@@ -23,6 +23,7 @@
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
   function matches(e, state) {
+    state = state || {};
     if (state.category && state.category !== "all" && e.categories.indexOf(state.category) < 0) return false;
     var q = (state.query || "").trim().toLowerCase();
     if (q) {
@@ -31,7 +32,29 @@
     }
     return true;
   }
-  function visible(col, state) { return DATA.live(col).filter(function (e) { return matches(e, state); }); }
+  // Straight-line (great-circle) distance in miles between two points. Never presented as a driving distance or travel time.
+  function milesBetween(a, b) {
+    var R = 3958.8, rad = Math.PI / 180, dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+  function hasPin(e) { return !!(e.loc && typeof e.loc.lat === "number" && typeof e.loc.lng === "number" && (e.loc.status === "verified" || e.loc.status === "address-point")); }
+  function distanceOf(e, state) { return state && state.origin && hasPin(e) ? milesBetween(state.origin, e.loc) : null; }
+  // Editorial order is the default. With a chosen origin, destinations with a known location sort nearest first (stable); the rest keep their order after them.
+  function visible(col, state) {
+    state = state || {};
+    var list = DATA.live(col).filter(function (e) { return matches(e, state); });
+    if (!state || !state.origin) return list;
+    return list.map(function (e, i) { return { e: e, i: i, d: distanceOf(e, state) }; })
+      .sort(function (a, b) { if (a.d == null && b.d == null) return a.i - b.i; if (a.d == null) return 1; if (b.d == null) return -1; return a.d - b.d || a.i - b.i; })
+      .map(function (x) { return x.e; });
+  }
+  // The collection has a Map view only when the page supplies destination locations (the Preview does; the published pages do not yet).
+  function mapEnabled(col) { return !!(col.entries && col.entries.some(function (e) { return e.loc; })); }
+  function coverage(col, state) {
+    var list = visible(col, state), pinned = list.filter(hasPin).length;
+    return { shown: list.length, pinned: pinned, unresolved: list.length - pinned };
+  }
 
   function tags(col, e) {
     return '<ul class="sc-tags">' + e.categories.map(function (c) {
@@ -86,6 +109,23 @@
   }
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   function lastDayText(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); return m ? MONTHS[+m[2] - 1] + " " + (+m[3]) + ", " + m[1] : iso; }
+  // One consistent label. A destination's seasonal closing date is "Last day open"; an activity or event with its own final date says so.
+  // lastDayKind: "event" -> "Final event day"; "runs" -> "Runs through"; anything else -> "Last day open". lastDayNote adds a short qualifier.
+  var LASTDAY_LABEL = { event: "Final event day", runs: "Runs through" };
+  function lastDayLine(e) {
+    if (!e.lastDay) return "";
+    return '<p class="sc-card-sum sc-card-lastday"><strong>' + (LASTDAY_LABEL[e.lastDayKind] || "Last day open") + ':</strong> ' + esc(lastDayText(e.lastDay)) +
+      (e.lastDayNote ? ' <span class="sc-lastday-note">(' + esc(e.lastDayNote) + ')</span>' : "") + '</p>';
+  }
+  function distanceLine(e, state) {
+    var d = distanceOf(e, state);
+    if (d == null) return "";
+    var how = state.origin.kind === "geo" ? "approximate straight-line distance from your location" : "approximate distance from the center of " + state.origin.label;
+    return '<p class="sc-card-sum sc-card-dist"><strong>About ' + (d < 10 ? d.toFixed(1) : Math.round(d)) + ' mi</strong> <span class="sc-dist-how">(' + esc(how) + ')</span></p>';
+  }
+  function ontarioLine(e) {
+    return e.region === "ON" || e.region === "Ontario" ? '<p class="sc-card-sum sc-card-border"><strong>In Ontario, Canada.</strong> This trip crosses the U.S.\u2013Canada border.</p>' : "";
+  }
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
@@ -97,13 +137,13 @@
     // The CSS only ever shrinks a title that would not fit; every other title keeps the approved 21px.
     var longWord = 0;
     String(e.name).split(/[\s\-\u2013\u2014]+/).forEach(function (w) { if (w.length >= 10 && w.length > longWord) longWord = w.length; });
-    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
+    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '" id="sc-card-' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
       media(e) +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title' + (longWord ? " sc-card-title--long" : "") + '"' + (longWord ? ' style="--lw:' + longWord + '"' : "") + '>' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
       '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
-      (e.lastDay ? '<p class="sc-card-sum sc-card-lastday"><strong>Last day:</strong> ' + esc(lastDayText(e.lastDay)) + '</p>' : "") +
+      lastDayLine(e) + distanceLine(e, opts.state) + ontarioLine(e) +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
@@ -123,11 +163,20 @@
 
   function results(col, state) {
     var list = visible(col, state);
-    var cls = state.view === "list" ? "sc-grid sc-list" : "sc-grid";
+    var asList = state.view === "list" || state.view === "map";
+    var cls = asList ? "sc-grid sc-list" : "sc-grid";
     if (!list.length) {
       return '<p class="sc-empty" role="status">No destinations match yet. Clear a filter to see the full collection.</p>';
     }
-    return '<ul class="' + cls + '">' + list.map(function (e) { return card(col, e, { list: state.view === "list" }); }).join("") + '</ul>';
+    var pre = "";
+    if (state.view === "map" && mapEnabled(col)) {
+      var cv = coverage(col, state);
+      pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">Showing ' + cv.pinned + ' of ' + cv.shown + ' destinations on the map' +
+        (cv.unresolved ? '; ' + cv.unresolved + ' location' + (cv.unresolved === 1 ? '' : 's') + ' still being verified (listed below)' : '') + '.</p>' +
+        '<div id="scMap" class="sc-map" aria-label="Map of the destinations in this collection (the list below has the same destinations)"></div>' +
+        '<p class="sc-map-credit">Preview map tiles: \u00a9 OpenStreetMap contributors. The accessible list below shows every destination.</p>';
+    }
+    return pre + '<ul class="' + cls + '">' + list.map(function (e) { return card(col, e, { list: asList, state: state }); }).join("") + '</ul>';
   }
 
   function discover(col, state) {
@@ -178,17 +227,35 @@
   }
 
   function dontMiss(col, state) {
-    var feat = DATA.live(col).filter(function (e) { return e.featured; });
-    if (!feat.length) return "";
+    var live = DATA.live(col), feat = visible(col, state).filter(function (e) { return e.featured; });
+    // The row follows the same filters and search as the directory. When every destination is featured the directory already shows each one once.
+    if (!feat.length || live.every(function (e) { return e.featured; })) return "";
     return '<section class="sc-section" aria-labelledby="scDontMiss"><div class="sc-section-head"><h2 class="sc-h2" id="scDontMiss">' + esc(col.dontMissTitle) + '</h2></div>' +
-      '<ul class="sc-grid sc-rail' + (feat.length === 1 ? " sc-rail-solo" : "") + '">' + feat.map(function (e) { return card(col, e, { list: feat.length === 1 }); }).join("") + '</ul></section>';
+      '<ul class="sc-grid sc-rail' + (feat.length === 1 ? " sc-rail-solo" : "") + '">' + feat.map(function (e) { return card(col, e, { list: feat.length === 1, state: state }); }).join("") + '</ul></section>';
   }
 
+  function nearestControls(state) {
+    var o = state.origin;
+    return '<div class="sc-near" role="group" aria-label="Sort by distance">' +
+      '<button type="button" class="sc-near-btn" id="scNearBtn">Nearest to me</button>' +
+      '<label class="sc-near-lab" for="scCity">City or ZIP</label>' +
+      '<input id="scCity" class="sc-near-in" type="text" list="scCityList" autocomplete="off" placeholder="e.g. Windsor, Ann Arbor" value="">' +
+      '<datalist id="scCityList"></datalist>' +
+      '<button type="button" class="sc-near-btn" id="scCityGo">Sort from here</button>' +
+      '<button type="button" class="sc-near-btn" id="scNearClear"' + (o ? "" : " hidden") + '>Clear location</button>' +
+      '<p class="sc-near-status" id="scNearStatus" role="status" aria-live="polite">' + (o ? nearStatus(o) : "Editorial order. Choose \u201cNearest to me\u201d or a city to sort by distance. Distances are approximate and are not driving distances or travel times.") + '</p></div>';
+  }
+  function nearStatus(o) {
+    return o.kind === "geo" ? "Sorted by approximate straight-line distance from your location. Not a driving distance or travel time."
+      : "Sorted by approximate distance from the center of " + esc(o.label) + ". Not a driving distance or travel time.";
+  }
   function explore(col, state) {
     return '<section class="sc-section" aria-labelledby="scExplore"><div class="sc-section-head"><h2 class="sc-h2" id="scExplore">' + esc(col.exploreTitle) + '</h2>' +
       '<div class="sc-views" role="group" aria-label="View"><button type="button" class="sc-view" data-view="grid" aria-pressed="' + (state.view !== "list") + '">Grid</button>' +
       '<button type="button" class="sc-view" data-view="list" aria-pressed="' + (state.view === "list") + '">List</button>' +
-      '<a class="sc-view" href="/map.html" title="General events map, not filtered to this collection">Events map</a></div></div>' +
+      (mapEnabled(col) ? '<button type="button" class="sc-view" data-view="map" aria-pressed="' + (state.view === "map") + '">Map</button>' : "") +
+      '<a class="sc-view" href="/map.html" title="General events map, not filtered to this collection">General events map (all listings)</a></div></div>' +
+      (mapEnabled(col) ? nearestControls(state) : "") +
       '<p class="sc-count" id="scCount" aria-live="polite">' + visible(col, state).length + ' of ' + DATA.live(col).length + ' destinations</p>' +
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }
@@ -211,5 +278,5 @@
     });
   }
 
-  return { fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { milesBetween: milesBetween, hasPin: hasPin, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });

@@ -26,9 +26,9 @@ assert.strictEqual(DATA.live(col, null).length, DATA.published(col).length, "no 
 
 // the collection still renders after removals: counts and cards are consistent, the removed cards are gone
 const html = R.results(Object.assign({}, col), { category: "all", query: "", view: "grid" });
-assert.ok(html.indexOf('data-entry="' + F + '"') >= 0 && /Last day:<\/strong> November 29, 2026/.test(html), "Franklin card shows its confirmed last operating day");
-assert.ok(/Last day:<\/strong> November 22, 2026/.test(html), "Diehl's card shows November 22");
-assert.ok(/Last day:<\/strong> November 22, 2026/.test(html) && html.indexOf('data-entry="' + P + '"') >= 0, "Parmenter's card shows November 22 (official homepage)");
+assert.ok(html.indexOf('data-entry="' + F + '"') >= 0 && /Last day open:<\/strong> November 29, 2026/.test(html), "Franklin card shows its confirmed last operating day");
+assert.ok(/Last day open:<\/strong> November 22, 2026/.test(html), "Diehl's card shows November 22");
+assert.ok(/Last day open:<\/strong> November 22, 2026/.test(html) && html.indexOf('data-entry="' + P + '"') >= 0, "Parmenter's card shows November 22 (official homepage)");
 
 // nothing but the placement is touched: the records are still in the private data, approved and unchanged in status
 for (const id of [D, P, F]) { const e = ED.entries().fall.find((x) => x.id === id); assert.ok(e && e.status === "PUBLISHED" && e.approval, id + " record untouched"); }
