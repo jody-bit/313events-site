@@ -41,12 +41,16 @@
   // A map pin needs a verified entrance or official coordinates (status "verified"). A Census address-point is a candidate location, not proof of
   // where a visitor enters, so those places stay in Grid/List and are counted as "still being verified". Distances may still use an address-point.
   function hasCoords(e) { return !!(e.loc && typeof e.loc.lat === "number" && typeof e.loc.lng === "number"); }
-  function hasPin(e) { return !!(hasCoords(e) && (e.loc.status === "verified" || e.loc.entrance)) || (qaPins && hasLocation(e)); }
+  // Two kinds of real pin. "verified": a confirmed visitor entrance or the agency's own entrance coordinates. "park-location": the park's official
+  // coordinates used as an approximate location; the visitor entrance is NOT verified, and the pin must never be offered as a directions destination.
+  function isParkLocation(e) { return hasCoords(e) && e.loc.status === "park-location"; }
+  function isVerifiedPin(e) { return hasCoords(e) && (e.loc.status === "verified" || !!e.loc.entrance); }
+  function hasPin(e) { return isVerifiedPin(e) || isParkLocation(e) || (qaPins && hasLocation(e)); }
   // Candidate = a location drawn only in the Preview QA view (?qa=pins); never part of the default or publication view.
-  function isCandidate(e) { return qaPins && hasLocation(e) && !(e.loc.status === "verified" || e.loc.entrance); }
+  function isCandidate(e) { return qaPins && hasLocation(e) && !isVerifiedPin(e) && !isParkLocation(e); }
   var qaPins = false;
   function setQaPins(on) { qaPins = on === true; }
-  function hasLocation(e) { return hasCoords(e) && (e.loc.status === "verified" || e.loc.status === "address-point"); }
+  function hasLocation(e) { return hasCoords(e) && (e.loc.status === "verified" || e.loc.status === "address-point" || e.loc.status === "park-location"); }
   function distanceOf(e, state) { return state && state.origin && hasLocation(e) ? milesBetween(state.origin, e.loc) : null; }
   // Editorial order is the default. With a chosen origin, destinations with a known location sort nearest first (stable); the rest keep their order after them.
   function visible(col, state) {
@@ -61,7 +65,8 @@
   function mapEnabled(col) { return !!(col.entries && col.entries.some(function (e) { return e.loc; })); }
   function coverage(col, state) {
     var list = visible(col, state), pinned = list.filter(hasPin).length;
-    return { shown: list.length, pinned: pinned, unresolved: list.length - pinned };
+    var parks = list.filter(isParkLocation).length;
+    return { shown: list.length, pinned: pinned, parks: parks, verified: list.filter(isVerifiedPin).length, unresolved: list.length - pinned };
   }
 
   function tags(col, e) {
@@ -185,6 +190,7 @@
     if (state.view === "map" && mapEnabled(col)) {
       var cv = coverage(col, state);
       pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">' + cv.pinned + ' of ' + cv.shown + ' places shown on the map; the rest are in the list.' +
+        (cv.parks ? ' ' + cv.parks + ' ' + (cv.parks === 1 ? 'is' : 'are') + ' an official park location (visitor entrance not yet verified); a pin does not mean the park is open.' : '') +
         (qaPins ? ' QA view: candidate pins are included and are not confirmed entrances.' : '') + '</p>' +
         '<div id="scMap" class="sc-map" aria-label="Map of the destinations in this collection (the list below has the same destinations)"></div>' +
         '<p class="sc-map-credit">Map tiles \u00a9 OpenStreetMap contributors \u00a9 CARTO. The accessible list below shows every destination.</p><p class="sc-map-tilestatus" id="scMapTiles" role="status" aria-live="polite"></p>';
@@ -292,5 +298,5 @@
     });
   }
 
-  return { dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, isParkLocation: isParkLocation, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });

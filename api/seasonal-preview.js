@@ -30,7 +30,7 @@ function entriesFor(slug) {
   const lead = cfg.lead || [];
   const byId = (id) => all.find((e) => e.id === id);
   // Public location fields only (status, lat, lng, address, entrance); source, method and notes stay in the private file.
-  all.forEach((e) => { const l = LOCS[e.id]; if (l && l.status !== "unresolved") e.loc = { status: l.status, lat: l.lat, lng: l.lng, address: l.address || null, entrance: l.entrance || null }; else if (l) e.loc = { status: "unresolved" }; });
+  all.forEach((e) => { const l = LOCS[e.id]; if (l && l.status !== "unresolved") e.loc = { status: l.status, lat: l.lat, lng: l.lng, address: l.address || null, entrance: l.entrance || null, accessUrl: l.accessUrl || null }; else if (l) e.loc = { status: "unresolved" }; });
   return lead.map(byId).filter(Boolean).concat(all.filter((e) => lead.indexOf(e.id) < 0));
 }
 
