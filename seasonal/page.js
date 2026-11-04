@@ -63,6 +63,8 @@
       dl.innerHTML = out.join("");
     }
     document.addEventListener("click", function (e) {
+      var cl = e.target.closest && e.target.closest('.sc-pop a[href^="#sc-card-"]');
+      if (cl) { var t = document.getElementById(cl.getAttribute("href").slice(1)); if (t) { e.preventDefault(); t.setAttribute("tabindex", "-1"); t.scrollIntoView({ block: "center" }); t.focus(); } return; }
       var id = e.target.closest && e.target.closest("#scNearBtn,#scCityGo,#scNearClear");
       if (id) {
         if (id.id === "scNearClear") { state.origin = null; var ci = document.getElementById("scCity"); if (ci) ci.value = ""; say("Editorial order."); sync(false); }

@@ -43,20 +43,20 @@
       if (!map) {
         map = L.map(holder, { scrollWheelZoom: false }).setView([42.33, -83.05], 8);
         var tiles = L.tileLayer(S.tileUrl || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", { subdomains: S.subdomains || "abc", maxZoom: S.maxZoom || 18, attribution: S.attribution || "© OpenStreetMap contributors" }).addTo(map);
-        var failed = 0; tiles.on("tileerror", function () { if (++failed === 3) { var n = document.getElementById("scMapNotice"); if (n) n.textContent += " Map tiles did not load; the list below has every destination."; } });
+        var failed = 0; tiles.on("tileerror", function () { if (++failed === 3) { var n = document.getElementById("scMapTiles"); if (n) n.textContent = "Map tiles did not load; the list below has every destination."; } });
         layer = L.layerGroup().addTo(map);
       }
       layer.clearLayers();
       var pts = [];
       pins.forEach(function (e) {
-        var m = L.marker([e.loc.lat, e.loc.lng], { title: e.name, keyboard: true, alt: e.name }).bindPopup(popup(e, R.lastDayHtml(e)), { maxWidth: 280 });
+        var m = L.marker([e.loc.lat, e.loc.lng], { title: e.name, keyboard: true, alt: e.name, icon: L.divIcon({ className: "sc-pin", html: '<span class="sc-pin-dot"></span>', iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -14] }) }).bindPopup(popup(e, R.lastDayHtml(e)), { maxWidth: 280 });
         layer.addLayer(m); pts.push([e.loc.lat, e.loc.lng]);
       });
       if (origin) { var o = L.circleMarker([origin.lat, origin.lng], { radius: 7, color: "#F5C400", fillColor: "#0A0A0A", fillOpacity: 1, weight: 3 }).bindTooltip(origin.kind === "geo" ? "Your location" : "Center of " + origin.label); layer.addLayer(o); pts.push([origin.lat, origin.lng]); }
       map.fitBounds(pts, { padding: [30, 30], maxZoom: 12 });
       setTimeout(function () { map.invalidateSize(); }, 50);
       return true;
-    }, function () { var n = document.getElementById("scMapNotice"); if (n) n.textContent += " The map could not load; the list below has every destination."; return false; });
+    }, function () { var n = document.getElementById("scMapTiles"); if (n) n.textContent = "The map could not load; the list below has every destination."; return false; });
   }
 
   function destroy() { if (map) { map.remove(); map = null; layer = null; } }

@@ -174,7 +174,7 @@
       pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">Showing ' + cv.pinned + ' of ' + cv.shown + ' destinations on the map' +
         (cv.unresolved ? '; ' + cv.unresolved + ' location' + (cv.unresolved === 1 ? '' : 's') + ' still being verified (listed below)' : '') + '.</p>' +
         '<div id="scMap" class="sc-map" aria-label="Map of the destinations in this collection (the list below has the same destinations)"></div>' +
-        '<p class="sc-map-credit">Preview map tiles: \u00a9 OpenStreetMap contributors. The accessible list below shows every destination.</p>';
+        '<p class="sc-map-credit">Map tiles \u00a9 OpenStreetMap contributors \u00a9 CARTO. The accessible list below shows every destination.</p><p class="sc-map-tilestatus" id="scMapTiles" role="status" aria-live="polite"></p>';
     }
     return pre + '<ul class="' + cls + '">' + list.map(function (e) { return card(col, e, { list: asList, state: state }); }).join("") + '</ul>';
   }
@@ -237,11 +237,11 @@
   function nearestControls(state) {
     var o = state.origin;
     return '<div class="sc-near" role="group" aria-label="Sort by distance">' +
-      '<button type="button" class="sc-near-btn" id="scNearBtn">Nearest to me</button>' +
-      '<label class="sc-near-lab" for="scCity">City or ZIP</label>' +
-      '<input id="scCity" class="sc-near-in" type="text" list="scCityList" autocomplete="off" placeholder="e.g. Windsor, Ann Arbor" value="">' +
+      '<button type="button" class="sc-near-btn sc-near-main" id="scNearBtn">Nearest to me</button>' +
+      '<div class="sc-near-city"><label class="sc-near-lab" for="scCity">City or ZIP</label>' +
+      '<input id="scCity" class="sc-near-in" type="text" list="scCityList" autocomplete="off" placeholder="e.g. Windsor" value="">' +
       '<datalist id="scCityList"></datalist>' +
-      '<button type="button" class="sc-near-btn" id="scCityGo">Sort from here</button>' +
+      '<button type="button" class="sc-near-btn" id="scCityGo">Use this city</button></div>' +
       '<button type="button" class="sc-near-btn" id="scNearClear"' + (o ? "" : " hidden") + '>Clear location</button>' +
       '<p class="sc-near-status" id="scNearStatus" role="status" aria-live="polite">' + (o ? nearStatus(o) : "Editorial order. Choose \u201cNearest to me\u201d or a city to sort by distance. Distances are approximate and are not driving distances or travel times.") + '</p></div>';
   }
