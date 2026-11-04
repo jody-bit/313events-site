@@ -13,5 +13,6 @@ assert.ok(/function updateCatSummary\(\)/.test(html) && /selected/.test(html) &&
 assert.ok(/Remove category: \$\{CATS\[k\]\.label\}/.test(html), "each name has an accessible remove button");
 assert.ok(/Object\.keys\(CATS\)\.filter\(k=>activeCats\.has\(k\)\)/.test(html), "names and count come from the live selection");
 assert.ok(/ev\.stopPropagation\(\)/.test(html), "removing a name does not close the open filter sheet");
+assert.ok(/allChip\.textContent = 'All categories'/.test(html), "the reset chip reads All categories");
 assert.ok(/Event Type palette/.test(html), "Event Type comments and palette are untouched");
 console.log("ok calendar-categories-summary");
