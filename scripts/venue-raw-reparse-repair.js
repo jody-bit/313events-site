@@ -59,6 +59,7 @@
 // Requires SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the environment.
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
 const { parseIcsLocation } = require(path.join(__dirname, "..", "api", "_lib", "ics-location"));
 const { buildVenueDetailsMap, resolveVenueFromCandidate } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 
@@ -75,7 +76,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&venue_address_raw=is.null` +
     `&venue_city_raw=is.null` +
     `&venue_name_raw=not.is.null` +
-    `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status` +
+    `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status,source,internal_note` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch re-parse candidates: HTTP ${resp.status}`);
@@ -138,6 +139,8 @@ async function repairVenueRawReparse({
   counts.totalConsidered = candidates.length;
 
   for (const event of candidates) {
+    // Owner-supplied / editorial-hold rows are never changed by automation, even to fill a blank.
+    if (isOwnerSuppliedRow(event)) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
     const parsed = parseIcsLocation(event.venue_name_raw);
     // BUG-012 (2026-10-04): text that still cannot be split into a venue
     // name may now carry the CITY from its own trailing "<known city> <ST>

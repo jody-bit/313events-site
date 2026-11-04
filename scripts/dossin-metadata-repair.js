@@ -54,6 +54,7 @@
 //   node scripts/dossin-metadata-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
 const {
   parseDossinEvents,
   dossinExternalId,
@@ -115,7 +116,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=is.null&event_url=is.null` +
-    `&select=id,external_id,ticket_url,event_url,start_date,status` +
+    `&select=id,external_id,ticket_url,event_url,start_date,status,source,internal_note` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch Dossin repair candidates: HTTP ${resp.status}`);
@@ -180,6 +181,8 @@ async function repairDossinMetadata({
     // Defensive re-check -- never touch a candidate that already has
     // either link populated, even if the query above somehow returned one.
     if ((event.ticket_url && event.ticket_url.trim()) || (event.event_url && event.event_url.trim())) continue;
+    // Owner-supplied / editorial-hold rows are never changed by automation, even to fill a blank.
+    if (isOwnerSuppliedRow(event)) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
 
     if (!eventUrlsByExternalId.has(event.external_id)) {
       counts.unmatched++;

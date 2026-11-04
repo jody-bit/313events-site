@@ -95,6 +95,7 @@
 //     in, so a later row cannot write over it.
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
 const { recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
 const { citiesConflict } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 
@@ -374,6 +375,12 @@ function planConsolidation(rows) {
         if (!c) continue;
         if (c.kind !== "deterministic") {
           reviews.push({ a, b, reason: c.reason });
+          continue;
+        }
+        // A row carrying OWNER-CORRECTION or EDITORIAL-HOLD is never retired into, nor filled from, another row by
+        // automation: the pair goes to review. (Manual-source rows still merge by rule: owner policy decision pending.)
+        if (isOwnerSuppliedRow(a, { includeManualSource: false }) || isOwnerSuppliedRow(b, { includeManualSource: false })) {
+          reviews.push({ a, b, reason: "owner_supplied_row" });
           continue;
         }
         const time = normalizeStartTime(b.time_display);
