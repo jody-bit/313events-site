@@ -5,7 +5,8 @@
   "use strict";
   var LEAFLET_JS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", LEAFLET_CSS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
   var JS_SRI = "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=", CSS_SRI = "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=";
-  var map = null, layer = null, loading = null;
+  var map = null, layer = null, loading = null, lastKey = "";
+  document.addEventListener("keydown", function (ev) { lastKey = ev.key; }, true);
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
@@ -50,6 +51,7 @@
       var pts = [];
       pins.forEach(function (e) {
         var m = L.marker([e.loc.lat, e.loc.lng], { title: e.name, keyboard: true, alt: e.name, icon: L.divIcon({ className: "sc-pin", html: '<span class="sc-pin-dot"></span>', iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -14] }) }).bindPopup(popup(e, R.lastDayHtml(e)), { maxWidth: 280 });
+        m.on("popupclose", function () { if (lastKey === "Escape" && m.getElement()) m.getElement().focus(); });
         layer.addLayer(m); pts.push([e.loc.lat, e.loc.lng]);
       });
       if (origin) { var o = L.circleMarker([origin.lat, origin.lng], { radius: 7, color: "#F5C400", fillColor: "#0A0A0A", fillOpacity: 1, weight: 3 }).bindTooltip(origin.kind === "geo" ? "Your location" : "Center of " + origin.label); layer.addLayer(o); pts.push([origin.lat, origin.lng]); }
