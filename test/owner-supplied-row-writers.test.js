@@ -114,5 +114,19 @@ const CORR = 'OWNER-CORRECTION 2026-11-04 jody fields=description | description:
       }
     }
   }
+  // Non-event retirement (status approved -> rejected) and venue creation/linking from stated places
+  {
+    const { planRetirement } = require(`${REPO}/scripts/retire-non-events.js`);
+    const r = (o) => ({ id: "r", status: "approved", source: "Sterling Heights - Library", title: "Library Closed", start_date: "2026-12-01", internal_note: null, ...o });
+    assert.strictEqual(planRetirement([r({ id: "ctl" })]).length, 1, "control row is retired by rule");
+    assert.strictEqual(planRetirement([r({ id: "hold", internal_note: HOLD }), r({ id: "corr", internal_note: CORR })]).length, 0, "owner rows are never retired");
+    const { planVenueRecords } = require(`${REPO}/scripts/venues-from-stated-places.js`);
+    const ev = (id, date, note) => ({ id, source: "TechTown Detroit", status: "approved", start_date: date, venue_name_raw: "TechTown Detroit", venue_address_raw: "440 Burroughs Street", venue_city_raw: "Detroit", venue_id: null, internal_note: note });
+    const ctl = planVenueRecords([ev("a", "2026-10-14"), ev("b", "2026-10-15"), ev("c", "2026-10-16")], []);
+    assert.ok(ctl.create.length === 1 && ctl.create[0].eventIds.length === 3, "control rows create/link a venue");
+    const prot = planVenueRecords([ev("a", "2026-10-14"), ev("b", "2026-10-15"), ev("c", "2026-10-16", HOLD)], []);
+    const ids = prot.create.concat(prot.link).flatMap((x) => x.eventIds || []);
+    assert.ok(!ids.includes("c"), "an owner-held row is not linked or created from");
+  }
   console.log("PASS: every enrichment/repair writer and the duplicate consolidator leave owner-supplied rows untouched");
 })().catch((e) => { console.error(e); process.exit(1); });
