@@ -14,7 +14,7 @@ function fakeL() {
 function fakeEl() { return { attrs: {}, html: "", setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; }, insertAdjacentHTML(_w, h) { this.html += h; }, clientHeight: 380 }; }
 
 // 1. one provider config: the URL and attribution equal what the live pages use today (no silent drift while they migrate)
-const MIGRATED = ["calendar.html"]; // pages already on the foundation; map.html moves in its own PR
+const MIGRATED = ["calendar.html", "map.html"]; // pages already on the foundation (each moved in its own PR)
 for (const page of ["map.html", "calendar.html"]) {
   const src = fs.readFileSync(path.join(__dirname, "..", page), "utf8");
   if (MIGRATED.includes(page)) {
@@ -27,7 +27,7 @@ for (const page of ["map.html", "calendar.html"]) {
     assert.ok(src.includes("basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"), page + " tile URL pattern");
   }
 }
-assert.strictEqual((fs.readFileSync(path.join(__dirname, "..", "calendar.html"), "utf8").match(/leaflet\.js/g) || []).length, 1, "one Leaflet library per page");
+for (const page of MIGRATED) assert.strictEqual((fs.readFileSync(path.join(__dirname, "..", page), "utf8").match(/leaflet\.js/g) || []).length, 1, page + ": one Leaflet library");
 assert.strictEqual(MF.tileUrl(), "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=" + MF.PROVIDER.key);
 assert.ok(/OpenStreetMap/.test(MF.PROVIDER.attribution) && /CARTO/.test(MF.PROVIDER.attribution), "attribution stays visible");
 console.log("PASS: one provider config, same URL and key as the live pages, attribution present");
