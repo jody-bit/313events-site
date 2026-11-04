@@ -115,15 +115,20 @@ keep_diag() {  # $1 = reason
     echo "got_sha256=$(openssl dgst -sha256 "$f" | awk '{print $NF}')"
     if [ -f "$f.refetch" ]; then echo "refetch_md5=$(md5_of "$f.refetch")"; echo "refetch_size=$(fsize "$f.refetch")"; fi
   } > "$d/info.txt"
-  tar -C "$WORKROOT" -cf - diag | age -r "$AGE_RECIPIENT" -o "$base.diag.age" || true
-  chmod 600 "$base.diag.age" 2>/dev/null || true
+  local kept="encrypted_originals=$(basename "$base.diag.age") (age-encrypted, mode 600; keep it, do not open, rename or delete it)"
+  if tar -C "$WORKROOT" -cf - diag | age -r "$AGE_RECIPIENT" -o "$base.diag.age" && [ -s "$base.diag.age" ]; then
+    chmod 600 "$base.diag.age" 2>/dev/null || true
+  else
+    rm -f "$base.diag.age"; kept="ORIGINALS NOT KEPT (encryption failed); only the numbers below were recorded"
+  fi
   { echo "313.events backup FAILURE REPORT: NOT a backup (no archive was produced by this run)"
     echo "time_utc=$STAMP"; echo "reason=$1"; echo "object_index=$i of $(wc -l < storage_objects.tsv | tr -d ' ')"
     echo "expected_etag=$etag"; echo "expected_size=$size"; echo "got_size=$(fsize "$f")"; echo "got_md5=$(md5_of "$f")"
-    echo "encrypted_originals=$(basename "$base.diag.age") (age-encrypted, mode 600; keep it, do not open, rename or delete it)"
+    echo "$kept"
   } > "$base.report.txt"
   chmod 600 "$base.report.txt" 2>/dev/null || true
-  echo "STOPPED on object #$i: $1. Failure report: $base.report.txt   Encrypted originals kept: $base.diag.age   (NOT a backup)" >&2
+  case "$kept" in ORIGINALS*) echo "STOPPED on object #$i: $1. ORIGINALS NOT KEPT (encryption failed). Failure report: $base.report.txt   (NOT a backup)" >&2;;
+    *) echo "STOPPED on object #$i: $1. Failure report: $base.report.txt   Encrypted originals kept: $base.diag.age   (NOT a backup)" >&2;; esac
 }
 i=0; hashed=0; refetched=0; multipart1=0
 while IFS=$'\t' read -r b name size etag upd; do

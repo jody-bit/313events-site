@@ -190,6 +190,11 @@ FAILSUB="" mock11 MOCK_PRIVATE=top.png; expect_fail 'missing, private or inacces
 FAILSUB="" mock11 X=1; mkgood
 FAILSUB="" mock11 MOCK_CORRUPT=top.png; expect_fail 'content hash mismatch' "same-size corrupted bytes on an MD5-verifiable object" diag
 FAILSUB="" mock11 MOCK_FLAKY=deep; expect_fail 'differs between two fetches' "unstable bytes on an object without an MD5" diag
+# if encryption of the originals fails, the report must say so and no .diag.age may exist
+FAILSUB="" mock11 MOCK_CORRUPT=top.png
+rm -rf "$tmp/out11"; if ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out11" AGE_RECIPIENT="not-a-valid-key" SUPABASE_URL=http://127.0.0.1:54333 "$here/backup.sh" ) >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed"; exit 1; fi
+grep -q 'ORIGINALS NOT KEPT' "$tmp/b11.log" && grep -q 'ORIGINALS NOT KEPT' "$tmp"/out11/*.report.txt && ! grep -q 'encrypted_originals=' "$tmp"/out11/*.report.txt && [ -z "$(ls "$tmp"/out11/*.diag.age 2>/dev/null)" ] || { cat "$tmp/b11.log"; ls "$tmp/out11"; echo "FAIL: report claims originals were kept"; exit 1; }
+FAILSUB="" mock11 X=1; mkgood
 psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{size}', '5') where name='top.png'"
 FAILSUB="" mock11 X=1; expect_fail 'size mismatch' "size differs from Storage's recorded size" diag
 psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{size}', '8') where name='top.png'"
