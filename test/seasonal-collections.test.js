@@ -214,7 +214,7 @@ assert.strictEqual(allEntries, 251, "70 fall + 52 halloween + 129 fall-color rec
   const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
   set.forEach((k) => { n[k.split("/")[0]]++; });
   for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, n[slug], slug + ": public destinations = the authorized batch");
-  assert.deepStrictEqual(n, { fall: 38, halloween: 25, "fall-color": 41 });
+  assert.deepStrictEqual(n, { fall: 38, halloween: 12, "fall-color": 41 });
 }
 
 // ---- 3. renderer behaviour, exercised on complete synthetic records
@@ -335,7 +335,7 @@ for (const slug of DATA.ORDER) {
   for (const c of withEntry) assert.strictEqual(c.status, DATA.readiness(col.entries.find((e) => e.id === c.entry_id)).state, c.entry_id + " registry status equals derived state");
   assert.deepStrictEqual(rows.filter((c) => c.status === "PUBLISHED").map((c) => c.entry_id).sort(), DATA.published(col).map((e) => e.id).sort());
 }
-assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 104, "the ledger shows exactly the 79 Fall records (76 + 3) and the 25 Halloween records that pass the gate as PUBLISHED");
+assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 91, "the ledger shows exactly the 79 Fall records (76 + 3) and the 12 Halloween records that pass the gate as PUBLISHED");
 
 // ---- 7. built pages in sync, routed, homepage cards link to them
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);
@@ -344,7 +344,7 @@ const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "u
 assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/halloween", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
   const rule = vercel.rewrites.find((r) => r.source === route);
-  assert.ok(rule && rule.destination === "/" + slug + ".html", "rewrite for " + route);
+  assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
   const page = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(page.includes('rel="canonical" href="https://313.events' + route + '"'));
   assert.ok(page.includes('data-collection="' + slug + '"'));

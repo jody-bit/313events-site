@@ -109,12 +109,19 @@ function allCollections() {
 // reviewer names and dates, the relevance note, the owner-photo authorization and its library ids, the file hashes, the
 // risk-acceptance text, the approval {by, at}, the migration history and every parked or alternative image stay in the
 // private data. A linked image keeps only what the card needs to draw it and credit it (src, source page, credit).
+function placements() {
+  try { return JSON.parse(fs.readFileSync(require("path").join(DIR, "placements.json"), "utf8")).placements || {}; } catch (err) { return {}; }
+}
 function publicEntry(e) {
   const im = e.image || {}, out = { id: e.id, name: e.name, city: e.city, region: e.region, categories: e.categories.slice(), featured: !!e.featured,
     status: "PUBLISHED", summary: e.summary };
   if (e.website) out.website = e.website;
   // An access advisory is shown only where the record carries an approved public text (owner-confirmed 2026-10-12).
   if (e.accessAdvisories && typeof e.accessAdvisories.publicText === "string" && e.accessAdvisories.publicText.trim()) out.advisory = e.accessAdvisories.publicText.trim();
+  // Scheduled placement removal (owner direction 2026-11-04): the public page drops the card at removeAt (America/Detroit); lastDay is the confirmed last operating date shown on the card.
+  // Kept in placements.json (keyed by record id) so the approved records themselves are not touched.
+  const pl = placements()[e.id];
+  if (pl && pl.removeAt) { out.removeAt = pl.removeAt; if (pl.lastDay) out.lastDay = pl.lastDay; }
   out.image = { src: im.src };
   if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
   if (im.placeholder) out.image.placeholder = im.placeholder;
