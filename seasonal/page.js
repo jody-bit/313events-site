@@ -14,20 +14,24 @@
   function initPublic() {
     var p = new URLSearchParams(location.search);
     var state = { category: p.get("cat") || "all", query: p.get("q") || "", view: ({ list: 1, map: 1 })[p.get("view")] ? p.get("view") : "grid", origin: null };
+    state.categories = [];
     if (state.view === "map" && !R.mapEnabled(col)) state.view = "grid";
     var known = R.usedCategories(col).map(function (c) { return c.id; });
-    if (state.category !== "all" && known.indexOf(state.category) < 0) state.category = "all";
+    // ?cat=a,b selects several categories; unknown ids are ignored. The same selection serves Grid, List and Map.
+    String(state.category || "").split(",").forEach(function (c) { if (known.indexOf(c) >= 0 && state.categories.indexOf(c) < 0) state.categories.push(c); });
+    delete state.category;
 
     function sync(scroll) {
       document.getElementById("scResults").innerHTML = R.results(col, state);
       var dm = document.getElementById("scDontMissWrap"); if (dm) dm.innerHTML = R.dontMiss(col, state);   // featured row follows search and category
       document.getElementById("scCount").textContent = R.visible(col, state).length + " of " + DATA.live(col).length + " destinations";
-      [].forEach.call(document.querySelectorAll(".sc-chip"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cat") === state.category)); });
+      [].forEach.call(document.querySelectorAll(".sc-chip"), function (b) { var c = b.getAttribute("data-cat"); b.setAttribute("aria-pressed", String(c === "all" ? state.categories.length === 0 : state.categories.indexOf(c) >= 0)); });
+      var cs = document.getElementById("scCatSummary"); if (cs) cs.innerHTML = R.catSummary(col, state);
       [].forEach.call(document.querySelectorAll("button.sc-view"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === state.view)); });
       var s = document.getElementById("scSearch"); if (s && s.value !== state.query) s.value = state.query;
       var q = new URLSearchParams(location.search);   // keep other URL params; only touch ours
       q.delete("cat"); q.delete("q"); q.delete("view");
-      if (state.category !== "all") q.set("cat", state.category);
+      if (state.categories.length) q.set("cat", state.categories.join(","));
       if (state.query) q.set("q", state.query);
       if (state.view === "list" || state.view === "map") q.set("view", state.view);
       try { history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); } catch (e) {}
@@ -39,6 +43,7 @@
       if (st && state.origin) st.textContent = R.nearStatus(state.origin);
       if (state.view === "map" && window.SeasonalMapView) window.SeasonalMapView.update(R.visible(col, state), state.origin, R);
     }
+    function focusSummary() { var cs = document.getElementById("scCatSummary"); if (cs) cs.focus(); }
     function loadMapScript() {
       if (window.SeasonalMapView || state.view !== "map") return;
       function add(src, next) { var sc = document.createElement("script"); sc.src = src; sc.onload = next; document.head.appendChild(sc); }
@@ -87,10 +92,17 @@
         }
         return;
       }
-      var b = e.target.closest("[data-cat],[data-view]");
+      var b = e.target.closest("[data-cat],[data-cat-remove],[data-cat-clear],[data-view]");
       if (!b) return;
       if (b.hasAttribute("data-view")) { state.view = b.getAttribute("data-view"); sync(false); loadMapScript(); return; }
-      state.category = b.getAttribute("data-cat"); sync(b.classList.contains("sc-tile"));
+      if (b.hasAttribute("data-cat-clear")) { state.categories = []; sync(false); focusSummary(); return; }
+      if (b.hasAttribute("data-cat-remove")) { var rid = b.getAttribute("data-cat-remove"); state.categories = state.categories.filter(function (c) { return c !== rid; }); sync(false); focusSummary(); return; }
+      var cat = b.getAttribute("data-cat");
+      if (cat === "all") state.categories = [];
+      else if (b.classList.contains("sc-tile")) state.categories = [cat];   // a navigation tile jumps to that one category
+      else if (state.categories.indexOf(cat) >= 0) state.categories = state.categories.filter(function (c) { return c !== cat; });
+      else state.categories = state.categories.concat([cat]);
+      sync(b.classList.contains("sc-tile"));
     });
     var s = document.getElementById("scSearch");
     if (s) s.addEventListener("input", function () { state.query = s.value; sync(false); });
