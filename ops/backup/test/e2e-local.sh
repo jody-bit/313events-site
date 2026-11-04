@@ -162,6 +162,17 @@ if PGUSER=backup_reader psql -X -q -d src -c "insert into public.venues(name) va
 if PGUSER=backup_reader psql -X -q -d src -c "select * from pg_authid" >/dev/null 2>&1; then echo "FAIL: backup_reader can read pg_authid"; exit 1; fi
 kill $SRC10 2>/dev/null || true
 echo "PASS 10: dedicated read-only role makes a complete backup (incl. RLS tables) and cannot write"
+# 11. credential-free Storage copy: a non-public bucket, or an object that is not served publicly, fails the backup by name (nothing omitted)
+psql -X -q -d src -c "update storage.buckets set public=false where id='event-flyers'"
+if run_backup >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed with a private bucket"; exit 1; fi
+grep -q 'not public' "$tmp/b11.log" && grep -q 'event-flyers' "$tmp/b11.log" || { cat "$tmp/b11.log"; echo "FAIL: private bucket not named"; exit 1; }
+psql -X -q -d src -c "update storage.buckets set public=true where id='event-flyers'"
+kill $SRC10 2>/dev/null || true
+MOCK_PRIVATE_BUCKET=event-flyers python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC11=$!; sleep 1
+if run_backup >"$tmp/b11b.log" 2>&1; then echo "FAIL: backup passed although objects were not served publicly"; exit 1; fi
+grep -q 'missing, private or inaccessible' "$tmp/b11b.log" || { cat "$tmp/b11b.log"; echo "FAIL: wrong reason"; exit 1; }
+kill $SRC11 2>/dev/null || true
+echo "PASS 11: Storage is copied with no credential; a private bucket or unserved object fails the backup by name"
 # 10b. effective privilege boundary, even with the read-only default overridden in the connection and the session
 psql -X -q -d src -c "create schema auth; create table auth.users(id int, email text); insert into auth.users values (1,'a@b'); create schema vault; create table vault.secrets(s text); insert into vault.secrets values ('s')"
 PGO="-c default_transaction_read_only=off"

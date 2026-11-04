@@ -4,7 +4,6 @@
 #
 # Optional one-time Keychain setup (each command prompts for the value; nothing is echoed):
 #   security add-generic-password -a "$USER" -s 313events-backup-db-password -w
-#   security add-generic-password -a "$USER" -s 313events-backup-storage-key -w
 # The age key pair is generated on first run at ~/.313events-backup/age.key (mode 600, outside the repo and CI).
 # Keep a second copy of that file in the password manager; losing it makes every archive unreadable.
 #
@@ -61,8 +60,7 @@ PGUSER="${PGUSER:-postgres.$PROD_REF}"
 case "$PGUSER" in *".$PROD_REF") ;; *) echo "PGUSER must end with .$PROD_REF (the shared-pooler tenant suffix)" >&2; exit 1;; esac
 export PGHOST PGPORT=5432 PGUSER PGDATABASE=postgres PGSSLMODE=require
 secret PGPASSWORD 313events-backup-db-password "Password for database user $PGUSER (hidden)"
-secret SUPABASE_SERVICE_ROLE_KEY 313events-backup-storage-key "Production service-role key, used only for Storage GET (hidden)"
-export PGPASSWORD SUPABASE_URL AGE_RECIPIENT SUPABASE_SERVICE_ROLE_KEY
+export PGPASSWORD SUPABASE_URL AGE_RECIPIENT   # no Storage credential: files come from public object URLs
 export BACKUP_DRY_RUN=1 BACKUP_DIR="$OUT"     # local only: nothing is uploaded
 
 # Preflight: prove the connection works and the session is read-only, before any dump starts.

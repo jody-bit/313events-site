@@ -19,8 +19,16 @@ class H(http.server.BaseHTTPRequestHandler):
         p = urllib.parse.unquote(self.path.split("?")[0])
         return p.split("/storage/v1/object/", 1)[1] if "/storage/v1/object/" in p else None
     def do_GET(self):
-        if not self._auth(): return
-        rel = self._path()
+        pub = "/storage/v1/object/public/" in self.path
+        if pub:
+            # Public route: must carry NO credential (the backup no longer sends one).
+            if self.headers.get("apikey") or self.headers.get("Authorization"):
+                self.send_response(400); self.end_headers(); return
+            rel = urllib.parse.unquote(self.path.split("?")[0]).split("/storage/v1/object/public/", 1)[1]
+            if os.environ.get("MOCK_PRIVATE_BUCKET") and rel.startswith(os.environ["MOCK_PRIVATE_BUCKET"] + "/"):
+                self.send_response(400); self.end_headers(); return
+        elif not self._auth(): return
+        else: rel = self._path()
         f = os.path.join(root, rel) if rel else None
         if rel is None or (fail and fail in rel) or not os.path.isfile(f):
             self.send_response(404); self.end_headers(); return

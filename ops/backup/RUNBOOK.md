@@ -14,7 +14,7 @@ Not backed up: Auth users (none exist today), Supabase platform settings, Vercel
 | Name | Holds | Notes |
 |---|---|---|
 | BACKUP_DB_URL | session-pooler connection string, read-only backup role | IPv4 compatible; no add-on needed |
-| BACKUP_SUPABASE_URL, BACKUP_STORAGE_KEY | project URL, key used only for GET on Storage | rotate on a schedule |
+| BACKUP_SUPABASE_URL | project URL (no Storage key: files are fetched from public object URLs) | none |
 | BACKUP_AGE_RECIPIENT | age PUBLIC key | safe to store; the private key is never on CI |
 | BACKUP_S3_PROVIDER / ENDPOINT / KEY_ID / SECRET / BUCKET | off-site bucket credentials | key scoped to this bucket; private bucket |
 | BACKUP_ALERT_WEBHOOK | URL for failure messages | messages contain no data |
@@ -48,7 +48,8 @@ Create a new project, run the same restore steps, then repoint the app: update S
 
 ## One-time local backup (no credentials in chat)
 `ops/backup/one-time-backup.sh` on the owner's Mac (needs `brew install postgresql@17 age jq`; stock macOS `shasum` and BSD tools are supported).
-- Secrets: the database password and the service-role key come from the environment, the macOS Keychain, or a hidden prompt. They are never echoed, never in a command line (database via `PGPASSWORD`, Storage key via a `curl -K` config read from a pipe), never written to disk. Only the pooler host name (not secret) is typed visibly.
+- Storage: every object is fetched from `/storage/v1/object/public/<bucket>/<path>` with no credential. The backup fails by name if any bucket is not public, if an object is not served, or if its size or MD5 eTag differs; objects with a multipart eTag are read twice and must hash identically. SHA-256 of every file is in the manifest.
+- Secrets: the database password comes from the environment, the macOS Keychain, or a hidden prompt. They are never echoed, never in a command line (database via `PGPASSWORD`), never written to disk. Only the pooler host name (not secret) is typed visibly.
 - Read-only: every database session sets `default_transaction_read_only`, `pg_dump` runs in a READ ONLY transaction, Storage is GET only. A preflight prints `on` for the read-only flag before any dump starts. (The credential is the project's postgres role until the least-privilege backup role is approved; see the role review.)
 - Storage: the object list comes from `storage.objects` (so sub-folders cannot be skipped) and the backup fails unless the downloaded file count and byte total equal what the database reports. The object list (name, size, eTag, updated_at) is snapshotted before and after the downloads; any difference means Storage changed mid-backup and the run fails (rerun). Each file must match its size and, where the eTag is a plain MD5, its content hash.
 - Failure paths: plaintext lives only in a private temp directory (never in the output folder, which may be synced to iCloud) and is removed on success, failure, and Ctrl-C/termination; a failed run also removes any partial archive, hash and manifest. Leftovers from a SIGKILL, crash or power loss are swept (and reported) at the start of the next run (do not run two backups at once). The object list must also equal the row count taken earlier and the object rows in the metadata dump, and the manifest records when the dump started, the list was taken and Storage was re-verified.

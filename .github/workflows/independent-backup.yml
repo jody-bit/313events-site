@@ -41,7 +41,6 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ secrets.BACKUP_DB_URL }}
           SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BACKUP_STORAGE_KEY }}
           AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
           RCLONE_CONFIG_OFFSITE_TYPE: s3
           RCLONE_CONFIG_OFFSITE_PROVIDER: ${{ secrets.BACKUP_S3_PROVIDER }}

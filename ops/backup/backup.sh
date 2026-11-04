@@ -5,7 +5,7 @@
 # Database credentials: either SUPABASE_DB_URL (CI) or PGHOST/PGPORT/PGUSER/PGPASSWORD (local; keeps the password out of argv).
 # Required environment (supply as CI secrets or from a local secrets manager; never commit):
 #   SUPABASE_URL               https://<ref>.supabase.co
-#   SUPABASE_SERVICE_ROLE_KEY  used only to download Storage objects (GET only)
+#   (no Storage credential: objects are fetched from their PUBLIC object URLs, with no key or Authorization header)
 #   AGE_RECIPIENT              age public key the archive is encrypted to (public; the private key is never on CI)
 #   RCLONE_REMOTE              rclone remote path for the off-site bucket, e.g. offsite:313-events-backups
 # Optional:
@@ -17,11 +17,10 @@
 set -Eeuo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"; . "$here/lib.sh"
 
-: "${AGE_RECIPIENT:?}" "${SUPABASE_URL:?}" "${SUPABASE_SERVICE_ROLE_KEY:?}"
+: "${AGE_RECIPIENT:?}" "${SUPABASE_URL:?}"
 if [ -z "${SUPABASE_DB_URL:-}" ]; then : "${PGHOST:?}" "${PGUSER:?}" "${PGPASSWORD:?}"; fi
 [ "${BACKUP_DRY_RUN:-0}" = 1 ] || : "${RCLONE_REMOTE:?}"
 DB="${SUPABASE_DB_URL:-dbname=${PGDATABASE:-postgres}}"; export PGSSLMODE="${PGSSLMODE:-require}"
-SB_KEY="$SUPABASE_SERVICE_ROLE_KEY"
 case "$(pg_dump --version)" in *" ${PG_DUMP_MAJOR:-17}."*) ;; *) echo "pg_dump major ${PG_DUMP_MAJOR:-17} required (found: $(pg_dump --version))" >&2; exit 1;; esac
 
 umask 077
@@ -87,6 +86,12 @@ LIST_AT="$(date -u +%Y%m%dT%H%M%SZ)"
 q > buckets.json <<'SQL'
 select coalesce(json_agg(b), '[]'::json) from (select id, name, public, file_size_limit, allowed_mime_types from storage.buckets order by id) b;
 SQL
+# Every bucket must be public, because the files are fetched without a credential. A private bucket (or any object whose
+# bucket is not in the bucket list) fails the backup by name; nothing is skipped.
+nonpublic="$(jq -r '[.[] | select(.public != true) | .id] | join(",")' buckets.json)"
+[ -z "$nonpublic" ] || { echo "storage bucket(s) not public, cannot be copied without a credential: $nonpublic" >&2; false; }
+unlisted="$(cut -f1 storage_objects.tsv | LC_ALL=C sort -u | while IFS= read -r ob; do jq -e --arg b "$ob" 'any(.[]; .id == $b)' buckets.json >/dev/null || printf '%s ' "$ob"; done)"
+[ -z "$unlisted" ] || { echo "objects in bucket(s) missing from the bucket list: $unlisted" >&2; false; }
 if awk -F'\t' 'NF != 5 {bad=1} END {exit !bad}' storage_objects.tsv; then echo "unexpected object name or metadata (tab/newline)" >&2; false; fi
 exp_n="$(wc -l < storage_objects.tsv | tr -d ' ')"
 # The object list must agree with the row count taken earlier and with the object rows in the metadata dump.
@@ -94,17 +99,23 @@ rc_n="$(awk -F'\t' '$1=="storage_objects"{print $2}' row_counts.tsv)"
 meta_n="$(awk '/^COPY storage.objects /{f=1; next} /^\\\.$/{f=0} f' storage_meta.sql | wc -l | tr -d ' ')"
 [ "$exp_n" = "$rc_n" ] && [ "$exp_n" = "$meta_n" ] || { echo "storage object count disagrees: list $exp_n, row_counts $rc_n, metadata dump $meta_n (Storage changed during the run; rerun)" >&2; false; }
 exp_bytes="$(awk -F'\t' '{s+=$3} END{print s+0}' storage_objects.tsv)"
-i=0; hashed=0
+i=0; hashed=0; multipart=0
 while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
   mkdir -p "storage/$b/$(dirname "$name")"
-  sb_curl -o "storage/$b/$name" "$SUPABASE_URL/storage/v1/object/$b/$(uri_path "$name")"
+  pub_get "storage/$b/$name" "$SUPABASE_URL/storage/v1/object/public/$b/$(uri_path "$name")" || { echo "object #$i is missing, private or inaccessible at its public URL" >&2; false; }
   [ "$(fsize "storage/$b/$name")" = "$size" ] || { echo "size mismatch on object #$i" >&2; false; }
   e="$(printf '%s' "$etag" | tr -d '"')"
   case "$e" in
     [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
       [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; }
       hashed=$((hashed + 1)) ;;
+    *)
+      # Multipart-style eTag (hash-of-hashes): the MD5 cannot be recomputed from the bytes, so the file is read a second time
+      # and both reads must have the same SHA-256. Counted separately in the manifest, never as MD5-verified.
+      pub_get "$WORK/reread.tmp" "$SUPABASE_URL/storage/v1/object/public/$b/$(uri_path "$name")" || { echo "re-read failed on object #$i" >&2; false; }
+      [ "$(sha256 "$WORK/reread.tmp" | cut -d' ' -f1)" = "$(sha256 "storage/$b/$name" | cut -d' ' -f1)" ] || { echo "re-read hash mismatch on object #$i" >&2; false; }
+      rm -f "$WORK/reread.tmp"; multipart=$((multipart + 1)) ;;
   esac
 done < storage_objects.tsv
 snap > storage_objects.after.tsv
@@ -135,6 +146,9 @@ STEP=manifest
   echo "pg_dump_version=$(pg_dump --version)"
   echo "storage_files=$got_n"
   echo "storage_bytes=$got_bytes"
+  echo "storage_access=public_urls_no_credential"
+  echo "storage_buckets_public=$(jq 'length' buckets.json)/$(jq 'length' buckets.json)"
+  echo "storage_multipart_etag_double_read=$multipart"
   echo "storage_content_hashed=$hashed"   # files whose eTag is a plain MD5 and matched; the rest are checked by size and the before/after snapshot
   echo "--- row_counts"; cat row_counts.tsv
   echo "--- sha256"

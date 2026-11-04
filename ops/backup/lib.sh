@@ -8,6 +8,8 @@ fsize() { wc -c < "$1" | tr -d ' '; }
 md5_of() { if command -v md5sum >/dev/null 2>&1; then md5sum "$1" | cut -d" " -f1; else md5 -q "$1"; fi; }
 uri_path() { jq -rn --arg n "$1" '$n|split("/")|map(@uri)|join("/")'; }
 
+# pub_get <dest> <url>   credential-free GET of a public object; any non-2xx, redirect or empty file fails
+pub_get() { curl -fsS --max-redirs 0 -o "$1" "$2" && [ -s "$1" ]; }
 # sb_curl <curl args...>   needs SB_KEY
 sb_curl() { curl -fsS -K <(printf 'header = "apikey: %s"\nheader = "Authorization: Bearer %s"\n' "$SB_KEY" "$SB_KEY") "$@"; }
 
