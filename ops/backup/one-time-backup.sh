@@ -37,7 +37,7 @@ secret() {  # variable name, keychain service, prompt text
   printf -v "$1" '%s' "$val"
 }
 
-for t in pg_dump pg_restore psql age age-keygen jq curl tar awk; do
+for t in pg_dump pg_restore psql age age-keygen jq curl tar awk openssl; do
   command -v "$t" >/dev/null || { echo "missing tool: $t   (macOS: brew install postgresql@17 age jq)" >&2; exit 1; }
 done
 command -v sha256sum >/dev/null || command -v shasum >/dev/null || { echo "missing tool: shasum" >&2; exit 1; }
@@ -97,7 +97,7 @@ echo "Archive:  $f"
 echo "Size:     $(fsize "$f") bytes"
 echo "SHA-256:  $(cut -d' ' -f1 "$base.tar.age.sha256")"
 echo "Created:  $(awk -F= '$1=="created_utc"{print $2}' "$base.manifest.txt")"
-echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes ($(awk -F= '$1=="storage_content_hashed"{print $2}' "$base.manifest.txt") hash-verified against Storage's MD5, $(awk -F= '$1=="storage_double_fetched"{print $2}' "$base.manifest.txt") size-verified and identical on two fetches)"
+echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes ($(awk -F= '$1=="storage_content_hashed"{print $2}' "$base.manifest.txt") hash-verified against Storage's MD5, $(awk -F= '$1=="storage_multipart1_verified"{print $2}' "$base.manifest.txt") verified against Storage's single-part multipart checksum, $(awk -F= '$1=="storage_double_fetched"{print $2}' "$base.manifest.txt") with no checksum available: size-verified and identical on two fetches)"
 echo "Row counts:"
 awk '/^--- row_counts/{go=1; next} /^--- sha256/{go=0} go' "$base.manifest.txt" | sed 's/^/  /'
 echo "Next: restore into the temporary project with ops/backup/restore-mac.sh (age key: $KEYDIR/age.key)"

@@ -99,7 +99,7 @@ for b in $(cut -f1 storage_objects.tsv | sort -u); do
   jq -e --arg b "$b" 'any(.[]; .id == $b)' buckets.json >/dev/null || { echo "objects exist in a bucket that is not in storage.buckets; backup refused" >&2; false; }
   jq -e --arg b "$b" 'any(.[]; .id == $b and .public == true)' buckets.json >/dev/null || { echo "bucket holding objects is not public, so its files cannot be fetched without a credential; backup refused" >&2; false; }
 done
-i=0; hashed=0; refetched=0
+i=0; hashed=0; refetched=0; multipart1=0
 while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
   mkdir -p "storage/$b/$(dirname "$name")"
@@ -112,9 +112,22 @@ while IFS=$'\t' read -r b name size etag upd; do
     [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
       [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; }
       hashed=$((hashed + 1)) ;;
+    *-1)
+      # Single-part multipart upload: S3 defines the eTag as MD5(binary MD5 of the part) + "-1", so the bytes can still be verified
+      # against a checksum Storage computed itself. Anything that does not have that exact shape falls through to the double fetch.
+      if printf '%s' "$e" | grep -Eq '^[0-9a-f]{32}-1$'; then
+        [ "$(openssl dgst -md5 -binary "storage/$b/$name" | openssl dgst -md5 | awk '{print $NF}')" = "${e%-1}" ] \
+          || { echo "multipart eTag mismatch on object #$i" >&2; false; }
+        multipart1=$((multipart1 + 1))
+      else
+        pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
+        cmp -s "storage/$b/$name" "storage/$b/$name.refetch" || { echo "object #$i differs between two fetches" >&2; false; }
+        rm -f "storage/$b/$name.refetch"
+        refetched=$((refetched + 1))
+      fi ;;
     *)
-      # No plain MD5 to compare with (multipart or absent eTag): size is checked above, and the bytes must be identical on a second,
-      # independent fetch. This proves stability, not authenticity; it is reported separately from the MD5-verified count.
+      # No checksum Storage computed that we can recompute (absent or unusual eTag): size is checked above, and the bytes must be
+      # identical on a second, independent fetch. This proves stability, not authenticity; it is reported separately.
       pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
       cmp -s "storage/$b/$name" "storage/$b/$name.refetch" || { echo "object #$i differs between two fetches" >&2; false; }
       rm -f "storage/$b/$name.refetch"
@@ -150,7 +163,8 @@ STEP=manifest
   echo "storage_files=$got_n"
   echo "storage_bytes=$got_bytes"
   echo "storage_content_hashed=$hashed"   # files whose eTag is a plain MD5 and matched
-  echo "storage_double_fetched=$refetched"   # the rest: size match and identical bytes on two fetches (no MD5 to compare with)
+  echo "storage_multipart1_verified=$multipart1"   # eTag is MD5-of-MD5 plus "-1" (single-part multipart upload) and matched
+  echo "storage_double_fetched=$refetched"   # the rest: size match and identical bytes on two fetches (no checksum to compare with)
   jq -r '.[] | "bucket="+.id+" public="+(.public|tostring)' buckets.json
   echo "--- row_counts"; cat row_counts.tsv
   echo "--- sha256"

@@ -175,6 +175,19 @@ FAILSUB="" mock11 MOCK_CORRUPT=top.png; expect_fail 'content hash mismatch' "sam
 FAILSUB="" mock11 MOCK_FLAKY=deep; expect_fail 'differs between two fetches' "unstable bytes on an object without an MD5"
 kill $M11 2>/dev/null || true
 echo "PASS 11b: private bucket, unknown bucket, missing object, private object, corrupted bytes and unstable bytes each fail the backup closed with nothing left behind"
+# 11c. single-part multipart eTags (MD5 of the binary MD5, suffix -1) are verified against a checksum Storage computed; other shapes are double-fetched
+mp="$(openssl dgst -md5 -binary "$tmp/srcfiles/event-flyers/u/def/deep/x.png" | openssl dgst -md5 | awk '{print $NF}')"
+seteTag() { psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{eTag}', to_jsonb(format('\"%s\"', '$1'))) where name='u/def/deep/x.png'"; }
+FAILSUB="" mock11 X=1
+seteTag "$mp-1"; rm -rf "$tmp/out11"; rb >"$tmp/b11.log" 2>&1 || { cat "$tmp/b11.log"; echo "FAIL: multipart-1 backup"; exit 1; }
+m11="$(ls "$tmp"/out11/*.manifest.txt)"
+grep -q '^storage_multipart1_verified=1$' "$m11" && grep -q '^storage_double_fetched=0$' "$m11" && grep -q '^storage_content_hashed=2$' "$m11" || { cat "$m11"; echo "FAIL: multipart-1 manifest counts"; exit 1; }
+seteTag "00000000000000000000000000000000-1"; expect_fail 'multipart eTag mismatch' "single-part multipart eTag that does not match the bytes"
+seteTag "$mp-2"; rm -rf "$tmp/out11"; rb >"$tmp/b11.log" 2>&1 || { cat "$tmp/b11.log"; echo "FAIL: -2 eTag backup"; exit 1; }
+grep -q '^storage_double_fetched=1$' "$(ls "$tmp"/out11/*.manifest.txt)" || { echo "FAIL: unusual eTag not double-fetched"; exit 1; }
+kill $M11 2>/dev/null || true
+psql -X -q -d src -c "update storage.objects set metadata = metadata - 'eTag' where name='u/def/deep/x.png'"
+echo "PASS 11c: a '<md5-of-md5>-1' eTag is verified against Storage's own checksum (mismatch fails closed); other eTag shapes are size-checked and double-fetched"
 # 10. the dedicated read-only role (no superuser, no pg_read_all_data) is sufficient for a complete backup and cannot write
 psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_before.txt"
 sed "s/PASTE-PASSWORD-HERE/testpw/" "$here/backup_reader_create.sql" | psql -X -q -d src
