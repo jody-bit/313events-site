@@ -859,11 +859,13 @@ function getWeekendDates(){
 // the entire point of this page existing. Unlike calendar.html this page
 // has no month to browse, so it's always evaluated against the live
 // EVENTS set as a whole, not one day/list slice at a time.
+// "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
+function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
 function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('tickets') && !hasTicketLink(e)) return false;
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
