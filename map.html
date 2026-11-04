@@ -578,6 +578,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/map-foundation.js"></script>
 <script>
 // Keys, labels, order and colours all come from /categories.js (one definition for every page).
 const CATS = {};
@@ -1202,57 +1203,15 @@ function buildPlaces(){
 let leafletMap = null;
 let markersByKey = new Map();
 
-// CARTO's free anonymous basemap tiles (basemaps.cartocdn.com, no key) —
-// which is what this page was built on (see the "no-API-key dark basemap"
-// comment near the top of this file) — stopped working late August 2026:
-// CARTO now requires a free API key on every tile request and, without one,
-// serves a "API KEY REQUIRED" watermark baked into the tile images
-// themselves rather than failing the request outright (confirmed live
-// 2026-09-04: the old anonymous URL now 403s; this is a documented CARTO
-// platform change hitting the exact 'dark_all'/'light_all' basemap paths
-// this site uses, not something specific to 313.events). Since Leaflet gets
-// a normal-looking 200/tile-image back either way, the existing
-// try/catch("Map tiles didn't load...") fallback below never fires — the
-// map "works," it just has a watermark stamped across it.
-//
-// Fixed 2026-09-05: Jody requested and received a free key from CARTO
-// (5M tile requests/month across raster+vector combined, no cost — CARTO's
-// own email says they'll reach out rather than cut access off if that's
-// ever exceeded). Per that same email the query param is named `key`, not
-// `api_key` as originally guessed here — corrected below. Their raster
-// tile service is the one that needed this; vector doesn't require a key
-// yet (CARTO says that's coming later, and this key will cover it when it
-// does — nothing to change here for that). Keep the CARTO+OpenStreetMap
-// attribution visible in the tileLayer options below — that's what the
-// free tier is in exchange for, per carto.com/attributions.
-const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
+// Basemap provider, tile key, attribution, scroll rule and the "tiles didn't load" message live in /map-foundation.js: one config for
+// every map (events map, calendar map, collection maps). The history of CARTO's key requirement and the current allowance
+// (1,000,000 commercial requests a month from 2026-12-01) are recorded there. A failed Leaflet load leaves an inert controller,
+// so the city rail and every filter below keep working.
+let mapCtl = null;
 
 function initLeaflet(){
-  // Leaflet loads from a CDN (unpkg for the library, CARTO for tiles), so a
-  // blocked/ad-blocked/offline network shouldn't be able to take the whole
-  // page down with it — the city rail and every filter below are plain data
-  // rendering with no Leaflet dependency, so they should keep working even
-  // if `L` never showed up. Guard the one spot that touches `L` directly.
-  try{
-    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
-    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
-    L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    }).addTo(leafletMap);
-    // Scroll-zoom is off by default (a map embedded in a normal page shouldn't
-    // hijack the page's own scroll) — enabled only once the visitor has
-    // deliberately interacted with the map itself.
-    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
-    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
-  } catch(err){
-    leafletMap = null;
-    const el = document.getElementById('leafletMap');
-    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
-  }
+  mapCtl = MapFoundation.create(document.getElementById('leafletMap'));
+  leafletMap = mapCtl.ready ? mapCtl.map : null;
 }
 
 // One street line under the place name, only for a precise (single-venue) place whose events
@@ -1338,31 +1297,18 @@ function jumpToPlaceList(key){
 
 function renderMap(places){
   if(!leafletMap) return;
-  markersByKey.forEach(m => leafletMap.removeLayer(m));
-  markersByKey = new Map();
+  // This page's places (events grouped by location) adapted into the foundation's common place format. Pin look and popup sizing
+  // are the foundation's; popup wording and what selecting a pin does stay here.
+  const list = [];
   places.forEach(place=>{
-    const count = place.events.length;
-    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
-    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
-    const marker = L.circleMarker([place.lat, place.lng], {
-      radius: r,
-      color: hex,
-      weight: place.precise ? 2 : 1.5,
-      dashArray: place.precise ? null : '3,3',
-      fillColor: hex,
-      fillOpacity: place.precise ? 0.6 : 0.35,
-    }).addTo(leafletMap);
-    // maxHeight caps a many-event place's popup so it scrolls internally
-    // (Leaflet's own CSS adds the scrollbar once this is set) instead of
-    // growing taller than the map and spilling off the top/bottom of the
-    // window with no way to see the rest of it — a real bug hit on the
-    // live site (2026-08-30) with a 40-event cluster near Rochester.
-    // autoPanPadding gives real breathing room from the window edge (the
-    // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: Math.max(160, Math.min(320, leafletMap.getSize().y - 100)), autoPanPadding: [24, 24], keepInView: true});
-    marker.on('click', ()=> selectPlace(place.key));
-    markersByKey.set(place.key, marker);
+    list.push({
+      key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
+      hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
+      popupHtml: placePopupHtml(place),
+    });
   });
+  mapCtl.setPlaces(list, key => selectPlace(key));
+  markersByKey = mapCtl.markers;
 }
 
 function renderCityRail(places){

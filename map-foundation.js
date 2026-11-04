@@ -22,6 +22,9 @@
   // CARTO's free commercial allowance is 1,000,000 tile requests per UTC calendar month across all keys, from 1 Dec 2026
   // (carto.com/legal/basemap-terms Sec 12.d; the 5,000,000 figure is CARTO's NON-commercial limit). Above the limit CARTO may
   // block the key without notice; there is no automatic overage charge and no automatic upgrade. Usage: dashboard.basemaps.carto.com.
+  // History (kept from the old per-page comments): CARTO's anonymous tiles stopped working late August 2026 and began serving an
+  // "API KEY REQUIRED" watermark inside the tile images (so the old try/catch never fired); Jody requested a free key on 2026-09-05; the
+  // query parameter is `key`, not `api_key`. Vector tiles need no key yet.
   // Keep the OpenStreetMap and CARTO attribution visible; that is what the free tier is in exchange for.
   var PROVIDER = {
     name: "CARTO dark_all",
