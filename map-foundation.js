@@ -98,7 +98,7 @@
     ["setPlaces", "select", "closePopup", "invalidate", "fitTo", "destroy"].forEach(function (n) { ctl[n] = function () { return false; }; });
     if (!el) return ctl;
     if (o.label) el.setAttribute("aria-label", o.label);
-    if (!el.getAttribute("role")) el.setAttribute("role", "group");
+    if (o.label && !el.getAttribute("role")) el.setAttribute("role", "group"); // no label, no role: live maps keep their markup unchanged
     try {
       if (!L) throw new Error("Leaflet failed to load");
       var map = L.map(el, { scrollWheelZoom: false }).setView(o.center || DEFAULT_CENTER, o.zoom || DEFAULT_ZOOM);
