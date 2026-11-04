@@ -344,7 +344,7 @@ const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "u
 assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/halloween", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
   const rule = vercel.rewrites.find((r) => r.source === route);
-  assert.ok(rule && rule.destination === "/" + slug + ".html", "rewrite for " + route);
+  assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
   const page = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(page.includes('rel="canonical" href="https://313.events' + route + '"'));
   assert.ok(page.includes('data-collection="' + slug + '"'));
