@@ -12,7 +12,7 @@
 
   var LINKS = [
     { key: "instagram", label: "Instagram", url: "https://www.instagram.com/313.thecityison/", host: /(^|\.)instagram\.com$/ },
-    { key: "facebook", label: "Facebook", url: null, host: /(^|\.)facebook\.com$/ },
+    { key: "facebook", label: "Facebook", url: "https://www.facebook.com/313.events/", host: /(^|\.)facebook\.com$/ },
     { key: "tiktok", label: "TikTok", url: null, host: /(^|\.)tiktok\.com$/ }
   ];
 

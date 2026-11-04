@@ -17,9 +17,11 @@ for (const f of pages) {
 }
 assert(withRow >= 16, "expected at least 16 pages with a footer-social row, found " + withRow);
 
-// 2. shipped list: Instagram only until owner-verified URLs exist
+// 2. shipped list: Instagram and Facebook (owner-supplied 2026-11-04); TikTok waits for its URL
 const shown = SL.LINKS.filter(SL.valid).map((l) => l.key);
-assert.deepStrictEqual(shown, ["instagram"], "only Instagram may render until Facebook/TikTok URLs are supplied; got " + shown);
+assert.deepStrictEqual(shown, ["instagram", "facebook"], "Instagram and Facebook render; TikTok stays hidden until its official URL is supplied; got " + shown);
+assert.strictEqual(SL.LINKS.find((l) => l.key === "facebook").url, "https://www.facebook.com/313.events/");
+assert.strictEqual(SL.LINKS.find((l) => l.key === "tiktok").url, null, "TikTok URL is never guessed");
 assert(SL.html().includes("Follow 313.events"));
 
 // 3. a full list renders all three with safe link attributes
