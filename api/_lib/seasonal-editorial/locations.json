@@ -474,14 +474,15 @@
   "notes": "Address-point match; visitor entrance not yet checked."
  },
  "black-oak-heritage-park": {
-  "status": "address-point",
+  "status": "verified",
   "lat": 42.269787,
   "lng": -83.089415,
   "address": "599 Broadway Street, Windsor, ON",
-  "source": "https://www.citywindsor.ca/",
-  "method": "coordinates printed on official page",
+  "source": "https://www.citywindsor.ca/ (Black Oak Heritage Park page)",
+  "method": "official City of Windsor page: printed coordinates plus stated sole access point",
   "verifiedAt": "2026-11-04",
-  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on City of Windsor page; lot is the only access point."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on City of Windsor page; lot is the only access point. Marked verified 2026-11-04: official coordinates and entrance statement agree on one access point.",
+  "entrance": "Park lot at 599 Broadway Street, the only access point per the City of Windsor page"
  },
  "stage-nature-center": {
   "status": "address-point",

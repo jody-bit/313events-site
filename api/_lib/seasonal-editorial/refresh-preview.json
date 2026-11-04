@@ -11,7 +11,7 @@
   ],
   "overrides": {
    "yates-cider-mill": {
-    "summary": "Take your cider outside and make this a Rochester Hills outing, with the mill as the starting point rather than the whole afternoon. Check the dated November hours before you go.",
+    "summary": "Take your cider outside and make this a Rochester Hills outing, with the mill as the starting point rather than the whole afternoon. Check the dated November hours before you go. The 2026 closing date isn't published.",
     "featured": true
    },
    "franklin-cider-mill": {
@@ -33,7 +33,7 @@
     "removeAt": "2026-11-23T00:00:00-05:00"
    },
    "parshallville-cider-mill": {
-    "summary": "Seek out the old mill on Ore Creek for a quieter, history-led cider outing before its short season ends. Wednesday to Sunday, 9 to 6, through mid-November, weather permitting.",
+    "summary": "Seek out the old mill on Ore Creek for a quieter, history-led cider outing. The mill lists Labor Day weekend through mid-November, weather permitting, but publishes no 2026 final day, so check before you go.",
     "featured": true
    },
    "macqueen-orchards": {
@@ -55,6 +55,63 @@
    "rochester-cider-mill": {
     "lastDay": "2026-12-31",
     "removeAt": "2027-01-01T00:00:00-05:00"
+   },
+   "stony-creek-orchard-and-cider-mill": {
+    "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "obstbaum-orchards": {
+    "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "erie-orchards-and-cider-mill": {
+    "summary": "Orchard and cider mill with pumpkin picking, blueberry and peach picking, hayrides, donuts, cider and caramel apples. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "dexter-cider-mill": {
+    "summary": "Historic riverside cider mill with cinnamon doughnuts, fresh-pressed cider, caramel apples and outdoor seating along the Huron River. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "blakes-orchard-cider-mill": {
+    "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "blakes-big-apple": {
+    "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "blakes-backyard": {
+    "summary": "Blake Farms market, taproom and U-pick with a greenhouse, a tree nursery and fall bonfires. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "bonadeo-farms": {
+    "summary": "Farm with a corn maze, pumpkin patch, hayrides, cider and donuts, and a haunted house on weekend evenings. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "alber-orchard-and-cider-mill": {
+    "summary": "Orchard and cider mill with heirloom and traditional apples, cider and hard cider, pumpkins and the Freedom Winery. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "porters-orchard": {
+    "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "schell-family-farm": {
+    "summary": "Family farm with pumpkins, apples, a fruit orchard and wagon rides. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "gust-brothers-pumpkin-farm": {
+    "summary": "Fall farm with a you-pick pumpkin patch, a corn maze, hayrides, farm animals, cider and donuts. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "goodison-cider-mill": {
+    "summary": "Goodison Cider Mill in Rochester. Official page lists fresh-pressed cider, donuts, pistachio nut bread, pies. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "damouni-orchards": {
+    "summary": "Damouni Orchards in Flint. Official page lists U-pick Honeycrisp and Gala apples, country store, Coop Tasting Room, cider donuts pre-order. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "nixon-farms-blast-corn-maze": {
+    "summary": "Working farm with the Blast Corn Maze, a U-pick pumpkin patch, tractor-drawn hayrides and a corn cannon. The 2026 closing date isn't published, so check with the farm before you go."
+   },
+   "kreps-apple-barn-and-cider-mill": {
+    "summary": "Orchard and cider mill with an animal barn, a corn maze, a sunflower trail and U-cut flowers. The farm's page mentions wrapping up on November 25 but gives no year, so check before you go."
+   },
+   "wasem-fruit-farm": {
+    "summary": "Fruit farm in Milan with pick-your-own apples and pumpkins. Its page lists November Fridays and Saturdays through the 21st but is out of date, so call or check Facebook before you go."
+   },
+   "wiards-orchards": {
+    "summary": "Orchard, cider mill and country store in Ypsilanti. The corn maze, slide, wagon rides and petting farm are listed as temporarily closed with no reopening date; November hours vary, so call ahead (734-482-7744)."
+   },
+   "three-cedars-farm": {
+    "summary": "Cider Donut Hut and country store, open Nov. 6–8 from 10 a.m. to 8 p.m. The farm is closed Nov. 2–5 and Nov. 9–26, then returns for Country Christmas, Nov. 27–Dec. 20."
    }
   },
   "lead": [
@@ -81,6 +138,9 @@
    "wadhams-to-avoca-trail": {
     "summary": "Walk the former railway over Mill Creek and see the valley from its historic trestle. Make the structure and landscape the story, with autumn color as a bonus.",
     "featured": true
+   },
+   "holiday-beach-conservation-area": {
+    "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration. The conservation authority lists day use from mid-April to the end of October and publishes nothing for November, so check before you go."
    }
   },
   "meta": {
