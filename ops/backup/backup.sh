@@ -4,8 +4,7 @@
 #
 # Database credentials: either SUPABASE_DB_URL (CI) or PGHOST/PGPORT/PGUSER/PGPASSWORD (local; keeps the password out of argv).
 # Required environment (supply as CI secrets or from a local secrets manager; never commit):
-#   SUPABASE_URL               https://<ref>.supabase.co
-#   SUPABASE_SERVICE_ROLE_KEY  used only to download Storage objects (GET only)
+#   SUPABASE_URL               https://<ref>.supabase.co  (Storage files are fetched from the public object URLs; no Storage key is used or needed)
 #   AGE_RECIPIENT              age public key the archive is encrypted to (public; the private key is never on CI)
 #   RCLONE_REMOTE              rclone remote path for the off-site bucket, e.g. offsite:313-events-backups
 # Optional:
@@ -17,11 +16,10 @@
 set -Eeuo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"; . "$here/lib.sh"
 
-: "${AGE_RECIPIENT:?}" "${SUPABASE_URL:?}" "${SUPABASE_SERVICE_ROLE_KEY:?}"
+: "${AGE_RECIPIENT:?}" "${SUPABASE_URL:?}"
 if [ -z "${SUPABASE_DB_URL:-}" ]; then : "${PGHOST:?}" "${PGUSER:?}" "${PGPASSWORD:?}"; fi
 [ "${BACKUP_DRY_RUN:-0}" = 1 ] || : "${RCLONE_REMOTE:?}"
 DB="${SUPABASE_DB_URL:-dbname=${PGDATABASE:-postgres}}"; export PGSSLMODE="${PGSSLMODE:-require}"
-SB_KEY="$SUPABASE_SERVICE_ROLE_KEY"
 case "$(pg_dump --version)" in *" ${PG_DUMP_MAJOR:-17}."*) ;; *) echo "pg_dump major ${PG_DUMP_MAJOR:-17} required (found: $(pg_dump --version))" >&2; exit 1;; esac
 
 umask 077
@@ -94,17 +92,33 @@ rc_n="$(awk -F'\t' '$1=="storage_objects"{print $2}' row_counts.tsv)"
 meta_n="$(awk '/^COPY storage.objects /{f=1; next} /^\\\.$/{f=0} f' storage_meta.sql | wc -l | tr -d ' ')"
 [ "$exp_n" = "$rc_n" ] && [ "$exp_n" = "$meta_n" ] || { echo "storage object count disagrees: list $exp_n, row_counts $rc_n, metadata dump $meta_n (Storage changed during the run; rerun)" >&2; false; }
 exp_bytes="$(awk -F'\t' '{s+=$3} END{print s+0}' storage_objects.tsv)"
-i=0; hashed=0
+# Coverage: every object must sit in a known bucket and every bucket that holds objects must be public, because the files are
+# fetched from the public object URLs without any credential. Anything else fails the backup; nothing is silently skipped.
+jq -e 'type == "array"' buckets.json >/dev/null || { echo "buckets.json is not a bucket list" >&2; false; }
+for b in $(cut -f1 storage_objects.tsv | sort -u); do
+  jq -e --arg b "$b" 'any(.[]; .id == $b)' buckets.json >/dev/null || { echo "objects exist in a bucket that is not in storage.buckets; backup refused" >&2; false; }
+  jq -e --arg b "$b" 'any(.[]; .id == $b and .public == true)' buckets.json >/dev/null || { echo "bucket holding objects is not public, so its files cannot be fetched without a credential; backup refused" >&2; false; }
+done
+i=0; hashed=0; refetched=0
 while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
   mkdir -p "storage/$b/$(dirname "$name")"
-  sb_curl -o "storage/$b/$name" "$SUPABASE_URL/storage/v1/object/$b/$(uri_path "$name")"
+  url="$SUPABASE_URL/storage/v1/object/public/$b/$(uri_path "$name")"
+  # No credential is sent. no-cache asks the CDN to revalidate; the size and hash checks below catch a stale copy anyway.
+  pub_curl -o "storage/$b/$name" "$url" || { echo "object #$i is missing, private or inaccessible at its public URL" >&2; false; }
   [ "$(fsize "storage/$b/$name")" = "$size" ] || { echo "size mismatch on object #$i" >&2; false; }
   e="$(printf '%s' "$etag" | tr -d '"')"
   case "$e" in
     [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
       [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; }
       hashed=$((hashed + 1)) ;;
+    *)
+      # No plain MD5 to compare with (multipart or absent eTag): size is checked above, and the bytes must be identical on a second,
+      # independent fetch. This proves stability, not authenticity; it is reported separately from the MD5-verified count.
+      pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
+      cmp -s "storage/$b/$name" "storage/$b/$name.refetch" || { echo "object #$i differs between two fetches" >&2; false; }
+      rm -f "storage/$b/$name.refetch"
+      refetched=$((refetched + 1)) ;;
   esac
 done < storage_objects.tsv
 snap > storage_objects.after.tsv
@@ -135,7 +149,9 @@ STEP=manifest
   echo "pg_dump_version=$(pg_dump --version)"
   echo "storage_files=$got_n"
   echo "storage_bytes=$got_bytes"
-  echo "storage_content_hashed=$hashed"   # files whose eTag is a plain MD5 and matched; the rest are checked by size and the before/after snapshot
+  echo "storage_content_hashed=$hashed"   # files whose eTag is a plain MD5 and matched
+  echo "storage_double_fetched=$refetched"   # the rest: size match and identical bytes on two fetches (no MD5 to compare with)
+  jq -r '.[] | "bucket="+.id+" public="+(.public|tostring)' buckets.json
   echo "--- row_counts"; cat row_counts.tsv
   echo "--- sha256"
   sha256 db.dump schema.sql storage_meta.sql row_counts.tsv fingerprint.tsv acl_replay.sql buckets.json storage_objects.tsv

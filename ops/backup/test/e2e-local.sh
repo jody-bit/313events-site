@@ -58,7 +58,7 @@ sleep 1
 psql -X -q -d dst -c "create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());"
 age-keygen -o "$tmp/id" 2>/dev/null; rec="$(age-keygen -y "$tmp/id")"
 
-run_backup() { ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) ; }
+run_backup() { ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 "$here/backup.sh" ) ; }
 # 1. backup succeeds, includes the nested objects, leaves ciphertext only
 run_backup >"$tmp/b.log" 2>&1 || { cat "$tmp/b.log"; echo "FAIL: backup"; exit 1; }
 a="$(ls "$tmp"/out/*.tar.age)"
@@ -131,11 +131,11 @@ echo "PASS 7: Storage changes during the backup (added object, replaced object) 
 kill $SRC3 2>/dev/null || true; sleep 0.3
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC5=$!; sleep 1
 rm -rf "$tmp/out"
-if ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="not-a-valid-key" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b4.log" 2>&1; then echo "FAIL: backup passed with an invalid age recipient"; exit 1; fi
+if ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="not-a-valid-key" SUPABASE_URL=http://127.0.0.1:54330 "$here/backup.sh" ) >"$tmp/b4.log" 2>&1; then echo "FAIL: backup passed with an invalid age recipient"; exit 1; fi
 [ -z "$(ls -A "$tmp/out")" ] || { ls "$tmp/out"; echo "FAIL: leftovers after encryption failure"; exit 1; }
 kill $SRC5 2>/dev/null || true; sleep 0.3
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" "" "" "" 2 & SRC6=$!; sleep 1
-( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b5.log" 2>&1 & BP=$!
+( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 "$here/backup.sh" ) >"$tmp/b5.log" 2>&1 & BP=$!
 sleep 2; [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: something exists under the output folder DURING the run"; exit 1; }
 pkill -INT -P $BP 2>/dev/null || true; kill -INT $BP 2>/dev/null || true; wait $BP 2>/dev/null || true; sleep 1
 [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after interrupt"; exit 1; }
@@ -145,18 +145,42 @@ echo "PASS 8: encryption failure and interrupt leave no plaintext and no partial
 kill $SRC3 2>/dev/null || true; sleep 0.3
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC7=$!; sleep 1
 mkdir -p "$tmp/t/313events-work.stale/storage" "$tmp/out9/313events-20200101T000000Z"; echo leftover > "$tmp/t/313events-work.stale/storage/x"
-( TMPDIR="$tmp/t" PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out9" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b9.log" 2>&1 || { cat "$tmp/b9.log"; echo "FAIL: backup 9"; exit 1; }
+( TMPDIR="$tmp/t" PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out9" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 "$here/backup.sh" ) >"$tmp/b9.log" 2>&1 || { cat "$tmp/b9.log"; echo "FAIL: backup 9"; exit 1; }
 grep -q "swept stale plaintext" "$tmp/b9.log" || { echo "FAIL: sweep did not report what it removed"; exit 1; }
 [ ! -e "$tmp/t/313events-work.stale" ] && [ ! -e "$tmp/out9/313events-20200101T000000Z" ] || { echo "FAIL: stale plaintext not swept"; exit 1; }
 [ -z "$(ls "$tmp/t")" ] && [ -z "$(ls "$tmp/out9" | grep -v -E '\.tar\.age$|\.sha256$|\.manifest\.txt$')" ] || { echo "FAIL: leftovers after run 9"; exit 1; }
 kill $SRC7 2>/dev/null || true
 echo "PASS 9: stale plaintext from a killed run is swept; working files live in the temp dir, output folder holds ciphertext only"
+# 9b. public-URL Storage path: anonymous GETs, full coverage, fail closed on a missing, private, unknown-bucket, corrupted or unstable object
+kill $SRC7 2>/dev/null || true; sleep 0.3
+rb() { ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out11" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54333 "$here/backup.sh" ); }
+mock11() { [ -z "${M11:-}" ] || { kill $M11 2>/dev/null || true; sleep 0.3; }; env "$@" python3 "$here/test/mock_storage.py" 54333 "$tmp/srcfiles" "$KEY" "${FAILSUB:-}" & M11=$!; sleep 1; }
+expect_fail() { # $1 = message that must appear, $2 = label
+  rm -rf "$tmp/out11"
+  if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed: $2"; exit 1; fi
+  grep -q "$1" "$tmp/b11.log" || { cat "$tmp/b11.log"; echo "FAIL: wrong reason: $2"; exit 1; }
+  [ -z "$(ls -A "$tmp/out11" 2>/dev/null)" ] || { ls "$tmp/out11"; echo "FAIL: leftovers: $2"; exit 1; }
+}
+psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{eTag}', to_jsonb(format('\"%s\"', '$m1'))) where name='top.png'"
+FAILSUB="" mock11 X=1
+rm -rf "$tmp/out11"; rb >"$tmp/b11.log" 2>&1 || { cat "$tmp/b11.log"; echo "FAIL: public-URL backup"; exit 1; }
+m11="$(ls "$tmp"/out11/*.manifest.txt)"
+grep -q '^storage_files=3$' "$m11" && grep -q '^storage_content_hashed=2$' "$m11" && grep -q '^storage_double_fetched=1$' "$m11" && grep -q '^bucket=event-flyers public=true$' "$m11" || { cp "$m11" /tmp/m11.txt; echo "FAIL: manifest storage lines"; exit 1; }
+echo "PASS 11a: files fetched from public URLs with no credential (the mock refuses any apikey/Authorization header); 2 MD5-verified, 1 double-fetched, bucket listed in manifest"
+psql -X -q -d src -c "update storage.buckets set public=false"; expect_fail 'not public' "private bucket holding objects"; psql -X -q -d src -c "update storage.buckets set public=true"
+psql -X -q -d src -c "insert into storage.objects(bucket_id,name,metadata) values ('ghost','g.png','{\"size\":1}')"; expect_fail 'not in storage.buckets' "object in an unknown bucket"; psql -X -q -d src -c "delete from storage.objects where bucket_id='ghost'"
+FAILSUB=deep mock11 X=1; expect_fail 'missing, private or inaccessible' "object missing at its public URL"
+FAILSUB="" mock11 MOCK_PRIVATE=top.png; expect_fail 'missing, private or inaccessible' "object refused (private) at its public URL"
+FAILSUB="" mock11 MOCK_CORRUPT=top.png; expect_fail 'content hash mismatch' "same-size corrupted bytes on an MD5-verifiable object"
+FAILSUB="" mock11 MOCK_FLAKY=deep; expect_fail 'differs between two fetches' "unstable bytes on an object without an MD5"
+kill $M11 2>/dev/null || true
+echo "PASS 11b: private bucket, unknown bucket, missing object, private object, corrupted bytes and unstable bytes each fail the backup closed with nothing left behind"
 # 10. the dedicated read-only role (no superuser, no pg_read_all_data) is sufficient for a complete backup and cannot write
 psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_before.txt"
 sed "s/PASTE-PASSWORD-HERE/testpw/" "$here/backup_reader_create.sql" | psql -X -q -d src
 kill $SRC3 2>/dev/null || true; sleep 0.3; rm -rf "$tmp/out"
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC10=$!; sleep 1
-( PGUSER=backup_reader PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b10.log" 2>&1 || { cat "$tmp/b10.log"; echo "FAIL: backup as backup_reader"; exit 1; }
+( PGUSER=backup_reader PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 "$here/backup.sh" ) >"$tmp/b10.log" 2>&1 || { cat "$tmp/b10.log"; echo "FAIL: backup as backup_reader"; exit 1; }
 grep -q '^storage_files=3$' "$tmp"/out/*.manifest.txt && grep -q '^events	25$' "$tmp"/out/*.manifest.txt || { echo "FAIL: backup_reader archive incomplete"; exit 1; }
 if PGUSER=backup_reader psql -X -q -d src -c "insert into public.venues(name) values ('x')" >/dev/null 2>&1; then echo "FAIL: backup_reader can write"; exit 1; fi
 if PGUSER=backup_reader psql -X -q -d src -c "select * from pg_authid" >/dev/null 2>&1; then echo "FAIL: backup_reader can read pg_authid"; exit 1; fi

@@ -14,7 +14,7 @@ Not backed up: Auth users (none exist today), Supabase platform settings, Vercel
 | Name | Holds | Notes |
 |---|---|---|
 | BACKUP_DB_URL | session-pooler connection string, read-only backup role | IPv4 compatible; no add-on needed |
-| BACKUP_SUPABASE_URL, BACKUP_STORAGE_KEY | project URL, key used only for GET on Storage | rotate on a schedule |
+| BACKUP_SUPABASE_URL | project URL; Storage files are fetched anonymously from the public object URLs (no Storage key is used; every bucket holding objects must be public or the backup fails) | none |
 | BACKUP_AGE_RECIPIENT | age PUBLIC key | safe to store; the private key is never on CI |
 | BACKUP_S3_PROVIDER / ENDPOINT / KEY_ID / SECRET / BUCKET | off-site bucket credentials | key scoped to this bucket; private bucket |
 | BACKUP_ALERT_WEBHOOK | URL for failure messages | messages contain no data |

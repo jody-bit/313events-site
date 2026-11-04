@@ -29,7 +29,7 @@ S
 chmod +x "$tmp/bin/"*
 age-keygen -o "$tmp/id" 2>/dev/null; key="$(age-keygen -y "$tmp/id")"
 export PATH="$tmp/bin:$PATH"
-run() { PGHOST=h PGUSER=u PGPASSWORD=p BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$key" SUPABASE_URL=https://stub.supabase.co SUPABASE_SERVICE_ROLE_KEY=stub "$here/backup.sh"; }
+run() { PGHOST=h PGUSER=u PGPASSWORD=p BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$key" SUPABASE_URL=https://stub.supabase.co "$here/backup.sh"; }
 run
 f="$(ls "$tmp"/out/*.tar.age)"
 mkdir "$tmp/x"; age -d -i "$tmp/id" "$f" | tar -x -C "$tmp/x"; m="$(echo "$tmp"/x/313events-*/MANIFEST.txt)"

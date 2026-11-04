@@ -9,18 +9,29 @@ dbname = sys.argv[5] if len(sys.argv) > 5 else ""
 mutate = sys.argv[6] if len(sys.argv) > 6 else ""   # SQL run once (against MUTATE_DB) on the first object GET: simulates Storage changing mid-backup
 delay = float(sys.argv[7]) if len(sys.argv) > 7 else 0.0
 mutated = []
+flaky = {}
 class H(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
     def _auth(self):
         if self.headers.get("apikey") != key or self.headers.get("Authorization") != "Bearer " + key:
             self.send_response(401); self.end_headers(); return False
         return True
+    def _public(self):
+        p = urllib.parse.unquote(self.path.split("?")[0])
+        return p.split("/storage/v1/object/public/", 1)[1] if "/storage/v1/object/public/" in p else None
     def _path(self):
         p = urllib.parse.unquote(self.path.split("?")[0])
         return p.split("/storage/v1/object/", 1)[1] if "/storage/v1/object/" in p else None
     def do_GET(self):
-        if not self._auth(): return
-        rel = self._path()
+        pub = self._public()
+        if pub is not None:
+            # anonymous public URL: refuse the request if ANY credential header is sent (proves the backup carries no key)
+            if self.headers.get("apikey") or self.headers.get("Authorization"):
+                self.send_response(400); self.end_headers(); return
+            if os.environ.get("MOCK_PRIVATE") and os.environ["MOCK_PRIVATE"] in pub:
+                self.send_response(400); self.end_headers(); return
+        elif not self._auth(): return
+        rel = pub if pub is not None else self._path()
         f = os.path.join(root, rel) if rel else None
         if rel is None or (fail and fail in rel) or not os.path.isfile(f):
             self.send_response(404); self.end_headers(); return
@@ -28,6 +39,11 @@ class H(http.server.BaseHTTPRequestHandler):
         if mutate and not mutated:
             mutated.append(1); subprocess.run(["psql", "dbname=" + os.environ.get("MUTATE_DB", "src"), "-X", "-q", "-c", mutate], check=True)
         data = open(f, "rb").read()
+        if pub is not None and os.environ.get("MOCK_CORRUPT") and os.environ["MOCK_CORRUPT"] in pub and data:
+            data = bytes([data[0] ^ 1]) + data[1:]                      # same size, different bytes
+        if pub is not None and os.environ.get("MOCK_FLAKY") and os.environ["MOCK_FLAKY"] in pub and data:
+            n = flaky.get(pub, 0); flaky[pub] = n + 1
+            if n % 2: data = bytes([data[0] ^ 1]) + data[1:]            # differs on every second fetch
         self.send_response(200); self.send_header("content-length", str(len(data))); self.end_headers(); self.wfile.write(data)
     def do_POST(self):
         if not self._auth(): return

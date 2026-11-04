@@ -8,7 +8,9 @@ fsize() { wc -c < "$1" | tr -d ' '; }
 md5_of() { if command -v md5sum >/dev/null 2>&1; then md5sum "$1" | cut -d" " -f1; else md5 -q "$1"; fi; }
 uri_path() { jq -rn --arg n "$1" '$n|split("/")|map(@uri)|join("/")'; }
 
-# sb_curl <curl args...>   needs SB_KEY
+# pub_curl <curl args...>   anonymous GET of a public Storage object: sends no apikey or Authorization header
+pub_curl() { curl -fsS --max-time 300 -H 'Cache-Control: no-cache' "$@"; }
+# sb_curl <curl args...>   authenticated call; needs SB_KEY (used by the restore side only, against the temporary project)
 sb_curl() { curl -fsS -K <(printf 'header = "apikey: %s"\nheader = "Authorization: Bearer %s"\n' "$SB_KEY" "$SB_KEY") "$@"; }
 
 # q reads SQL on stdin and runs it in a session forced to read-only. -q keeps command tags out of the output.

@@ -4,12 +4,11 @@
 #
 # Optional one-time Keychain setup (each command prompts for the value; nothing is echoed):
 #   security add-generic-password -a "$USER" -s 313events-backup-db-password -w
-#   security add-generic-password -a "$USER" -s 313events-backup-storage-key -w
 # The age key pair is generated on first run at ~/.313events-backup/age.key (mode 600, outside the repo and CI).
 # Keep a second copy of that file in the password manager; losing it makes every archive unreadable.
 #
 # Read-only guarantee: every database session sets default_transaction_read_only, pg_dump uses a READ ONLY transaction,
-# and Storage is accessed with GET only. No SQL in this directory writes. The output folder receives ciphertext only.
+# and Storage files are fetched with anonymous GET from their public URLs (no Storage key exists in this procedure). No SQL in this directory writes. The output folder receives ciphertext only.
 set -Eeuo pipefail
 set +x
 umask 077
@@ -61,8 +60,7 @@ PGUSER="${PGUSER:-postgres.$PROD_REF}"
 case "$PGUSER" in *".$PROD_REF") ;; *) echo "PGUSER must end with .$PROD_REF (the shared-pooler tenant suffix)" >&2; exit 1;; esac
 export PGHOST PGPORT=5432 PGUSER PGDATABASE=postgres PGSSLMODE=require
 secret PGPASSWORD 313events-backup-db-password "Password for database user $PGUSER (hidden)"
-secret SUPABASE_SERVICE_ROLE_KEY 313events-backup-storage-key "Production service-role key, used only for Storage GET (hidden)"
-export PGPASSWORD SUPABASE_URL AGE_RECIPIENT SUPABASE_SERVICE_ROLE_KEY
+export PGPASSWORD SUPABASE_URL AGE_RECIPIENT
 export BACKUP_DRY_RUN=1 BACKUP_DIR="$OUT"     # local only: nothing is uploaded
 
 # Preflight: prove the connection works and the session is read-only, before any dump starts.
@@ -99,7 +97,7 @@ echo "Archive:  $f"
 echo "Size:     $(fsize "$f") bytes"
 echo "SHA-256:  $(cut -d' ' -f1 "$base.tar.age.sha256")"
 echo "Created:  $(awk -F= '$1=="created_utc"{print $2}' "$base.manifest.txt")"
-echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes ($(awk -F= '$1=="storage_content_hashed"{print $2}' "$base.manifest.txt") content-hashed, the rest verified by size and the before/after snapshot)"
+echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes ($(awk -F= '$1=="storage_content_hashed"{print $2}' "$base.manifest.txt") hash-verified against Storage's MD5, $(awk -F= '$1=="storage_double_fetched"{print $2}' "$base.manifest.txt") size-verified and identical on two fetches)"
 echo "Row counts:"
 awk '/^--- row_counts/{go=1; next} /^--- sha256/{go=0} go' "$base.manifest.txt" | sed 's/^/  /'
 echo "Next: restore into the temporary project with ops/backup/restore-mac.sh (age key: $KEYDIR/age.key)"
