@@ -39,11 +39,12 @@ for (const slug of H.SLUGS) {
 }
 // fall: no duplicates of existing destinations, expired activity removed, final dates shown
 const fall = H.previewData("fall").entries.map((e) => e.id);
-["kackleberry-farms", "debucks-family-farm", "trabbic-family-pumpkin-farm"].forEach((id) => assert.ok(!fall.includes(id), id + " removed (expired)"));
+["kackleberry-farms", "debucks-family-farm", "trabbic-family-pumpkin-farm", "corn-fun", "jasons-pumpkin-patch", "wheeler-farms-corn-maze"].forEach((id) => assert.ok(!fall.includes(id), id + " removed (expired)"));
 const byId = Object.fromEntries(H.previewData("fall").entries.map((e) => [e.id, e]));
 assert.strictEqual(byId["parmenters-northville-cider-mill"].lastDay, "2026-11-22");
 assert.strictEqual(byId["diehls-orchard-and-cider-mill"].lastDay, "2026-11-22");
 assert.strictEqual(byId["franklin-cider-mill"].lastDay, "2026-11-29");
+assert.strictEqual(byId["rochester-cider-mill"].lastDay, "2026-12-31", "Rochester: operator states the season ends December 31, 2026");
 assert.ok(!byId["yates-cider-mill"].lastDay && !byId["parshallville-cider-mill"].lastDay, "Yates and Parshallville: no guessed final date");
 assert.ok(!/since 1837/.test(byId["franklin-cider-mill"].summary), "no uninterrupted-since-1837 claim");
 // outside: the three existing leads keep their existing records (no duplicate), Haven Hill is Edsel Ford, no peak-color promise
