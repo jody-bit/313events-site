@@ -1029,9 +1029,9 @@
    "name": "Eloise Asylum",
    "location": "Westland, MI",
    "inventory_note": "Immersive asylum horror",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": "eloise-asylum",
-   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-73cbabcb",
@@ -1066,7 +1066,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions",

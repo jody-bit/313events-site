@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 29,
-  "eligiblePublished": 9,
+  "ownerApproved": 28,
+  "eligiblePublished": 8,
   "held": 20,
-  "excluded": 23,
+  "excluded": 24,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -63,37 +63,25 @@
    "inventoryNo": "2",
    "name": "Eloise Asylum",
    "city": "Westland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "eloise-asylum",
-    "name": "Eloise Asylum",
-    "city": "Westland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
-    "website": "https://eloiseasylum.com/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-1.webp",
-      "/assets/seasonal/halloween-card-4.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "313.events archive"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Eloise removal from The Dark Is On 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "halloween-greenfield-village",

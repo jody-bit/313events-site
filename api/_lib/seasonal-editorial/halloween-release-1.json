@@ -9,7 +9,17 @@
       "evidenceNote": "Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25.",
       "datesNote": "Opens Sept 25, 2026 (official). Closing date is not stated on the official page. Weekly hours listed: Fri 7-11 PM, Sat 7 PM-12 AM, Sun 7-10:30 PM. WXYZ roundup (secondary) says weekends through Nov 1.",
       "inventoryOrder": 2,
-      "website": "https://eloiseasylum.com/"
+      "website": "https://eloiseasylum.com/",
+      "disposition": {
+        "type": "ended",
+        "reason": "Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), Eloise removal from The Dark Is On 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "halloween-greenfield-village": {
       "tier": "publish",
