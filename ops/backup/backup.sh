@@ -99,6 +99,32 @@ for b in $(cut -f1 storage_objects.tsv | sort -u); do
   jq -e --arg b "$b" 'any(.[]; .id == $b)' buckets.json >/dev/null || { echo "objects exist in a bucket that is not in storage.buckets; backup refused" >&2; false; }
   jq -e --arg b "$b" 'any(.[]; .id == $b and .public == true)' buckets.json >/dev/null || { echo "bucket holding objects is not public, so its files cannot be fetched without a credential; backup refused" >&2; false; }
 done
+# On ANY size or checksum mismatch the run stops, and the downloaded original plus a second fetch are kept for diagnosis: age-encrypted,
+# mode 600, next to a plain-text failure report that carries numbers only (no object name, no content). The kept files are labelled
+# as a failure diagnostic, use a different extension from an archive (restore-mac.sh can never pick them), and a run never overwrites
+# or removes a file from another run, so a known-good archive is untouched.
+keep_diag() {  # $1 = reason
+  local f="storage/$b/$name" d="$WORKROOT/diag" base="$OUTDIR/313events-DIAGNOSTIC-$STAMP"
+  pub_curl -o "$f.refetch" "$url" 2>/dev/null || true
+  mkdir -p "$d"; cp "$f" "$d/original"
+  if [ -f "$f.refetch" ]; then cp "$f.refetch" "$d/refetch"; fi
+  { echo "FAILURE DIAGNOSTIC. NOT A BACKUP. Never restore from it or treat it as verified."
+    echo "reason=$1"; echo "object_index=$i"; echo "object=$b/$name"; echo "expected_etag=$etag"; echo "expected_size=$size"
+    echo "got_size=$(fsize "$f")"; echo "got_md5=$(md5_of "$f")"
+    echo "got_md5_of_md5=$(openssl dgst -md5 -binary "$f" | openssl dgst -md5 | awk '{print $NF}')"
+    echo "got_sha256=$(openssl dgst -sha256 "$f" | awk '{print $NF}')"
+    if [ -f "$f.refetch" ]; then echo "refetch_md5=$(md5_of "$f.refetch")"; echo "refetch_size=$(fsize "$f.refetch")"; fi
+  } > "$d/info.txt"
+  tar -C "$WORKROOT" -cf - diag | age -r "$AGE_RECIPIENT" -o "$base.diag.age" || true
+  chmod 600 "$base.diag.age" 2>/dev/null || true
+  { echo "313.events backup FAILURE REPORT: NOT a backup (no archive was produced by this run)"
+    echo "time_utc=$STAMP"; echo "reason=$1"; echo "object_index=$i of $(wc -l < storage_objects.tsv | tr -d ' ')"
+    echo "expected_etag=$etag"; echo "expected_size=$size"; echo "got_size=$(fsize "$f")"; echo "got_md5=$(md5_of "$f")"
+    echo "encrypted_originals=$(basename "$base.diag.age") (age-encrypted, mode 600; keep it, do not open, rename or delete it)"
+  } > "$base.report.txt"
+  chmod 600 "$base.report.txt" 2>/dev/null || true
+  echo "STOPPED on object #$i: $1. Failure report: $base.report.txt   Encrypted originals kept: $base.diag.age   (NOT a backup)" >&2
+}
 i=0; hashed=0; refetched=0; multipart1=0
 while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
@@ -106,46 +132,25 @@ while IFS=$'\t' read -r b name size etag upd; do
   url="$SUPABASE_URL/storage/v1/object/public/$b/$(uri_path "$name")"
   # No credential is sent. no-cache asks the CDN to revalidate; the size and hash checks below catch a stale copy anyway.
   pub_curl -o "storage/$b/$name" "$url" || { echo "object #$i is missing, private or inaccessible at its public URL" >&2; false; }
-  [ "$(fsize "storage/$b/$name")" = "$size" ] || { echo "size mismatch on object #$i" >&2; false; }
+  [ "$(fsize "storage/$b/$name")" = "$size" ] || { keep_diag "size mismatch"; echo "size mismatch on object #$i" >&2; false; }
   e="$(printf '%s' "$etag" | tr -d '"')"
-  case "$e" in
-    [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
-      [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; }
-      hashed=$((hashed + 1)) ;;
-    *-1)
-      # Single-part multipart upload: S3 defines the eTag as MD5(binary MD5 of the part) + "-1", so the bytes can still be verified
-      # against a checksum Storage computed itself. Anything that does not have that exact shape falls through to the double fetch.
-      if printf '%s' "$e" | grep -Eq '^[0-9a-f]{32}-1$'; then
-        got_mp="$(openssl dgst -md5 -binary "storage/$b/$name" | openssl dgst -md5 | awk '{print $NF}')"
-        if [ "$got_mp" != "${e%-1}" ]; then
-          # Stop; never downgrade to a weaker check. Keep the downloaded original, a second fetch and the numbers for diagnosis,
-          # encrypted like every other artifact (the plaintext working directory is still deleted on exit).
-          pub_curl -o "storage/$b/$name.refetch" "$url" 2>/dev/null || true
-          { echo "object_index=$i"; echo "object=$b/$name"; echo "expected_etag=$etag"; echo "expected_size=$size"
-            echo "got_size=$(fsize "storage/$b/$name")"; echo "got_md5=$(md5_of "storage/$b/$name")"; echo "got_md5_of_md5=$got_mp"
-            echo "got_sha256=$(openssl dgst -sha256 "storage/$b/$name" | awk '{print $NF}')"
-            [ -f "storage/$b/$name.refetch" ] && echo "refetch_md5=$(md5_of "storage/$b/$name.refetch")"; } > "$WORKROOT/diag.txt"
-          mkdir -p "$WORKROOT/diag"; cp "storage/$b/$name" "$WORKROOT/diag/original"; [ -f "storage/$b/$name.refetch" ] && cp "storage/$b/$name.refetch" "$WORKROOT/diag/refetch"
-          cp "$WORKROOT/diag.txt" "$WORKROOT/diag/info.txt"
-          tar -C "$WORKROOT" -cf - diag | age -r "$AGE_RECIPIENT" -o "$OUTDIR/313events-DIAGNOSTIC-$STAMP.diag.age" || true
-          echo "multipart eTag mismatch on object #$i; STOPPED, no downgrade. Encrypted diagnostic kept: $OUTDIR/313events-DIAGNOSTIC-$STAMP.diag.age" >&2
-          false
-        fi
-        multipart1=$((multipart1 + 1))
-      else
-        pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
-        cmp -s "storage/$b/$name" "storage/$b/$name.refetch" || { echo "object #$i differs between two fetches" >&2; false; }
-        rm -f "storage/$b/$name.refetch"
-        refetched=$((refetched + 1))
-      fi ;;
-    *)
-      # No checksum Storage computed that we can recompute (absent or unusual eTag): size is checked above, and the bytes must be
-      # identical on a second, independent fetch. This proves stability, not authenticity; it is reported separately.
-      pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
-      cmp -s "storage/$b/$name" "storage/$b/$name.refetch" || { echo "object #$i differs between two fetches" >&2; false; }
-      rm -f "storage/$b/$name.refetch"
-      refetched=$((refetched + 1)) ;;
-  esac
+  if printf '%s' "$e" | grep -Eq '^[0-9a-f]{32}$'; then
+    [ "$(md5_of "storage/$b/$name")" = "$e" ] || { keep_diag "content hash mismatch"; echo "content hash mismatch on object #$i" >&2; false; }
+    hashed=$((hashed + 1))
+  elif printf '%s' "$e" | grep -Eq '^[0-9a-f]{32}-1$'; then
+    # Single-part multipart upload: S3 defines the eTag as MD5(binary MD5 of the part) + "-1", so the bytes can still be verified
+    # against a checksum Storage computed itself. A mismatch stops the run; it is never downgraded to a weaker check.
+    got_mp="$(openssl dgst -md5 -binary "storage/$b/$name" | openssl dgst -md5 | awk '{print $NF}')"
+    [ "$got_mp" = "${e%-1}" ] || { keep_diag "multipart eTag mismatch"; echo "multipart eTag mismatch on object #$i; STOPPED, no downgrade" >&2; false; }
+    multipart1=$((multipart1 + 1))
+  else
+    # No checksum Storage computed that we can recompute (absent or unusual eTag): size is checked above, and the bytes must be
+    # identical on a second, independent fetch. This proves stability only, not authenticity; it is reported separately.
+    pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
+    if ! cmp -s "storage/$b/$name" "storage/$b/$name.refetch"; then keep_diag "bytes differ between two fetches"; echo "object #$i differs between two fetches" >&2; false; fi
+    rm -f "storage/$b/$name.refetch"
+    refetched=$((refetched + 1))
+  fi
 done < storage_objects.tsv
 snap > storage_objects.after.tsv
 cmp -s storage_objects.tsv storage_objects.after.tsv || { echo "Storage changed while the backup was running; rerun" >&2; false; }

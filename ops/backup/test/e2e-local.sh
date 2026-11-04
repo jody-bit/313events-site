@@ -155,11 +155,27 @@ echo "PASS 9: stale plaintext from a killed run is swept; working files live in 
 kill $SRC7 2>/dev/null || true; sleep 0.3
 rb() { ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out11" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54333 "$here/backup.sh" ); }
 mock11() { [ -z "${M11:-}" ] || { kill $M11 2>/dev/null || true; sleep 0.3; }; env "$@" python3 "$here/test/mock_storage.py" 54333 "$tmp/srcfiles" "$KEY" "${FAILSUB:-}" & M11=$!; sleep 1; }
-expect_fail() { # $1 = message that must appear, $2 = label
-  rm -rf "$tmp/out11"
-  if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed: $2"; exit 1; fi
+expect_fail() { # $1 = message that must appear, $2 = label, $3 = "diag" when originals must be kept (encrypted, mode 600, with a report)
+  if [ "${3:-}" = diag ]; then
+    if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed: $2"; exit 1; fi
+  else
+    rm -rf "$tmp/out11"; if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed: $2"; exit 1; fi
+  fi
   grep -q "$1" "$tmp/b11.log" || { cat "$tmp/b11.log"; echo "FAIL: wrong reason: $2"; exit 1; }
-  [ -z "$(ls -A "$tmp/out11" 2>/dev/null)" ] || { ls "$tmp/out11"; echo "FAIL: leftovers: $2"; exit 1; }
+  if [ "${3:-}" = diag ]; then
+    [ "$(ls "$tmp"/out11/*.tar.age | wc -l | tr -d ' ')" = 1 ] && [ "$(ls "$tmp"/out11/*.diag.age | wc -l | tr -d ' ')" = 1 ] && [ "$(ls "$tmp"/out11/*.report.txt | wc -l | tr -d ' ')" = 1 ] || { ls "$tmp/out11"; echo "FAIL: expected the good archive plus one diagnostic and one report: $2"; exit 1; }
+    [ "$(stat -c %a "$tmp"/out11/*.diag.age)" = 600 ] && [ "$(stat -c %a "$tmp"/out11/*.report.txt)" = 600 ] || { echo "FAIL: diagnostic files are not mode 600"; exit 1; }
+    ! grep -q 'deep\|top.png\|nested' "$tmp"/out11/*.report.txt || { echo "FAIL: report names an object"; exit 1; }
+    grep -q 'NOT a backup' "$tmp"/out11/*.report.txt && grep -q 'STOPPED on object' "$tmp/b11.log" || { echo "FAIL: failure report wording"; exit 1; }
+    [ "$(sha256sum "$tmp"/out11/313events-2*.tar.age | cut -d' ' -f1)" = "$(cut -d' ' -f1 "$tmp/good.sha")" ] || { echo "FAIL: known-good archive was altered"; exit 1; }
+    rm -f "$tmp"/out11/*.diag.age "$tmp"/out11/*.report.txt
+  else
+    [ -z "$(ls -A "$tmp/out11" 2>/dev/null)" ] || { ls "$tmp/out11"; echo "FAIL: leftovers: $2"; exit 1; }
+  fi
+}
+mkgood() { # a known-good archive that failing runs must leave untouched
+  rm -rf "$tmp/out11"; rb >"$tmp/good.log" 2>&1 || { cat "$tmp/good.log"; echo "FAIL: good backup"; exit 1; }
+  cp "$(ls "$tmp"/out11/*.tar.age.sha256)" "$tmp/good.sha"
 }
 psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{eTag}', to_jsonb(format('\"%s\"', '$m1'))) where name='top.png'"
 FAILSUB="" mock11 X=1
@@ -171,10 +187,14 @@ psql -X -q -d src -c "update storage.buckets set public=false"; expect_fail 'not
 psql -X -q -d src -c "insert into storage.objects(bucket_id,name,metadata) values ('ghost','g.png','{\"size\":1}')"; expect_fail 'not in storage.buckets' "object in an unknown bucket"; psql -X -q -d src -c "delete from storage.objects where bucket_id='ghost'"
 FAILSUB=deep mock11 X=1; expect_fail 'missing, private or inaccessible' "object missing at its public URL"
 FAILSUB="" mock11 MOCK_PRIVATE=top.png; expect_fail 'missing, private or inaccessible' "object refused (private) at its public URL"
-FAILSUB="" mock11 MOCK_CORRUPT=top.png; expect_fail 'content hash mismatch' "same-size corrupted bytes on an MD5-verifiable object"
-FAILSUB="" mock11 MOCK_FLAKY=deep; expect_fail 'differs between two fetches' "unstable bytes on an object without an MD5"
+FAILSUB="" mock11 X=1; mkgood
+FAILSUB="" mock11 MOCK_CORRUPT=top.png; expect_fail 'content hash mismatch' "same-size corrupted bytes on an MD5-verifiable object" diag
+FAILSUB="" mock11 MOCK_FLAKY=deep; expect_fail 'differs between two fetches' "unstable bytes on an object without an MD5" diag
+psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{size}', '5') where name='top.png'"
+FAILSUB="" mock11 X=1; expect_fail 'size mismatch' "size differs from Storage's recorded size" diag
+psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{size}', '8') where name='top.png'"
 kill $M11 2>/dev/null || true
-echo "PASS 11b: private bucket, unknown bucket, missing object, private object, corrupted bytes and unstable bytes each fail the backup closed with nothing left behind"
+echo "PASS 11b: private bucket, unknown bucket, missing object and private object fail closed with nothing left; corrupted bytes, unstable bytes and a size mismatch fail closed and keep encrypted, mode-600 originals plus a failure report, without touching a known-good archive"
 # 11c. single-part multipart eTags (MD5 of the binary MD5, suffix -1) are verified against a checksum Storage computed; other shapes are double-fetched
 mp="$(openssl dgst -md5 -binary "$tmp/srcfiles/event-flyers/u/def/deep/x.png" | openssl dgst -md5 | awk '{print $NF}')"
 seteTag() { psql -X -q -d src -c "update storage.objects set metadata = jsonb_set(metadata, '{eTag}', to_jsonb(format('\"%s\"', '$1'))) where name='u/def/deep/x.png'"; }
@@ -185,7 +205,7 @@ grep -q '^storage_multipart1_verified=1$' "$m11" && grep -q '^storage_double_fet
 seteTag "00000000000000000000000000000000-1"; rm -rf "$tmp/out11"
 if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed with a wrong multipart eTag"; exit 1; fi
 grep -q 'multipart eTag mismatch' "$tmp/b11.log" && grep -q 'no downgrade' "$tmp/b11.log" || { cat "$tmp/b11.log"; echo "FAIL: mismatch message"; exit 1; }
-[ "$(ls "$tmp/out11" | wc -l | tr -d ' ')" = 1 ] && d11="$(ls "$tmp"/out11/313events-DIAGNOSTIC-*.diag.age)" || { ls "$tmp/out11"; echo "FAIL: expected only the encrypted diagnostic"; exit 1; }
+[ "$(ls "$tmp/out11" | wc -l | tr -d ' ')" = 2 ] && d11="$(ls "$tmp"/out11/313events-DIAGNOSTIC-*.diag.age)" && [ -s "$tmp"/out11/313events-DIAGNOSTIC-*.report.txt ] || { ls "$tmp/out11"; echo "FAIL: expected only the encrypted diagnostic and the report"; exit 1; }
 ! grep -aq 'PNGD-3' "$d11" || { echo "FAIL: diagnostic is not encrypted"; exit 1; }
 mkdir "$tmp/dg"; age -d -i "$tmp/id" "$d11" | tar -x -C "$tmp/dg"
 cmp -s "$tmp/dg/diag/original" "$tmp/srcfiles/event-flyers/u/def/deep/x.png" && grep -q "^got_md5_of_md5=$mp$" "$tmp/dg/diag/info.txt" && grep -q '^expected_etag="00000000000000000000000000000000-1"$' "$tmp/dg/diag/info.txt" || { cat "$tmp/dg/diag/info.txt"; echo "FAIL: diagnostic content"; exit 1; }
