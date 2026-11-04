@@ -18,6 +18,25 @@ const col = { slug: "t", title: "T", titleLines: ["T"], subtitle: "s", categorie
 assert.deepStrictEqual(R.coverage(col, {}), { shown: 3, pinned: 1, unresolved: 2 }, "coverage counts only verified pins");
 const none = Object.assign({}, col, { slug: "t2", entries: [a, u] });
 const html = R.results(none, { view: "map" });
-assert.ok(/No destinations are on the map yet; 2 locations still being verified/.test(html), "zero pins is stated plainly");
-assert.ok(!/Showing 0 of/.test(html), "no 'Showing 0 of' wording");
+assert.ok(/0 of 2 places shown on the map; the rest are in the list\./.test(html), "coverage text is computed from the data");
+assert.ok(!/candidate pins are included/i.test(html), "the default view has no QA wording");
+const withEntrance = mk("e", { status: "address-point", lat: 42.5, lng: -83.2, entrance: "North lot, Main St" });
+assert.strictEqual(R.hasPin(withEntrance), true, "a set entrance earns a pin");
+const c1 = R.coverage(Object.assign({}, col, { entries: [v, a, u] }), {});
+assert.strictEqual(c1.pinned, 1, "default view: candidates never pin");
+R.setQaPins(true);
+assert.strictEqual(R.hasPin(a), true, "QA view draws the candidate");
+assert.strictEqual(R.isCandidate(a), true, "...and marks it as a candidate");
+assert.strictEqual(R.isCandidate(v), false, "verified places are not candidates");
+assert.strictEqual(R.hasPin(u), false, "unresolved never pins, even in QA");
+assert.ok(/2 of 3 places shown on the map.*QA view: candidate pins/.test(R.results(col, { view: "map" })), "QA view says so");
+R.setQaPins(false);
+assert.strictEqual(R.hasPin(a), false, "QA flag off again");
+// the QA flag exists only in the Preview route and only when asked
+const H = require(path.join(__dirname, "..", "api/seasonal-preview.js"));
+function page(q) { process.env.VERCEL_ENV = "preview"; const res = { headers: {}, setHeader() {}, end(b) { this.body = b; } }; H({ query: q, method: "GET" }, res); return res.body || ""; }
+assert.ok(!/setQaPins/.test(page({ c: "fall" })), "default Preview page has no QA call");
+assert.ok(/setQaPins\(true\)/.test(page({ c: "fall", qa: "pins" })), "?qa=pins turns it on in the Preview route");
+const fs = require("fs");
+assert.ok(!/get\(["']qa["']\)|query\.qa/.test(fs.readFileSync(path.join(__dirname, "..", "seasonal/render.js"), "utf8")), "render.js never reads the qa parameter itself");
 console.log("ok seasonal-pin-policy");

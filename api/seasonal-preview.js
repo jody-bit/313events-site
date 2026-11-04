@@ -41,7 +41,7 @@ function previewData(slug) {
 
 function json(v) { return JSON.stringify(v).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029"); }
 
-function html(slug) {
+function html(slug, qaPins) {
   const d = previewData(slug), R = RENDER;
   const title = (d.meta ? d.meta.title : "Fall Is On.") + " (Preview) — 313.events";
   return `<!DOCTYPE html>
@@ -72,6 +72,7 @@ ${R.footer()}
 <script>(function () {
   var C = window.SeasonalCollections, slug = ${JSON.stringify(slug)}, META = ${json(d.meta)};
   var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug], previewPendingPhotos: true });
+  ${qaPins ? "window.SeasonalRender.setQaPins(true);   // Preview-only QA view (?qa=pins): candidate pins drawn and labelled; never the default view" : ""}
   document.getElementById("scMain").innerHTML = window.SeasonalRender.main(col);
 })();</script>
 <script src="/seasonal/image-fallback.js"></script>
@@ -92,7 +93,7 @@ function handler(req, res) {
   }
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.end(html(q.c));
+  res.end(html(q.c, q.qa === "pins"));
 }
 
 module.exports = handler;

@@ -41,7 +41,11 @@
   // A map pin needs a verified entrance or official coordinates (status "verified"). A Census address-point is a candidate location, not proof of
   // where a visitor enters, so those places stay in Grid/List and are counted as "still being verified". Distances may still use an address-point.
   function hasCoords(e) { return !!(e.loc && typeof e.loc.lat === "number" && typeof e.loc.lng === "number"); }
-  function hasPin(e) { return hasCoords(e) && e.loc.status === "verified"; }
+  function hasPin(e) { return !!(hasCoords(e) && (e.loc.status === "verified" || e.loc.entrance)) || (qaPins && hasLocation(e)); }
+  // Candidate = a location drawn only in the Preview QA view (?qa=pins); never part of the default or publication view.
+  function isCandidate(e) { return qaPins && hasLocation(e) && !(e.loc.status === "verified" || e.loc.entrance); }
+  var qaPins = false;
+  function setQaPins(on) { qaPins = on === true; }
   function hasLocation(e) { return hasCoords(e) && (e.loc.status === "verified" || e.loc.status === "address-point"); }
   function distanceOf(e, state) { return state && state.origin && hasLocation(e) ? milesBetween(state.origin, e.loc) : null; }
   // Editorial order is the default. With a chosen origin, destinations with a known location sort nearest first (stable); the rest keep their order after them.
@@ -180,8 +184,8 @@
     var pre = "";
     if (state.view === "map" && mapEnabled(col)) {
       var cv = coverage(col, state);
-      pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">' + (cv.pinned ? 'Showing ' + cv.pinned + ' of ' + cv.shown + ' destinations on the map' : 'No destinations are on the map yet') +
-        (cv.unresolved ? '; ' + cv.unresolved + ' location' + (cv.unresolved === 1 ? '' : 's') + ' still being verified (listed below)' : '') + '.</p>' +
+      pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">' + cv.pinned + ' of ' + cv.shown + ' places shown on the map; the rest are in the list.' +
+        (qaPins ? ' QA view: candidate pins are included and are not confirmed entrances.' : '') + '</p>' +
         '<div id="scMap" class="sc-map" aria-label="Map of the destinations in this collection (the list below has the same destinations)"></div>' +
         '<p class="sc-map-credit">Map tiles \u00a9 OpenStreetMap contributors \u00a9 CARTO. The accessible list below shows every destination.</p><p class="sc-map-tilestatus" id="scMapTiles" role="status" aria-live="polite"></p>';
     }
@@ -288,5 +292,5 @@
     });
   }
 
-  return { dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });

@@ -9,11 +9,11 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function tileNote(msg) { var n = document.getElementById("scMapTiles"); if (n) n.textContent = msg; }
 
-  function popup(e, lastDayLine) {
+  function popup(e, lastDayLine, R) {
     var loc = e.loc, dir = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(loc.lat + "," + loc.lng);
     return '<div class="sc-pop"><strong class="sc-pop-name">' + esc(e.name) + '</strong><div>' + esc(e.city) + ', ' + esc(e.region) + '</div>' +
       '<p>' + esc(e.summary) + '</p>' + (lastDayLine || "") +
-      (loc.status === "address-point" ? '<p class="sc-pop-note">Marks the street address; the visitor entrance is still being confirmed.</p>' : "") +
+      (R.isCandidate(e) ? '<p class="sc-pop-note"><strong>Candidate, not entrance.</strong> Marks the street address for QA only; the visitor entrance is still being confirmed.</p>' : "") +
       '<p class="sc-pop-links"><a href="#sc-card-' + esc(e.id) + '">Card</a>' + (e.website ? ' &middot; <a href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">Official website</a>' : "") +
       ' &middot; <a href="' + esc(dir) + '" target="_blank" rel="noopener noreferrer">Directions</a></p></div>';
   }
@@ -35,8 +35,8 @@
       }
       if (!ctl.ready) { tileNote("The map could not load; the list below has every destination."); return false; }
       var places = pins.map(function (e) {
-        return { key: e.id, lat: e.loc.lat, lng: e.loc.lng, title: e.name,
-          icon: { className: "sc-pin", html: '<span class="sc-pin-dot"></span>', size: 44 }, popupHtml: popup(e, R.lastDayHtml(e)) };
+        return { key: e.id, lat: e.loc.lat, lng: e.loc.lng, title: e.name + (R.isCandidate(e) ? " (candidate, not entrance)" : ""),
+          icon: { className: "sc-pin", html: '<span class="sc-pin-dot"></span>', size: 44 }, popupHtml: popup(e, R.lastDayHtml(e), R) };
       });
       ctl.setPlaces(places);
       if (origin && ctl.map) {
