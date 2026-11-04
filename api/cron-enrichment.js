@@ -139,7 +139,7 @@ module.exports = async (req, res) => {
     // deliberately (see this file's own header) rather than factored into a
     // shared module.
     const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-    const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: runHandle && runHandle.runId ? runHandle.runId : null });
+    const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: runHandle && runHandle.runId ? runHandle.runId : null, ledger: require("../scripts/enrichment-ledger").createTableLedger({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY }) });
 
     let descriptionCounts = null;
     let outerLimitsDescriptionError = null;
@@ -305,7 +305,7 @@ module.exports = async (req, res) => {
       session_data: (genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)) || (venueCounts && venueCounts.written)
         ? {
             // Which events the venue step wrote and which fields (capped), so a later question about a row has an answer.
-            ...(venueCounts && venueCounts.written ? { venue_fill: { written: venueCounts.written, fields: venueCounts.writtenFields || [], owner_row_fills: venueCounts.ownerRowFills || 0, owner_row_ids: venueCounts.ownerRowFillIds || [] } } : {}),
+            ...(venueCounts && (venueCounts.written || venueCounts.ownerRowSkipped) ? { venue_fill: { written: venueCounts.written, fields: venueCounts.writtenFields || [], owner_rows_skipped: venueCounts.ownerRowSkipped || 0, proposed_fills: venueCounts.proposedFills || [], proposed_deduped: venueCounts.proposedDeduped || 0, ledger_durable: !!venueCounts.ledgerDurable, ledger_failed_closed: venueCounts.ledgerFailedClosed || 0, note: venueCounts.ledgerDurable ? "per-field records in enrichment_change_log" : "NON-DURABLE summary (capped); no durable ledger until enrichment_change_log is approved" } } : {}),
             ...(genericCounts && genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
             ...(genericCounts ? { total_considered: genericCounts.totalConsidered, cap_reached: genericCounts.capReached === true } : {}),
             ...(genericCounts && genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),

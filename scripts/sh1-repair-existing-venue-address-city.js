@@ -86,8 +86,9 @@ function classifyTier(event, canonicalMaps, learnedMap, decision) {
 const WRITTEN_FIELDS_CAP = 100;
 const AUTO_FILL_MARKER = "AUTO-FILL";
 
-// Owner-supplied rows: Manual source, or a private note carrying an owner correction or an editorial hold. SH.1 only ever
-// fills blank fields, so these rows are still filled, but each such fill is flagged (ownerRowFills) for the daily digest.
+// Owner-supplied rows: Manual source, or a private note carrying an owner correction or an editorial hold. SH.1 NEVER writes
+// these (Nov 4 owner direction: flagging after mutation is insufficient). The proposed fill is recorded as status "proposed"
+// and goes to review; an approved fill is applied through the admin correction path, not by this job.
 function isOwnerSuppliedRow(event) {
   const note = typeof event.internal_note === "string" ? event.internal_note : "";
   return String(event.source || "").toLowerCase() === "manual" || /OWNER-CORRECTION|EDITORIAL[-_ ]HOLD/i.test(note);
@@ -97,7 +98,7 @@ function isOwnerSuppliedRow(event) {
 function autoFillLine(fields, decision, event, today, runId) {
   const tier = (decision && decision.tier) || "canonical";
   const name = event.venue_name_raw ? ` for "${String(event.venue_name_raw).replace(/[\r\n"]+/g, " ").slice(0, 80)}"` : "";
-  return `${AUTO_FILL_MARKER} ${today}: ${fields.join(", ")} from ${tier}${name}; step SH.1 enrichment blank-field fill${runId ? `; run ${runId}` : ""}${isOwnerSuppliedRow(event) ? "; owner-supplied row, flagged" : ""}`;
+  return `${AUTO_FILL_MARKER} ${today}: ${fields.join(", ")} from ${tier}${name}; step SH.1 enrichment blank-field fill${runId ? `; run ${runId}` : ""}`;
 }
 
 const REPAIR_PAGE_SIZE = 1000;
@@ -161,6 +162,9 @@ async function repairExistingEvents({
   fetchCandidates = fetchRepairCandidates,
   applyPatchFn = applyPatch,
   runId = null,
+  // Optional durable ledger {record(records) -> Promise<void> (throws on failure), hasProposal(key) -> Promise<boolean>}.
+  // Absent until the enrichment_change_log table is approved; see scripts/enrichment-ledger.js.
+  ledger = null,
 } = {}) {
   const counts = {
     totalConsidered: 0,
@@ -192,8 +196,15 @@ async function repairExistingEvents({
     // Nov 4 attribution (R&Q proposal, Nico Bones finding): which fields each written event received (capped), and
     // how many of the filled rows were owner-supplied (Manual source or an owner marker). Observation only.
     writtenFields: [],
-    ownerRowFills: 0,
-    ownerRowFillIds: [],
+    // Owner/Editorial rows are never written: the proposed fill is counted and (capped) listed here, and sent to the ledger.
+    ownerRowSkipped: 0,
+    proposedFills: [],
+    proposedDeduped: 0,
+    // Per-field change records handed to the ledger (applied or proposed). ledgerDurable says whether a durable ledger was
+    // attached; without one (table not yet approved) applied fills carry only the AUTO-FILL note and the capped run summary.
+    ledgerRecords: 0,
+    ledgerDurable: !!ledger,
+    ledgerFailedClosed: 0,
     // Issue #49: why the rest were not filled. A conflict goes to a person
     // (Needs Decision); a venue known from one source only is confirmed
     // once, at venue level; an excluded name (TBA, secret, multiple
@@ -220,6 +231,7 @@ async function repairExistingEvents({
 
   const today = todayIso();
   for (const event of candidates) {
+    const owner = isOwnerSuppliedRow(event);
     const fieldPatch = resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap);
     const decision = fieldPatch._decision || null;
     if (Object.keys(fieldPatch).length === 0) {
@@ -248,6 +260,29 @@ async function repairExistingEvents({
       patch.internal_note = event.internal_note ? `${event.internal_note}\n${line}` : line;
     }
     const tier = classifyTier(event, canonicalMaps, learnedMap, decision);
+    const ledgerTier = (decision && decision.tier) || "canonical";
+    const records = Object.keys(fieldPatch).map((field) => ({
+      event_id: event.id, field, before: event[field] === undefined ? null : event[field], after: fieldPatch[field],
+      source: `SH.1 ${ledgerTier}`, run_id: runId, status: owner ? "proposed" : "applied", at: new Date().toISOString(),
+    }));
+    if (owner) {
+      // Owner/Editorial-supplied row: never patched. Record the proposal once (not re-queued daily) and move on.
+      counts.ownerRowSkipped++;
+      let fresh = true;
+      try {
+        if (ledger) {
+          const dups = [];
+          for (const r of records) dups.push(await ledger.hasProposal(`${r.event_id}|${r.field}|${r.after}`));
+          fresh = dups.some((d) => !d);
+          if (fresh) { await ledger.record(records.filter((_, i) => !dups[i])); counts.ledgerRecords += records.filter((_, i) => !dups[i]).length; }
+        }
+      } catch (err) {
+        logger.warn(`Ledger write failed for proposed fill on ${event.id}: ${err.message}`);
+      }
+      if (!fresh) counts.proposedDeduped++;
+      else if (counts.proposedFills.length < WRITTEN_FIELDS_CAP) counts.proposedFills.push({ id: event.id, fields: records.map((r) => r.field) });
+      continue;
+    }
     if (tier === "canonical_venue_id") counts.repairableFromCanonicalVenueId++;
     else if (tier === "canonical_name_match") counts.repairableFromCanonicalName++;
     else if (tier === "learned_historical") counts.repairableFromLearnedHistorical++;
@@ -256,16 +291,21 @@ async function repairExistingEvents({
       logger.log(`[dry-run] would patch event ${event.id} (${event.venue_name_raw || "no venue name"}):`, patch);
       continue;
     }
+    // Fail closed: when a durable ledger is attached, the record is written BEFORE the patch; no record, no patch.
+    if (ledger) {
+      try { await ledger.record(records); counts.ledgerRecords += records.length; }
+      catch (err) {
+        counts.ledgerFailedClosed++;
+        logger.warn(`Ledger write failed for event ${event.id}; fill skipped (fail closed): ${err.message}`);
+        continue;
+      }
+    }
     const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, patch, { updatedAt: event.updated_at || null });
     if (applied) {
       counts.written++;
       counts.fieldsWritten += Object.keys(fieldPatch).length;
       counts.writtenIds.push(event.id);
       if (counts.writtenFields.length < WRITTEN_FIELDS_CAP) counts.writtenFields.push({ id: event.id, fields: Object.keys(fieldPatch) });
-      if (isOwnerSuppliedRow(event)) {
-        counts.ownerRowFills++;
-        if (counts.ownerRowFillIds.length < WRITTEN_FIELDS_CAP) counts.ownerRowFillIds.push(event.id);
-      }
     } else {
       counts.skippedConcurrentChange++;
       logger.warn(`Skipped event ${event.id} — a field in ${JSON.stringify(patch)} was no longer null at write time (concurrent change).`);
