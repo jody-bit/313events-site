@@ -1,5 +1,5 @@
 // social-links.test.js: the footer social row. Guards: every page with a .footer-social loads the include; only valid https links on
-// the network's own domain render; Facebook/TikTok stay hidden until the owner supplies verified URLs (never invented).
+// the network's own domain render; a profile with no verified owner-supplied URL stays hidden (never invented).
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -17,11 +17,11 @@ for (const f of pages) {
 }
 assert(withRow >= 16, "expected at least 16 pages with a footer-social row, found " + withRow);
 
-// 2. shipped list: Instagram and Facebook (owner-supplied 2026-11-04); TikTok waits for its URL
+// 2. shipped list: Instagram, Facebook and TikTok (owner-supplied 2026-11-04)
 const shown = SL.LINKS.filter(SL.valid).map((l) => l.key);
-assert.deepStrictEqual(shown, ["instagram", "facebook"], "Instagram and Facebook render; TikTok stays hidden until its official URL is supplied; got " + shown);
+assert.deepStrictEqual(shown, ["instagram", "facebook", "tiktok"], "all three owner-supplied profiles render; got " + shown);
 assert.strictEqual(SL.LINKS.find((l) => l.key === "facebook").url, "https://www.facebook.com/313.events/");
-assert.strictEqual(SL.LINKS.find((l) => l.key === "tiktok").url, null, "TikTok URL is never guessed");
+assert.strictEqual(SL.LINKS.find((l) => l.key === "tiktok").url, "https://www.tiktok.com/@313.thecityison");
 assert(SL.html().includes("Follow 313.events"));
 
 // 3. a full list renders all three with safe link attributes
