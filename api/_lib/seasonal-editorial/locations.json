@@ -376,14 +376,15 @@
   "notes": "Address-point match; visitor entrance not yet checked."
  },
  "bennett-arboretum": {
-  "status": "address-point",
+  "status": "park-location",
   "lat": 42.431146,
   "lng": -83.483269,
   "address": "4990 Edward N Hines Dr., Northville, MI 48168",
   "source": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
-  "method": "coordinates printed on official page",
+  "method": "official park coordinates printed on the operator page (approximate park location, not an entrance)",
   "verifiedAt": "2026-11-04",
-  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on Wayne County page; host is Wayne County Parks. Parking may be at Cass Benton Park across the street."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on Wayne County page; host is Wayne County Parks. Parking may be at Cass Benton Park across the street. Jody 2026-11-04: pin as \"Park location \u2014 visitor entrance not yet verified\"; link the official page, no directions-to-coordinates. A pin does not establish the park is open.",
+  "accessUrl": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum"
  },
  "maybury-state-park": {
   "status": "address-point",
@@ -659,14 +660,15 @@
   "address": "6952 County Road 50, Amherstburg, ON N0R 1G0"
  },
  "point-pelee-national-park": {
-  "status": "address-point",
+  "status": "park-location",
   "lat": 41.986722,
   "lng": -82.549028,
   "address": "1118 Point Pelee Drive, Leamington, ON N8H 3V4",
   "source": "https://parks.canada.ca/pn-np/on/pelee/info/contact",
-  "method": "coordinates printed on official page",
+  "method": "official park coordinates printed on the operator page (approximate park location, not an entrance)",
   "verifiedAt": "2026-11-04",
-  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Printed as N 41 59.2033, W 082 32.9417 (degrees decimal minutes), converted here. Visitor Centre closed Nov 2 2026 to Mar 31 2027."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Printed as N 41 59.2033, W 082 32.9417 (degrees decimal minutes), converted here. Visitor Centre closed Nov 2 2026 to Mar 31 2027. Jody 2026-11-04: pin as \"Park location \u2014 visitor entrance not yet verified\"; link the official page, no directions-to-coordinates. A pin does not establish the park is open.",
+  "accessUrl": "https://parks.canada.ca/pn-np/on/pelee/info/contact"
  },
  "kensington-metropark": {
   "status": "unresolved",
@@ -675,14 +677,15 @@
   "address": "4570 Huron River Parkway, Milford, MI 48381"
  },
  "crosswinds-marsh": {
-  "status": "address-point",
+  "status": "park-location",
   "lat": 42.094189,
   "lng": -83.440872,
   "address": "27600 Haggerty Rd., New Boston, MI 48164",
   "source": "https://www.waynecountymi.gov/Parks-Recreation/Explore/Crosswinds-Marsh",
-  "method": "coordinates printed on official page",
+  "method": "official park coordinates printed on the operator page (approximate park location, not an entrance)",
   "verifiedAt": "2026-11-04",
-  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on official page; unclear if gate or parcel centre."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on official page; unclear if gate or parcel centre. Jody 2026-11-04: pin as \"Park location \u2014 visitor entrance not yet verified\"; link the official page, no directions-to-coordinates. A pin does not establish the park is open.",
+  "accessUrl": "https://www.waynecountymi.gov/Parks-Recreation/Explore/Crosswinds-Marsh"
  },
  "ojibway-prairie-complex": {
   "status": "unresolved",
