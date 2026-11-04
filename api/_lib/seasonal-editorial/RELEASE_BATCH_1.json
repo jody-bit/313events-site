@@ -77,6 +77,8 @@
     "status": "PUBLISHED",
     "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze.",
     "website": "https://www.diehlsorchard.com/",
+    "removeAt": "2026-11-23T00:00:00-05:00",
+    "lastDay": "2026-11-22",
     "image": {
      "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
      "alternates": [
@@ -110,6 +112,8 @@
     "status": "PUBLISHED",
     "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
     "website": "https://www.franklincidermill.com/",
+    "removeAt": "2026-11-30T00:00:00-05:00",
+    "lastDay": "2026-11-29",
     "image": {
      "src": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
      "alternates": [
@@ -404,6 +408,7 @@
     "status": "PUBLISHED",
     "summary": "Historic Northville cider mill selling cider and cider products, with call-ahead orders for large quantities.",
     "website": "https://www.northvillecider.com/",
+    "removeAt": "2026-11-23T00:00:00-05:00",
     "image": {
      "src": "/assets/seasonal/fall-card-2.webp",
      "alternates": [
