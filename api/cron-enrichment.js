@@ -106,9 +106,23 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Staging test scope (inactive unless ENRICHMENT_TEST_ONLY_EVENT_IDS is set; refuses production and any host but the one named).
+  let testScope;
+  try { testScope = require("../scripts/enrichment-test-scope").resolveTestScope(process.env, SUPABASE_URL); }
+  catch (scopeErr) { res.status(200).json({ ok: false, error: scopeErr.message }); return; }
+
   const runHandle = await startRun(SLUGS.enrichment);
 
   try {
+    if (testScope.active) {
+      // Same handler, auth, run log and SH.1 call as production; only the SH.1 step runs, on the named test events only.
+      const { repairExistingEvents: repairScoped } = require("../scripts/sh1-repair-existing-venue-address-city");
+      const scopedCounts = await repairScoped({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: runHandle && runHandle.runId ? runHandle.runId : null, onlyIds: testScope.ids, ledger: require("../scripts/enrichment-ledger").createTableLedger({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY }) });
+      await finishRun(runHandle, { outcome: "success", records_written: scopedCounts.written || 0, session_data: { test_scope: { ids: testScope.ids, host: testScope.host }, venue_fill: { run_id: scopedCounts.runId, written: scopedCounts.written, fields: scopedCounts.writtenFields || [], owner_rows_skipped: scopedCounts.ownerRowSkipped || 0, proposed_fills: scopedCounts.proposedFills || [], proposed_deduped: scopedCounts.proposedDeduped || 0, ledger_durable: !!scopedCounts.ledgerDurable, ledger_failed_closed: scopedCounts.ledgerFailedClosed || 0, note: scopedCounts.ledgerDurable ? "per-field records in enrichment_change_log" : "NON-DURABLE summary (capped); no durable ledger until enrichment_change_log is approved" } } });
+      res.status(200).json({ ok: true, testScope: { ids: testScope.ids, host: testScope.host }, written: scopedCounts.written || 0, venueRepair: scopedCounts });
+      return;
+    }
+
     // Step 0 (2026-10-01, RA candidate-recovery MVP -- Product Owner
     // decision 6: "Reuse the existing generic enrichment/self-healing
     // pipeline. Do not create a separate RA enrichment architecture.
@@ -305,7 +319,7 @@ module.exports = async (req, res) => {
       session_data: (genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)) || (venueCounts && venueCounts.written)
         ? {
             // Which events the venue step wrote and which fields (capped), so a later question about a row has an answer.
-            ...(venueCounts && (venueCounts.written || venueCounts.ownerRowSkipped) ? { venue_fill: { written: venueCounts.written, fields: venueCounts.writtenFields || [], owner_rows_skipped: venueCounts.ownerRowSkipped || 0, proposed_fills: venueCounts.proposedFills || [], proposed_deduped: venueCounts.proposedDeduped || 0, ledger_durable: !!venueCounts.ledgerDurable, ledger_failed_closed: venueCounts.ledgerFailedClosed || 0, note: venueCounts.ledgerDurable ? "per-field records in enrichment_change_log" : "NON-DURABLE summary (capped); no durable ledger until enrichment_change_log is approved" } } : {}),
+            ...(venueCounts && (venueCounts.written || venueCounts.ownerRowSkipped) ? { venue_fill: { run_id: venueCounts.runId, written: venueCounts.written, fields: venueCounts.writtenFields || [], owner_rows_skipped: venueCounts.ownerRowSkipped || 0, proposed_fills: venueCounts.proposedFills || [], proposed_deduped: venueCounts.proposedDeduped || 0, ledger_durable: !!venueCounts.ledgerDurable, ledger_failed_closed: venueCounts.ledgerFailedClosed || 0, note: venueCounts.ledgerDurable ? "per-field records in enrichment_change_log" : "NON-DURABLE summary (capped); no durable ledger until enrichment_change_log is approved" } } : {}),
             ...(genericCounts && genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
             ...(genericCounts ? { total_considered: genericCounts.totalConsidered, cap_reached: genericCounts.capReached === true } : {}),
             ...(genericCounts && genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),

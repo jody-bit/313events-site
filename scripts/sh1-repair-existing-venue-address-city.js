@@ -89,9 +89,15 @@ const AUTO_FILL_MARKER = "AUTO-FILL";
 // Owner-supplied rows: Manual source, or a private note carrying an owner correction or an editorial hold. SH.1 NEVER writes
 // these (Nov 4 owner direction: flagging after mutation is insufficient). The proposed fill is recorded as status "proposed"
 // and goes to review; an approved fill is applied through the admin correction path, not by this job.
+function normalizeMarkerText(v) {
+  // NFKC folds compatibility forms (non-breaking and full-width spaces, full-width letters); zero-width characters are removed;
+  // any run of whitespace becomes one space; surrounding whitespace is trimmed. Case is folded by the callers.
+  return String(v == null ? "" : v).normalize("NFKC").replace(/[\u200B-\u200D\u2060\uFEFF]/g, "").replace(/\s+/g, " ").trim();
+}
+const OWNER_NOTE_MARKER = /OWNER[-_ ]?CORRECTION|EDITORIAL[-_ ]?HOLD/i;
 function isOwnerSuppliedRow(event) {
-  const note = typeof event.internal_note === "string" ? event.internal_note : "";
-  return String(event.source || "").toLowerCase() === "manual" || /OWNER-CORRECTION|EDITORIAL[-_ ]HOLD/i.test(note);
+  const note = normalizeMarkerText(event && event.internal_note);
+  return normalizeMarkerText(event && event.source).toLowerCase() === "manual" || OWNER_NOTE_MARKER.test(note);
 }
 
 // One dated line per automated fill that has no VENUE_KNOWLEDGE_FILLED line: date, step, fields, tier, run id.
@@ -162,11 +168,18 @@ async function repairExistingEvents({
   fetchCandidates = fetchRepairCandidates,
   applyPatchFn = applyPatch,
   runId = null,
+  // Test scope (staging only, set by api/cron-enrichment.js after scripts/enrichment-test-scope.js has verified the target):
+  // when an array, ONLY these event ids are considered; every other row is left unread by this step's decision loop.
+  onlyIds = null,
   // Optional durable ledger {record(records) -> Promise<void> (throws on failure), hasProposal(key) -> Promise<boolean>}.
   // Absent until the enrichment_change_log table is approved; see scripts/enrichment-ledger.js.
   ledger = null,
 } = {}) {
+  // Every automated fill must name its run. The cron passes source_runs.id; when none was given (the CLI, or run-log unavailable)
+  // a run id is generated so no AUTO-FILL line or ledger record is ever unattributed.
+  if (!runId) runId = `sh1-${new Date().toISOString().replace(/[-:.]/g, "").slice(0, 15)}Z`;
   const counts = {
+    runId,
     totalConsidered: 0,
     repairable: 0,
     repairableFromCanonicalVenueId: 0,
@@ -226,7 +239,11 @@ async function repairExistingEvents({
     buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY),
   ]);
 
-  const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
+  let candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
+  if (Array.isArray(onlyIds)) {
+    const allow = new Set(onlyIds.map(String));
+    candidates = candidates.filter((e) => allow.has(String(e.id)));
+  }
   counts.totalConsidered = candidates.length;
 
   const today = todayIso();
@@ -250,7 +267,7 @@ async function repairExistingEvents({
     // venue's own record (venue_id).
     const patch = { ...fieldPatch };
     if (decision && decision.tier && decision.tier !== "canonical_venue_id" && decision.tier !== "canonical_name") {
-      const line = provenanceLine(decision, today);
+      const line = `${provenanceLine(decision, today)}; run ${runId}`;
       patch.internal_note = event.internal_note ? `${event.internal_note}\n${line}` : line;
     } else {
       // A canonical fill is still an automated change to a stored row: say so, once, in the private note (Nov 4 finding:
@@ -280,7 +297,7 @@ async function repairExistingEvents({
         logger.warn(`Ledger write failed for proposed fill on ${event.id}: ${err.message}`);
       }
       if (!fresh) counts.proposedDeduped++;
-      else if (counts.proposedFills.length < WRITTEN_FIELDS_CAP) counts.proposedFills.push({ id: event.id, fields: records.map((r) => r.field) });
+      else if (counts.proposedFills.length < WRITTEN_FIELDS_CAP) counts.proposedFills.push({ id: event.id, fields: records.map((r) => r.field), values: Object.fromEntries(records.map((r) => [r.field, r.after])) });
       continue;
     }
     if (tier === "canonical_venue_id") counts.repairableFromCanonicalVenueId++;
@@ -315,7 +332,7 @@ async function repairExistingEvents({
   return counts;
 }
 
-module.exports = { repairExistingEvents, classifyTier, fetchRepairCandidates, applyPatch, REPAIRABLE_FIELDS };
+module.exports = { repairExistingEvents, isOwnerSuppliedRow, classifyTier, fetchRepairCandidates, applyPatch, REPAIRABLE_FIELDS };
 
 if (require.main === module) {
   const dryRun = process.argv.includes("--dry-run");
