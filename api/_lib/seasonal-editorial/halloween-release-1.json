@@ -225,6 +225,16 @@
           "/assets/seasonal/halloween-card-5.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "slaughterhouse-adventure": {
@@ -243,6 +253,16 @@
           "/assets/seasonal/halloween-card-7.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "full-moon-manor-at-bonadeo-farms": {
@@ -263,6 +283,16 @@
           "/assets/seasonal/halloween-card-1.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "nightmare-fields-at-the-pumpkin-factory": {
