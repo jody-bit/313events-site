@@ -11,13 +11,12 @@
       "alt": "A wooden cider press pouring fresh cider beside baskets of apples and pumpkins, with a red barn and hayride at sunset."
     },
     {
-      "title": "Halloween in the Orbit",
-      "href": "/halloween",
-      "copy": "Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit.",
-      "cta": "Get spooky",
-      "image": "/assets/guides/halloween-guide-800.webp",
-      "image2x": "/assets/guides/halloween-guide-1600.webp",
-      "alt": "Glowing jack-o'-lanterns and a scarecrow beside a foggy path leading visitors toward a haunted manor under a full moon."
+      "title": "Off the Beaten Orbit",
+      "href": "/off-the-beaten-orbit",
+      "copy": "Potters, makers, historic houses and unexpected winter outings across the Detroit Orbit.",
+      "cta": "Explore winter",
+      "image": "/assets/placeholders/event-800.webp",
+      "alt": "Photo pending: the Off the Beaten Orbit tile artwork has not been approved yet."
     },
     {
       "title": "Fall Colors",
