@@ -24,4 +24,6 @@ create index if not exists enrichment_change_log_proposed_idx
 
 alter table public.enrichment_change_log enable row level security;
 revoke all on public.enrichment_change_log from anon, authenticated;
+-- Supabase default privileges give service_role everything, so grant alone is not append-only: revoke the rest explicitly.
+revoke update, delete, truncate on public.enrichment_change_log from service_role;
 grant select, insert on public.enrichment_change_log to service_role;

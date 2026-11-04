@@ -18,5 +18,6 @@ const { createTableLedger } = require("../scripts/enrichment-ledger");
   assert.ok(!/PATCH|DELETE/.test(src.replace(/\/\/.*$/gm, "")), "ledger module is append-only: never PATCH or DELETE");
   const sql = fs.readFileSync(__dirname + "/../supabase/proposed/enrichment_change_log.sql", "utf8");
   assert.ok(/enable row level security/.test(sql) && /revoke all on public\.enrichment_change_log from anon, authenticated/.test(sql));
+  assert.ok(/revoke update, delete, truncate on public\.enrichment_change_log from service_role/.test(sql), "append-only is enforced by revoke, not just by grant");
   console.log("PASS: enrichment ledger is off by default, append-only, and its proposed table is RLS-locked");
 })().catch((e) => { console.error("FAIL:", e); process.exitCode = 1; });
