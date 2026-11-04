@@ -14,6 +14,7 @@ const qa = require("./seasonal-qa.js");
 const ED = require("./_lib/seasonal-editorial/editorial.js");
 const RENDER = require("../seasonal/render.js");
 const PREVIEW = require("./_lib/seasonal-editorial/refresh-preview.json");
+const LOCS = require("./_lib/seasonal-editorial/locations.json");
 
 const SLUGS = ["fall", "outside-the-ordinary", "off-the-beaten-orbit"];
 
@@ -28,6 +29,8 @@ function entriesFor(slug) {
   // The six lead stories, in rank order, first: the "Don't miss" rail shows the featured entries in list order.
   const lead = cfg.lead || [];
   const byId = (id) => all.find((e) => e.id === id);
+  // Public location fields only (status, lat, lng, address, entrance); source, method and notes stay in the private file.
+  all.forEach((e) => { const l = LOCS[e.id]; if (l && l.status !== "unresolved") e.loc = { status: l.status, lat: l.lat, lng: l.lng, address: l.address || null, entrance: l.entrance || null }; else if (l) e.loc = { status: "unresolved" }; });
   return lead.map(byId).filter(Boolean).concat(all.filter((e) => lead.indexOf(e.id) < 0));
 }
 
@@ -56,7 +59,7 @@ function html(slug) {
 <link rel="stylesheet" href="/seasonal/seasonal.css">
 </head>
 <body data-collection="${R.esc(slug)}">
-<p role="status" style="margin:0;padding:10px 16px;background:#F5C400;color:#0A0A0A;font:600 14px Inter,sans-serif;text-align:center">PREVIEW FOR OWNER REVIEW. Not published, not approved, no expiry is scheduled.</p>
+<p role="status" style="margin:0;padding:10px 16px;background:#F5C400;color:#0A0A0A;font:600 14px Inter,sans-serif;text-align:center">PREVIEW FOR OWNER REVIEW. Not published and not approved. Dates and map locations shown here are for review; nothing is scheduled.</p>
 <div class="sc-page">
 ${R.header()}
 <main id="scMain"></main>
@@ -65,6 +68,8 @@ ${R.footer()}
 <script>window.SeasonalPublishedEntries = {${JSON.stringify(slug)}: ${json(d.entries)}};</script>
 <script src="/seasonal/collections.js"></script>
 <script src="/seasonal/render.js"></script>
+<script src="/seasonal/orbit-cities.js"></script>
+<script>window.SeasonalMapSettings = {"tileUrl":"https://tile.openstreetmap.org/{z}/{x}/{y}.png","attribution":"\u00a9 OpenStreetMap contributors","maxZoom":18};</script>
 <script>(function () {
   var C = window.SeasonalCollections, slug = ${JSON.stringify(slug)}, META = ${json(d.meta)};
   var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug] });

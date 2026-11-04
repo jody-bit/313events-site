@@ -75,6 +75,7 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.md",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_HALLOWEEN_1.json",
   "api/_lib/seasonal-editorial/placements.json",
+  "api/_lib/seasonal-editorial/locations.json",
   "api/_lib/seasonal-editorial/refresh-preview.json",
   "api/seasonal-preview.js",
   "api/_lib/seasonal-editorial/candidate-images.json",

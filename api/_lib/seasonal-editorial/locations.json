@@ -1,0 +1,632 @@
+{
+ "yates-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "parmenters-northville-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "blakes-orchard-cider-mill": {
+  "status": "address-point",
+  "lat": 42.849399,
+  "lng": -82.951219,
+  "address": "17985 Armada Center Road, Armada, MI 48005",
+  "source": "https://blakefarms.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "wiards-orchards": {
+  "status": "address-point",
+  "lat": 42.187287,
+  "lng": -83.647891,
+  "address": "5565 Merritt Rd, Ypsilanti, MI 48197",
+  "source": "https://www.wiards.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "franklin-cider-mill": {
+  "status": "address-point",
+  "lat": 42.529834,
+  "lng": -83.305313,
+  "address": "7450 Franklin Rd, Bloomfield Hills, MI 48301",
+  "source": "https://www.franklincidermill.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "dexter-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "rochester-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "blakes-big-apple": {
+  "status": "address-point",
+  "lat": 42.824361,
+  "lng": -82.883833,
+  "address": "71485 North Avenue, Armada, MI 48005",
+  "source": "https://blakefarms.com/big-apple/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "stony-creek-orchard-and-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "diehls-orchard-and-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "long-family-orchard-and-farm": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "plymouth-orchards-and-cider-mill": {
+  "status": "address-point",
+  "lat": 42.33485,
+  "lng": -83.554286,
+  "address": "10685 Warren Rd, Plymouth, MI 48170",
+  "source": "https://www.plymouthorchards.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "obstbaum-orchards": {
+  "status": "address-point",
+  "lat": 42.422867,
+  "lng": -83.589601,
+  "address": "9252 Currie Road, Northville, MI 48167",
+  "source": "https://www.obstbaum.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "wasem-fruit-farm": {
+  "status": "address-point",
+  "lat": 42.142089,
+  "lng": -83.628097,
+  "address": "6580 Judd Road, Milan, MI 48160",
+  "source": "https://www.wasemfruitfarm.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "westview-orchards-and-winery": {
+  "status": "address-point",
+  "lat": 42.77735,
+  "lng": -83.015601,
+  "address": "65075 Van Dyke, Washington, MI 48095",
+  "source": "https://www.westvieworchards.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "spicer-orchards": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "three-cedars-farm": {
+  "status": "address-point",
+  "lat": 42.403694,
+  "lng": -83.608329,
+  "address": "7897 Six Mile Road, Northville, MI 48168",
+  "source": "https://www.threecedarsfarm.org/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "kackleberry-farms": {
+  "status": "address-point",
+  "lat": 41.972303,
+  "lng": -83.34872,
+  "address": "6421 N Stony Creek Rd, Monroe, MI 48162",
+  "source": "https://www.kackleberryfarms.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "bonadeo-farms": {
+  "status": "address-point",
+  "lat": 42.682154,
+  "lng": -83.604196,
+  "address": "1215 White Lake Rd, Highland Township, MI 48356",
+  "source": "https://bonadeofarms.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "alber-orchard-and-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "big-red-orchard": {
+  "status": "address-point",
+  "lat": 42.80122,
+  "lng": -83.07046,
+  "address": "4900 32 Mile Road, Washington, MI 48095",
+  "source": "https://bigredorchard.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "blakes-backyard": {
+  "status": "address-point",
+  "lat": 42.904003,
+  "lng": -83.044245,
+  "address": "5590 Van Dyke, Almont, MI 48003",
+  "source": "https://blakefarms.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "erie-orchards-and-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "kreps-apple-barn-and-cider-mill": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "parshallville-cider-mill": {
+  "status": "address-point",
+  "lat": 42.690956,
+  "lng": -83.780931,
+  "address": "8507 Parshallville Road, Fenton, MI 48430",
+  "source": "https://parshallvillecidermill.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "porters-orchard": {
+  "status": "address-point",
+  "lat": 42.919025,
+  "lng": -83.4735,
+  "address": "12060 Hegel Road, Goodrich, MI 48438",
+  "source": "https://portersorchard.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "schell-family-farm": {
+  "status": "address-point",
+  "lat": 42.452819,
+  "lng": -83.936327,
+  "address": "10055 Dexter-Pinckney Rd, Pinckney, MI 48169",
+  "source": "https://www.schellfamilyfarm.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "corn-fun": {
+  "status": "address-point",
+  "lat": 42.766433,
+  "lng": -82.689136,
+  "address": "9391 Lindsey Lane, Casco, MI 48064",
+  "source": "https://cornfun.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "debucks-family-farm": {
+  "status": "address-point",
+  "lat": 42.181916,
+  "lng": -83.532147,
+  "address": "50240 Martz Road, Belleville, MI 48111",
+  "source": "https://www.debucksfamilyfarm.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "flushing-farms": {
+  "status": "address-point",
+  "lat": 43.105744,
+  "lng": -83.862926,
+  "address": "7096 Gillette Rd, Flushing, MI 48433",
+  "source": "https://flushingfarms.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "nixon-farms-blast-corn-maze": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "trabbic-family-pumpkin-farm": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "macqueen-orchards": {
+  "status": "address-point",
+  "lat": 41.595587,
+  "lng": -83.720642,
+  "address": "7605 Garden Road, Holland, OH 43528",
+  "source": "https://www.macqueenorchards.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "gust-brothers-pumpkin-farm": {
+  "status": "address-point",
+  "lat": 41.745282,
+  "lng": -83.789801,
+  "address": "13639 Mulberry Road, Ottawa Lake, MI 49267",
+  "source": "https://www.gustbrothers.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "jasons-pumpkin-patch": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "wheeler-farms-corn-maze": {
+  "status": "address-point",
+  "lat": 41.538227,
+  "lng": -83.815633,
+  "address": "11455 Obee Road, Whitehouse, OH 43571",
+  "source": "https://www.wheelerfarms.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "goodison-cider-mill": {
+  "status": "address-point",
+  "lat": 42.736529,
+  "lng": -83.166309,
+  "address": "4295 Orion Road, Rochester, MI 48306",
+  "source": "https://www.goodisoncidermill.com/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "damouni-orchards": {
+  "status": "address-point",
+  "lat": 42.929258,
+  "lng": -83.723774,
+  "address": "2391 W Reid Road, Flint, MI 48507",
+  "source": "https://www.damouniorchards.com",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "stony-creek-metropark": {
+  "status": "address-point",
+  "lat": 42.712347,
+  "lng": -83.074956,
+  "address": "4300 Main Park Road, Shelby Township, MI 48316",
+  "source": "https://www.metroparks.com/parks-and-trails/stony-creek-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "hudson-mills-metropark": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "belle-isle-park": {
+  "status": "address-point",
+  "lat": 42.337686,
+  "lng": -82.998907,
+  "address": "99 Pleasure Drive, Detroit, MI 48207",
+  "source": "https://www.michigan.gov/recsearch/parks/belleisle",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "rouge-park": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "hines-drive-edward-n-hines-parkway": {
+  "status": "address-point",
+  "lat": 42.348341,
+  "lng": -83.371235,
+  "address": "33275 Edward Hines Drive, Westland, MI 48185",
+  "source": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "bennett-arboretum": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "maybury-state-park": {
+  "status": "address-point",
+  "lat": 42.435812,
+  "lng": -83.530947,
+  "address": "49601 Eight Mile Road, Northville, MI 48167",
+  "source": "https://www.michigan.gov/recsearch/parks/maybury",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "cranbrook-gardens-and-grounds": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "elmwood-cemetery": {
+  "status": "unresolved",
+  "source": "https://www.elmwoodhistoriccemetery.org/",
+  "notes": "No Census match for 1200 Elmwood Avenue, Detroit, MI 48207",
+  "address": "1200 Elmwood Avenue, Detroit, MI 48207"
+ },
+ "dequindre-cut-greenway": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "indian-springs-metropark": {
+  "status": "address-point",
+  "lat": 42.693006,
+  "lng": -83.511888,
+  "address": "5200 Indian Trail, White Lake, MI 48386",
+  "source": "https://www.metroparks.com/parks-and-trails/indian-springs-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "highland-state-recreation-area": {
+  "status": "address-point",
+  "lat": 42.648468,
+  "lng": -83.536291,
+  "address": "5200 Highland Road, White Lake, MI 48383",
+  "source": "https://www.michigan.gov/recsearch/parks/highland",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "seven-lakes-state-park": {
+  "status": "address-point",
+  "lat": 42.816375,
+  "lng": -83.648183,
+  "address": "14390 Fish Lake Road, Holly, MI 48442",
+  "source": "https://www.michigan.gov/recsearch/parks/sevenlakes",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "waterloo-state-recreation-area": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "huron-river-drive": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "oak-openings-preserve-metropark": {
+  "status": "address-point",
+  "lat": 41.544736,
+  "lng": -83.839514,
+  "address": "5402 Wilkins Rd, Whitehouse, OH 43571",
+  "source": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "wildwood-preserve-metropark": {
+  "status": "address-point",
+  "lat": 41.67685,
+  "lng": -83.664479,
+  "address": "5100 W Central Ave, Toledo, OH 43615",
+  "source": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "black-oak-heritage-park": {
+  "status": "unresolved",
+  "source": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+  "notes": "No Census match for 599 Broadway Street, Windsor, ON",
+  "address": "599 Broadway Street, Windsor, ON"
+ },
+ "stage-nature-center": {
+  "status": "address-point",
+  "lat": 42.617369,
+  "lng": -83.189473,
+  "address": "6685 Coolidge Hwy, Troy, MI 48098",
+  "source": "https://troynaturesociety.org/visitor-info/hours-location/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "dexter-huron-metropark": {
+  "status": "address-point",
+  "lat": 42.33159,
+  "lng": -83.859794,
+  "address": "6535 Huron River Drive, Dexter, MI 48130",
+  "source": "https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "lower-huron-metropark": {
+  "status": "unresolved",
+  "source": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
+  "notes": "No Census match for 40151 East Huron River Drive, Belleville, MI 48111",
+  "address": "40151 East Huron River Drive, Belleville, MI 48111"
+ },
+ "willow-metropark": {
+  "status": "unresolved",
+  "source": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
+  "notes": "No Census match for 23200 South Huron Road, New Boston, MI 48164",
+  "address": "23200 South Huron Road, New Boston, MI 48164"
+ },
+ "oakwoods-metropark": {
+  "status": "address-point",
+  "lat": 42.122776,
+  "lng": -83.350898,
+  "address": "32911 Willow Road, New Boston, MI 48164",
+  "source": "https://www.metroparks.com/parks-and-trails/oakwoods-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "holly-state-recreation-area": {
+  "status": "address-point",
+  "lat": 42.815961,
+  "lng": -83.547403,
+  "address": "8100 Grange Hall Road, Holly, MI 48442",
+  "source": "https://www.michigan.gov/recsearch/parks/holly",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "independence-oaks-county-park": {
+  "status": "address-point",
+  "lat": 42.776985,
+  "lng": -83.38146,
+  "address": "9501 Sashabaw Road, Clarkston, MI 48348",
+  "source": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/independence-oaks",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "addison-oaks-county-park": {
+  "status": "address-point",
+  "lat": 42.799076,
+  "lng": -83.167751,
+  "address": "1480 West Romeo Road, Leonard, MI 48367",
+  "source": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/addison-oaks",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "paint-creek-trail": {
+  "status": "address-point",
+  "lat": 42.732644,
+  "lng": -83.161807,
+  "address": "4480 Orion Rd, Rochester, MI 48306",
+  "source": "https://www.paintcreektrail.org/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "macomb-orchard-trail": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "bird-hills-nature-area": {
+  "status": "address-point",
+  "lat": 42.299671,
+  "lng": -83.765829,
+  "address": "1850 Newport Road, Ann Arbor, MI 48103",
+  "source": "https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "barton-nature-area": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "old-us-12-corridor": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "columbus-county-park": {
+  "status": "address-point",
+  "lat": 42.854001,
+  "lng": -82.707949,
+  "address": "1670 Bauman Road, Columbus, MI 48063",
+  "source": "https://www.stclaircounty.org/Offices/176",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "wadhams-to-avoca-trail": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "grosse-ile-nature-and-land-conservancy-preserves": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "secor-metropark": {
+  "status": "address-point",
+  "lat": 41.673493,
+  "lng": -83.761106,
+  "address": "10001 W Central Ave, Berkey, OH 43504",
+  "source": "https://metroparkstoledo.com/explore-your-parks/secor-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "pearson-metropark": {
+  "status": "address-point",
+  "lat": 41.637772,
+  "lng": -83.447743,
+  "address": "761 Lallendorf Rd, Oregon, OH 43616",
+  "source": "https://metroparkstoledo.com/explore-your-parks/pearson-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "side-cut-metropark": {
+  "status": "address-point",
+  "lat": 41.572172,
+  "lng": -83.638841,
+  "address": "1025 W River Rd, Maumee, OH 43537",
+  "source": "https://metroparkstoledo.com/explore-your-parks/side-cut-metropark/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "farnsworth-metropark": {
+  "status": "address-point",
+  "lat": 41.486899,
+  "lng": -83.736887,
+  "address": "8505 S River Road (US 24), Waterville, OH 43566",
+  "source": "https://metroparkstoledo.com/explore-your-parks/farnsworth/",
+  "method": "official-site address + US Census geocoder",
+  "verifiedAt": "2026-11-04",
+  "notes": "Address-point match; visitor entrance not yet checked."
+ },
+ "holiday-beach-conservation-area": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "point-pelee-national-park": {
+  "status": "unresolved",
+  "source": null,
+  "notes": "No sourced address yet."
+ },
+ "kensington-metropark": {
+  "status": "unresolved",
+  "source": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+  "notes": "No Census match for 4570 Huron River Parkway, Milford, MI 48381",
+  "address": "4570 Huron River Parkway, Milford, MI 48381"
+ }
+}
