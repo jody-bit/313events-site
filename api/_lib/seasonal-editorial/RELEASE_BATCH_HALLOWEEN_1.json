@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 32,
-  "eligiblePublished": 12,
+  "ownerApproved": 29,
+  "eligiblePublished": 9,
   "held": 20,
-  "excluded": 20,
+  "excluded": 23,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -417,108 +417,75 @@
    "inventoryNo": "11",
    "name": "Deranged Haunt",
    "city": "Romulus",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "deranged-haunt",
-    "name": "Deranged Haunt",
-    "city": "Romulus",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted woods",
-    "website": "https://derangedhauntedattraction.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-4.webp",
-      "/assets/seasonal/halloween-card-5.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "slaughterhouse-adventure",
    "inventoryNo": "12",
    "name": "Slaughterhouse Adventure",
    "city": "Fowlerville",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "slaughterhouse-adventure",
-    "name": "Slaughterhouse Adventure",
-    "city": "Fowlerville",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and corn maze",
-    "website": "https://slaughterhouseadventure.net/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "full-moon-manor-at-bonadeo-farms",
    "inventoryNo": "13",
    "name": "Full Moon Haunted House at Bonadeo Farms",
    "city": "Highland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "full-moon-manor-at-bonadeo-farms",
-    "name": "Full Moon Haunted House at Bonadeo Farms",
-    "city": "Highland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
-    "website": "https://fullmoonhauntedhouse.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-4.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-7.webp",
-      "/assets/seasonal/halloween-card-1.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "exit-13-haunted-house",

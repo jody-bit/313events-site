@@ -2158,21 +2158,24 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": true,
+   "public": false,
    "publication": {
-    "declared_status": "PUBLISHED",
-    "state": "PUBLISHED",
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": true
+     "approval": false
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [],
+    "outstanding": [
+     "Excluded: resolved as ended. Retained in the inventory with its history; never shown publicly.",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2200,7 +2203,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
@@ -2370,21 +2373,24 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": true,
+   "public": false,
    "publication": {
-    "declared_status": "PUBLISHED",
-    "state": "PUBLISHED",
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": true
+     "approval": false
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [],
+    "outstanding": [
+     "Excluded: resolved as ended. Retained in the inventory with its history; never shown publicly.",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2411,7 +2417,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
@@ -2553,21 +2559,24 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": true,
+   "public": false,
    "publication": {
-    "declared_status": "PUBLISHED",
-    "state": "PUBLISHED",
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": true
+     "approval": false
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [],
+    "outstanding": [
+     "Excluded: resolved as ended. Retained in the inventory with its history; never shown publicly.",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2594,7 +2603,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
