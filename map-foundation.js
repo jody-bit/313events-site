@@ -107,7 +107,10 @@
       var layer = L.tileLayer(tileUrl(provider), { attribution: provider.attribution, subdomains: provider.subdomains, maxZoom: provider.maxZoom });
       if (layer.on) layer.on("tileerror", function () {
         errors++;
-        if (!noticed && errors >= TILE_ERROR_NOTICE_AFTER && el.insertAdjacentHTML) { noticed = true; el.insertAdjacentHTML("beforeend", TILES_BLOCKED_HTML); }
+        if (noticed || errors < TILE_ERROR_NOTICE_AFTER) return;
+        noticed = true;
+        if (typeof o.onTilesFailed === "function") o.onTilesFailed(errors);
+        else if (el.insertAdjacentHTML) el.insertAdjacentHTML("beforeend", TILES_BLOCKED_HTML);
       });
       layer.addTo(map);
       // Scroll-wheel zoom only after the visitor deliberately interacts with the map (the page keeps its own scroll).
@@ -129,7 +132,14 @@
       ctl.places = places || [];
       var h = el.clientHeight || (ctl.map.getSize ? ctl.map.getSize().y : 400);
       ctl.places.forEach(function (place) {
-        var m = L.circleMarker([place.lat, place.lng], pinStyle(place)).addTo(ctl.map);
+        var m;
+        if (place.icon) {
+          var sz = place.icon.size || 44;
+          m = L.marker([place.lat, place.lng], { title: place.title || "", alt: place.title || "", keyboard: true,
+            icon: L.divIcon({ className: place.icon.className || "", html: place.icon.html || "", iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2], popupAnchor: [0, -14] }) }).addTo(ctl.map);
+        } else {
+          m = L.circleMarker([place.lat, place.lng], pinStyle(place)).addTo(ctl.map);
+        }
         if (place.popupHtml) m.bindPopup(place.popupHtml, popupOptions(h));
         if (onSelect) m.on("click", function () { onSelect(place.key); });
         ctl.markers.set(place.key, m);

@@ -6,9 +6,10 @@ const MF = require("../map-foundation.js");
 
 function fakeL() {
   const log = { tiles: [], circles: [], removed: 0, popups: [] };
+  const mkMarker = (ll, o) => ({ ll, o, _h: {}, addTo() { this.kind = 'marker'; return this; }, bindPopup() { return this; }, on(e, f) { this._h[e] = f; return this; }, getLatLng() { return this.ll; }, openPopup() {} });
   const mk = (ll, st) => ({ ll, st, _h: {}, addTo() { log.circles.push(this); return this; }, bindPopup(h, o) { log.popups.push({ h, o }); return this; }, on(e, f) { this._h[e] = f; return this; }, getLatLng() { return this.ll; }, openPopup() { this.opened = true; } });
   const map = { _h: {}, scrollWheelZoom: { enable() { map.sw = true; }, disable() { map.sw = false; } }, setView() { return map; }, on(e, f) { map._h[e] = f; }, removeLayer() { log.removed++; }, panTo(ll) { map.panned = ll; }, closePopup() {}, invalidateSize() {}, getSize: () => ({ y: 500 }), fitBounds(b, o) { map.fit = { b, o }; }, remove() { map.gone = true; } };
-  return { log, map, L: { map: () => map, tileLayer: (u, o) => { const t = { u, o, on(e, f) { t[e] = f; }, addTo() { log.tiles.push(t); return t; } }; return t; }, circleMarker: mk } };
+  return { log, map, L: { marker: (ll, o) => { const m = mkMarker(ll, o); log.circles.push(m); return m; }, divIcon: (o) => o, map: () => map, tileLayer: (u, o) => { const t = { u, o, on(e, f) { t[e] = f; }, addTo() { log.tiles.push(t); return t; } }; return t; }, circleMarker: mk } };
 }
 function fakeEl() { return { attrs: {}, html: "", setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; }, insertAdjacentHTML(_w, h) { this.html += h; }, clientHeight: 380 }; }
 
@@ -48,6 +49,16 @@ console.log("PASS: pin style and popup sizing match the live maps");
 }
 console.log("PASS: create, pins, select, aria-label and scroll rule");
 
+// 3b. icon places become keyboard-focusable 44px markers with the page's own markup; circles remain the default
+{
+  const { L, log } = fakeL(); const ctl = MF.create(fakeEl(), {}, { L });
+  ctl.setPlaces([{ key: "c", lat: 1, lng: 2, title: "Diehl's Orchard", icon: { className: "sc-pin", html: "<span></span>" } }, { key: "d", lat: 3, lng: 4, count: 2 }]);
+  const [icon, circle] = log.circles;
+  assert.strictEqual(icon.kind, "marker"); assert.strictEqual(icon.o.keyboard, true); assert.strictEqual(icon.o.title, "Diehl's Orchard"); assert.deepStrictEqual(icon.o.icon.iconSize, [44, 44]);
+  assert.ok(!circle.kind, "no icon means the live circle pin");
+}
+console.log("PASS: icon places are keyboard-focusable markers; circles stay the default");
+
 // 4. failure states are visible, never silent and never throw
 {
   const el = fakeEl(); const ctl = MF.create(el, {}, { L: null });
@@ -57,6 +68,9 @@ console.log("PASS: create, pins, select, aria-label and scroll rule");
   for (let i = 0; i < 7; i++) log.tiles[0].tileerror(); assert.strictEqual(el2.html, "", "a few failed tiles are normal");
   log.tiles[0].tileerror(); assert.ok(/map background is temporarily unavailable/.test(el2.html), "a refused key shows a visible notice");
   log.tiles[0].tileerror(); assert.strictEqual((el2.html.match(/tiles-notice/g) || []).length, 1, "the notice appears once");
+  const seen = []; const { L: L3, log: log3 } = fakeL(); const el3 = fakeEl(); MF.create(el3, { onTilesFailed: (n) => seen.push(n) }, { L: L3 });
+  for (let i = 0; i < 12; i++) log3.tiles[0].tileerror();
+  assert.deepStrictEqual(seen, [8], "a page-supplied handler replaces the default notice and fires once"); assert.strictEqual(el3.html, "");
 }
 console.log("PASS: missing library and refused tiles show a visible message, never throw");
 
