@@ -341,7 +341,7 @@ assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 91, "the 
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "utf8")).placements;
-assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/halloween", "/fall-color"]);
+assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
   const rule = vercel.rewrites.find((r) => r.source === route);
   assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
