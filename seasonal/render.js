@@ -62,7 +62,11 @@
       .map(function (x) { return x.e; });
   }
   // The collection has a Map view only when the page supplies destination locations (the Preview does; the published pages do not yet).
-  function mapEnabled(col) { return !!(col.entries && col.entries.some(function (e) { return e.loc; })); }
+  // A Map view is offered only when at least one destination can actually be pinned (a verified entrance or an official park location). With none, the
+  // button would open an empty map and a "0 of N places shown" notice (live Fall and Off the Beaten Orbit, 2026-11-04); those collections stay Grid/List.
+  // Distances and "Nearest to me" still work from any known location (including address-points), so they follow locationsEnabled, not the Map view.
+  function locationsEnabled(col) { return !!(col.entries && col.entries.some(function (e) { return e.loc; })); }
+  function mapEnabled(col) { return !!(col.entries && col.entries.some(function (e) { return e.loc && hasPin(e); })); }
   function coverage(col, state) {
     var list = visible(col, state), pinned = list.filter(hasPin).length;
     var parks = list.filter(isParkLocation).length;
@@ -286,7 +290,7 @@
       '<button type="button" class="sc-view" data-view="list" aria-pressed="' + (state.view === "list") + '">List</button>' +
       (mapEnabled(col) ? '<button type="button" class="sc-view" data-view="map" aria-pressed="' + (state.view === "map") + '">Map</button>' : "") +
       '<a class="sc-view" href="/map.html" title="General events map, not filtered to this collection">General events map (all listings)</a></div></div>' +
-      (mapEnabled(col) ? nearestControls(state) : "") +
+      (locationsEnabled(col) ? nearestControls(state) : "") +
       '<p class="sc-count" id="scCount" aria-live="polite">' + visible(col, state).length + ' of ' + DATA.live(col).length + ' destinations</p>' +
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }
@@ -309,5 +313,5 @@
     });
   }
 
-  return { catSummary: catSummary, dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, isParkLocation: isParkLocation, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { explore: explore, catSummary: catSummary, dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, isParkLocation: isParkLocation, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });
