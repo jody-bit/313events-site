@@ -54,7 +54,7 @@
 //   node scripts/dossin-metadata-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
-const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   parseDossinEvents,
   dossinExternalId,

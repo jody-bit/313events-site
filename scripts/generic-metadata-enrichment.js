@@ -78,7 +78,7 @@
 // Optionally reads TAVILY_API_KEY for external discovery (see above).
 
 const path = require("path");
-const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   buildVenueDetailsMap,
   resolveVenueNameFromAddressRepair,
@@ -359,7 +359,7 @@ async function repairGenericMetadata({
 
   for (const event of candidates) {
     // Rows carrying OWNER-CORRECTION or EDITORIAL-HOLD are never changed by automation, even to fill a blank.
-    // (Manual-source rows are NOT excluded here: see api/_lib/owner-supplied-row.js.)
+    // (Manual-source rows are NOT excluded here: see scripts/owner-supplied-row.js.)
     if (isOwnerSuppliedRow(event, { includeManualSource: false })) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
     let touchedThisEvent = false;
     let descOutcome = null;     // [outcome, reason] for this record's description, recorded once below

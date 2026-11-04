@@ -59,7 +59,7 @@
 // Requires SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the environment.
 
 const path = require("path");
-const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const { parseIcsLocation } = require(path.join(__dirname, "..", "api", "_lib", "ics-location"));
 const { buildVenueDetailsMap, resolveVenueFromCandidate } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 

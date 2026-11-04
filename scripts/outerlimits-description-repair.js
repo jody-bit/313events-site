@@ -45,7 +45,7 @@
 //   node scripts/outerlimits-description-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
-const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   fetchDescriptionsByExternalId,
   SOURCE_NAME,

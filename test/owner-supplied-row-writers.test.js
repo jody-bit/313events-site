@@ -6,7 +6,7 @@
 "use strict";
 const assert = require("assert");
 const REPO = process.env.REPO_DIR || process.cwd();
-const { isOwnerSuppliedRow } = require(`${REPO}/api/_lib/owner-supplied-row`);
+const { isOwnerSuppliedRow } = require(`${REPO}/scripts/owner-supplied-row`);
 const silent = { log() {}, warn() {}, error() {} };
 const URL_ = "https://example.supabase.co", KEY = "k";
 const HOLD = "EDITORIAL-HOLD 2026-11-04 owner: leave blank on purpose";

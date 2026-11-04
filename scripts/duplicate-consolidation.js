@@ -95,7 +95,7 @@
 //     in, so a later row cannot write over it.
 
 const path = require("path");
-const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "api", "_lib", "owner-supplied-row"));
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const { recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
 const { citiesConflict } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 
