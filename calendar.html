@@ -1562,7 +1562,7 @@ function buildFilterBar(){
   // 15 today via migration_007/009b/018/031-032/036-037, each a deliberate,
   // explicit expansion. "gaming" (Gaming & Esports) is the most recent,
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
-  allChip.textContent = 'All types';
+  allChip.textContent = 'All categories';   // Jody 2026-11-04: spelled out; this chip resets the Categories selection (Event Type is separate and unchanged)
   allChip.onclick = ()=>{
     activeCats = new Set(Object.keys(CATS));
     buildFilterBar();
