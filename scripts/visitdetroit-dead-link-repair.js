@@ -32,7 +32,7 @@
 //   node scripts/visitdetroit-dead-link-repair.js --dry-run  (reports only)
 
 const { healEventUrl, registerRecoveryStrategy, classifyRecoveryOutcome } = require("../api/_lib/link-health");
-const { visitDetroitRecoveryStrategy } = require("../api/_lib/visitdetroit-link-recovery");
+const { visitDetroitRecoveryStrategy, OLD_SHAPE_RE } = require("../api/_lib/visitdetroit-link-recovery");
 
 registerRecoveryStrategy("visitdetroit.com", visitDetroitRecoveryStrategy);
 
@@ -45,16 +45,15 @@ function todayIso() {
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchImpl = fetch) {
   const url =
     `${SUPABASE_URL}/rest/v1/events` +
-    `?start_date=gte.${todayIso()}` +
+    // Still-running events count too (P0 2026-10-16: Cider, Harvest Festival have start_date in the past). Stable
+    // id order: the per-run window rotates over this list by day number (see repairVisitDetroitDeadLinks), because
+    // link_checked_at is written only when an outcome changes and so cannot drive a rotation.
+    `?or=(start_date.gte.${todayIso()},end_date.gte.${todayIso()})` +
+    `&order=id.asc` +
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=not.is.null` +
     `&select=id,external_id,title,ticket_url,link_check_status` +
-    // Deterministic, priority-first order (#256): never-checked rows first,
-    // then 'dead' (may now be repairable), then 'ok'; least recently checked
-    // first inside each group. A run that stops at its time budget therefore
-    // defers the lowest-value rechecks instead of an arbitrary subset.
-    `&order=link_check_status.asc.nullsfirst,link_checked_at.asc.nullsfirst,id.asc` +
     `&limit=1000`;
   const resp = await fetchImpl(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch VisitDetroit link-repair candidates: HTTP ${resp.status}`);
@@ -93,14 +92,21 @@ async function repairVisitDetroitDeadLinks({
   applyPatchFn = applyPatch,
   healFn = healEventUrl,
   fetchFn = fetch,
-  shouldStop = () => false,
+  // Per-run budget (P0 2026-10-16): the 2026-10-16 Auto-Repair run hit the 300 s function limit and lost its counts.
+  // Stop checking at maxChecks or when deadlineMs has passed since the start, report what was done, and log samples as we go.
+  shouldStop = () => false, // #256: Auto-Repair step soft stop (aborted mid-request results are discarded)
+  maxChecks = 150,
+  deadlineMs = 240000,
+  nowFn = Date.now,
+  dayNumber = Math.floor(Date.now() / 86400000),
 } = {}) {
+  const startedAt = nowFn();
   const counts = {
     stoppedEarly: false,
-    stamped: 0,
     deferred: 0,
     checked: 0,
     totalConsidered: 0,
+    samples: [],
     ok: 0,
     repaired: 0,
     stillDead: 0,
@@ -135,29 +141,33 @@ async function repairVisitDetroitDeadLinks({
   }
   const sbHeaders = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
 
-  const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
+  let candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
   counts.totalConsidered = candidates.length;
+  // Deterministic daily window, no writes: start at (day number x maxChecks) modulo the candidate count, so
+  // successive daily runs walk through every row even when the earlier rows write nothing (inconclusive / already ok).
+  if (candidates.length > maxChecks) {
+    const offset = (dayNumber * maxChecks) % candidates.length;
+    candidates = candidates.slice(offset).concat(candidates.slice(0, offset));
+    counts.windowOffset = offset;
+  }
 
+  let checked = 0;
   for (let i = 0; i < candidates.length; i++) {
     const event = candidates[i];
-    if (shouldStop()) {
-      // Budget/timeout reached: remaining candidates are deferred, not
-      // counted as checked or inconclusive, and nothing further is written.
-      counts.stoppedEarly = true;
-      counts.deferred = candidates.length - i;
-      break;
-    }
     if (!event.ticket_url || !event.ticket_url.trim()) continue; // defensive re-check
-
-    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn });
-    if (shouldStop()) {
-      // The step was aborted mid-request: the result is an abort artifact,
-      // not evidence about the link. Discard it without any write.
-      counts.stoppedEarly = true;
+    if (shouldStop() || checked >= maxChecks || nowFn() - startedAt >= deadlineMs) {
+      counts.stoppedEarly = true; // budget reached: the remaining rows are checked on the next run
       counts.deferred = candidates.length - i;
       break;
     }
+    checked++;
+
+    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn, requireIdentity: true });
+    if (shouldStop()) { counts.stoppedEarly = true; counts.deferred = candidates.length - i; break; } // aborted mid-request: result is an artifact, write nothing
     counts.checked++;
+    // Log what the check actually saw for the first rows (P0 2026-10-16: evidence for stamps we could not reproduce).
+    if (counts.samples.length < 10) logger.log("[link-check sample] " + JSON.stringify({ id: event.id, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null }));
+    if (counts.samples.length < 10) counts.samples.push({ id: event.id, url: event.ticket_url, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null, identityConfirmed: result.identityConfirmed === undefined ? null : result.identityConfirmed });
 
     if (result.classification === "inconclusive") {
       counts.inconclusive++;
@@ -170,12 +180,15 @@ async function repairVisitDetroitDeadLinks({
     }
 
     let patchBody;
-    let stampOnly = false;
+    if (result.classification === "ok" && OLD_SHAPE_RE.test(event.ticket_url)) {
+      // P0 2026-10-16: the bare /<slug>/ form is the known-dead shape (R&Q: 292/292 returned 404 from a
+      // real browser). An "ok" for it is not a verified destination, so never record it as ok.
+      counts.unverifiedOldShape = (counts.unverifiedOldShape || 0) + 1;
+      continue;
+    }
     if (result.classification === "ok") {
       counts.ok++;
-      // Status already recorded: stamp only the check time (one column) so the least-recently-checked
-      // ordering rotates through every row instead of re-checking the same oldest rows each run (#256).
-      if (event.link_check_status === "ok") stampOnly = true;
+      if (event.link_check_status === "ok") continue; // already recorded as ok — nothing changed
       patchBody = { link_check_status: "ok", link_checked_at: new Date().toISOString() };
     } else if (result.repaired) {
       counts.repaired++;
@@ -186,7 +199,7 @@ async function repairVisitDetroitDeadLinks({
       };
     } else {
       counts.stillDead++;
-      if (event.link_check_status === "dead") stampOnly = true;
+      if (event.link_check_status === "dead") continue; // already recorded as dead — nothing changed
       patchBody = { link_check_status: "dead", link_checked_at: new Date().toISOString() };
     }
 
@@ -195,11 +208,8 @@ async function repairVisitDetroitDeadLinks({
       continue;
     }
 
-    if (stampOnly) patchBody = { link_checked_at: patchBody.link_checked_at };
     const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, event.ticket_url, patchBody, fetchFn);
-    if (applied && stampOnly) {
-      counts.stamped++; // bookkeeping only: not a repair, not in written/fieldsWritten/writtenIds
-    } else if (applied) {
+    if (applied) {
       counts.written++;
       counts.fieldsWritten += Object.keys(patchBody).length;
       counts.writtenIds.push(event.id);

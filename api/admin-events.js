@@ -129,7 +129,7 @@ async function buildProvenance(rows, headers) {
     const since = encodeURIComponent(new Date(Date.now() - 30 * 86400000).toISOString());
     const [f, r] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name,feed_format,status,last_polled_at,last_poll_result&limit=1000`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status,resume:session_data->>resume&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
     ]);
     if (f.ok) feeds = await f.json(); else readError = `feed_sources HTTP ${f.status}`;
     if (r.ok) runs = await r.json(); else readError = `${readError ? readError + "; " : ""}source_runs HTTP ${r.status}`;

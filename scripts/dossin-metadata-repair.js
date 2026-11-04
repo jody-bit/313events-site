@@ -76,7 +76,18 @@ async function fetchEventUrlsByExternalId(fetchImpl = fetch) {
   const r = await fetchImpl(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
   if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
   const html = await r.text();
-  const events = parseDossinEvents(html);
+  // The source page carries relative "LEARN MORE" hrefs (e.g. /events/guided-tour-57). Resolve each
+  // against the page URL so only an absolute http(s) link is ever stored; anything that does not
+  // resolve to one is treated as no link.
+  const events = parseDossinEvents(html).map((e) => {
+    if (!e.event_url) return e;
+    let abs = null;
+    try {
+      const u = new URL(e.event_url, SOURCE_URL);
+      if (u.protocol === "http:" || u.protocol === "https:") abs = u.href;
+    } catch { /* unparseable href: no link */ }
+    return { ...e, event_url: abs };
+  });
 
   const hrefCounts = new Map();
   for (const e of events) {

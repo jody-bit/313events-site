@@ -226,46 +226,7 @@ const tiny = (ms = 150) => Object.fromEntries(Object.keys(AUTO_REPAIR_TIMEOUTS).
   }
   console.log("PASS: admin-events maxDuration declared (>= budget + 30 s), no Node-20.3-only API");
 
-  // --- E. feeds poller respects its budget ---
-  {
-    process.env.SUPABASE_URL = creds.SUPABASE_URL;
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
-    process.env.FEED_FETCH_TIMEOUT_MS = "60";
-    process.env.FEEDS_RUN_BUDGET_MS = "2200"; // threshold = 2200 - (60 + 2000) = 140 ms
-    delete process.env.CRON_SECRET;
-    const feeds = [1, 2, 3, 4, 5, 6].map((i) => ({ id: `f${i}`, venue_name: `V${i}`, feed_url: `https://hang.example/f${i}.ics`, feed_format: "ics", status: "approved" }));
-    const patched = []; let feedFetches = 0; let feedsQuery = "";
-    global.fetch = (url, init = {}) => {
-      if (url.includes("/rest/v1/feed_sources?status=")) { feedsQuery = url; return Promise.resolve({ ok: true, status: 200, json: async () => feeds }); }
-      if (url.includes("/rest/v1/feed_sources?id=eq.")) { patched.push(url.match(/id=eq\.([^&]+)/)[1]); return Promise.resolve({ ok: true, status: 200, text: async () => "" }); }
-      if (url.includes("/rest/v1/")) return Promise.resolve({ ok: true, status: 200, json: async () => [], text: async () => "" });
-      if (url.includes("hang.example")) { feedFetches++; return new Promise((_, rej) => init.signal && init.signal.addEventListener("abort", () => rej(init.signal.reason), { once: true })); }
-      throw new Error("unmocked URL: " + url);
-    };
-    delete require.cache[require.resolve(`${REPO_DIR}/api/cron-feeds.js`)];
-    const handler = require(`${REPO_DIR}/api/cron-feeds.js`);
-    const res = { _s: null, _b: null, status(c) { this._s = c; return this; }, json(b) { this._b = b; return this; } };
-    const keepAlive = setInterval(() => {}, 50); // AbortSignal.timeout timers are unref'd; keep the loop alive in the test
-    const t = Date.now();
-    await handler({ headers: {} }, res);
-    clearInterval(keepAlive);
-    const elapsed = Date.now() - t;
-    assert.strictEqual(res._s, 200);
-    assert.ok(elapsed < 1500, `run bounded by per-feed timeout and budget, took ${elapsed} ms`);
-    assert.ok(feedFetches >= 1 && feedFetches < 6, `some feeds attempted (${feedFetches}), the rest deferred`);
-    assert.strictEqual(res._b.complete, false);
-    assert.strictEqual(res._b.feedsSkippedForBudget, 6 - feedFetches);
-    const skipped = res._b.results.filter((r) => /^Skipped: run time budget/.test(r.result));
-    assert.strictEqual(skipped.length, 6 - feedFetches);
-    const timedOut = res._b.results.filter((r) => /^Fetch failed: timed out/.test(r.result));
-    assert.strictEqual(timedOut.length, feedFetches, "a hung feed is reported as a timeout, not success");
-    assert.ok(skipped.every((r) => !patched.includes(r.id)), "skipped feeds keep their old last_polled_at (not marked polled)");
-    assert.ok(/order=last_polled_at\.asc\.nullsfirst/.test(feedsQuery), "least recently polled feeds go first");
-    const { feedSourceFailures } = { feedSourceFailures: null };
-    void feedSourceFailures;
-    delete process.env.FEED_FETCH_TIMEOUT_MS; delete process.env.FEEDS_RUN_BUDGET_MS;
-  }
-  console.log("PASS E: feeds poller times out hung feeds, stops at its budget, reports skipped feeds, polls the stalest first");
+  // E. (feeds poller budget) is covered on main by run-budget / feed-run-health and their tests; #261 keeps only Auto-Repair.
 
   global.fetch = origFetch;
   console.log("\nAll #256 step-budget tests passed.");

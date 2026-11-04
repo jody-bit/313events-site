@@ -57,12 +57,6 @@
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
-    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
-    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
-    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
-    --c-vendor:#39FF14;
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -117,7 +111,6 @@
     display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);
   }
   .venue-event-row:last-child{border-bottom:none;}
-  .venue-event-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
   .venue-event-body{min-width:0;flex:1;}
   .venue-event-date{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;}
   .venue-event-title{display:block;font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;margin-top:2px;}
@@ -139,6 +132,7 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -181,23 +175,11 @@
 const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
 const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -297,12 +279,10 @@ function renderVenue(v, events){
     listEl.innerHTML = `<p class="venue-empty">No upcoming events listed for this venue right now.</p>`;
   } else {
     listEl.innerHTML = events.map(e => {
-      const cat = CATS[e.category] || {color:'var(--accent)'};
       return `
         <div class="venue-event-row">
-          <span class="venue-event-dot" style="background:${cat.color}"></span>
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span>
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
             ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
           </div>

@@ -23,7 +23,7 @@ const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Congregation-specific rule) — that's shared logic other consumers
 // (press-coverage matching) also depend on, and changing it is a separate
 // decision.
-const { resolveLinkField, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
+const { resolveLinkField, eventPageFromDescription, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -498,7 +498,11 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     let timeDisplay = null;
     if (start.hour !== null) {
       const startStr = formatIcsTime(start.hour, start.minute);
-      const endStr = (end && end.hour !== null && end.date === start.date) ? formatIcsTime(end.hour, end.minute) : null;
+      // A same-day DTEND of exactly 23:59 is the feeds' end-of-day filler (Richmond, Redford, Madison Heights, Macomb Twp,
+      // Garden City: "12:00 PM – 11:59 PM"), not a published end. Keep the start only; the calendar export then uses its
+      // 2-hour default. Any other end time is kept as given. Same narrow rule as cron-visitdetroit.js.
+      const placeholderEnd = !!end && end.hour === 23 && end.minute === 59;
+      const endStr = (end && end.hour !== null && end.date === start.date && !placeholderEnd) ? formatIcsTime(end.hour, end.minute) : null;
       timeDisplay = endStr ? `${startStr} – ${endStr}` : startStr;
     }
 
@@ -533,6 +537,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
         };
 
     const link = resolveLinkField(ev.url, feedSource.feed_url);
+    // A feed whose VEVENT URL is only the calendar-feed path (CivicPlus) still prints the event's own page in its DESCRIPTION
+    // ("https://<same site>/calendar.aspx?EID=<uid>"). Taken only when it is on the feed's own site, unique, and carries this
+    // event's UID (api/_lib/link-field.js); stored as event_url, never as a ticket link. The description is left as given.
+    const derivedEventUrl = link.url ? null : eventPageFromDescription(ev.description, feedSource.feed_url, ev.uid);
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
@@ -597,6 +605,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden, and
       // the field is then left out of the write so it never replaces a stored link.
       ticket_url: link.url,
+      ...(derivedEventUrl ? { event_url: derivedEventUrl } : {}),
       image_url: ev.image || null,
       // Just the feed's own organization/venue name, matching every other
       // single-venue cron's convention (e.g. cron-trinosophes.js's
@@ -907,34 +916,44 @@ async function patchFeedSource(id, patch, sbHeaders) {
 }
 
 const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const { createBudget, fetchText, isTimeout } = require("./_lib/run-budget");
+const health = require("./_lib/feed-run-health");
+
+// Bounded execution (2026-10-21). vercel.json gives this function 60 s; finished runs take 28-42 s, and a run that
+// is killed leaves its source_runs row at "started". The budget stops STARTING feeds early enough to finish the
+// current one and write the closing row; feeds not reached are deferred (their last_polled_at is untouched, so
+// they lead the next run). Each feed request has its own timeout. Env overrides exist for tests and tuning.
+function feedLimits(env = process.env) {
+  const num = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: num(env.FEEDS_BUDGET_MS, 42000),
+    requestTimeoutMs: num(env.FEEDS_REQUEST_TIMEOUT_MS, 12000),
+    minStartMs: num(env.FEEDS_MIN_START_MS, 10000),
+    resumeWindowMs: num(env.FEEDS_RESUME_WINDOW_MS, 6 * 60 * 60 * 1000),
+    stalledAfterMs: num(env.FEEDS_STALLED_AFTER_MS, 10 * 60 * 1000),
+    staleAfterMs: num(env.FEEDS_STALE_AFTER_MS, 72 * 60 * 60 * 1000),
+  };
+}
 
 // A feed that could not be fetched, parsed or written is reported in its own
 // `result` string while the invocation still answers 200. Count those so the
 // run row says "partial"/"failed" instead of "success".
-const FEED_FAILURE_RESULT = /^(Fetch failed|Error:|Skipped — unrecognized|Skipped: run time budget|Parsed \d+ events? but Supabase upsert failed)/;
+// Persistent conditions (the same block or failure as the previous poll) are reported in the response and the run
+// note but do not make every run "partial"; new failures, timeouts and deferred feeds do.
+// Deferred feeds were not attempted: they are reported on their own (`deferred`) and make the run partial, but
+// they are not failures, so sources_failed in the run record counts real failures only.
 function feedSourceFailures(body) {
   const results = Array.isArray(body && body.results) ? body.results : [];
-  return { attempted: results.length, failed: results.filter((r) => FEED_FAILURE_RESULT.test(String((r && r.result) || ""))).length };
+  const deferred = results.filter((r) => r && r.kind === health.KINDS.DEFERRED).length;
+  return {
+    attempted: results.filter((r) => r && r.kind !== health.KINDS.DEFERRED && r.kind !== health.KINDS.SKIPPED_RESUME).length,
+    failed: results.filter((r) => health.RUN_FAILURE_KINDS.has(r && r.kind) && r.kind !== health.KINDS.DEFERRED).length,
+    deferred,
+  };
 }
-
-// #256: this function's maxDuration is 60 s (vercel.json) and the loop below
-// is sequential, so one hung feed used to run the whole invocation into the
-// platform kill (Oct 19 22:00Z run left `started`, never finished). Each feed
-// fetch is now bounded and the loop stops starting feeds when the run budget
-// is nearly spent; skipped feeds are reported (not patched, so they stay the
-// least recently polled and go first next run) and the run is partial.
-const FEEDS_RUN_BUDGET_MS = 45000;
-const FEED_FETCH_TIMEOUT_MS = 10000;
-const FEED_START_HEADROOM_MS = 2000; // upsert/patch headroom after the fetch timeout
-const feedsConfig = () => ({
-  budgetMs: Number(process.env.FEEDS_RUN_BUDGET_MS) || FEEDS_RUN_BUDGET_MS,
-  fetchTimeoutMs: Number(process.env.FEED_FETCH_TIMEOUT_MS) || FEED_FETCH_TIMEOUT_MS,
-});
 
 const handleRequest = async (req, res) => {
   if (!requireCronAuth(req, res)) return;
-  const runStart = Date.now();
-  const { budgetMs, fetchTimeoutMs } = feedsConfig();
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
@@ -946,9 +965,17 @@ const handleRequest = async (req, res) => {
     Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
   };
 
+  // A resume run exists to finish what the 22:00Z run did not reach; if that run is somehow still going, do nothing
+  // rather than poll the same feeds twice.
+  const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
+  if (resume && await health.otherRunInProgress({ supabaseUrl: SUPABASE_URL, headers: sbHeaders })) {
+    res.status(200).json({ upserted: 0, resume: true, note: "resume run skipped: another feeds run is still in progress", fetchedAt: new Date().toISOString() });
+    return;
+  }
+
   let feedSources;
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/feed_sources?status=eq.approved&select=*&order=last_polled_at.asc.nullsfirst,id.asc`, { headers: sbHeaders });
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/feed_sources?status=eq.approved&select=*`, { headers: sbHeaders });
     feedSources = await r.json();
     if (!Array.isArray(feedSources)) throw new Error("Unexpected response shape");
   } catch (err) {
@@ -960,6 +987,15 @@ const handleRequest = async (req, res) => {
     res.status(200).json({ upserted: 0, feedsChecked: 0, fetchedAt: new Date().toISOString() });
     return;
   }
+
+  // Bounded execution, stalled-run detection and ordering (see feedLimits above).
+  const limits = feedLimits();
+  const runStartedAt = Date.now();
+  const budget = createBudget({ budgetMs: limits.budgetMs });
+  const stalledRuns = await health.closeStalledRuns({ supabaseUrl: SUPABASE_URL, headers: sbHeaders, olderThanMs: limits.stalledAfterMs });
+  const staleFeeds = health.staleFeeds(feedSources, runStartedAt, limits.staleAfterMs); // judged on the state before this run polls anything
+  const orderedFeeds = health.orderFeedsForRun(feedSources);
+  let budgetExhausted = false;
 
   let totalUpserted = 0;
   const linkLog = createRejectionLog({ limit: 20 }); // Q17: at most 20 sanitized rejected links logged per run, the rest aggregated
@@ -974,14 +1010,23 @@ const handleRequest = async (req, res) => {
   const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-  let skippedForBudget = 0;
-  for (const feedSource of feedSources) {
-    let pollResult;
-    if (Date.now() - runStart > budgetMs - (fetchTimeoutMs + FEED_START_HEADROOM_MS)) {
-      skippedForBudget++;
-      results.push({ id: feedSource.id, venue: feedSource.venue_name, result: "Skipped: run time budget reached" });
-      continue; // not patched: last_polled_at stays old so it is first in line next run
+  const preambleMs = Date.now() - runStartedAt; // feed list, stalled-run close and venue lookups, before the first feed
+  for (const feedSource of orderedFeeds) {
+    const previousResult = feedSource.last_poll_result;
+    const feedStartedAt = Date.now();
+    // Safe retry: a re-run with ?resume=1 leaves feeds that were polled recently and did not fail alone.
+    if (resume && health.shouldSkipOnResume(feedSource, Date.now(), limits.resumeWindowMs)) {
+      results.push({ id: feedSource.id, venue: feedSource.venue_name, result: `Skipped (resume): polled OK at ${feedSource.last_polled_at}`, kind: health.KINDS.SKIPPED_RESUME });
+      continue;
     }
+    // Not enough budget left to start another feed and still write the closing run row: defer it. Its
+    // last_polled_at is deliberately not touched, so it is the first feed polled on the next run.
+    if (feedSource.feed_format !== "manual" && budget.remaining() < limits.minStartMs) {
+      budgetExhausted = true;
+      results.push({ id: feedSource.id, venue: feedSource.venue_name, result: health.DEFERRED_RESULT, kind: health.KINDS.DEFERRED });
+      continue;
+    }
+    let pollResult;
     try {
       if (feedSource.feed_format === "manual") {
         // Never fetched, never scraped — see this file's header and
@@ -990,14 +1035,13 @@ const handleRequest = async (req, res) => {
         // MBMC/Detroit History Tours), not this cron.
         pollResult = "Not polled automatically — no feed/export exists for this source; awaiting manual follow-up (see admin.html's Feed sources queue).";
       } else if (feedSource.feed_format === "rss") {
-        const r = await fetch(feedSource.feed_url, {
+        const r = await fetchText(feedSource.feed_url, {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
-          signal: AbortSignal.timeout(fetchTimeoutMs),
-        });
+        }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
           pollResult = `Fetch failed: HTTP ${r.status}`;
         } else {
-          const text = await r.text();
+          const text = r.text;
           const rssItems = parseRssItems(text);
           const rows = rssEventsToRows(rssItems, feedSource, venueMap);
 
@@ -1021,14 +1065,16 @@ const handleRequest = async (req, res) => {
         // about yet — fail closed (skip), never guess at a parser.
         pollResult = `Skipped — unrecognized feed_format '${feedSource.feed_format}'`;
       } else {
-        const r = await fetch(feedSource.feed_url, {
+        const r = await fetchText(feedSource.feed_url, {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
-          signal: AbortSignal.timeout(fetchTimeoutMs),
-        });
+        }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
           pollResult = `Fetch failed: HTTP ${r.status}`;
         } else {
-          const text = await r.text();
+          const text = r.text;
+          // A 200 whose body is not a calendar (HTML, a challenge page, a truncated file) is a failed fetch, not an
+          // empty calendar: a valid VCALENDAR with no VEVENTs stays the legitimate zero below.
+          if (!/BEGIN:VCALENDAR/i.test(text)) throw new Error("not-a-calendar");
           const icsEvents = parseIcsEvents(text);
           const rows = icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap);
           const feedPolicy = policyFor(feedSource);
@@ -1057,16 +1103,18 @@ const handleRequest = async (req, res) => {
         }
       }
     } catch (err) {
-      pollResult = err && err.name === "TimeoutError"
-        ? `Fetch failed: timed out after ${Math.round(fetchTimeoutMs / 1000)} s`
-        : "Error: " + err.message;
+      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
     }
 
-    results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult });
+    results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult), ms: Date.now() - feedStartedAt });
     await patchFeedSource(feedSource.id, { last_polled_at: new Date().toISOString(), last_poll_result: pollResult }, sbHeaders);
   }
 
   linkLog.flush();
-  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length - skippedForBudget, feedsSkippedForBudget: skippedForBudget, complete: skippedForBudget === 0, budgetMs, elapsedMs: Date.now() - runStart, results, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
+  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
+  health.logAlerts(runHealth.alerts);
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, resume, preambleMs, perFeed: health.compactResults(results), results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
+module.exports.feedSourceFailures = feedSourceFailures;
+module.exports.feedLimits = feedLimits;
