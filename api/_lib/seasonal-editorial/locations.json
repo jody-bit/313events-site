@@ -1,8 +1,10 @@
 {
  "yates-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.yatescidermill.com/",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "1950 E. Avon Rd., Rochester Hills, MI 48307",
+  "readAt": "2026-11-04"
  },
  "parmenters-northville-cider-mill": {
   "status": "unresolved",
@@ -41,13 +43,17 @@
  },
  "dexter-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.dextercidermill.com/",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "3685 Central St., Dexter, MI 48130",
+  "readAt": "2026-11-04"
  },
  "rochester-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://rochestercidermill.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "5125 N. Rochester Rd., Rochester, MI 48306",
+  "readAt": "2026-11-04"
  },
  "blakes-big-apple": {
   "status": "address-point",
@@ -61,18 +67,24 @@
  },
  "stony-creek-orchard-and-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.stonycreekorchard.com/",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "2961 W. 32 Mile, Romeo, MI 48065",
+  "readAt": "2026-11-04"
  },
  "diehls-orchard-and-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.diehlsorchard.com/",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "1479 Ranch Rd., Holly, MI 48442",
+  "readAt": "2026-11-04"
  },
  "long-family-orchard-and-farm": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.longsorchard.com/",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "1540 E Commerce Rd, Commerce Township, MI 48382",
+  "readAt": "2026-11-04"
  },
  "plymouth-orchards-and-cider-mill": {
   "status": "address-point",
@@ -116,8 +128,10 @@
  },
  "spicer-orchards": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.spicerorchards.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "10411 Clyde Rd., Fenton, MI",
+  "readAt": "2026-11-04"
  },
  "three-cedars-farm": {
   "status": "address-point",
@@ -151,8 +165,10 @@
  },
  "alber-orchard-and-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://alberorchard.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "13011 Bethel Church Rd., Manchester, MI",
+  "readAt": "2026-11-04"
  },
  "big-red-orchard": {
   "status": "address-point",
@@ -181,8 +197,10 @@
  },
  "kreps-apple-barn-and-cider-mill": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://krepsapplebarn.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "12500 Minx Rd., La Salle, MI 48145",
+  "readAt": "2026-11-04"
  },
  "parshallville-cider-mill": {
   "status": "address-point",
@@ -246,13 +264,17 @@
  },
  "nixon-farms-blast-corn-maze": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.nixonfarmsdexter.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "6175 Daly Rd., Dexter, MI 48130",
+  "readAt": "2026-11-04"
  },
  "trabbic-family-pumpkin-farm": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.trabbicpumpkinfarm.com",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "1560 E. Sterns Rd., Erie, MI 48133",
+  "readAt": "2026-11-04"
  },
  "macqueen-orchards": {
   "status": "address-point",
@@ -276,8 +298,10 @@
  },
  "jasons-pumpkin-patch": {
   "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "source": "https://www.jasonspumpkinpatch.com/visit-us",
+  "notes": "Address read from operator page 2026-11-04 (page-reading tool; geocode match must confirm state/ZIP). Coordinates pending.",
+  "address": "12629 W. Salem Carroll Rd, Oak Harbor, OH 43449",
+  "readAt": "2026-11-04"
  },
  "wheeler-farms-corn-maze": {
   "status": "address-point",
@@ -322,7 +346,8 @@
  "hudson-mills-metropark": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Huron-Clinton Metroparks; no entrance lot printed.",
+  "address": "8801 N. Territorial Road, Dexter, MI 48130"
  },
  "belle-isle-park": {
   "status": "address-point",
@@ -337,7 +362,8 @@
  "rouge-park": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). No single street address; navigation point only.",
+  "address": "Joy Rd and Spinoza Dr (Cozy Corners), Detroit"
  },
  "hines-drive-edward-n-hines-parkway": {
   "status": "address-point",
@@ -350,9 +376,14 @@
   "notes": "Address-point match; visitor entrance not yet checked."
  },
  "bennett-arboretum": {
-  "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "status": "address-point",
+  "lat": 42.431146,
+  "lng": -83.483269,
+  "address": "4990 Edward N Hines Dr., Northville, MI 48168",
+  "source": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+  "method": "coordinates printed on official page",
+  "verifiedAt": "2026-11-04",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on Wayne County page; host is Wayne County Parks. Parking may be at Cass Benton Park across the street."
  },
  "maybury-state-park": {
   "status": "address-point",
@@ -367,12 +398,13 @@
  "cranbrook-gardens-and-grounds": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Main entrance off Lone Pine Road; not the campus/museum entrance.",
+  "address": "House & Gardens, 380 Lone Pine Road, Bloomfield Hills, MI 48304"
  },
  "elmwood-cemetery": {
   "status": "unresolved",
   "source": "https://www.elmwoodhistoriccemetery.org/",
-  "notes": "No Census match for 1200 Elmwood Avenue, Detroit, MI 48207",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Address correct; Census no-match is a geocoder gap. Visitor gate not found.",
   "address": "1200 Elmwood Avenue, Detroit, MI 48207"
  },
  "dequindre-cut-greenway": {
@@ -413,7 +445,8 @@
  "waterloo-state-recreation-area": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Visitor centre; park-level coordinates exist but must not be used as an entrance pin.",
+  "address": "Gerald E. Eddy Discovery Center, 17030 Bush Road, Chelsea, MI 48118"
  },
  "huron-river-drive": {
   "status": "unresolved",
@@ -441,10 +474,14 @@
   "notes": "Address-point match; visitor entrance not yet checked."
  },
  "black-oak-heritage-park": {
-  "status": "unresolved",
-  "source": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
-  "notes": "No Census match for 599 Broadway Street, Windsor, ON",
-  "address": "599 Broadway Street, Windsor, ON"
+  "status": "address-point",
+  "lat": 42.269787,
+  "lng": -83.089415,
+  "address": "599 Broadway Street, Windsor, ON",
+  "source": "https://www.citywindsor.ca/",
+  "method": "coordinates printed on official page",
+  "verifiedAt": "2026-11-04",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on City of Windsor page; lot is the only access point."
  },
  "stage-nature-center": {
   "status": "address-point",
@@ -469,13 +506,13 @@
  "lower-huron-metropark": {
   "status": "unresolved",
   "source": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
-  "notes": "No Census match for 40151 East Huron River Drive, Belleville, MI 48111",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Check geocoder input includes \"East\".",
   "address": "40151 East Huron River Drive, Belleville, MI 48111"
  },
  "willow-metropark": {
   "status": "unresolved",
   "source": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
-  "notes": "No Census match for 23200 South Huron Road, New Boston, MI 48164",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Main gate not described.",
   "address": "23200 South Huron Road, New Boston, MI 48164"
  },
  "oakwoods-metropark": {
@@ -546,7 +583,8 @@
  "barton-nature-area": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Main entrance and parking north of park, NE of Bird Road. Coordinates seen only on a map link; not accepted.",
+  "address": "1010 W. Huron River Drive, Ann Arbor, MI 48103"
  },
  "old-us-12-corridor": {
   "status": "unresolved",
@@ -616,17 +654,89 @@
  "holiday-beach-conservation-area": {
   "status": "unresolved",
   "source": null,
-  "notes": "No sourced address yet."
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Day use may be closed in November; needs ERCA confirmation.",
+  "address": "6952 County Road 50, Amherstburg, ON N0R 1G0"
  },
  "point-pelee-national-park": {
-  "status": "unresolved",
-  "source": null,
-  "notes": "No sourced address yet."
+  "status": "address-point",
+  "lat": 41.986722,
+  "lng": -82.549028,
+  "address": "1118 Point Pelee Drive, Leamington, ON N8H 3V4",
+  "source": "https://parks.canada.ca/pn-np/on/pelee/info/contact",
+  "method": "coordinates printed on official page",
+  "verifiedAt": "2026-11-04",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Printed as N 41 59.2033, W 082 32.9417 (degrees decimal minutes), converted here. Visitor Centre closed Nov 2 2026 to Mar 31 2027."
  },
  "kensington-metropark": {
   "status": "unresolved",
   "source": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
-  "notes": "No Census match for 4570 Huron River Parkway, Milford, MI 48381",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Geocode input must use \"Parkway\".",
   "address": "4570 Huron River Parkway, Milford, MI 48381"
+ },
+ "crosswinds-marsh": {
+  "status": "address-point",
+  "lat": 42.094189,
+  "lng": -83.440872,
+  "address": "27600 Haggerty Rd., New Boston, MI 48164",
+  "source": "https://www.waynecountymi.gov/Parks-Recreation/Explore/Crosswinds-Marsh",
+  "method": "coordinates printed on official page",
+  "verifiedAt": "2026-11-04",
+  "notes": "EI findings 2026-11-04 (official page read via summarizing reader; one-off, not independently geocoded). Coordinates printed on official page; unclear if gate or parcel centre."
+ },
+ "ojibway-prairie-complex": {
+  "status": "unresolved",
+  "address": "Ojibway Nature Centre, 5200 Matchett Road, Windsor, ON N9C 4E8",
+  "source": "https://www.citywindsor.ca/residents/parks-and-forestry/ojibway-prairie-complex/ojibway-nature-centre",
+  "readAt": "2026-11-04",
+  "notes": "Ontario: needs a Canadian geocoder. Page lists no Nature Centre hours; natural areas dawn to dusk. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "hidden-lake-gardens": {
+  "status": "unresolved",
+  "address": "6214 W Monroe Road (M-50), Tipton, MI 49287",
+  "source": "https://ipf.msu.edu/hidden-lake-gardens",
+  "readAt": "2026-11-04",
+  "notes": "Visitor entrance not stated on page (call 517-431-2060). Woodland Drive closed to vehicles from Nov 2026. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "pewabic-holiday-showcase": {
+  "status": "unresolved",
+  "address": "10125 E Jefferson Ave, Detroit, MI 48214",
+  "source": "https://www.pewabic.org/pages/holiday-showcase",
+  "readAt": "2026-11-04",
+  "notes": "Page: showcase runs Nov 5 through Dec 27. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "post-make-the-gift-workshops": {
+  "status": "unresolved",
+  "address": "14500 Kercheval, Detroit, MI 48215",
+  "source": "https://www.mutualadoration.com/",
+  "readAt": "2026-11-04",
+  "notes": "Home page does not list make-the-gift dates; schedule is on its workshops page (not read). Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "walkerville-brewery-holiday-market": {
+  "status": "unresolved",
+  "address": "525 Argyle Road, Windsor, ON N8Y 4Z8",
+  "source": "https://www.walkervillebrewery.com/events/holidaymarket-2026",
+  "readAt": "2026-11-04",
+  "notes": "Ontario: needs a Canadian geocoder. Fri Nov 20 5-10 PM, Sat Nov 21 11 AM-5 PM. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "willistead-manor-holiday-tours": {
+  "status": "unresolved",
+  "address": "1899 Niagara Street, Windsor, ON N8Y 1K3",
+  "source": "https://www.citywindsor.ca/residents/culture/willistead-manor/Willistead-Manor-Tours",
+  "readAt": "2026-11-04",
+  "notes": "Ontario: needs a Canadian geocoder. Tours Wed Dec 2/9/16/23 6-8 PM; Sun Dec 6/13/20/27 1-4 PM. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "stahls-motors-and-music": {
+  "status": "unresolved",
+  "address": "56516 North Bay Dr., Chesterfield, MI 48051",
+  "source": "https://www.stahlsauto.com/visit/",
+  "readAt": "2026-11-04",
+  "notes": "Visitor hours: Tuesdays 1-4; third Thursdays 5-8; first Saturday 11-4. Coordinates pending (cloud cannot reach geocoders)."
+ },
+ "rochester-kris-kringle-market": {
+  "status": "unresolved",
+  "address": "W. Fourth & Walnut Blvd., downtown Rochester, MI (no street number given)",
+  "source": "https://www.downtownrochestermi.com/kris-kringle-market/",
+  "readAt": "2026-11-04",
+  "notes": "Fri Dec 4 4-10 PM, Sat Dec 5 noon-10 PM. Intersection, not a street address. Coordinates pending (cloud cannot reach geocoders)."
  }
 }

@@ -15,19 +15,19 @@
     "featured": true
    },
    "franklin-cider-mill": {
-    "summary": "Go for the cider and warm donuts; stay for the story of a mill whose history reaches back to Michigan’s statehood year. Season ends Sunday, November 29, 2026.",
+    "summary": "Go for the cider and warm donuts; stay for the story of a mill whose history reaches back to Michigan’s statehood year.",
     "featured": true,
     "lastDay": "2026-11-29",
     "removeAt": "2026-11-30T00:00:00-05:00"
    },
    "parmenters-northville-cider-mill": {
-    "summary": "Pick up cider in Northville, then spend some time exploring the town around it. This is a short-season stop with a firm final day. Last day November 22, 2026.",
+    "summary": "Pick up cider in Northville, then spend some time exploring the town around it. This is a short-season stop with a firm final day.",
     "featured": true,
     "lastDay": "2026-11-22",
     "removeAt": "2026-11-23T00:00:00-05:00"
    },
    "diehls-orchard-and-cider-mill": {
-    "summary": "Make a final November cider-and-donut stop in Holly, then choose a nearby woodland walk if conditions allow. November weekends, noon to 5 p.m.; last day November 22.",
+    "summary": "Make a final November cider-and-donut stop in Holly, then choose a nearby woodland walk if conditions allow. November weekends, noon to 5 p.m.",
     "featured": true,
     "lastDay": "2026-11-22",
     "removeAt": "2026-11-23T00:00:00-05:00"
@@ -47,7 +47,7 @@
     "removeAt": "2026-11-26T00:00:00-05:00"
    },
    "plymouth-orchards-and-cider-mill": {
-    "summary": "Plymouth orchard with award-winning cider and donuts. The mill closes November 8; the Red Shed (a separate address) continues through November 25.",
+    "summary": "Plymouth orchard with award-winning cider and donuts. The Red Shed, at a separate address, stays open through November 25.",
     "featured": false,
     "lastDay": "2026-11-08",
     "removeAt": "2026-11-09T00:00:00-05:00"
