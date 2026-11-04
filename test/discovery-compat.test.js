@@ -41,7 +41,7 @@ const fs = require("fs");
 const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
 const plain = (x) => JSON.parse(JSON.stringify(x));
 
@@ -452,11 +452,11 @@ function run() {
       const page = PAGES[surface];
       const ED = require(`${REPO_DIR}/event-dates.js`);
       // Calendar/Map take "today" from EventDates.detroitClock (PR-4); pin it to this test's fixed now.
-      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), EventDates: Object.assign({}, ED, { detroitClock: (n) => ED.detroitClock(n || new Date(NOW)) }) };
+      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), PlaceList: require(`${REPO_DIR}/place-list.js`), EventDates: Object.assign({}, ED, { detroitClock: (n) => ED.detroitClock(n || new Date(NOW)) }) };
       vm.createContext(sb);
       vm.runInContext(FAKE_DATE(NOW), sb);
       vm.runInContext([
-        block(page.html, "CATS", "\\}\\);"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
+        block(page.html, "CATS", "\\}\\);"), "const KNOWN_PLACES = PlaceList.locations();", block(page.html, "FEATURE_CHIPS", "\\];"),
         oneLineFn(page.html, "toISO"), fn(page.html, "getTodayISO"), fn(page.html, "getWeekendDates"),
         `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
              originLocation = null, radiusMiles = null, cachedWeekendDates = [];
@@ -469,7 +469,7 @@ function run() {
       // plain(): values created inside the sandbox belong to another realm.
       return plain(vm.runInContext(`({ cats: Array.from(activeCats), free: freeOnly, features: Array.from(activeFeatures), q: query, when: whenMode,
         loc: originLocation ? originLocation.name : null, radius: radiusMiles,
-        knownPlaces: LOCATIONS.map(function(l){ return l.name; }), knownFeatures: FEATURE_CHIPS.map(function(f){ return f.key; }),
+        knownPlaces: KNOWN_PLACES.map(function(l){ return l.name; }), knownFeatures: FEATURE_CHIPS.map(function(f){ return f.key; }),
         selectedDate: typeof selectedDate === "undefined" ? undefined : selectedDate,
         neighborhood: typeof neighborhoodFilter === "undefined" ? undefined : neighborhoodFilter,
         picked: typeof pickedDate === "undefined" ? undefined : pickedDate })`, sb));
@@ -581,7 +581,7 @@ function run() {
     assert.deepStrictEqual(plain(D.places), plain(vm.runInContext("LOCATIONS", sb)), "places match what the homepage had, exactly");
     // The boundary: the shared copy, the server's copy and the homepage's old copy are the same polygon.
     const server = require(`${REPO_DIR}/api/_lib/detroit-boundary.js`);
-    const { _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+    const { _defaultConfig } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
     assert.deepStrictEqual(plain(_defaultConfig.boundary), plain(server.DETROIT_BOUNDARY), "discovery.js and the server use the same Detroit boundary");
     assert.deepStrictEqual(plain(vm.runInContext("DETROIT_BOUNDARY", sb)), plain(server.DETROIT_BOUNDARY), "and it is the one the homepage had");
     // The Orbit decision for every city agrees with the server's maths and with the homepage's old maths.
@@ -602,12 +602,11 @@ function run() {
     assert.deepStrictEqual(D.features.filter((f) => f.kind === "derived").map((f) => ({ key: f.key, label: f.label })), chips, "derived features match what the homepage's FEATURE_CHIPS had");
     const blocked = plain(vm.runInContext("BLOCKED_NAMES", sb));
     blocked.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked`));
-    // Calendar and Map still carry their own copies of these.
-    ["calendar.html", "map.html"].forEach((f) => {
-      assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`);
-      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
-    });
-    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and Calendar's and Map's remaining copies");
+    // Calendar and Map no longer carry copies: they read the same shared modules (test/drift-guard.test.js forbids a private copy).
+    const shared = require(`${REPO_DIR}/blocked-names.js`);
+    assert.deepStrictEqual(plain(shared.NAMES), blocked, "the shared blocked-names.js list is the one the homepage had");
+    shared.NAMES.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked by discovery.js too`));
+    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and the shared blocked-names.js / place-list.js that Calendar and Map now read");
   }
 
   console.log("\nAll discovery compatibility tests passed.");
@@ -617,7 +616,7 @@ function run() {
 // the border, SERVICE_AREA.md); Lansing is the documented case just inside
 // (67.5 mi). Built with a private places table so the real one is untouched.
 function _probeOrbit() {
-  const { _build, _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+  const { _build, _defaultConfig } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
   const P = _build(Object.assign({}, _defaultConfig, { places: _defaultConfig.places.concat([["Saginaw", "city", "Michigan", 43.4195, -83.9508]]) }));
   const orbit = P.change(P.defaults(), { where: { radius: "orbit" } });
   const ctx = { now: new Date("2026-10-03T19:00:00Z") };
