@@ -20,6 +20,7 @@
 
     function sync(scroll) {
       document.getElementById("scResults").innerHTML = R.results(col, state);
+      var dm = document.getElementById("scDontMissWrap"); if (dm) dm.innerHTML = R.dontMiss(col, state);   // featured row follows search and category
       document.getElementById("scCount").textContent = R.visible(col, state).length + " of " + DATA.live(col).length + " destinations";
       [].forEach.call(document.querySelectorAll(".sc-chip"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cat") === state.category)); });
       [].forEach.call(document.querySelectorAll("button.sc-view"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === state.view)); });

@@ -4,8 +4,7 @@
 (function () {
   "use strict";
   var MF = window.MapFoundation;   // the shared map foundation (/map-foundation.js): Leaflet loading, tiles, attribution, errors
-  var ctl = null, lastDay = "";
-  document.addEventListener("keydown", function (ev) { lastDay = ev.key; }, true);
+  var ctl = null;
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function tileNote(msg) { var n = document.getElementById("scMapTiles"); if (n) n.textContent = msg; }
@@ -48,8 +47,7 @@
       ctl.fitTo(fit); ctl.invalidate();
       places.forEach(function (pl) {
         var m = ctl.markers.get(pl.key);
-        if (m) { m.on("add", function () {}); var el = m.getElement && m.getElement(); if (el) el.setAttribute("aria-label", pl.title);
-          m.on("popupclose", function () { if (lastDay === "Escape" && m.getElement()) m.getElement().focus(); }); }
+        if (m) { m.on("add", function () {}); var el = m.getElement && m.getElement(); if (el) el.setAttribute("aria-label", pl.title); }
       });
       return true;
     }, function () { tileNote("The map could not load; the list below has every destination."); return false; });

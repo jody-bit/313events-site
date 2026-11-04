@@ -263,7 +263,7 @@
 
   function main(col, state) {
     state = state || { category: "all", query: "", view: "grid" };
-    return hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+    return hero(col) + filterBar(col, state) + '<div id="scDontMissWrap">' + dontMiss(col, state) + '</div>' + explore(col, state) + discover(col, state) + more(col);
   }
 
   // Font-independent guard for the shared title rule: the CSS hint above is tuned to the Archivo display face; when the webfont has not loaded (or a
@@ -279,5 +279,5 @@
     });
   }
 
-  return { lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });
