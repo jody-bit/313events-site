@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // City stated by a street address (P1 audit EXPORT-2): shared by api/submit.js and scripts/ra-sync.js.
   "api/_lib/address-city.js",
+  // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
+  "api/_lib/venue-location-gate.js",
   // Public submit form stores the city its address states (P1 audit EXPORT-2).
   "api/submit.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
