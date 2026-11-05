@@ -21,6 +21,8 @@ const ALLOWED = [
   "api/_lib/source-health.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
   "api/_lib/control-tower.js",
+  // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
+  "api/_lib/non-event-filter.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
@@ -72,6 +74,12 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.json",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.md",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_HALLOWEEN_1.json",
+  "api/_lib/seasonal-editorial/placements.json",
+  "api/_lib/seasonal-editorial/locations.json",
+  "api/_lib/seasonal-editorial/refresh-preview.json",
+  "api/seasonal-preview.js",
+  "api/seasonal-collection.js",
+  "api/_lib/seasonal-editorial/refresh-release.json",
   "api/_lib/seasonal-editorial/candidate-images.json",
   "api/_lib/seasonal-editorial/candidates.json",
   "api/_lib/seasonal-editorial/defaults.json",

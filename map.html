@@ -180,6 +180,11 @@
     font-size:12.5px;font-weight:600;cursor:pointer;
   }
 
+  .cat-summary{flex:0 0 100%;width:100%;margin:2px 0 6px;font-size:13px;color:var(--ink,#fff)}
+  .cat-summary:focus{outline:2px solid var(--accent,#c8ff00);outline-offset:3px}
+  .cat-summary-line{margin:0;line-height:2}
+  .cat-name{display:inline-flex;align-items:center;gap:6px;margin:0 6px 0 0;padding:2px 8px;border:1px solid #3a3a3a}
+  .cat-name .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
   .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .chip{
     border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
@@ -338,6 +343,7 @@
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
+  .evt-link:not(:last-child){margin-right:16px;} /* Get tickets / Event details / Venue website must not read as one run (390px) */
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
   @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
@@ -472,6 +478,7 @@
 <script src="/event-links.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
+<script src="/place-eligibility.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
@@ -510,7 +517,7 @@
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+        <span class="mt-label">Categories</span><span class="mt-sub" id="filterTriggerSub">All categories</span>
       </button>
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
@@ -559,7 +566,7 @@
   <div class="map-legend">
     <span class="ml-item"><span class="ml-swatch precise"></span>Exact venue</span>
     <span class="ml-item"><span class="ml-swatch approx"></span>City center (exact venue unknown)</span>
-    <span class="ml-item">Marker color = most common event type there</span>
+    <span class="ml-item">Marker color = most common category there</span>
   </div>
 
   <div class="map-shell">
@@ -578,6 +585,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/map-foundation.js"></script>
 <script>
 // Keys, labels, order and colours all come from /categories.js (one definition for every page).
 const CATS = {};
@@ -708,6 +716,7 @@ const LOCATIONS = [
   // coordinates) so map.html and discovery agree. Phase 1 city resolution.
   {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
   {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
+  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56},
 ];
 
 // Phase 2: sourced coordinates for 30 more in-orbit cities (city-table-phase2.js), each gated on
@@ -884,15 +893,11 @@ function matchesFilters(e){
     }
   }
   if(originLocation && radiusMiles !== null){
-    const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP, {source:e.source, venue:e.venue}) : null;
-    const loc = e.city ? (hit && hit.loc) : CITY_LOOKUP.get('detroit');
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
+    // Shared place rule (PlaceEligibility): same city resolution as before, and Detroit Orbit
+    // now means 75 miles from Detroit's BORDER like the homepage (it was the city centre). A
+    // city that cannot be placed is never guessed: it is left out of an active place filter
+    // and counted by PlaceEligibility.partition() rather than lost silently.
+    if(!PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).eligible) return false;
   }
   return true;
 }
@@ -914,13 +919,22 @@ function buildFilterBar(){
   header.appendChild(headerClose);
   bar.appendChild(header);
 
+  const catSummary = document.createElement('div');
+  catSummary.id = 'catSummary';
+  catSummary.className = 'cat-summary';
+  catSummary.tabIndex = -1;
+  catSummary.setAttribute('role', 'status');
+  catSummary.setAttribute('aria-live', 'polite');
+  bar.appendChild(catSummary);
+  updateCatSummary();
+
   const allChip = document.createElement('button');
   allChip.type = 'button';
   const allActive = activeCats.size === Object.keys(CATS).length;
   allChip.className = 'chip' + (allActive ? ' active' : '');
   allChip.id = 'allTypesChip';
   allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
-  allChip.textContent = 'All types';
+  allChip.textContent = 'All categories';
   allChip.onclick = ()=>{
     activeCats = new Set(Object.keys(CATS));
     buildFilterBar();
@@ -982,6 +996,36 @@ function buildFilterBar(){
   bar.appendChild(clearChip);
 }
 
+// "Categories: 2 of 15 selected — Nightlife, Music". The count is read from activeCats and CATS on every call, so it is always the live selection.
+// Display-only context (name with its category colour); no extra controls. Nothing narrowed (all selected) is stated in words.
+function updateCatSummary(){
+  const box = document.getElementById('catSummary');
+  if(!box) return;
+  const total = Object.keys(CATS).length, keys = Object.keys(CATS).filter(k=>activeCats.has(k));
+  box.innerHTML = '';
+  const line = document.createElement('p');
+  line.className = 'cat-summary-line';
+  const strong = document.createElement('strong');
+  strong.textContent = 'Categories:';
+  line.appendChild(strong);
+  line.appendChild(document.createTextNode(` ${keys.length} of ${total} selected`));
+  if(keys.length === total){
+    line.appendChild(document.createTextNode(' \u2014 all categories'));
+  } else if(keys.length){
+    line.appendChild(document.createTextNode(' \u2014 '));
+    keys.forEach((k, i)=>{
+      if(i) line.appendChild(document.createTextNode(' '));
+      // Display-only: the category's own colour dot and name. Selecting and deselecting stays with the category chips above.
+      const c = document.createElement('span');
+      c.className = 'cat-name';
+      const d = document.createElement('span'); d.className = 'dot'; d.setAttribute('aria-hidden', 'true'); d.style.background = CATS[k].color;
+      c.appendChild(d); c.appendChild(document.createTextNode(CATS[k].label));
+      line.appendChild(c);
+    });
+  }
+  box.appendChild(line);
+}
+
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
@@ -996,6 +1040,7 @@ function clearAllFilters(){
 }
 
 function renderActiveFilters(){
+  updateCatSummary();
   const tray = document.getElementById('activeFilters');
   const chips = [];
 
@@ -1082,6 +1127,17 @@ function truncateText(str, maxLen){
 }
 function eventUrl(e){
   return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
+}
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
 }
 // Which link(s) an event card offers: one rule for every page, see event-links.js (a bare venue homepage is never the main button).
 function eventLinksHtml(e){
@@ -1211,57 +1267,15 @@ function buildPlaces(){
 let leafletMap = null;
 let markersByKey = new Map();
 
-// CARTO's free anonymous basemap tiles (basemaps.cartocdn.com, no key) —
-// which is what this page was built on (see the "no-API-key dark basemap"
-// comment near the top of this file) — stopped working late August 2026:
-// CARTO now requires a free API key on every tile request and, without one,
-// serves a "API KEY REQUIRED" watermark baked into the tile images
-// themselves rather than failing the request outright (confirmed live
-// 2026-09-04: the old anonymous URL now 403s; this is a documented CARTO
-// platform change hitting the exact 'dark_all'/'light_all' basemap paths
-// this site uses, not something specific to 313.events). Since Leaflet gets
-// a normal-looking 200/tile-image back either way, the existing
-// try/catch("Map tiles didn't load...") fallback below never fires — the
-// map "works," it just has a watermark stamped across it.
-//
-// Fixed 2026-09-05: Jody requested and received a free key from CARTO
-// (5M tile requests/month across raster+vector combined, no cost — CARTO's
-// own email says they'll reach out rather than cut access off if that's
-// ever exceeded). Per that same email the query param is named `key`, not
-// `api_key` as originally guessed here — corrected below. Their raster
-// tile service is the one that needed this; vector doesn't require a key
-// yet (CARTO says that's coming later, and this key will cover it when it
-// does — nothing to change here for that). Keep the CARTO+OpenStreetMap
-// attribution visible in the tileLayer options below — that's what the
-// free tier is in exchange for, per carto.com/attributions.
-const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
+// Basemap provider, tile key, attribution, scroll rule and the "tiles didn't load" message live in /map-foundation.js: one config for
+// every map (events map, calendar map, collection maps). The history of CARTO's key requirement and the current allowance
+// (1,000,000 commercial requests a month from 2026-12-01) are recorded there. A failed Leaflet load leaves an inert controller,
+// so the city rail and every filter below keep working.
+let mapCtl = null;
 
 function initLeaflet(){
-  // Leaflet loads from a CDN (unpkg for the library, CARTO for tiles), so a
-  // blocked/ad-blocked/offline network shouldn't be able to take the whole
-  // page down with it — the city rail and every filter below are plain data
-  // rendering with no Leaflet dependency, so they should keep working even
-  // if `L` never showed up. Guard the one spot that touches `L` directly.
-  try{
-    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
-    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
-    L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    }).addTo(leafletMap);
-    // Scroll-zoom is off by default (a map embedded in a normal page shouldn't
-    // hijack the page's own scroll) — enabled only once the visitor has
-    // deliberately interacted with the map itself.
-    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
-    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
-  } catch(err){
-    leafletMap = null;
-    const el = document.getElementById('leafletMap');
-    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
-  }
+  mapCtl = MapFoundation.create(document.getElementById('leafletMap'));
+  leafletMap = mapCtl.ready ? mapCtl.map : null;
 }
 
 // One street line under the place name, only for a precise (single-venue) place whose events
@@ -1347,31 +1361,18 @@ function jumpToPlaceList(key){
 
 function renderMap(places){
   if(!leafletMap) return;
-  markersByKey.forEach(m => leafletMap.removeLayer(m));
-  markersByKey = new Map();
+  // This page's places (events grouped by location) adapted into the foundation's common place format. Pin look and popup sizing
+  // are the foundation's; popup wording and what selecting a pin does stay here.
+  const list = [];
   places.forEach(place=>{
-    const count = place.events.length;
-    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
-    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
-    const marker = L.circleMarker([place.lat, place.lng], {
-      radius: r,
-      color: hex,
-      weight: place.precise ? 2 : 1.5,
-      dashArray: place.precise ? null : '3,3',
-      fillColor: hex,
-      fillOpacity: place.precise ? 0.6 : 0.35,
-    }).addTo(leafletMap);
-    // maxHeight caps a many-event place's popup so it scrolls internally
-    // (Leaflet's own CSS adds the scrollbar once this is set) instead of
-    // growing taller than the map and spilling off the top/bottom of the
-    // window with no way to see the rest of it — a real bug hit on the
-    // live site (2026-08-30) with a 40-event cluster near Rochester.
-    // autoPanPadding gives real breathing room from the window edge (the
-    // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: Math.max(160, Math.min(320, leafletMap.getSize().y - 100)), autoPanPadding: [24, 24], keepInView: true});
-    marker.on('click', ()=> selectPlace(place.key));
-    markersByKey.set(place.key, marker);
+    list.push({
+      key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
+      hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
+      popupHtml: placePopupHtml(place),
+    });
   });
+  mapCtl.setPlaces(list, key => selectPlace(key));
+  markersByKey = mapCtl.markers;
 }
 
 function renderCityRail(places){
@@ -1745,10 +1746,10 @@ function updateMobileTriggers(){
   const filterSub = document.getElementById('filterTriggerSub');
   const totalCats = Object.keys(CATS).length;
   const parts = [];
-  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
+  if(activeCats.size < totalCats) parts.push(`${activeCats.size} of ${totalCats} categories`);
   if(freeOnly) parts.push('Free');
   if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
-  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
@@ -1918,12 +1919,12 @@ function mapSupabaseRow(row) {
     time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink); keeping this
     // field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
   };

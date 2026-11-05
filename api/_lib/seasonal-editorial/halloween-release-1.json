@@ -19,7 +19,17 @@
       "evidenceNote": "Official event page (re-read 2026-10-12) lists 2026 dates and a 2026 sold-out notice.",
       "datesNote": "Oct 1-4, 8-11, 15-18 and 22-25, 2026, 6 to 9:30 PM (official).",
       "inventoryOrder": 3,
-      "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates."
+      "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates.",
+      "disposition": {
+        "type": "ended",
+        "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "zoo-boo": {
       "tier": "publish",
@@ -29,7 +39,17 @@
       "evidenceNote": "Official page (re-read 2026-10-12) lists 2026 dates and ticketing.",
       "datesNote": "Oct 3-4, 9-11, 16-18 and 23-25, 2026; event 3 to 8:30 PM (full-zoo access until 6 PM).",
       "inventoryOrder": 4,
-      "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo."
+      "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
+      "disposition": {
+        "type": "ended",
+        "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "glenlore-carnevil-2": {
       "tier": "publish",
@@ -43,7 +63,17 @@
       "categories": [
         "strange-unusual",
         "family-friendly"
-      ]
+      ],
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "hush-haunted-attraction": {
       "tier": "publish",
@@ -77,7 +107,17 @@
       "categories": [
         "strange-unusual",
         "family-friendly"
-      ]
+      ],
+      "disposition": {
+        "type": "ended",
+        "reason": "The TreeRunner page listed Oct 2-4, 9-11, 16-18, 23-25 and 30-31, 2026; the final night was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "erebus": {
       "tier": "verified",
@@ -113,6 +153,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "wiards-night-terrors": {
@@ -267,6 +317,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "field-of-fear": {
@@ -284,6 +344,16 @@
           "/assets/seasonal/halloween-card-4.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Field of Fear page listed its final night as Oct 31, 2026. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "dearborn-haunted-trail": {
@@ -385,6 +455,16 @@
           "/assets/seasonal/halloween-card-2.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Wildwood Preserve page listed Friday Oct 23 through Saturday Oct 31, 2026, 2 to 8 p.m.; the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "fort-meigs-garrison-ghost-walk": {
@@ -401,6 +481,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "haunted-waterville-tours": {
@@ -428,6 +518,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "brick-or-treat-at-legoland-discovery-center": {
@@ -445,6 +545,16 @@
           "/assets/seasonal/halloween-card-6.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "LEGOLAND Discovery Center's operator-stated 2026 range was Oct 1-31 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "ooky-spooky-light-show": {
@@ -480,6 +590,16 @@
           "/assets/seasonal/halloween-card-6.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Sloan Longway calendar listed the last Laser Halloween shows on Saturday Oct 31, 2026, at 7 and 8 PM. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "thiessen-orchards-scaredy-cat-barn": {
@@ -517,6 +637,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "halloween-hunt-the-haunts": {
