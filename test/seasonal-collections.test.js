@@ -344,7 +344,6 @@ const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"
 const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "utf8")).placements;
 assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
-  if (slug === "halloween") { assert.ok(vercel.redirects.some((r) => r.source === route && r.destination === "/fall"), "/halloween is redirected to /fall until Halloween 2027"); continue; }   // paused, owner 2026-11-05
   const rule = vercel.rewrites.find((r) => r.source === route);
   assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
   const page = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
