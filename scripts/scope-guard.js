@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // City stated by a street address (P1 audit EXPORT-2): shared by api/submit.js and scripts/ra-sync.js.
   "api/_lib/address-city.js",
+  // Public submit form stores the city its address states (P1 audit EXPORT-2).
+  "api/submit.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
