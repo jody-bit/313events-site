@@ -28,7 +28,7 @@ function call(route, { method = "GET", query = {}, body, headers = {} } = {}) {
   const form = await call("authorize", { query: q });
   assert.strictEqual(form.status, 200);
   assert.ok(/type="password"/.test(form.body) && !form.body.includes(T));
-  assert.ok(form.body.includes("<strong>Claude</strong>") && form.body.includes("<strong>claude.ai</strong>"), "consent text names the client and the redirect host");
+  assert.ok(form.body.includes("<strong>Claude</strong>") && form.body.includes("<strong>claude.ai</strong>") && /24 hours/.test(form.body), "consent text names the client, the redirect host and the lifetime");
   assert.ok(form.body.includes('name="resource"'), "resource is carried through the sign-in form");
   assert.ok(/frame-ancestors 'none'/.test(form.headers["content-security-policy"]) && /default-src 'none'/.test(form.headers["content-security-policy"]), "CSP on the sign-in page");
   const wrongRes = await call("authorize", { query: Object.assign({}, q, { resource: "https://evil.example/api/editorial-gateway" }) });
@@ -49,6 +49,11 @@ function call(route, { method = "GET", query = {}, body, headers = {} } = {}) {
   assert.strictEqual(tk.status, 200);
   assert.strictEqual(gw.callerKind({ authorization: "Bearer " + tk.body.access_token }, T), "session");
   assert.strictEqual(tk.body.expires_in, 86400, "24-hour connector session");
+
+  // Cancel returns to the registered callback with error=access_denied and iss, and never asks for the token
+  const denied = await call("authorize", { method: "POST", body: Object.assign({ decision: "deny" }, q) });
+  assert.strictEqual(denied.status, 302);
+  assert.ok(denied.headers.location.startsWith(RU + "?") && denied.headers.location.includes("error=access_denied") && denied.headers.location.includes("iss=https%3A%2F%2Fpreview.example"));
 
   // rate limit: five wrong tokens from one address, then blocked even with the right token
   for (let i = 0; i < 5; i++) await call("authorize", { method: "POST", body: Object.assign({ gateway_token: "wrong-wrong-wrong-wrong" }, q), headers: { "x-forwarded-for": "7.7.7.7" } });

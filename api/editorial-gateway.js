@@ -85,6 +85,8 @@ const TOOLS = [
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   },
 ];
+// Tool-level auth for OAuth-capable clients (ChatGPT Apps SDK style; field name to be confirmed on a Preview).
+for (const t of TOOLS) t.securitySchemes = oauthFront.SECURITY_SCHEMES;
 
 function makeCtx(req) {
   const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0];

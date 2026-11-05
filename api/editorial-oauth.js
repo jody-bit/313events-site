@@ -27,18 +27,17 @@ function blocked(req, nowMs) {
 function noteFail(req, nowMs) { const k = clientKey(req); FAILS.set(k, (FAILS.get(k) || []).concat(nowMs)); }
 
 const FIELDS = ["client_id", "redirect_uri", "response_type", "code_challenge", "code_challenge_method", "state", "resource"];
-function page(q, message, client) {
+function page(q, message, consent) {
   const hidden = FIELDS.map((f) => `<input type="hidden" name="${f}" value="${esc(q[f])}">`).join("");
-  let host = "";
-  try { host = new URL(q.redirect_uri).hostname; } catch (_) { host = ""; }
-  const name = client && client.nm ? client.nm : "an unnamed connector";
+  const name = consent ? consent.client_name : "(unnamed connector)";
+  const host = consent ? consent.redirect_host : "";
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Connect to 313.events</title>
 <style>body{font:16px system-ui;max-width:28rem;margin:3rem auto;padding:0 16px}input[type=password]{width:100%;padding:12px;font-size:16px;box-sizing:border-box}button{margin-top:12px;padding:12px 20px;font-size:16px}.e{color:#b00020}.w{border:2px solid #b00020;padding:12px}</style></head>
 <body><h1>Connect to 313.events</h1>
-<p>You are about to let <strong>${esc(name)}</strong> (sending you back to <strong>${esc(host)}</strong>) find events and attach images on 313.events for the next 24 hours.</p>
-<p class="w"><strong>Only continue if you started this connection yourself, just now,</strong> from the Claude or ChatGPT connector screen. If anyone sent you this link, close this page. Type the token only on this exact address: ${esc(String(q._origin || ""))}</p>
+<p>Connector: <strong>${esc(name)}</strong><br>Returns to: <strong>${esc(host)}</strong></p>
+<p class="w"><strong>${esc(consent ? consent.warning : "")}</strong> If anyone sent you this link, choose Cancel. Type the token only on this exact address: ${esc(String(q._origin || ""))}</p>
 ${message ? `<p class="e">${esc(message)}</p>` : ""}<form method="post" action="/api/editorial-oauth/authorize">${hidden}
-<input type="password" name="gateway_token" autocomplete="off" autocapitalize="off" required aria-label="Gateway token"><button type="submit">Connect</button></form></body></html>`;
+<input type="password" name="gateway_token" autocomplete="off" autocapitalize="off" aria-label="Gateway token"><button type="submit" name="decision" value="approve">Connect</button> <button type="submit" name="decision" value="deny" formnovalidate>Cancel</button></form></body></html>`;
 }
 
 function parseForm(req) {
@@ -77,7 +76,7 @@ module.exports = async function handler(req, res) {
       res.setHeader("Referrer-Policy", "no-referrer");
       res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self' https://claude.ai https://claude.com https://chatgpt.com; frame-ancestors 'none'; base-uri 'none'");
       res.setHeader("X-Frame-Options", "DENY");
-      res.status(200).send(page(Object.assign({ _origin: o }, q), "", chk.client));
+      res.status(200).send(page(Object.assign({ _origin: o }, q), "", front.consent(token, q, o)));
       return;
     }
     if (req.method === "POST") {
@@ -89,7 +88,12 @@ module.exports = async function handler(req, res) {
       res.setHeader("Referrer-Policy", "no-referrer");
       res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self' https://claude.ai https://claude.com https://chatgpt.com; frame-ancestors 'none'; base-uri 'none'");
       res.setHeader("X-Frame-Options", "DENY");
-      if (blocked(req, nowMs)) { res.setHeader("Content-Type", "text/html; charset=utf-8"); res.status(429).send(page(Object.assign({ _origin: o }, q), "Too many attempts. Wait ten minutes and try again.", chk.client)); return; }
+      if (f.decision === "deny") {
+        const back = front.denyRedirect(token, q, "access_denied", o);
+        if (back) { res.setHeader("Location", back); res.status(302).end(); return; }
+        res.status(400).json({ error: "invalid_request" }); return;
+      }
+      if (blocked(req, nowMs)) { res.setHeader("Content-Type", "text/html; charset=utf-8"); res.status(429).send(page(Object.assign({ _origin: o }, q), "Too many attempts. Wait ten minutes and try again.", front.consent(token, q, o))); return; }
       const a = front.approve(token, q, f.gateway_token, new Date(nowMs), o);
       if (!a.ok) {
         noteFail(req, nowMs);
@@ -97,7 +101,7 @@ module.exports = async function handler(req, res) {
         console.log(JSON.stringify({ editorial_oauth: "signin_refused", reason: a.error, client: chk.client && chk.client.nm || null, redirect_host: (() => { try { return new URL(q.redirect_uri).hostname; } catch (_) { return null; } })(), vercel_env: process.env.VERCEL_ENV || null }));
         await new Promise((r) => setTimeout(r, 750));
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.status(401).send(page(Object.assign({ _origin: o }, q), "That token was not accepted.", chk.client));
+        res.status(401).send(page(Object.assign({ _origin: o }, q), "That token was not accepted.", front.consent(token, q, o)));
         return;
       }
       res.setHeader("Location", a.redirect);
@@ -110,7 +114,7 @@ module.exports = async function handler(req, res) {
   if (route === "token") {
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); res.status(405).json({ error: "invalid_request" }); return; }
     const f = parseForm(req);
-    const r = front.token(token, f, new Date());
+    const r = front.token(token, f, new Date(), o);
     res.status(r.status).json(r.body);
     return;
   }
