@@ -82,6 +82,7 @@ const { SLUGS } = require("../api/_lib/source-slugs");
 const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
+const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const {
   RA_ID_PATTERN,
   parseCandidateIds,
@@ -865,7 +866,7 @@ async function completeRaSyncSession(opts) {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rowsToUpsert.map((r) => r.row.external_id),
-        { select: `external_id,status,${MERGE_BLANK_FIELDS.join(",")}` }
+        { select: `external_id,status,source,internal_note,${MERGE_BLANK_FIELDS.join(",")}` }
       );
 
       // No existing row at all (the normal, overwhelmingly common case --
@@ -878,7 +879,10 @@ async function completeRaSyncSession(opts) {
       const toMerge = [];
       for (const entry of rowsToUpsert) {
         const existing = existingRows.get(entry.row.external_id);
-        if (existing) toMerge.push({ ...entry, existing });
+        // An owner-supplied or editorially held row is never filled by automation, not even a blank (the owner may have
+        // left it blank on purpose). Reported as skipped so the session still counts it as addressed.
+        if (existing && isOwnerSuppliedRow(existing)) skipped.push({ id: entry.id, reason: "OWNER_PROTECTED" });
+        else if (existing) toMerge.push({ ...entry, existing });
         else toInsert.push(entry);
       }
 
