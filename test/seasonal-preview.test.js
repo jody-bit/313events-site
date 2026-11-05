@@ -29,11 +29,11 @@ assert.strictEqual(call({ VERCEL_ENV: "preview" }, { c: "fall" }, "POST").status
 const LEADS = {
   fall: ["yates-cider-mill", "franklin-cider-mill", "parmenters-northville-cider-mill", "diehls-orchard-and-cider-mill", "parshallville-cider-mill", "macqueen-orchards"],
   "outside-the-ordinary": ["highland-state-recreation-area", "cranbrook-gardens-and-grounds", "wadhams-to-avoca-trail", "crosswinds-marsh", "ojibway-prairie-complex", "hidden-lake-gardens"],
-  "off-the-beaten-orbit": ["pewabic-holiday-showcase", "post-make-the-gift-workshops", "walkerville-brewery-holiday-market", "willistead-manor-holiday-tours", "stahls-motors-and-music", "rochester-kris-kringle-market"]
+  "off-the-beaten-orbit": ["pewabic-holiday-showcase", "post-make-the-gift-workshops", "detroit-urban-craft-fair", "walkerville-brewery-holiday-market", "willistead-manor-holiday-tours", "stahls-motors-and-music", "rochester-kris-kringle-market"]
 };
 for (const slug of H.SLUGS) {
   const d = H.previewData(slug), feat = d.entries.filter((e) => e.featured).map((e) => e.id);
-  assert.deepStrictEqual(feat, LEADS[slug], slug + ": six leads in rank order");
+  assert.deepStrictEqual(feat, LEADS[slug], slug + ": leads in rank order");
   assert.strictEqual(new Set(d.entries.map((e) => e.id)).size, d.entries.length, slug + ": no duplicate destinations");
   d.entries.forEach((e) => { assert.ok(e.name && e.city && e.region && e.summary && e.categories.length, e.id); if (d.meta) assert.ok(e.categories.every((c) => d.meta.categories.some((m) => m.id === c)), e.id + ": category known"); });
 }

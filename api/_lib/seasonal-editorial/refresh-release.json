@@ -355,7 +355,7 @@
    "hero": {
     "desktop": "/assets/seasonal/off-the-beaten-orbit-hero-1600.webp",
     "mobile": "/assets/seasonal/off-the-beaten-orbit-hero-800.webp",
-    "alt": "Shoppers browse rows of independent maker booths in a large indoor craft fair hall.",
+    "alt": "Shoppers browse rows of independent maker booths at the Detroit Urban Craft Fair.",
     "illustrative": false,
     "objectPosition": "50% 50%"
    },
@@ -450,6 +450,46 @@
      "note": "Fits the collection brief per Editorial review 2026-11-04 (Jody's refresh brief cmsg 02:30Z).",
      "checkedAt": "2026-11-04",
      "checkedBy": "Claude Code (Editorial)"
+    }
+   },
+   {
+    "id": "detroit-urban-craft-fair",
+    "name": "Detroit Urban Craft Fair",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "markets",
+     "makers-studios"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "More than 100 independent makers fill the Masonic Temple for a weekend of handmade gifts, prints, clothing and more. Saturday December 5 and Sunday December 6.",
+    "website": "https://www.detroiturbancraftfair.com/",
+    "checkUrl": "https://www.detroiturbancraftfair.com/",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "pending": true,
+     "pendingNote": "Photo pending: no cleared photograph yet. Must render the visible label 'Photo pending'; never an illustration badge. Jody supplied a Detroit Urban Craft Fair photo (2026-11-05 04:03Z) used for the homepage tile and collection hero; attaching it to this card needs the owner-photo or licence record (photoId/credit) first."
+    },
+    "lastDay": "2026-12-06",
+    "removeAt": "2026-12-07T00:00:00-05:00",
+    "lastDayKind": "event",
+    "evidence": [
+     {
+      "level": "official",
+      "websiteChecked": true,
+      "url": "https://www.detroiturbancraftfair.com/",
+      "checkedAt": "2026-11-05",
+      "checkedBy": "Claude Code (Event Intelligence read, event-intelligence/next14-2026-11-05/DETROIT-URBAN-CRAFT-FAIR-2026-11-05.md); approval stamp is applied by R&Q/Platform, not here",
+      "note": "Dates 'December 5th and 6th, 2026' on the organizer home page; Masonic Temple, 500 Temple St, Midtown Detroit per /about. Hours (Sat 11-7, Sun 11-6) and $5 admission come from /about, which prints no year, so they are not stated on the card: Check with the venue before you go."
+     }
+    ],
+    "relevance": {
+     "confirmed": true,
+     "note": "Independent maker market in the Detroit core; owner direction 2026-11-05 04:03Z (cmsg_0139NVW4pFWSu54bJXVBHDMbVTYPyh5HnYFgdT2wApwV83).",
+     "checkedAt": "2026-11-05",
+     "checkedBy": "Claude Code (Experience, on owner direction)"
     }
    },
    {
@@ -607,6 +647,7 @@
   "lead": [
    "pewabic-holiday-showcase",
    "post-make-the-gift-workshops",
+   "detroit-urban-craft-fair",
    "walkerville-brewery-holiday-market",
    "willistead-manor-holiday-tours",
    "stahls-motors-and-music",
