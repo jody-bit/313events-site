@@ -176,6 +176,10 @@
       "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
     }
   },
+  "redirects": [
+    { "source": "/halloween", "destination": "/fall", "permanent": false },
+    { "source": "/halloween.html", "destination": "/fall", "permanent": false }
+  ],
   "rewrites": [
     {
       "source": "/config.js",
@@ -228,10 +232,6 @@
     {
       "source": "/off-the-beaten-orbit",
       "destination": "/api/seasonal-collection?c=off-the-beaten-orbit"
-    },
-    {
-      "source": "/halloween",
-      "destination": "/halloween.html"
     },
     {
       "source": "/fall-color",

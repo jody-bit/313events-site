@@ -18,6 +18,7 @@ const dest = (src) => (v.rewrites.find((x) => x.source === src) || {}).destinati
 assert.strictEqual(dest("/fall"), "/api/seasonal-collection?c=fall");
 assert.strictEqual(dest("/outside-the-ordinary"), "/api/seasonal-collection?c=outside-the-ordinary");
 assert.strictEqual(dest("/off-the-beaten-orbit"), "/api/seasonal-collection?c=off-the-beaten-orbit");
-assert.strictEqual(dest("/halloween"), "/halloween.html", "/halloween untouched");
+assert.strictEqual(dest("/halloween"), undefined, "/halloween is paused until Halloween 2027 (redirected to /fall)");
+assert.ok(v.redirects.some((r) => r.source === "/halloween" && r.destination === "/fall" && r.permanent === false), "temporary redirect");
 assert.strictEqual(dest("/fall-color"), "/fall-color.html", "/fall-color untouched");
 console.log("ok seasonal-collection-public");
