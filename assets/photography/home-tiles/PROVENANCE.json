@@ -1,0 +1,18 @@
+[
+  {
+    "files": ["home-tile-apples-eastern-market-800.webp", "home-tile-apples-eastern-market-1600.webp"],
+    "used_on": "homepage Don't Miss tile \"Detroit Orbit Fall Guide\" (replaces the illustration /assets/guides/fall-guide-*.webp, which stays in the repo)",
+    "original": {"filename": "IMG_5809.jpeg", "pixels": "3024x3024", "device": "Apple iPhone 13", "exif_datetime_original": "2023-11-18 09:52:38", "location_per_owner": "Eastern Market, Detroit"},
+    "crop": "x 0-3024, y 820-2710 of the original (16:10), resized down to 1600x1000 and 800x500; no retouching, no upscaling, no AI",
+    "clearance": "Owner-cleared: Jody, 2026-11-05 (all owner Photos/library assets). Licence and photographer details not recorded beyond that.",
+    "not_used": "apples-enhancement-study.png (AI reconstruction); the original JPEG is the source"
+  },
+  {
+    "files": ["home-tile-autumn-boardwalk-800.webp", "home-tile-autumn-boardwalk-1600.webp"],
+    "used_on": "homepage Don't Miss tile \"Fall Colors\" (replaces the illustration /assets/guides/fall-color-guide-*.webp, which stays in the repo)",
+    "original": {"filename": "IMG_2026.HEIC", "apple_photos_uuid": "9E980D02-89B9-4A05-A3AA-DA4AA1010CB9", "pixels": "8064x6048 stored, 6048x8064 after orientation", "capture_date": "2026-10-09", "place_per_photo_library": "Highland State Recreation Area (library record 313p-9e980d02)"},
+    "crop": "orientation applied, then x 1648-6048, y 2450-5200 of the oriented original (16:10), resized down to 1600x1000 and 800x500; no retouching, no upscaling, no AI",
+    "clearance": "Owner-cleared: Jody, 2026-11-05 (all owner Photos/library assets). Licence and photographer details not recorded beyond that.",
+    "originals_kept_at": "experience/hero-slideshow-2026-11-05/originals/ (unmodified)"
+  }
+]
