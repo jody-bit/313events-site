@@ -1,0 +1,38 @@
+// DRAFT adapter tests: synthetic token, no network.
+"use strict";
+const assert = require("assert");
+const crypto = require("crypto");
+const gw = require("../api/_lib/editorial-gateway");
+const o = require("../api/_lib/oauth-front");
+const T = "s".repeat(40);
+const now = new Date("2026-11-05T05:00:00Z");
+const RU = "https://claude.ai/api/mcp/auth_callback";
+const verifier = crypto.randomBytes(32).toString("base64url");
+const challenge = crypto.createHash("sha256").update(verifier).digest("base64url");
+
+const m = o.metadata("https://preview.example");
+assert.strictEqual(m.authorizationServer.code_challenge_methods_supported[0], "S256");
+assert.deepStrictEqual(m.protectedResource.authorization_servers, ["https://preview.example"]);
+assert.strictEqual(o.register(T, { redirect_uris: ["https://evil.example/cb"] }).status, 400, "unknown redirect host refused");
+assert.strictEqual(o.register(T, { redirect_uris: ["http://claude.ai/cb"] }).status, 400, "http refused");
+const reg = o.register(T, { redirect_uris: [RU, "https://chatgpt.com/connector_platform_oauth_redirect"] });
+assert.strictEqual(reg.status, 201);
+const q = { client_id: reg.body.client_id, redirect_uri: RU, response_type: "code", code_challenge: challenge, code_challenge_method: "S256", state: "abc" };
+assert.ok(o.checkAuthorize(T, q).ok);
+assert.strictEqual(o.checkAuthorize(T, Object.assign({}, q, { redirect_uri: "https://claude.ai/other" })).error, "invalid_redirect_uri");
+assert.strictEqual(o.checkAuthorize(T, Object.assign({}, q, { code_challenge_method: "plain" })).error, "invalid_request");
+assert.strictEqual(o.checkAuthorize("u".repeat(40), q).error, "invalid_client", "clients registered under another token are void");
+assert.strictEqual(o.approve(T, q, "wrong-token-wrong-token", now).error, "access_denied");
+const ok = o.approve(T, q, ` ${T}\n`, now);
+assert.ok(ok.ok && ok.redirect.startsWith(RU + "?code=") && ok.redirect.includes("state=abc"));
+assert.ok(!ok.redirect.includes(T), "the token never appears in the redirect");
+const code = new URL(ok.redirect).searchParams.get("code");
+const form = { grant_type: "authorization_code", code, client_id: q.client_id, redirect_uri: RU, code_verifier: verifier };
+assert.strictEqual(o.token(T, Object.assign({}, form, { code_verifier: "x".repeat(43) }), now).status, 400, "wrong PKCE verifier");
+assert.strictEqual(o.token(T, form, new Date(now.getTime() + 61000)).status, 400, "code expires after 60 s");
+const tk = o.token(T, form, now);
+assert.strictEqual(tk.status, 200);
+assert.strictEqual(gw.callerKind({ authorization: "Bearer " + tk.body.access_token }, T, now), "session", "the gateway accepts the issued access token as a device session");
+assert.strictEqual(gw.callerKind({ authorization: "Bearer " + tk.body.access_token }, "r".repeat(40), now), null, "rotating the token revokes it");
+assert.ok(!JSON.stringify(tk.body).includes(T));
+console.log("PASS: oauth-front draft: discovery, stateless registration, owner approval, PKCE code exchange, revocation by token rotation");
