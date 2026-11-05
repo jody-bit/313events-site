@@ -207,7 +207,14 @@
   function isShown(e) { return PROJECTED.indexOf(e) >= 0 ? (!e.fixture && e.status === "PUBLISHED") : isPublic(e); }
   function published(c) { return c.entries.filter(isShown); }
   function entriesPublic(c) { return c.entries.filter(isShown).length; }
+  // Scheduled removal from a collection placement. An entry's public `removeAt` (ISO instant) takes it out of the displayed list from that
+  // moment; the destination record, images and history stay in the private data. In the browser `now` is the visitor's clock; in Node
+  // (build, tests) no instant is applied unless one is passed, so generated pages and tests do not depend on the day they run.
+  function live(c, now) {
+    if (now === undefined) now = typeof window !== "undefined" ? Date.now() : null;
+    return published(c).filter(function (e) { return !(now !== null && e.removeAt && Date.parse(e.removeAt) <= now); });
+  }
 
-  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, CROSS: CROSS, STATES: STATES, published: published, entriesPublic: entriesPublic,
+  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
     readiness: readiness, gate: gate, isPublic: isPublic };
 });
