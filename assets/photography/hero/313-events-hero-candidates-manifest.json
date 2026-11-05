@@ -213,7 +213,7 @@
     "mobile": {
       "file": "313-events-homepage-hero-M-mobile.webp",
       "size": [900, 1200],
-      "crop": "From the original IMG_1683.HEIC, x 911-3179, y 0-3024 (3:4), downscaled to 900x1200"
+      "crop": "From the original IMG_1683.HEIC, x 1173-2916, y 700-3024 (3:4), downscaled to 900x1200"
     },
     "treatment": "Crop and resize only; no tint or generative alteration",
     "rights": "Owner-cleared: Jody, 2026-11-05, all owner Photos/library assets for 313.events use (no licence or photographer details recorded beyond that)",
@@ -244,7 +244,7 @@
     "desktop": {
       "file": "313-events-homepage-hero-O.webp",
       "size": [2400, 1350],
-      "note": "Re-cropped from the full-resolution original IMG_9853.HEIC (orientation applied first), x 0-4032, y 475-2743, downscaled to 2400x1350; no upscaling, retouching or AI."
+      "note": "Re-cropped from the full-resolution original IMG_9853.HEIC (orientation applied first), x 0-4032, y 395-2663, downscaled to 2400x1350; no upscaling, retouching or AI."
     },
     "mobile": {
       "file": "313-events-homepage-hero-O-mobile.webp",
