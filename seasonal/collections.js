@@ -140,6 +140,8 @@
   };
 
   var ORDER = ["fall", "halloween", "fall-color"];
+  // Collections taken out of public cross-linking until their season returns (Dark Orbit: Halloween 2027, owner 2026-11-05).
+  var PAUSED = ["halloween"];
   var CROSS = {
     fall: { label: "Fall Is On.", route: "/fall", img: "/assets/seasonal/fall-card-3.webp" },
     halloween: { label: "The Dark Orbit", route: "/halloween", img: "/assets/seasonal/halloween-card-1.webp" },
@@ -215,6 +217,6 @@
     return published(c).filter(function (e) { return !(now !== null && e.removeAt && Date.parse(e.removeAt) <= now); });
   }
 
-  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
+  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, PAUSED: PAUSED, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
     readiness: readiness, gate: gate, isPublic: isPublic };
 });

@@ -295,7 +295,8 @@ for (const slug of DATA.ORDER) {
   for (const e of PRIVATE[slug].entries.filter((x) => !DATA.isPublic(x))) assert.ok(!html.includes(e.name), slug + ": unpublished record leaked into the page: " + e.name);
   assert.ok(html.includes("Illustrative image") && html.includes('class="sc-hero"'), "the approved hero (labelled illustrative) is unchanged");
   assert.ok(html.includes("not only this collection") && html.includes("Open events map") && !/View on map/.test(html));
-  for (const other of DATA.ORDER.filter((s) => s !== slug)) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.ORDER.filter((s) => s !== slug && !DATA.PAUSED.includes(s))) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.PAUSED) assert.ok(!html.includes('href="' + routes[other] + '"'), "paused collection " + other + " is not cross-linked");
   const built = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(!/fixture/i.test(built), slug + ".html must never contain test fixtures");
 }
