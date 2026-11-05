@@ -207,17 +207,17 @@
     "source": "313p-fd2d7588 (owner photo library; web file /assets/seasonal/editorial/fall/atmospheric__fall__d0934__1600.webp)",
     "desktop": {
       "file": "313-events-homepage-hero-M.webp",
-      "size": [1600, 900],
-      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+      "size": [2400, 1350],
+      "note": "Re-cropped from the full-resolution original IMG_1683.HEIC (orientation applied first), x 0-4032, y 250-2518, downscaled to 2400x1350; no upscaling, retouching or AI."
     },
     "mobile": {
       "file": "313-events-homepage-hero-M-mobile.webp",
       "size": [900, 1200],
-      "crop": "Centre 3:4 crop"
+      "crop": "From the original IMG_1683.HEIC, x 911-3179, y 0-3024 (3:4), downscaled to 900x1200"
     },
     "treatment": "Crop and resize only; no tint or generative alteration",
     "rights": "Owner-cleared: Jody, 2026-11-05, all owner Photos/library assets for 313.events use (no licence or photographer details recorded beyond that)",
-    "original": {"filename": "IMG_1683.HEIC", "apple_photos_uuid": "FD2D7588-2BE5-441F-81C8-328EACCE107E", "pixels": "4032x3024", "note": "Web file is a 1600px derivative; export the original for a sharp 2400px slide"},
+    "original": {"filename": "IMG_1683.HEIC", "apple_photos_uuid": "FD2D7588-2BE5-441F-81C8-328EACCE107E", "pixels": "4032x3024", "note": "Sharp slide re-cropped from this original (kept unmodified in experience/hero-slideshow-2026-11-05/originals, EXIF intact)"},
     "status": "draft, 2026-11-05"
   },
   {
@@ -225,17 +225,17 @@
     "source": "313p-9e980d02 (owner photo library; web file /assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-02__1600.webp)",
     "desktop": {
       "file": "313-events-homepage-hero-N.webp",
-      "size": [1600, 900],
-      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+      "size": [2400, 1350],
+      "note": "Re-cropped from the full-resolution original IMG_2026.HEIC (orientation applied first), x 0-6048, y 2300-5702, downscaled to 2400x1350; no upscaling, retouching or AI."
     },
     "mobile": {
       "file": "313-events-homepage-hero-N-mobile.webp",
       "size": [900, 1200],
-      "crop": "Centre 3:4 crop"
+      "crop": "From the original IMG_2026.HEIC, x 900-5436, y 1200-7248 (3:4), downscaled to 900x1200"
     },
     "treatment": "Crop and resize only; no tint or generative alteration",
     "rights": "Owner-cleared: Jody, 2026-11-05, all owner Photos/library assets for 313.events use (no licence or photographer details recorded beyond that)",
-    "original": {"filename": "IMG_2026.HEIC", "apple_photos_uuid": "9E980D02-89B9-4A05-A3AA-DA4AA1010CB9", "pixels": "6048x8064 portrait", "note": "Web file is a 1600px derivative; export the original for a sharp 2400px slide"},
+    "original": {"filename": "IMG_2026.HEIC", "apple_photos_uuid": "9E980D02-89B9-4A05-A3AA-DA4AA1010CB9", "pixels": "6048x8064 portrait", "note": "Sharp slide re-cropped from this original (kept unmodified in experience/hero-slideshow-2026-11-05/originals, EXIF intact)"},
     "status": "draft, 2026-11-05"
   },
   {
@@ -243,17 +243,17 @@
     "source": "313p-8eb3067a (owner photo library; web file /assets/seasonal/editorial/fall/atmospheric__fall__d2111__1600.webp)",
     "desktop": {
       "file": "313-events-homepage-hero-O.webp",
-      "size": [1600, 900],
-      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+      "size": [2400, 1350],
+      "note": "Re-cropped from the full-resolution original IMG_9853.HEIC (orientation applied first), x 0-4032, y 475-2743, downscaled to 2400x1350; no upscaling, retouching or AI."
     },
     "mobile": {
       "file": "313-events-homepage-hero-O-mobile.webp",
       "size": [900, 1200],
-      "crop": "Centre 3:4 crop"
+      "crop": "From the original IMG_9853.HEIC, x 1000-3268, y 0-3024 (3:4), downscaled to 900x1200"
     },
     "treatment": "Crop and resize only; no tint or generative alteration",
     "rights": "Owner-cleared: Jody, 2026-11-05, all owner Photos/library assets for 313.events use (no licence or photographer details recorded beyond that)",
-    "original": {"filename": "IMG_9853.HEIC", "apple_photos_uuid": "8EB3067A-ADE7-4B2E-8A72-A7FF32FA28F7", "pixels": "4032x3024", "note": "Web file is a 1600px derivative; export the original for a sharp 2400px slide"},
+    "original": {"filename": "IMG_9853.HEIC", "apple_photos_uuid": "8EB3067A-ADE7-4B2E-8A72-A7FF32FA28F7", "pixels": "4032x3024", "note": "Sharp slide re-cropped from this original (kept unmodified in experience/hero-slideshow-2026-11-05/originals, EXIF intact)"},
     "status": "draft, 2026-11-05"
   }
 ]
