@@ -66,7 +66,7 @@ const ALLOWED = [
   "api/_lib/localist-rows.js",
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
   // Editorial Gateway (owner P1 interruption 2026-10-26): authenticated find / upload image / verify for AI clients; new files only.
-  "api/editorial-gateway.js", "api/_lib/editorial-gateway.js",
+  "api/editorial-gateway.js", "api/editorial-oauth.js", "api/_lib/oauth-front.js", "api/_lib/editorial-gateway.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",

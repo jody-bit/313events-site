@@ -178,6 +178,30 @@
   },
   "rewrites": [
     {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/api/editorial-oauth?route=protected-resource"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource/api/editorial-gateway",
+      "destination": "/api/editorial-oauth?route=protected-resource"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/api/editorial-oauth?route=authorization-server"
+    },
+    {
+      "source": "/api/editorial-oauth/register",
+      "destination": "/api/editorial-oauth?route=register"
+    },
+    {
+      "source": "/api/editorial-oauth/authorize",
+      "destination": "/api/editorial-oauth?route=authorize"
+    },
+    {
+      "source": "/api/editorial-oauth/token",
+      "destination": "/api/editorial-oauth?route=token"
+    },
+    {
       "source": "/config.js",
       "destination": "/api/config"
     },
