@@ -209,8 +209,8 @@ async function run() {
     assert.strictEqual(rows.noname.venue_name_raw, "Venue TBA");
     assert.strictEqual(rows.noname.venue_city_raw, "Madison Heights");
     assert.strictEqual(rows.noname.venue_id, null, "a Madison Heights event is not linked to a Detroit placeholder");
-    // A bare region is left as the text it is: not the placeholder, and no feed city.
-    assert.deepStrictEqual([rows.region.venue_name_raw, rows.region.venue_city_raw, rows.region.venue_id], ["OH", null, null]);
+    // A bare region is not a venue (P1 audit EXPORT-2): the placeholder, no city, and no feed city.
+    assert.deepStrictEqual([rows.region.venue_name_raw, rows.region.venue_city_raw, rows.region.venue_id], ["Venue TBA", null, null]);
     // A LOCATION with any real text is never given the feed's city — it
     // states a place, even when that place cannot be read. (Independent
     // review, 2026-10-04: a first version filled every one of these with
@@ -280,7 +280,7 @@ async function run() {
       ],
     });
     assert.strictEqual(regional["region-only"].venue_city_raw, null);
-    assert.strictEqual(regional["region-only"].venue_name_raw, "MI", "a bare region is left as it is");
+    assert.strictEqual(regional["region-only"].venue_name_raw, "Venue TBA", "a bare region is not a venue (P1 audit EXPORT-2): the existing placeholder, no city");
 
     const regionalBlank = await runFeed({
       feedSource: { ...MUNICIPAL_FEED, id: "fs-regional2", venue_name: "Eastern Market Partnership", feed_url: "https://feed.example/emp2.ics" },
