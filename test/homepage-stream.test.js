@@ -325,11 +325,11 @@ async function run() {
     const seeded = JSON.parse(read("data/dont-miss.json"));
     // Shipped today: the three seasonal guides as static editorial cards (no
     // canonical event is selected), each with its optimized artwork on disk.
-    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Halloween in the Orbit", "Fall Colors"]);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Off the Beaten Orbit", "Fall Colors"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Explore winter", "Chase color"]);
     assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
-    for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
+    for (const p of seeded.placements) for (const f of [p.image, p.image2x].filter(Boolean)) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
     assert.ok(seeded.placements.every((p) => !p.url), "no other link field");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");

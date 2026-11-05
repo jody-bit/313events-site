@@ -168,6 +168,12 @@
     },
     "api/seasonal-qa.js": {
       "includeFiles": "api/_lib/seasonal-editorial/**"
+    },
+    "api/seasonal-preview.js": {
+      "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
+    },
+    "api/seasonal-collection.js": {
+      "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
     }
   },
   "rewrites": [
@@ -213,7 +219,15 @@
     },
     {
       "source": "/fall",
-      "destination": "/fall.html"
+      "destination": "/api/seasonal-collection?c=fall"
+    },
+    {
+      "source": "/outside-the-ordinary",
+      "destination": "/api/seasonal-collection?c=outside-the-ordinary"
+    },
+    {
+      "source": "/off-the-beaten-orbit",
+      "destination": "/api/seasonal-collection?c=off-the-beaten-orbit"
     },
     {
       "source": "/halloween",

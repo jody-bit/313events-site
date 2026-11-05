@@ -32,6 +32,8 @@
  *           license and carries no license URL. The original photo identifiers (file name, Apple Photos id) stay in the
  *           private photo library and are looked up by photoId; scripts/build-seasonal.js and the tests verify that;
  *        c. linked image: recorded owner acceptance of the copyright risk. That is NOT confirmed usage rights.
+ *        e. owner-cleared supplied image: `image.ownerClearance` {statement (the owner's words, verbatim), recordedBy, recordedAt,
+ *           messageRef}. No photographer, credit or licence is asserted; no visible credit is shown.
  *        d. owner-supplied illustration: the recorded `image.illustration` statement (the card was supplied by the
  *           owner; the generation tool and its terms are not recorded). It says nothing about any real photograph.
  *   5. explicit publication approval: `approval` {by, at}. Only the approving person adds this; nothing in this repo
@@ -140,6 +142,8 @@
   };
 
   var ORDER = ["fall", "halloween", "fall-color"];
+  // Collections taken out of public cross-linking until their season returns (Dark Orbit: Halloween 2027, owner 2026-11-05).
+  var PAUSED = ["halloween"];
   var CROSS = {
     fall: { label: "Fall Is On.", route: "/fall", img: "/assets/seasonal/fall-card-3.webp" },
     halloween: { label: "The Dark Orbit", route: "/halloween", img: "/assets/seasonal/halloween-card-1.webp" },
@@ -168,6 +172,11 @@
     var op = img.ownerPhoto, au = op && op.authorization;
     var owner = !!(op && PHOTO_ID.test(op.photoId || "") && has(op.reviewRef) && au && has(au.statement) && has(au.grantee) && has(au.recordedBy) &&
       DATE.test(au.recordedAt || "") && DATE.test(op.verifiedAt || "") && has(op.verifiedBy) && has(img.credit) && img.illustrative !== true);
+    // Owner-cleared supplied image (owner instruction 2026-11-05): an image the owner supplied and cleared in words for this use.
+    // Needs a hashed local file (route 3a) and the owner's statement recorded verbatim with who recorded it, when and where.
+    // It invents no photographer, credit or licence, shows no visible credit, and is not an owner-library photo or a license.
+    var oc = img.ownerClearance;
+    var cleared = !!(oc && has(oc.statement) && has(oc.recordedBy) && has(oc.messageRef) && DATE.test(oc.recordedAt || "") && !op && !img.remote && img.illustrative !== true);
     // Linked image (owner decision 2026-10-11): shown from the destination's own site with the generated card as the
     // fallback. Needs the link, its source page, a credit and the recorded owner acceptance. Recorded risk acceptance is
     // NOT confirmed usage rights; it is only the owner's decision to accept the risk.
@@ -183,10 +192,10 @@
       acq && has(acq.file) && img.src === acq.file && /^\/assets\/seasonal\/[a-z-]+-card-\d+\.webp$/.test(img.src) && acq.bytes > 0 &&
       SHA.test(acq.sha256 || "") && acq.width > 0 && acq.height > 0 && DATE.test(acq.acquiredAt || ""));
     var imageRoute = remote && !file ? "linked" : (file && owner ? "owner-photo" : (file ? "acquired-file" : (illus ? "illustration" : null)));
-    var rightsRoute = illus ? "owner-supplied-illustration" : (licensed ? "third-party-license" : (owner ? "owner-authorization" : (remote ? "linked-risk-acceptance" : null)));
+    var rightsRoute = illus ? "owner-supplied-illustration" : (licensed ? "third-party-license" : (owner ? "owner-authorization" : (cleared ? "owner-clearance" : (remote ? "linked-risk-acceptance" : null))));
     var acquired = file || remote || illus;
-    var rights = illus || licensed || owner || remote;
-    var imageStarted = !!rm || !!op || !!il || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
+    var rights = illus || licensed || owner || cleared || remote;
+    var imageStarted = !!rm || !!op || !!il || !!oc || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
     var approval = !!(ap && has(ap.by) && DATE.test(ap.at || ""));
     // A record the editor has resolved as a duplicate of another record, or as closed, is retained in the inventory with its
     // history but is never shown: `disposition {type}` forces it out of every public state, whatever else it carries.
@@ -207,7 +216,14 @@
   function isShown(e) { return PROJECTED.indexOf(e) >= 0 ? (!e.fixture && e.status === "PUBLISHED") : isPublic(e); }
   function published(c) { return c.entries.filter(isShown); }
   function entriesPublic(c) { return c.entries.filter(isShown).length; }
+  // Scheduled removal from a collection placement. An entry's public `removeAt` (ISO instant) takes it out of the displayed list from that
+  // moment; the destination record, images and history stay in the private data. In the browser `now` is the visitor's clock; in Node
+  // (build, tests) no instant is applied unless one is passed, so generated pages and tests do not depend on the day they run.
+  function live(c, now) {
+    if (now === undefined) now = typeof window !== "undefined" ? Date.now() : null;
+    return published(c).filter(function (e) { return !(now !== null && e.removeAt && Date.parse(e.removeAt) <= now); });
+  }
 
-  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, CROSS: CROSS, STATES: STATES, published: published, entriesPublic: entriesPublic,
+  return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, PAUSED: PAUSED, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
     readiness: readiness, gate: gate, isPublic: isPublic };
 });
