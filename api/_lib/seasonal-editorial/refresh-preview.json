@@ -375,10 +375,27 @@
     "website": "https://www.detroiturbancraftfair.com/",
     "checkUrl": "https://www.detroiturbancraftfair.com/",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
+     "src": "/assets/seasonal/off-the-beaten-orbit-ducf-card.webp",
      "illustrative": false,
-     "pending": true,
-     "pendingNote": "Photo pending: no cleared photograph yet. Must render the visible label 'Photo pending'; never an illustration badge. Jody supplied a Detroit Urban Craft Fair photo (2026-11-05 04:03Z) used for the homepage tile and collection hero; attaching it to this card needs the owner-photo or licence record (photoId/credit) first."
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-ducf-card.webp",
+      "bytes": 183976,
+      "sha256": "aa229a67ce74a18d6c850c6df7060ef24988347f2542a1dd5f6e602e08e9c8cc",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-05"
+     },
+     "ownerClearance": {
+      "statement": "Jody, instruction recorded in the 313.events project thread 2026-11-05 04:26Z: \"photo credit is cleared - make it live\" (relayed as Jody's instruction in Codex). Photographer, source URL and licence are NOT recorded.",
+      "recordedBy": "Claude Code (Experience)",
+      "recordedAt": "2026-11-05",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb4WVQ3RVLEFe1GBnnCBo7g7",
+      "original": {
+       "file": "/assets/guides/source/off-the-beaten-orbit-detroit-urban-craft-fair-original.webp",
+       "sha256": "d2c9bdda4cd031b7cf0a74f0774b5db3649a2a5e3491d68ec3641e19d50aedbc",
+       "note": "Owner-supplied upload of the Detroit Urban Craft Fair; card is a 3:2 crop resized to 1280x853."
+      }
+     }
     },
     "lastDay": "2026-12-06",
     "removeAt": "2026-12-07T00:00:00-05:00",
@@ -398,6 +415,10 @@
      "note": "Independent maker market in the Detroit core; owner direction 2026-11-05 04:03Z (cmsg_0139NVW4pFWSu54bJXVBHDMbVTYPyh5HnYFgdT2wApwV83).",
      "checkedAt": "2026-11-05",
      "checkedBy": "Claude Code (Experience, on owner direction)"
+    },
+    "approval": {
+     "by": "Jody (publication instruction, cmsg_0139NVW4pFWSu54bJXVBHDMb4WVQ3RVLEFe1GBnnCBo7g7)",
+     "at": "2026-11-05"
     }
    },
    {

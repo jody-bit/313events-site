@@ -19,3 +19,9 @@ to be confirmed by the Product Owner).
 (2026-11-05 04:03Z). Subject per Jody (2026-11-05 04:03Z): the Detroit Urban Craft Fair (indoor maker market). Photographer, credit line and licence NOT recorded in the file;
 shown with no visible credit per the promotional-photography default unless the source or Jody says a credit is required. Alt: "Shoppers browse rows of
 independent maker booths in a large indoor craft fair hall." Faces are visible (crowd scene).
+
+### Owner clearance record (2026-11-05 04:26Z)
+Jody's instruction, recorded verbatim as relayed in the project thread (message cmsg_0139NVW4pFWSu54bJXVBHDMb4WVQ3RVLEFe1GBnnCBo7g7):
+"photo credit is cleared - make it live" (Jody, in Codex). This clears the supplied DetroitUrbanCraftFair.webp for the Off the Beaten Orbit homepage tile, collection hero and the
+Detroit Urban Craft Fair card. NO photographer, source URL or licence is recorded and none is asserted; no visible credit is shown. The card uses
+`image.ownerClearance` (see seasonal/collections.js route 4e) with a 3:2 crop at assets/seasonal/off-the-beaten-orbit-ducf-card.webp (sha256 aa229a67ce74a18d6c850c6df7060ef24988347f2542a1dd5f6e602e08e9c8cc).
