@@ -228,7 +228,7 @@
       '<div class="sc-map-card"><p class="sc-map-copy"><strong>' + esc(col.mapBlurb) + '</strong></p>' +
       '<a class="sc-btn" href="/map.html">Open events map <span aria-hidden="true">&rarr;</span></a></div></div>' +
       '<div class="sc-bottom-more"><h2 class="sc-h2 sc-h2-sm">More seasonal collections</h2><ul class="sc-more">' +
-      DATA.ORDER.filter(function (s) { return s !== col.slug; }).map(function (s) {
+      DATA.ORDER.filter(function (s) { return s !== col.slug && (DATA.PAUSED || []).indexOf(s) < 0; }).map(function (s) {
         var c = DATA.CROSS[s];
         return '<li><a class="sc-more-card" href="' + esc(c.route) + '"><img src="' + esc(c.img) + '" alt="" loading="lazy" width="640" height="427"><span>' + esc(c.label) + ' <span aria-hidden="true">&rarr;</span></span></a></li>';
       }).join("") + '</ul></div></section>';

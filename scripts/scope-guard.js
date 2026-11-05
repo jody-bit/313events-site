@@ -33,6 +33,8 @@ const ALLOWED = [
   "assets/guides/fall-color-guide-1600.webp", "assets/guides/fall-color-guide-800.webp",
   "assets/guides/fall-guide-1600.webp", "assets/guides/fall-guide-800.webp",
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
+  "assets/guides/off-the-beaten-orbit-guide-1600.webp", "assets/guides/off-the-beaten-orbit-guide-800.webp",
+  "assets/guides/source/off-the-beaten-orbit-detroit-urban-craft-fair-original.webp",
   // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
   "api/_lib/ra-links.js", "api/admin-events.js",
   // #185 increment 1 (owner-correction lock in the shared events writer; owner GO for the draft 2026-10-18 05:05Z, release needs R&Q + owner word).
