@@ -201,5 +201,56 @@
     "copyright": "Jody Tyree",
     "content_note": "Bikini Kill performing live at Royal Oak Music Theatre, 2026-09-15 -- same photo already live on that event's own page.",
     "usage": "313.events homepage hero rotation, added 2026-09-17"
+  },
+  {
+    "candidate": "M",
+    "source": "313p-fd2d7588 (owner photo library; web file /assets/seasonal/editorial/fall/atmospheric__fall__d0934__1600.webp)",
+    "desktop": {
+      "file": "313-events-homepage-hero-M.webp",
+      "size": [1600, 900],
+      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-M-mobile.webp",
+      "size": [900, 1200],
+      "crop": "Centre 3:4 crop"
+    },
+    "treatment": "Crop and resize only; no tint or generative alteration",
+    "rights": "Owner-authorized: photographer granted use to 313.events owner (photo-library.json)",
+    "status": "draft, 2026-11-05"
+  },
+  {
+    "candidate": "N",
+    "source": "313p-9e980d02 (owner photo library; web file /assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-02__1600.webp)",
+    "desktop": {
+      "file": "313-events-homepage-hero-N.webp",
+      "size": [1600, 900],
+      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-N-mobile.webp",
+      "size": [900, 1200],
+      "crop": "Centre 3:4 crop"
+    },
+    "treatment": "Crop and resize only; no tint or generative alteration",
+    "rights": "Owner-authorized: photographer granted use to 313.events owner (photo-library.json)",
+    "status": "draft, 2026-11-05"
+  },
+  {
+    "candidate": "O",
+    "source": "313p-8eb3067a (owner photo library; web file /assets/seasonal/editorial/fall/atmospheric__fall__d2111__1600.webp)",
+    "desktop": {
+      "file": "313-events-homepage-hero-O.webp",
+      "size": [1600, 900],
+      "note": "Centre 16:9 crop of a 1600px source; softer than the 2400px slides at full desktop width."
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-O-mobile.webp",
+      "size": [900, 1200],
+      "crop": "Centre 3:4 crop"
+    },
+    "treatment": "Crop and resize only; no tint or generative alteration",
+    "rights": "Owner-authorized: photographer granted use to 313.events owner (photo-library.json)",
+    "status": "draft, 2026-11-05"
   }
 ]
