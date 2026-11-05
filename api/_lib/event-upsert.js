@@ -82,7 +82,7 @@
 "use strict";
 
 const { fillBlankOrganizerEventUrls } = require("./organizer-links");
-const { OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
+const { OWNER_CORRECTION_MARKER, OWNER_LOCKABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
 const { normalizeRowLinks } = require("./link-field");
 
 const DEFAULT_TABLE = "events";
@@ -171,7 +171,7 @@ function groupRowsByKeyShape(rows) {
 // completed nothing is written, because a write without it could revert a correction.
 const CORRECTION_PAGE_LIMIT = 1000;
 async function loadOwnerCorrections(supabaseUrl, serviceRoleKey) {
-  const cols = ["external_id", "internal_note", "venue_id"].concat(OWNER_EDITABLE_FIELDS).join(",");
+  const cols = ["external_id", "internal_note", "venue_id"].concat(OWNER_LOCKABLE_FIELDS).join(",");
   const r = await fetch(`${supabaseUrl}/rest/v1/events?select=${cols}&internal_note=like.*${OWNER_CORRECTION_MARKER}*&external_id=not.is.null&limit=${CORRECTION_PAGE_LIMIT}`, {
     headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
   });
