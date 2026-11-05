@@ -208,6 +208,40 @@ const ok = (m) => console.log("PASS: " + m);
   assert.ok(lines.length >= 2 && lines.every((l) => !l.includes(TOKEN) && !l.includes("z".repeat(30))), "refusal logs carry no secret");
   ok("F7 refusal logs contain no token value");
 
+  // F8 file-adapter defenses (ChatGPT temporary download_url). Synthetic bytes only.
+  w = makeWorld(); global.fetch = w.fetch;
+  const SECRET_Q = "sig=TEMP-SIGNATURE-SYNTHETIC-123";
+  const U = "https://93.184.216.34/dl/f1?" + SECRET_Q;
+  const fileFor = (u, extra) => Object.assign({ download_url: u, file_id: "file_syn" }, extra || {});
+  const upl = (f, extra) => call(bearer, mcp("upload_event_image", Object.assign({ event_id: EVENT, file: f, dry_run: false }, extra || {})));
+  // redirect hop to a private address is refused
+  w.remote.set(U, { status: 302, body: "", headers: { location: "https://10.0.0.5/x" } });
+  r = await upl(fileFor(U)); assert.strictEqual(r.payload.result.isError, true); assert.strictEqual(w.writes.length, 0);
+  // redirect to metadata IP literal and to http
+  w.remote.set(U, { status: 302, body: "", headers: { location: "http://93.184.216.34/x" } });
+  r = await upl(fileFor(U)); assert.strictEqual(r.payload.result.isError, true);
+  // oversize (> 4 MB) refused
+  w.remote.set(U, { body: Buffer.concat([FLYER, Buffer.alloc(4 * 1024 * 1024, 1)]) });
+  r = await upl(fileFor(U)); assert.strictEqual(r.payload.result.isError, true); assert.strictEqual(w.writes.length, 0);
+  // HTML / SVG disguised as an image, declared mime lying, empty body
+  for (const bad of [Buffer.from("<html><script>1</script></html>"), Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>'), Buffer.alloc(0)]) {
+    w.remote.set(U, { body: bad, type: "image/jpeg" });
+    r = await upl(fileFor(U, { mime_type: "image/jpeg" })); assert.strictEqual(r.payload.result.isError, true);
+  }
+  // pixel bomb header (65535 x 65535) refused
+  w.remote.set(U, { body: jpeg(65535, 65535, 100) });
+  r = await upl(fileFor(U)); assert.strictEqual(r.payload.result.isError, true);
+  assert.strictEqual(w.writes.length, 0, "every refused file wrote nothing");
+  // happy path, then the temporary URL must not leak into logs, audit line or response
+  w.remote.set(U, { body: FLYER });
+  const logs = []; const ol = console.log; const oe = console.error; console.log = (...a) => logs.push(a.join(" ")); console.error = (...a) => logs.push(a.join(" "));
+  r = await upl(fileFor(U, { file_name: "flyer.jpg" }), { client: "chatgpt" });
+  console.log = ol; console.error = oe;
+  assert.strictEqual(r.payload.result.structuredContent.outcome, "applied");
+  const blob = JSON.stringify(r.payload) + logs.join("\n") + w.events.get(EVENT).internal_note;
+  assert.ok(!blob.includes("TEMP-SIGNATURE-SYNTHETIC-123") && !blob.includes(TOKEN), "temporary download signature and token absent from response, logs and audit note");
+  ok("F8 file adapter: private/http redirect hops, >4 MB, HTML/SVG/empty, pixel bomb refused with zero writes; temp URL signature never logged or stored");
+
   global.fetch = realFetch;
   console.log("\nAll editorial-gateway-clients.test.js checks passed.");
 })().catch((e) => { console.error(e); process.exit(1); });

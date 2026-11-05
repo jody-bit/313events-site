@@ -10,11 +10,7 @@
 const front = require("./_lib/oauth-front");
 
 const configured = () => process.env.EDITORIAL_GATEWAY_TOKEN;
-function origin(req) {
-  const proto = String(req.headers["x-forwarded-proto"] || "https").split(",")[0];
-  const host = req.headers["x-forwarded-host"] || req.headers.host;
-  return `${proto}://${host}`;
-}
+const origin = (req) => front.issuerFor(req.headers);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 // Sign-in rate limit: 5 wrong tokens per 10 minutes per client address, per server instance, plus a fixed delay on every wrong
@@ -30,12 +26,17 @@ function blocked(req, nowMs) {
 }
 function noteFail(req, nowMs) { const k = clientKey(req); FAILS.set(k, (FAILS.get(k) || []).concat(nowMs)); }
 
-const FIELDS = ["client_id", "redirect_uri", "response_type", "code_challenge", "code_challenge_method", "state"];
-function page(q, message) {
+const FIELDS = ["client_id", "redirect_uri", "response_type", "code_challenge", "code_challenge_method", "state", "resource"];
+function page(q, message, client) {
   const hidden = FIELDS.map((f) => `<input type="hidden" name="${f}" value="${esc(q[f])}">`).join("");
+  let host = "";
+  try { host = new URL(q.redirect_uri).hostname; } catch (_) { host = ""; }
+  const name = client && client.nm ? client.nm : "an unnamed connector";
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Connect to 313.events</title>
-<style>body{font:16px system-ui;max-width:28rem;margin:3rem auto;padding:0 16px}input[type=password]{width:100%;padding:12px;font-size:16px;box-sizing:border-box}button{margin-top:12px;padding:12px 20px;font-size:16px}.e{color:#b00020}</style></head>
-<body><h1>Connect to 313.events</h1><p>Enter the Editorial Gateway token to let this connector add event images. It is checked on the server and never shown or stored.</p>
+<style>body{font:16px system-ui;max-width:28rem;margin:3rem auto;padding:0 16px}input[type=password]{width:100%;padding:12px;font-size:16px;box-sizing:border-box}button{margin-top:12px;padding:12px 20px;font-size:16px}.e{color:#b00020}.w{border:2px solid #b00020;padding:12px}</style></head>
+<body><h1>Connect to 313.events</h1>
+<p>You are about to let <strong>${esc(name)}</strong> (sending you back to <strong>${esc(host)}</strong>) find events and attach images on 313.events for the next 24 hours.</p>
+<p class="w"><strong>Only continue if you started this connection yourself, just now,</strong> from the Claude or ChatGPT connector screen. If anyone sent you this link, close this page. Type the token only on this exact address: ${esc(String(q._origin || ""))}</p>
 ${message ? `<p class="e">${esc(message)}</p>` : ""}<form method="post" action="/api/editorial-oauth/authorize">${hidden}
 <input type="password" name="gateway_token" autocomplete="off" autocapitalize="off" required aria-label="Gateway token"><button type="submit">Connect</button></form></body></html>`;
 }
@@ -70,29 +71,33 @@ module.exports = async function handler(req, res) {
       const q = req.query || {};
       // The URL may carry the OAuth request, never a credential: a gateway_token/token/access_token query parameter is refused.
       if (q.gateway_token || q.token || q.access_token) { res.status(400).json({ error: "invalid_request" }); return; }
-      const chk = front.checkAuthorize(token, q);
+      const chk = front.checkAuthorize(token, q, o);
       if (!chk.ok) { res.status(400).json({ error: chk.error }); return; }
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("Referrer-Policy", "no-referrer");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self' https://claude.ai https://claude.com https://chatgpt.com; frame-ancestors 'none'; base-uri 'none'");
       res.setHeader("X-Frame-Options", "DENY");
-      res.status(200).send(page(q, ""));
+      res.status(200).send(page(Object.assign({ _origin: o }, q), "", chk.client));
       return;
     }
     if (req.method === "POST") {
       const f = parseForm(req);
       const q = {}; for (const k of FIELDS) q[k] = f[k];
-      const chk = front.checkAuthorize(token, q);
+      const chk = front.checkAuthorize(token, q, o);
       if (!chk.ok) { res.status(400).json({ error: chk.error }); return; }
       const nowMs = Date.now();
       res.setHeader("Referrer-Policy", "no-referrer");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self' https://claude.ai https://claude.com https://chatgpt.com; frame-ancestors 'none'; base-uri 'none'");
       res.setHeader("X-Frame-Options", "DENY");
-      if (blocked(req, nowMs)) { res.setHeader("Content-Type", "text/html; charset=utf-8"); res.status(429).send(page(q, "Too many attempts. Wait ten minutes and try again.")); return; }
-      const a = front.approve(token, q, f.gateway_token, new Date(nowMs));
+      if (blocked(req, nowMs)) { res.setHeader("Content-Type", "text/html; charset=utf-8"); res.status(429).send(page(Object.assign({ _origin: o }, q), "Too many attempts. Wait ten minutes and try again.", chk.client)); return; }
+      const a = front.approve(token, q, f.gateway_token, new Date(nowMs), o);
       if (!a.ok) {
         noteFail(req, nowMs);
+        // One line per refused sign-in: facts only, never a value (R&Q gap 18).
+        console.log(JSON.stringify({ editorial_oauth: "signin_refused", reason: a.error, client: chk.client && chk.client.nm || null, redirect_host: (() => { try { return new URL(q.redirect_uri).hostname; } catch (_) { return null; } })(), vercel_env: process.env.VERCEL_ENV || null }));
         await new Promise((r) => setTimeout(r, 750));
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.status(401).send(page(q, "That token was not accepted."));
+        res.status(401).send(page(Object.assign({ _origin: o }, q), "That token was not accepted.", chk.client));
         return;
       }
       res.setHeader("Location", a.redirect);

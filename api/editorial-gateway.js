@@ -156,7 +156,7 @@ module.exports = async (req, res) => {
     // One line per refusal: a reason word and facts about the server's token (state, length class, stray whitespace), never a value.
     console.log(JSON.stringify({ gateway_auth: "refused", reason: gateway.authFailureReason(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN), configured: gateway.tokenStatus(process.env.EDITORIAL_GATEWAY_TOKEN), method: req.method, vercel_env: process.env.VERCEL_ENV || null }));
     // Lets an OAuth-capable client (Claude, ChatGPT connector) discover the sign-in front (api/editorial-oauth.js).
-    res.setHeader("WWW-Authenticate", oauthFront.challenge(`${String(req.headers["x-forwarded-proto"] || "https").split(",")[0]}://${req.headers["x-forwarded-host"] || req.headers.host}`));
+    res.setHeader("WWW-Authenticate", oauthFront.challenge(oauthFront.issuerFor(req.headers)));
     res.status(401).json({ error: { code: "unauthorized", message: "Unauthorized." } });
     return;
   }
