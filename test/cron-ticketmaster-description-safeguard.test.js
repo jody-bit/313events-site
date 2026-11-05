@@ -141,7 +141,7 @@ async function run() {
 
     // --- 5a. no additional database request: one lookup, as before
     assert.strictEqual(lookups(db).length, 1, "existence is read from the one status lookup the connector already made");
-    assert.ok(lookups(db)[0].url.endsWith("&select=external_id,status"), "which still selects only external_id and status");
+    assert.ok(lookups(db)[0].url.endsWith("&select=external_id,status,title,description,description_source,internal_note"), "which now also selects the stored description and its source (precedence rule, 2026-10-24)");
   }
   console.log("PASS: a new event gets Ticketmaster's description; a stored event's description key is omitted and its text survives");
   console.log("PASS: the resulting two row shapes are refused as one request and written by the batching helper as two uniform requests");
