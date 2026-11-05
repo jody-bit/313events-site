@@ -37,6 +37,8 @@ const ALLOWED = [
   "api/_lib/ra-links.js", "api/admin-events.js",
   // #185 increment 1 (owner-correction lock in the shared events writer; owner GO for the draft 2026-10-18 05:05Z, release needs R&Q + owner word).
   "api/_lib/event-contract.js", "api/_lib/event-upsert.js", "api/_lib/link-field.js",
+  // N7 / #224 shared text sanitizer (entities, tags, CSS/RTF blocks) applied in the shared events writer; owner GO to be confirmed at release.
+  "api/_lib/text-sanitize.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   // Description enrichment per-record outcomes (issue #100, approved by the owner 2026-10-13): the enrichment cron passes them to the run log.
