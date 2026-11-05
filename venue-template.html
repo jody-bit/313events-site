@@ -133,6 +133,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/event-dates.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -284,7 +285,7 @@ function renderVenue(v, events){
           <div class="venue-event-body">
             <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
-            ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
+            ${EventDates.displayTime(e.time_display || '') ? `<span class="venue-event-time">${escapeHtml(EventDates.displayTime(e.time_display || ''))}</span>` : ''}
           </div>
         </div>`;
     }).join('');

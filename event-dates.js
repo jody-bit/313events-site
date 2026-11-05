@@ -107,7 +107,8 @@
   // Only a trailing "11:59 PM" after a real start clock time is dropped; "11:59 PM" alone and every other range stay as stored.
   function displayTime(t) {
     if (typeof t !== "string") return t;
-    var m = t.match(/^(.*?\S)\s*(?:[\u2013\u2014-]|\bto\b|\buntil\b)\s*11:59\s*PM\s*$/i);
+    // Also the 24-hour spelling ("23:59") and dotted meridiem ("11:59 p.m.") of the same filler.
+    var m = t.match(/^(.*?\S)\s*(?:[\u2013\u2014-]|\bto\b|\buntil\b)\s*(?:11:59\s*P\.?M\.?|23:59)\s*$/i);
     if (m && /\d\s*(?:AM|PM)|\bnoon\b/i.test(m[1])) return m[1];
     return t;
   }
