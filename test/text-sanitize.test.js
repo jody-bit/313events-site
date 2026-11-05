@@ -8,6 +8,9 @@ const { sanitizeText, sanitizeRowText } = require(`${REPO}/api/_lib/text-sanitiz
 assert.strictEqual(sanitizeText(".cf0{font-family:Segoe UI;font-size:10.5pt;} James R. Hartman Theatre"), "James R. Hartman Theatre");
 // tags and entities
 assert.strictEqual(sanitizeText("<p>Doors at 7 &amp; music at 8</p>"), "Doors at 7 & music at 8");
+// R&Q review: an angle-bracketed word that is not an HTML tag is text and survives.
+assert.strictEqual(sanitizeText("AC/DC <Live> at Fox"), "AC/DC <Live> at Fox");
+assert.strictEqual(sanitizeText("<b>AC/DC</b> <Live> at Fox"), "AC/DC <Live> at Fox");
 assert.strictEqual(sanitizeText("Rock&#8217;n&#x2019;Roll &ndash; Live&nbsp;Show"), "Rock’n’Roll – Live Show");
 assert.strictEqual(sanitizeText("A<br/>B"), "A B");
 assert.strictEqual(sanitizeText("x<!-- hidden -->y<style>.a{color:red}</style>z"), "x y z");

@@ -10,6 +10,8 @@
 // Owner-corrected text is protected by protectOwnerCorrections in event-upsert.js, which runs after this and restores those fields.
 "use strict";
 
+const HTML_TAGS = "a|abbr|b|blockquote|body|br|center|code|div|em|font|h[1-6]|head|hr|html|i|img|li|link|meta|ol|p|pre|s|small|span|strike|strong|sub|sup|table|tbody|td|th|thead|tr|u|ul|o:p|w:[a-z]+";
+
 const NAMED = {
   amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", ndash: "–", mdash: "—", lsquo: "‘", rsquo: "’",
   ldquo: "“", rdquo: "”", hellip: "…", copy: "©", reg: "®", trade: "™", eacute: "é", egrave: "è",
@@ -33,7 +35,8 @@ function sanitizeText(value) {
   let s = value;
   s = s.replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, " ");
   s = s.replace(/<!--[\s\S]*?-->/g, " ");
-  s = s.replace(/<\/?[A-Za-z][^<>]*>/g, " ");
+  // Only real HTML tag names: "AC/DC <Live> at Fox" keeps its angle-bracketed word (R&Q review of #333).
+  s = s.replace(new RegExp("</?(?:" + HTML_TAGS + ")\\b[^<>]*>", "gi"), " ");
   s = s.replace(CSS_BLOCK, " ");
   s = decodeEntitiesOnce(s);
   s = s.replace(/[ \t ]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
