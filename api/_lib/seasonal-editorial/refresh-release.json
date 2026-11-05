@@ -353,9 +353,9 @@
    "mapTitle": "Explore more of the Orbit",
    "mapBlurb": "The events map shows all 313.events listings, not only this collection.",
    "hero": {
-    "desktop": "/assets/placeholders/event-800.webp",
-    "mobile": "/assets/placeholders/event-800.webp",
-    "alt": "",
+    "desktop": "/assets/seasonal/off-the-beaten-orbit-hero-1600.webp",
+    "mobile": "/assets/seasonal/off-the-beaten-orbit-hero-800.webp",
+    "alt": "Shoppers browse rows of independent maker booths in a large indoor craft fair hall.",
     "illustrative": false,
     "objectPosition": "50% 50%"
    },
