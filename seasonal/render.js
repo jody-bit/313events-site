@@ -125,7 +125,8 @@
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
     var owner = !viaLink && !viaCanon && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
     var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
-    if (viaCanon) return html + '</div>';
+    // Canonical event image showing: no label. But if it fails and the cover is the generic placeholder, the card must say "Photo pending" (hidden until the card falls back).
+    if (viaCanon) return html + (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image.src) && !e.image.illustrative ? '<span class="sc-pending sc-pending-fb">Photo pending</span>' : "") + '</div>';
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
     if (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image && e.image.src) && !e.image.illustrative) return html + '<span class="sc-pending">Photo pending</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
