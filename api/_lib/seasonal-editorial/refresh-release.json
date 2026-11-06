@@ -641,7 +641,7 @@
     "image": {
      "src": "/assets/seasonal/rochester-kris-kringle-market-card-1280.webp",
      "alt": "Illustration of an evening Christmas market on a Rochester, Michigan street: white vendor tents and small wooden huts strung with lights, a Kris Kringle Market banner overhead, shoppers in winter coats and Santa hats at a gift stall, and the words Kris Kringle Market, Rochester, Michigan across the sky.",
-     "illustrative": true,
+     "illustrative": false,
      "acquired": {
       "file": "/assets/seasonal/rochester-kris-kringle-market-card-1280.webp",
       "bytes": 263746,
@@ -650,12 +650,11 @@
       "height": 853,
       "acquiredAt": "2026-11-06"
      },
-     "illustration": {
-      "statement": "Jody, 313.events project timeline 2026-11-06 02:42Z, supplied KrisKringleMarket.png for the Kris Kringle Market in Rochester, MI. Owner-supplied promotional artwork: a rendered illustration, not an event photograph, and not owner-photographed. It does not show the actual market and must not be read as documentary photography of it. Dates and times on this card come only from the official source, never from the artwork.",
-      "suppliedBy": "313.events owner",
+     "ownerClearance": {
+      "statement": "Jody, 313.events project timeline 2026-11-06 02:42Z: \"for the Kris Kringle market\" (attached KrisKringleMarket.png); 2026-11-06 13:53Z: \"YES — DROP THE ‘ILLUSTRATIVE IMAGE’ BADGE (#347)… I approve removing the ‘Illustrative image’ badge from the Kris Kringle event card.\" Owner-supplied promotional artwork: a rendered illustration, not an event photograph, not owner-photographed. It does not show the actual market. Dates and times on this card come only from the official source, never from the artwork.",
       "recordedBy": "Claude Code (Editorial)",
       "recordedAt": "2026-11-06",
-      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMbBSJFEMUHxhwfX7i9SDRhgZ",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb9hJCWt1S5banpM7BrC9qcC",
       "note": "Creator, generation tool, source URL and licence are NOT recorded and none is asserted. Original preserved unmodified in project files (editorial/kris-kringle-2026-11-06/image/original/kris-kringle-market-owner-supplied-original.png, 1536x1024 PNG, 2819941 bytes, sha256 e8bcc4618d0c9b25cc08d5e6f114d933fb271160ac947985a791c3084bb10391); the card is that image resized to 1280x853 (same 3:2 frame, no crop, no upscaling)."
      }
     },
