@@ -101,4 +101,44 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   return { counts, perCandidate, text: parts.join(" ") };
 }
 
-module.exports = { buildRaRunSummary };
+// Read side (Admin / control tower). Takes the persisted pieces and returns a
+// display-safe object. Anything not persisted stays null = UNKNOWN; it is
+// never coerced to 0 or "success". Runs from before this change have none of
+// these fields => { known: false }.
+const KNOWN_STATUS = new Set(["imported_public", "promoted_pending_review", "deferred_by_cap", "blocked", "never_attempted"]);
+
+function readRaTelemetry({ summary, summaryText, perCandidate } = {}) {
+  const sm = summary && typeof summary === "object" ? summary : null;
+  const text = typeof summaryText === "string" && summaryText ? summaryText : null;
+  if (!sm && !text) return { known: false, summaryText: null, counts: null, perCandidate: null };
+  const n = (v) => (Number.isFinite(v) ? v : null);
+  const g = (o, k) => (o && typeof o === "object" ? n(o[k]) : null);
+  const counts = {
+    listingCandidates: g(sm && sm.listing, "candidates"),
+    listingNew: g(sm && sm.listing, "new"),
+    detailAttempted: g(sm && sm.detail, "attempted"), // null = device did not report
+    detailBlocked: g(sm && sm.detail, "blocked"),
+    detailSucceeded: g(sm && sm.detail, "succeeded"),
+    pendingReview: g(sm && sm.promotion, "pendingReview"), // hidden; never public
+    deferredByCap: g(sm && sm.promotion, "deferredByCap"),
+    public: g(sm && sm.publications, "public"),
+  };
+  const per = Array.isArray(perCandidate)
+    ? perCandidate.filter((c) => c && typeof c.id === "string").map((c) => ({
+        id: c.id,
+        status: KNOWN_STATUS.has(c.status) ? c.status : "unknown",
+        detailBlocked: c.detailBlocked === true,
+      }))
+    : null;
+  return { known: true, summaryText: text, counts, perCandidate: per };
+}
+
+// Untrusted device-reported detail-fetch outcome -> small known shape, or null.
+function sanitizeDetailReport(d) {
+  if (!d || typeof d !== "object") return null;
+  const ids = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === "string" && /^ra-\d+$/.test(x)).slice(0, 200) : []);
+  const n = (v) => (Number.isInteger(v) && v >= 0 && v <= 100000 ? v : null);
+  return { attempted: n(d.attempted), blocked: n(d.blocked), blockedIds: ids(d.blockedIds) };
+}
+
+module.exports = { buildRaRunSummary, readRaTelemetry, sanitizeDetailReport };

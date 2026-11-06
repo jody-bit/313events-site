@@ -1434,6 +1434,21 @@ function formatRaCounts(run) {
   return parts.join(', ');
 }
 
+// Four-count RA telemetry line. Absent values read "unknown", never 0/success.
+// Listing promotions are pending_review (hidden) and never counted as public.
+function formatRaTelemetry(run) {
+  const t = run && run.telemetry;
+  if (!t || !t.known) return 'Run detail (listing / detail fetch / pending_review / public): unknown — not recorded for this run';
+  const c = t.counts || {};
+  const v = (x) => (x === null || x === undefined ? 'unknown' : x);
+  const per = Array.isArray(t.perCandidate) ? t.perCandidate : [];
+  const blocked = per.filter((p) => p.status === 'blocked' || p.detailBlocked).length;
+  const never = per.filter((p) => p.status === 'never_attempted').length;
+  let line = `Listing: ${v(c.listingCandidates)} candidates, ${v(c.listingNew)} new · Detail fetch: ${v(c.detailSucceeded)} succeeded, ${v(c.detailBlocked)} blocked (attempted ${v(c.detailAttempted)}) · Hidden pending_review: ${v(c.pendingReview)}, deferred by cap: ${v(c.deferredByCap)} · Public: ${v(c.public)}`;
+  if (per.length) line += ` · Candidates blocked ${blocked}, never attempted ${never}`;
+  return line;
+}
+
 function renderRaSync(data) {
   const banner = document.getElementById('raSyncBanner');
   const { latestRun, lastSuccessfulRun } = data;
@@ -1464,6 +1479,11 @@ function renderRaSync(data) {
     banner.innerHTML = `
       ✗ <b>Resident Advisor sync ${escapeHtml(latestRun.outcome || 'failed')}</b> <span class="checked-at">— ${escapeHtml(startedAt)} — ${escapeHtml(formatRaCounts(latestRun))}</span>
     `;
+  }
+
+  banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">${escapeHtml(formatRaTelemetry(latestRun))}</div>`;
+  if (latestRun.telemetry && latestRun.telemetry.summaryText) {
+    banner.innerHTML += `<div class="checked-at" style="margin-top:4px;">${escapeHtml(latestRun.telemetry.summaryText)}</div>`;
   }
 
   // Surface the last time it genuinely worked whenever the latest run

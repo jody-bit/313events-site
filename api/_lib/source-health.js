@@ -46,6 +46,7 @@
 // reschedules anything. A stale event is a question for a person.
 
 const { SOURCE_SLUGS } = require("./source-slugs");
+const { readRaTelemetry } = require("./ra-run-summary");
 
 const HOUR_MS = 3600000;
 const STREAK_FAILING = 3; // consecutive runs: one bad day is noise, three is a pattern
@@ -357,6 +358,8 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       lastAttemptAt: latest ? latest.started_at : null,
       lastSuccessAt: (done.find((r) => r.outcome === "success" || r.outcome === "partial") || {}).started_at || null,
       lastOutcome: latest ? latest.outcome : null,
+      // RA only: persisted four-count telemetry of the latest run (unknown when absent).
+      ...(slug === "resident-advisor" ? { raTelemetry: readRaTelemetry({ summary: latest && latest.ra_summary, summaryText: latest && latest.ra_summary_text, perCandidate: latest && latest.ra_per_candidate }) } : {}),
       lastFetched: latestDone && typeof latestDone.records_fetched === "number" ? latestDone.records_fetched : null,
       lastParsed: latestDone && typeof latestDone.records_parsed === "number" ? latestDone.records_parsed : null,
       lastWritten: latestDone && typeof latestDone.records_written === "number" ? latestDone.records_written : null,

@@ -7,7 +7,7 @@ const {
   getSourceRun,
   patchSourceRunSessionData,
 } = require(path.join(__dirname, "..", "scripts", "ra-sync"));
-const { buildRaRunSummary } = require("./_lib/ra-run-summary");
+const { buildRaRunSummary, sanitizeDetailReport } = require("./_lib/ra-run-summary");
 const { promoteRaCandidates } = require(path.join(__dirname, "..", "scripts", "ra-candidate-promotion"));
 const { RaKnownIdsValidationError } = require("./_lib/ra-known-ids");
 const { StatusLookupFailedError } = require("./_lib/status-lookup");
@@ -85,15 +85,6 @@ function checkAuth(req, res) {
     return false;
   }
   return true;
-}
-
-// Optional device-reported detail-fetch outcome; untrusted, so coerced to a
-// small known shape. Absent/garbage => null (summary then says "unreported").
-function sanitizeDetailReport(d) {
-  if (!d || typeof d !== "object") return null;
-  const ids = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === "string" && /^ra-\d+$/.test(x)).slice(0, 200) : []);
-  const n = (v) => (Number.isInteger(v) && v >= 0 && v <= 100000 ? v : null);
-  return { attempted: n(d.attempted), blocked: n(d.blocked), blockedIds: ids(d.blockedIds) };
 }
 
 module.exports = async (req, res) => {

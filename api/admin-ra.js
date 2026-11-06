@@ -38,6 +38,8 @@ const crypto = require("crypto");
 // run doesn't hide how long it's actually been since RA sync last really
 // worked.
 
+const { readRaTelemetry } = require("./_lib/ra-run-summary");
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 // Non-production deployments must never use the production database (api/_lib/environment.js).
 require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
@@ -94,6 +96,9 @@ function summarizeRun(row) {
     skipped: typeof sd.skipped === "number" ? sd.skipped : null,
     errors: typeof sd.errors === "number" ? sd.errors : null,
   };
+  // Four-count telemetry (listing / detail / hidden pending_review promotions /
+  // public). Absent fields are UNKNOWN (null), never 0 or success.
+  summary.telemetry = readRaTelemetry({ summary: sd.summary, summaryText: sd.summaryText, perCandidate: sd.perCandidate });
   if (incomplete) {
     const ageMinutes = (Date.now() - new Date(row.started_at).getTime()) / 60000;
     summary.staleMinutes = Math.round(ageMinutes);

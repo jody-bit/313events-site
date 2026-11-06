@@ -52,6 +52,44 @@ console.log("PASS: 0 detail events + 10 hidden promotions => 0 public, 10 pendin
 }
 console.log("PASS: cap-deferred id listed and carried over; failed promotion => never_attempted, stated");
 
+{
+  // Read side: absent fields are UNKNOWN, never 0/success; blocked != never_attempted.
+  const { readRaTelemetry, sanitizeDetailReport } = require(`${REPO_DIR}/api/_lib/ra-run-summary.js`);
+  assert.deepStrictEqual(readRaTelemetry({}), { known: false, summaryText: null, counts: null, perCandidate: null });
+  const partial = readRaTelemetry({ summary: { listing: { candidates: 122 } }, summaryText: "x" });
+  assert.strictEqual(partial.counts.public, null);
+  assert.strictEqual(partial.counts.detailAttempted, null);
+  assert.strictEqual(partial.counts.listingCandidates, 122);
+  const full = buildRaRunSummary({
+    sessionData, complete: { imported: 0 },
+    promotion: { written: 10, writtenIds: promoted, deferredByCapIds: [newIds[10]], dryRun: false },
+    detail: { attempted: 1, blocked: 1, blockedIds: ["ra-9"] },
+  });
+  const t = readRaTelemetry({ summary: full.counts, summaryText: full.text, perCandidate: full.perCandidate });
+  assert.strictEqual(t.counts.pendingReview, 10);
+  assert.strictEqual(t.counts.public, 0);
+  assert.strictEqual(t.perCandidate[0].status, "promoted_pending_review");
+  const blk = readRaTelemetry({ summary: full.counts, perCandidate: [{ id: "ra-9", status: "blocked", detailBlocked: true }, { id: "ra-8", status: "never_attempted" }, { id: "ra-7", status: "weird" }] });
+  assert.deepStrictEqual(blk.perCandidate.map((c) => c.status), ["blocked", "never_attempted", "unknown"]);
+  // admin-ra summarizeRun carries it; pre-change runs => known:false
+  process.env.SUPABASE_URL = "https://example.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
+  const { summarizeRun } = require(`${REPO_DIR}/api/admin-ra.js`);
+  assert.strictEqual(summarizeRun({ id: "r", started_at: new Date().toISOString(), outcome: "partial", session_data: {} }).telemetry.known, false);
+  const ar = summarizeRun({ id: "r", started_at: new Date().toISOString(), outcome: "partial", session_data: { summary: full.counts, summaryText: full.text, perCandidate: full.perCandidate } });
+  assert.strictEqual(ar.telemetry.counts.public, 0);
+  assert.deepStrictEqual(sanitizeDetailReport({ attempted: 2, blocked: 1, blockedIds: ["ra-1", "x"] }), { attempted: 2, blocked: 1, blockedIds: ["ra-1"] });
+  // control tower / source-health: RA row carries telemetry; other sources don't
+  const sh = require(`${REPO_DIR}/api/_lib/source-health.js`);
+  const now = Date.now();
+  const mkRun = (extra) => ({ source_slug: "resident-advisor", outcome: "partial", started_at: new Date(now - 3600000).toISOString(), finished_at: new Date(now - 3500000).toISOString(), records_fetched: 0, records_parsed: 0, records_written: 0, ...extra });
+  const ev = sh.evaluateSources({ runs: [mkRun({ ra_summary: full.counts, ra_summary_text: full.text, ra_per_candidate: full.perCandidate })], events: [], now });
+  const raRow = ev.sources.find((x) => x.slug === "resident-advisor");
+  assert.strictEqual(raRow.raTelemetry.counts.pendingReview, 10);
+  const ev2 = sh.evaluateSources({ runs: [mkRun({})], events: [], now });
+  assert.strictEqual(ev2.sources.find((x) => x.slug === "resident-advisor").raTelemetry.known, false);
+  console.log("PASS: read side (admin-ra + source-health RA row): absent = unknown, blocked != never_attempted, pending never public");
+}
+
 (async () => {
   process.env.SUPABASE_URL = "https://example.supabase.co";
   process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
