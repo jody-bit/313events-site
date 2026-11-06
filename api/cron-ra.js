@@ -181,7 +181,12 @@ module.exports = async (req, res) => {
       // promotion. Isolated: failure only drops these additive fields.
       try {
         const run = await getSourceRun(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, result.runId, fetch);
-        const sd = (run && run.session_data) || {};
+        // Whole-column PATCH: never write back over a missing/non-object
+        // session_data (would erase the run's start/complete data).
+        if (!run || !run.session_data || typeof run.session_data !== "object" || Array.isArray(run.session_data)) {
+          throw new Error("session_data missing on re-read; summary not persisted");
+        }
+        const sd = run.session_data;
         const summary = buildRaRunSummary({
           sessionData: sd, complete: result, promotion: result.candidatePromotion, detail: sd.detailReport,
         });

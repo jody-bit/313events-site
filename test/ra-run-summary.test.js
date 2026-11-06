@@ -50,6 +50,14 @@ console.log("PASS: 0 detail events + 10 hidden promotions => 0 public, 10 pendin
   assert.ok(s.perCandidate.every((c) => c.status === "never_attempted"));
   assert.ok(/promotion failed/.test(s.text));
 }
+{
+  // R&Q notes 1+2: unreported detail is "not reported", never "0 succeeded" / "RA blocked the rest".
+  const s = buildRaRunSummary({ sessionData, complete: { imported: 0 }, promotion: { written: 10, writtenIds: promoted, deferredByCapIds: [], dryRun: false } });
+  assert.ok(/not reported/.test(s.text));
+  assert.ok(!/0 succeeded/.test(s.text) && !/blocked the rest/.test(s.text));
+  assert.strictEqual(s.counts.detail.blocked, null);
+  assert.strictEqual(s.counts.detail.attempted, null);
+}
 console.log("PASS: cap-deferred id listed and carried over; failed promotion => never_attempted, stated");
 
 {
@@ -120,5 +128,24 @@ console.log("PASS: cap-deferred id listed and carried over; failed promotion => 
   assert.ok(persisted.summary && persisted.summaryText && persisted.perCandidate && persisted.candidatePromotion, "promotion result + summary persisted into the same run row after promotion");
   assert.strictEqual(persisted.phase, "completed");
   assert.deepStrictEqual(persisted.detailReport.blockedIds, ["ra-2578841"]);
+  // R&Q note 3: null session_data on re-read => no whole-column patch, response still 200.
+  {
+    const before = patches.length;
+    const realFetch = global.fetch;
+    let reads = 0;
+    run = { ...run, outcome: "started", session_data: { phase: "started", ...sessionData } };
+    global.fetch = async (url, opts) => {
+      const method = (opts && opts.method) || "GET";
+      if (url.includes("/rest/v1/source_runs?id=eq.") && method === "GET" && ++reads >= 2) return { ok: true, json: async () => [{ ...run, session_data: null }] };
+      return realFetch(url, opts);
+    };
+    const r2 = { status(c) { this._s = c; return this; }, json(b) { this._b = b; return this; } };
+    await handler({ method: "POST", headers: { authorization: "Bearer s" }, body: { action: "complete", runId: "run-1", events: [] } }, r2);
+    assert.strictEqual(r2._s, 200);
+    assert.ok(r2._b.summaryError, "reported");
+    const summaryPatches = patches.slice(before).filter((b) => b.session_data && b.session_data.summaryText);
+    assert.strictEqual(summaryPatches.length, 0, "no summary patch over null session_data");
+    global.fetch = realFetch;
+  }
   console.log("PASS: handler persists summary + promotion result into source_runs.session_data; records_* untouched");
 })().catch((e) => { console.error(e); process.exitCode = 1; });

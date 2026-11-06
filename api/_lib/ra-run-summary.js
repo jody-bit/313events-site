@@ -24,7 +24,9 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   const d = detail || sd.detailReport || {};
   const detailAttempted = Number.isFinite(d.attempted) ? d.attempted : null;
   const blockedIds = arr(d.blockedIds);
-  const blocked = Number.isFinite(d.blocked) ? d.blocked : blockedIds.length;
+  // Unreported stays null (unknown), never 0.
+  const blocked = Number.isFinite(d.blocked) ? d.blocked : blockedIds.length ? blockedIds.length : null;
+  const detailReported = detailAttempted !== null || blocked !== null;
 
   const p = promotion && !promotion.error ? promotion : null;
   const writtenIds = p ? arr(p.writtenIds) : [];
@@ -75,10 +77,12 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   parts.push(
     `Listing showed ${plural(counts.listing.candidates, "candidate", "candidates")}, ${counts.listing.new} new to us.`
   );
-  if (counts.detail.blocked > 0 || (detailAttempted !== null && imported === 0 && counts.listing.new > 0)) {
-    parts.push(`Detail fetch: ${imported} succeeded${detailAttempted !== null ? ` of ${detailAttempted} attempted` : ""}; RA blocked the rest.`);
+  if (!detailReported) {
+    parts.push(`Detail fetch result was not reported by the device (${plural(imported, "event", "events")} imported from submitted details).`);
+  } else if (counts.detail.blocked > 0) {
+    parts.push(`Detail fetch: ${imported} succeeded${detailAttempted !== null ? ` of ${detailAttempted} attempted` : ""}; RA blocked ${counts.detail.blocked}.`);
   } else {
-    parts.push(`Detail fetch: ${imported} succeeded.`);
+    parts.push(`Detail fetch: ${imported} succeeded${detailAttempted !== null ? ` of ${detailAttempted} attempted` : ""}.`);
   }
   if (counts.promotion.error) {
     parts.push(`Listing promotion failed (${counts.promotion.error}); nothing was promoted.`);
