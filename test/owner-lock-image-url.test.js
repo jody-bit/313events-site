@@ -33,7 +33,7 @@ console.log("PASS: 1. fields=image_url is read as a lock");
 console.log("PASS: 2. a refresh keeps the owner-chosen image_url");
 
 // 3. a lock line that names an unknown field is still ignored for that field
-assert.strictEqual(contract.ownerCorrectedFields("OWNER-CORRECTION 2026-11-06T02:00:00.000Z e1 fields=status,end_date | {}").size, 0);
+assert.strictEqual(contract.ownerCorrectedFields("OWNER-CORRECTION 2026-11-06T02:00:00.000Z e1 fields=status,start_date | {}").size, 0);
 console.log("PASS: 3. other fields are not locked by accident");
 
 // 4. image_url is not a correctable field through save_correction, and does not widen the editable list
