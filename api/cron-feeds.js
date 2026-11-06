@@ -1010,6 +1010,7 @@ const handleRequest = async (req, res) => {
   const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const runDay = new Date(runStartedAt).toISOString().slice(0, 10); // UTC date this run started (first-seen date of a block)
   const preambleMs = Date.now() - runStartedAt; // feed list, stalled-run close and venue lookups, before the first feed
   for (const feedSource of orderedFeeds) {
     const previousResult = feedSource.last_poll_result;
@@ -1039,7 +1040,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           const rssItems = parseRssItems(text);
@@ -1069,7 +1070,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           // A 200 whose body is not a calendar (HTML, a challenge page, a truncated file) is a failed fetch, not an
@@ -1111,7 +1112,7 @@ const handleRequest = async (req, res) => {
   }
 
   linkLog.flush();
-  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
+  const runHealth = health.summarizeRun(results, { today: runDay, stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
   health.logAlerts(runHealth.alerts);
   res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, resume, preambleMs, perFeed: health.compactResults(results), results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
