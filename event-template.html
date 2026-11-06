@@ -1011,6 +1011,12 @@ async function init(){
     const rows = await resp.json();
     if(!Array.isArray(rows) || !rows.length) throw new Error('not found');
     currentEvent = mapRow(rows[0]);
+    // Placeholder-name rescue (CalendarLocation.addressVerifiedFor): a reviewed record in /data/address-verified.json.
+    // A failed or missing file just leaves addressVerified unset, which keeps Directions off for placeholder names.
+    try {
+      const vr = await fetch('/data/address-verified.json', {cache: 'no-cache'});
+      if(vr.ok){ const vj = await vr.json(); currentEvent.addressVerified = CalendarLocation.addressVerifiedFor(currentEvent, vj && vj.entries); }
+    } catch(_) {}
     renderEvent(currentEvent);
     loadEditorialLink(currentEvent.id);
   } catch (err) {

@@ -361,6 +361,19 @@
     return { ready: true, reason: "", query: q, label: "" };
   }
 
+  // Sourcing for the placeholder-name rescue: an explicit, reviewed record in data/address-verified.json
+  // ({eventId, street, city, verifiedAt, verifiedBy, source}). True only when the record is complete AND the event's
+  // own resolved street and city still equal the recorded ones, so an address that later changes in the source
+  // drops the link until it is re-verified. Pure; the page supplies the parsed JSON.
+  function addressVerifiedFor(e, entries) {
+    e = e || {};
+    if (!Array.isArray(entries) || !e.id) return false;
+    var rec = entries.filter(function (x) { return x && String(x.eventId) === String(e.id); })[0];
+    if (!rec || isBlank(rec.street) || isBlank(rec.city) || isBlank(rec.verifiedAt) || isBlank(rec.verifiedBy) || isBlank(rec.source)) return false;
+    var r = resolveForEvent(e);
+    return !!r.street && !!r.city && streetKey(r.street) === streetKey(rec.street) && normKey(r.city) === normKey(rec.city);
+  }
+
   // Event pages: the resolver's chosen parts (event address first, venue fallback, nothing invented),
   // unless the event's and venue's addresses disagree, in which case no link (existing conflict rule).
   function directionsForEvent(e) {
@@ -403,6 +416,7 @@
     streetLineForEvent: streetLineForEvent,
     safeDirections: safeDirections,
     directionsForEvent: directionsForEvent,
+    addressVerifiedFor: addressVerifiedFor,
     sharedStreetLine: sharedStreetLine,
     parseAddress: parseAddress,
     icsEscape: icsEscape,

@@ -242,7 +242,7 @@ function renderVenue(v, events){
   const addrEl = document.getElementById('venueAddress');
   if(v.address){
     // Directions only for a complete address; otherwise the address is plain text (CalendarLocation.safeDirections).
-    const dir = CalendarLocation.safeDirections({name: v.name, address: v.address, city: v.city || 'Detroit', zip: v.zip_code, entrance: v.entrance});
+    const dir = CalendarLocation.safeDirections({name: v.name, address: v.address, city: v.city, zip: v.zip_code, entrance: v.entrance});
     addrEl.dataset.directions = dir.ready ? 'ready' : dir.reason;
     if(dir.ready){
       addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dir.query)}`;

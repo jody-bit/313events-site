@@ -82,6 +82,27 @@ assert.strictEqual(C.directionsForEvent({ venue: "Venue TBA", locEventAddress: "
 assert.strictEqual(C.directionsForEvent({ venue: "Some Hall", locEventAddress: "Woodward", locEventCity: "Detroit" }).ready, false);
 ok("event page: complete ready, event/venue conflict not ready, TBA venue not ready, partial not ready");
 
+// sourcing: addressVerified comes from a reviewed record that must still match the event's own street and city
+{
+  const rec = { eventId: "ef9ed14a-5024-4f7d-a720-8529d1b8d939", street: "6221 Merriman Road", city: "Garden City", verifiedAt: "2026-11-06", verifiedBy: "R&Q", source: "https://example.org/event" };
+  const ev = { id: rec.eventId, venue: "Venue TBA", locEventAddress: "6221 Merriman Road", locEventCity: "Garden City" };
+  const withFlag = (e, list) => Object.assign({}, e, { addressVerified: C.addressVerifiedFor(e, list) });
+  assert.strictEqual(C.addressVerifiedFor(ev, [rec]), true);
+  assert(C.directionsForEvent(withFlag(ev, [rec])).ready, "record + matching address => Directions ready for a placeholder venue");
+  assert(!C.directionsForEvent(withFlag(ev, [])).ready, "no record => not ready");
+  assert.strictEqual(C.addressVerifiedFor(Object.assign({}, ev, { id: "other" }), [rec]), false, "record is per event id");
+  assert.strictEqual(C.addressVerifiedFor(Object.assign({}, ev, { locEventAddress: "6300 Merriman Rd" }), [rec]), false, "address changed in the source => flag lapses");
+  assert.strictEqual(C.addressVerifiedFor(Object.assign({}, ev, { locEventCity: "Westland" }), [rec]), false, "city changed => lapses");
+  assert.strictEqual(C.addressVerifiedFor(Object.assign({}, ev, { locEventAddress: "6221 Merriman Rd" }), [rec]), true, "street-type spelling is normalised");
+  for (const k of ["verifiedAt", "verifiedBy", "source"]) assert.strictEqual(C.addressVerifiedFor(ev, [Object.assign({}, rec, { [k]: "" })]), false, "incomplete record (" + k + ") is ignored");
+  assert.strictEqual(C.addressVerifiedFor(ev, null), false); assert.strictEqual(C.addressVerifiedFor(ev, [{ eventId: rec.eventId }]), false);
+  const secret = Object.assign({}, ev, { description: "Location shared after RSVP." });
+  assert(!C.directionsForEvent(withFlag(secret, [rec])).ready, "a record never overrides a secrecy marker");
+  const file = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "address-verified.json"), "utf8"));
+  assert(Array.isArray(file.entries), "data file has an entries array");
+  ok("addressVerified is sourced from data/address-verified.json: per event, tied to the recorded street+city, lapses on change");
+}
+
 // pages are wired to the guard; the venue page loads the resolver and no longer links any non-empty address
 const ev = fs.readFileSync(path.join(__dirname, "..", "event-template.html"), "utf8");
 const vn = fs.readFileSync(path.join(__dirname, "..", "venue-template.html"), "utf8");
@@ -89,6 +110,8 @@ assert(/CalendarLocation\.directionsForEvent\(e\)/.test(ev) && /encodeURICompone
 assert(!/encodeURIComponent\(streetLine\.text\)/.test(ev), "event page no longer links the raw street line");
 assert(/<script src="\/calendar-location\.js"><\/script>/.test(vn), "venue page loads the resolver");
 assert(/CalendarLocation\.safeDirections\(/.test(vn) && /encodeURIComponent\(dir\.query\)/.test(vn));
+assert(!/city: v\.city \|\| /.test(vn), "venue page does not default a missing city to Detroit for directions");
 assert(!/encodeURIComponent\(fullAddr\)/.test(vn), "venue page no longer links any non-empty address");
+assert(/address-verified\.json/.test(ev) && /CalendarLocation\.addressVerifiedFor\(/.test(ev), "event page loads the verified records");
 ok("event and venue pages use the guard; venue page loads calendar-location.js");
 console.log(n + " checks passed");
