@@ -57,6 +57,11 @@ console.log("PASS: 0 detail events + 10 hidden promotions => 0 public, 10 pendin
   assert.ok(!/0 succeeded/.test(s.text) && !/blocked the rest/.test(s.text));
   assert.strictEqual(s.counts.detail.blocked, null);
   assert.strictEqual(s.counts.detail.attempted, null);
+  // end to end: builder -> persisted shape -> Admin read side keeps it null (not 0)
+  const { readRaTelemetry } = require(`${REPO_DIR}/api/_lib/ra-run-summary.js`);
+  const t = readRaTelemetry({ summary: JSON.parse(JSON.stringify(s.counts)), summaryText: s.text, perCandidate: s.perCandidate });
+  assert.strictEqual(t.counts.detailBlocked, null);
+  assert.strictEqual(t.counts.detailAttempted, null);
 }
 console.log("PASS: cap-deferred id listed and carried over; failed promotion => never_attempted, stated");
 
