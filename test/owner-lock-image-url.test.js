@@ -55,3 +55,14 @@ console.log("PASS: 4. save_correction still refuses image_url");
     console.log("PASS: 5. the owner-correction lookup selects image_url");
   })();
 }
+
+// 6. end_date is lockable the same way (a feed end date an owner has fixed must not revert), and still not a save_correction field
+{
+  const l = contract.buildOwnerCorrectionLine({ at: "2026-11-06T02:00:00.000Z", editId: "e2", actor: "owner", changes: [{ field: "end_date", before: "2026-12-28", after: "2026-12-27" }] });
+  assert.deepStrictEqual(Array.from(contract.ownerCorrectedFields(l)), ["end_date"]);
+  const out = contract.protectOwnerCorrections([{ external_id: "vd-1", end_date: "2026-12-28", start_date: "2026-11-05" }], new Map([["vd-1", { external_id: "vd-1", internal_note: l, end_date: "2026-12-27" }]]));
+  assert.strictEqual(out.rows[0].end_date, "2026-12-27");
+  assert.ok(!contract.OWNER_EDITABLE_FIELDS.includes("end_date"));
+  assert.strictEqual(contract.validateCorrection({ end_date: "2026-12-27" }, { end_date: "2026-12-28" }).errors.length, 1);
+  console.log("PASS: 6. end_date is lockable, not correctable");
+}

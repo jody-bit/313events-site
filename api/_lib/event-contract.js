@@ -109,9 +109,9 @@ function isoDay(v) {
 const OWNER_CORRECTION_MARKER = "OWNER-CORRECTION";
 const OWNER_EDITABLE_FIELDS = Object.freeze(["title", "description", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display", "price_from"]);
 // Fields a lock line may name but save_correction does not accept (the Editorial Gateway records its image pick with
-// fields=image_url; there is no validated text edit for it). They are locked against ingestion exactly like the
+// fields=image_url; end_date is held the same way when an owner fixes a feed end date; neither has a validated text edit). They are locked against ingestion exactly like the
 // editable fields, so a source's feed image cannot revert an owner-chosen one.
-const OWNER_LOCK_ONLY_FIELDS = Object.freeze(["image_url"]);
+const OWNER_LOCK_ONLY_FIELDS = Object.freeze(["image_url", "end_date"]);
 const OWNER_LOCKABLE_FIELDS = Object.freeze(OWNER_EDITABLE_FIELDS.concat(OWNER_LOCK_ONLY_FIELDS));
 // A corrected venue name must not be re-resolved to a different venue by the next run.
 const OWNER_LOCK_ALSO = Object.freeze({ venue_name_raw: ["venue_id"] });
