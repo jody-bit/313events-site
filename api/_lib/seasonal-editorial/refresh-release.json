@@ -663,6 +663,53 @@
      "checkedAt": "2026-11-04",
      "checkedBy": "Claude Code (Editorial)"
     }
+   },
+   {
+    "id": "krampus-night-canterbury-village",
+    "name": "Krampus Night at Canterbury Castle",
+    "city": "Lake Orion",
+    "region": "MI",
+    "categories": [
+     "markets"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "A 21-and-over Krampus Night at Canterbury Castle: buffet dinner, cash bar, live music from Mystic Pouch, games, comedy and an appearance by Krampus and his elves. Sunday November 22; doors 5 p.m., dinner and show 6 to 8 p.m. $59.95 per person as the operator lists; confirm fees.",
+    "website": "https://www.canterburyvillage.com/event/krampus-night/",
+    "checkUrl": "https://www.canterburyvillage.com/event/krampus-night/",
+    "image": {
+     "src": "/assets/seasonal/off-the-beaten-orbit-krampus-night-card.webp",
+     "alt": "Four horned, masked Krampus characters and a smiling woman in a red and black costume pose outside a distillery tasting room decorated with holiday lights at night.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-krampus-night-card.webp",
+      "bytes": 94766,
+      "sha256": "3571681646d9640a760d64709814c35828a58f19374b13be7311b38b02ca00cd",
+      "width": 600,
+      "height": 600,
+      "acquiredAt": "2026-11-06"
+     },
+     "ownerClearance": {
+      "statement": "Image supplied by Jody in the 313.events project thread 2026-11-06 with a request to add it to the Krampus Night listing and collection entry. Photographer, source URL and licence are NOT recorded.",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMbQJTmoLa3TkWPk8rZE8SBX3",
+      "original": {
+       "sha256": "0969c9d3050c3cc0cce7a1fcfa5831685784376f7fb1ebc05c6ee8c19f6b7f7f",
+       "note": "600x600 PNG, preserved at project files editorial/krampus-night-2026-11-06/image/original/"
+      }
+     }
+    },
+    "lastDay": "2026-11-22",
+    "removeAt": "2026-11-23T00:00:00-05:00",
+    "lastDayKind": "event",
+    "evidence": [
+     {
+      "level": "official",
+      "websiteChecked": false,
+      "url": "https://www.canterburyvillage.com/event/krampus-night/",
+      "checkedAt": "2026-11-06",
+      "note": "Details from the production event row (R&Q read-only export 2026-11-06, source checked 2026-11-05); organizer page not re-read from this environment. Category 'markets' is the closest existing fit (Canterbury Village is a shopping village); flagged for owner."
+     }
+    ]
    }
   ],
   "lead": [
