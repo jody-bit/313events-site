@@ -84,4 +84,36 @@ ok("partial public rows (482, street only, bare city, truncated city) => not rea
 // the page wiring consumes exactly this output
 assert(/CalendarLocation\.directionsForEvent\(e\)/.test(html) && /address-verified\.json/.test(html));
 ok("event page calls directionsForEvent on the mapRow output and loads the reviewed records");
+// ---- venue page: public venues select, the page's own mapVenueRow / venueDirections ----
+{
+  const vhtml = fs.readFileSync(path.join(__dirname, "..", "venue-template.html"), "utf8");
+  const vsel = /\/rest\/v1\/venues\?id=eq\.[^`]*&select=([^`]+)`/.exec(vhtml);
+  assert(vsel, "venue page select found");
+  const vcols = vsel[1].split(",");
+  assert(vcols.includes("zip_code"), "the venue page selects zip_code");
+  assert(!vcols.some((c) => PRIVATE.test(c) || /confidence|source$|provenance|evidence/.test(c)) , "no private or provenance venue column");
+  assert(!vcols.some((c) => /^(?:state|province|country)$/.test(c)), "the public venues select carries no state/country column (postal/ZIP is the only region evidence)");
+  const fn = (name) => { const st = vhtml.indexOf("function " + name + "("); assert(st >= 0, name); let i = vhtml.indexOf("{", st), d = 0; for (; i < vhtml.length; i++) { if (vhtml[i] === "{") d++; else if (vhtml[i] === "}" && --d === 0) break; } return vhtml.slice(st, i + 1); };
+  const vctx = vm.createContext({ CalendarLocation: C });
+  vm.runInContext(["decodeEntities", "mapVenueRow", "venueDirections"].map(fn).join("\n") + "\nthis.mapVenueRow = mapVenueRow; this.venueDirections = venueDirections;", vctx);
+  const vrow = (over) => { const r = Object.assign({ id: 1, name: "Hall", address: null, city: null, zip_code: null, website: null, instagram_url: null, facebook_url: null, tiktok_url: null, twitter_url: null, neighborhood_id: null }, over); for (const k of Object.keys(r)) assert(vcols.includes(k), "venue fixture key " + k + " is a public column"); return r; };
+  const vd = (over) => vctx.venueDirections(vctx.mapVenueRow(vrow(over), null));
+  let r = vd({ address: "401 Riverside Dr W", city: "Windsor", zip_code: "N9A 5P4" });
+  assert(r.ready && r.query === "401 Riverside Dr W, Windsor, N9A 5P4, Canada", "Windsor ON via the public zip_code column: " + r.query);
+  r = vd({ address: "500 Ouellette Ave", city: "Windsor" }); assert(!r.ready && r.reason === "ambiguous_city");
+  r = vd({ address: "500 Main St", city: "Windsor", zip_code: "06095" }); assert(r.ready && /USA$/.test(r.query));
+  r = vd({ address: "2211 Woodward Ave", city: "Detroit", zip_code: "48201" }); assert(r.ready && r.query === "2211 Woodward Ave, Detroit, 48201, USA");
+  r = vd({ address: "2211 Woodward Ave, Detroit, MI", city: "Detroit", zip_code: "N9A 5P4" }); assert(!r.ready && r.reason === "conflicting_region");
+  r = vd({ address: "123", city: "Detroit", zip_code: "48201" }); assert(!r.ready && r.reason === "number_only");
+  r = vd({ address: "123 Main St", city: null }); assert(!r.ready && r.reason === "city_missing", "a missing venue city is not defaulted to Detroit");
+  ok("venue page (public venues select incl. zip_code): postal/ZIP context decides Windsor; conflicts, partials and a missing city are not ready");
+}
+
+// ---- Windsor on the event page in public shape ----
+{
+  r = dirs(row({ venue_name_raw: "Hall", venue_address_raw: "500 Ouellette Ave", venue_city_raw: "Windsor" })); assert(!r.ready && r.reason === "ambiguous_city");
+  r = dirs(row({ venue_id: 9, venues: { name: "Hall", address: "401 Riverside Dr W", city: "Windsor", zip_code: "N9A 5P4", lat: null, lng: null } }));
+  assert(r.ready && /Windsor, N9A 5P4, Canada$/.test(r.query), "venues embed postal code makes Windsor, ON ready: " + r.query);
+  ok("event page public rows: bare Windsor not ready; Windsor with the venues embed's postal code ready");
+}
 console.log(n + " checks passed");

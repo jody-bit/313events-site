@@ -21,9 +21,24 @@ r = sd({ address: "1 Riverside Dr W, Windsor, ON N9A 5K3" });
 assert(r.ready && r.query === "1 Riverside Dr W, Windsor, ON N9A 5K3, Canada");
 r = sd({ address: "500 Main St", city: "Windsor", state: "CT", zip: "06095" });
 assert(r.ready && /Windsor, CT 06095, USA$/.test(r.query) && !/ON|Canada|Ontario/.test(r.query));
-r = sd({ address: "500 Ouellette Ave", city: "Windsor" });
-assert(r.ready && r.query === "500 Ouellette Ave, Windsor", "bare Windsor stays bare, neither country is guessed");
 ok("valid CA with postal code; US Windsor is not sent to Ontario");
+
+// ambiguous city: a bare Windsor is a guess between countries, so it is not ready; any stated region/postal/country makes it ready
+notReady({ address: "500 Ouellette Ave", city: "Windsor" }, "ambiguous_city", "bare Windsor + street");
+notReady({ address: "500 Ouellette Ave, Windsor" }, "city_missing", "bare Windsor inside the address (city cannot be split off, so not ready either way)");
+r = sd({ address: "401 Riverside Dr W", city: "Windsor", zip: "N9A 5P4" });
+assert(r.ready && r.query === "401 Riverside Dr W, Windsor, N9A 5P4, Canada", "a valid Canadian postal code makes Windsor, ON ready: " + r.query);
+r = sd({ address: "1 Riverside Dr W, Windsor, ON" }); assert(r.ready && /Windsor, ON, Canada$/.test(r.query));
+r = sd({ address: "500 Main St", city: "Windsor", zip: "06095" }); assert(r.ready && /USA$/.test(r.query) && !/Canada|ON/.test(r.query));
+r = sd({ address: "500 Main St", city: "Windsor", country: "Canada" }); assert(r.ready && /Canada$/.test(r.query));
+r = sd({ address: "500 Main St", city: "Troy" }); assert(r.ready && r.query === "500 Main St, Troy", "other cities are unchanged: no region is added or required");
+ok("ambiguous city (Windsor) needs a region, postal/ZIP or country; a region is never inferred");
+
+// conflicting evidence is a data error, never a link
+notReady({ address: "500 Main St", city: "Windsor", state: "ON", zip: "48201" }, "conflicting_region", "ON with a US ZIP");
+notReady({ address: "500 Main St", city: "Detroit", state: "MI", zip: "N9A 5P4" }, "conflicting_region", "MI with a Canadian postal code");
+notReady({ address: "500 Main St", city: "Windsor", state: "ON", country: "US" }, "conflicting_region", "ON with country US");
+ok("conflicting region evidence is not ready");
 
 notReady({ address: "123", city: "Detroit" }, "number_only", "number only");
 notReady({ address: "482" }, "number_only", "482 ZIP-like fragment");

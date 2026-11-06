@@ -313,6 +313,8 @@
   var PLACEHOLDER = /^(?:tba|tbd|tba\b.*|venue tba|location tba|location to be (?:announced|determined)|to be (?:announced|determined)|various(?: locations?)?|multiple locations?|secret(?: location)?|undisclosed(?: location)?|private(?: location| residence)?|online|virtual)\.?$/i;
   var REGION_WORDS = /^(?:michigan|ohio|ontario|canada|usa|united states|mi|oh|on|us|ca)\.?$/i;
   var SECRECY = /\b(?:secret|undisclosed|secluded)\b|\bprivate (?:location|residence|address|home)\b|\brsvp\b[^|]{0,40}\baddress\b|\baddress\b[^|]{0,40}\b(?:after|upon) (?:rsvp|registration|purchase)\b|\blocation\b[^|]{0,30}\b(?:shared|sent|revealed|released|announced|provided|given)\b[^|]{0,30}\b(?:after|upon|to ticket|to rsvp|via email|by email)\b|\bsecret location\b/i;
+  // City names that exist in more than one country within reach of the data. Extend only with names that actually occur.
+  var AMBIGUOUS_CITIES = { "windsor": true };
   function validZip(z) { z = clean(z); return US_ZIP.test(z) || CA_POSTAL.test(z) ? z.toUpperCase() : ""; }
   function stripTrailing(s) { return clean(s).replace(/[\s,;]+$/, "").replace(/^[\s,;]+/, ""); }
   function safeDirections(input) {
@@ -351,12 +353,18 @@
     if (c && (REGION_WORDS.test(c) || STATE_NAMES[c.toLowerCase()])) return no("region_only");
     if (c && (/\d/.test(c) || /\s[A-Za-z]\.?$/.test(c) || c.length < 3)) return no("truncated_city");
     var regionOk = CA_PROVINCES.test(state) || (US_STATE.test(state) && !CA_PROVINCES.test(state));
+    // Which country does the data itself point to? Each signal is only what is stored, never inferred from the city.
+    var sigCA = CA_PROVINCES.test(state) || CA_POSTAL.test(zip) || /^(?:canada|ca|can)$/i.test(country);
+    var sigUS = (US_STATE.test(state) && !CA_PROVINCES.test(state)) || US_ZIP.test(zip) || COUNTRY_US.test(country) || country === "US";
+    // Conflicting evidence (a province with a US ZIP, a US state with a Canadian postal code, ...) is a data error: no link.
+    if (sigCA && sigUS) return no("conflicting_region");
+    // A city name shared by places in different countries ("Windsor": Ontario, Connecticut, ...) needs a stated
+    // region, postal/ZIP code or country. Without one the link would be a guess, so it is not ready (a region is never inferred).
+    if (c && AMBIGUOUS_CITIES[normKey(c)] && !(sigCA || sigUS)) return no("ambiguous_city");
     var ctx = [c, [regionOk ? state : "", zip].filter(Boolean).join(" ")];
     // Country is added only when the data says which one: a Canadian province or postal code => Canada,
     // a US state or ZIP => USA. A bare "Windsor" is left bare rather than guessed in either direction.
-    var isCA = CA_PROVINCES.test(state) || CA_POSTAL.test(zip) || /^canada$/i.test(country);
-    var isUS = (US_STATE.test(state) && !CA_PROVINCES.test(state)) || US_ZIP.test(zip) || COUNTRY_US.test(country) || country === "US";
-    var cty = isCA ? "Canada" : (isUS ? "USA" : "");
+    var cty = sigCA ? "Canada" : (sigUS ? "USA" : "");
     var q = [street].concat(ctx, [cty]).filter(Boolean).join(", ");
     return { ready: true, reason: "", query: q, label: "" };
   }
