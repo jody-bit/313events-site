@@ -4,7 +4,10 @@ const {
   startRaSyncSession,
   completeRaSyncSession,
   RaSyncSessionError,
+  getSourceRun,
+  patchSourceRunSessionData,
 } = require(path.join(__dirname, "..", "scripts", "ra-sync"));
+const { buildRaRunSummary } = require("./_lib/ra-run-summary");
 const { promoteRaCandidates } = require(path.join(__dirname, "..", "scripts", "ra-candidate-promotion"));
 const { RaKnownIdsValidationError } = require("./_lib/ra-known-ids");
 const { StatusLookupFailedError } = require("./_lib/status-lookup");
@@ -84,6 +87,15 @@ function checkAuth(req, res) {
   return true;
 }
 
+// Optional device-reported detail-fetch outcome; untrusted, so coerced to a
+// small known shape. Absent/garbage => null (summary then says "unreported").
+function sanitizeDetailReport(d) {
+  if (!d || typeof d !== "object") return null;
+  const ids = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === "string" && /^ra-\d+$/.test(x)).slice(0, 200) : []);
+  const n = (v) => (Number.isInteger(v) && v >= 0 && v <= 100000 ? v : null);
+  return { attempted: n(d.attempted), blocked: n(d.blocked), blockedIds: ids(d.blockedIds) };
+}
+
 module.exports = async (req, res) => {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(500).json({ error: "Database not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)." });
@@ -135,6 +147,7 @@ module.exports = async (req, res) => {
         SUPABASE_SERVICE_ROLE_KEY,
         runId: body.runId,
         events: body.events,
+        detailReport: sanitizeDetailReport(body.detail),
       });
       // RA_CANDIDATE_PROMOTION DEFECT 2 fix (2026-10-07): close the
       // discovery/promotion timing gap. Before this, promoteRaCandidates()
@@ -171,6 +184,28 @@ module.exports = async (req, res) => {
         result.candidatePromotion = await promoteRaCandidates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
       } catch (promotionErr) {
         result.candidatePromotion = { error: promotionErr.message };
+      }
+      // RA telemetry (2026-11-06): server-built four-count summary, persisted
+      // into the SAME source_runs.session_data the tower/Admin read, after
+      // promotion. Isolated: failure only drops these additive fields.
+      try {
+        const run = await getSourceRun(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, result.runId, fetch);
+        const sd = (run && run.session_data) || {};
+        const summary = buildRaRunSummary({
+          sessionData: sd, complete: result, promotion: result.candidatePromotion, detail: sd.detailReport,
+        });
+        result.summary = summary.counts;
+        result.perCandidate = summary.perCandidate;
+        result.summaryText = summary.text;
+        await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, result.runId, {
+          ...sd,
+          candidatePromotion: result.candidatePromotion,
+          summary: summary.counts,
+          perCandidate: summary.perCandidate,
+          summaryText: summary.text,
+        }, fetch);
+      } catch (summaryErr) {
+        result.summaryError = summaryErr.message;
       }
       res.status(200).json(result);
     } catch (err) {
