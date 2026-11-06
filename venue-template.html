@@ -282,7 +282,7 @@ function renderVenue(v, events){
       return `
         <div class="venue-event-row">
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
             ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
           </div>
