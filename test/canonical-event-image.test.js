@@ -65,3 +65,12 @@ console.log(n + " checks passed");
   assert.strictEqual(e2[0].image.canonical, undefined);
   console.log("ok - failed read leaves the cover");
 })();
+// Preview fixture: exactly one entry links an event, in the Preview data only (never the release overlay)
+{
+  const prev = require("../api/_lib/seasonal-editorial/refresh-preview.json"), rel = require("../api/_lib/seasonal-editorial/refresh-release.json");
+  const linked = (d) => Object.values(d).flatMap((c) => (c.add || []).concat(Object.values(c.overrides || {}))).filter((e) => e && e.eventId).map((e) => e.id);
+  assert.deepStrictEqual(linked(prev), ["pewabic-holiday-showcase"]);
+  assert.deepStrictEqual(linked(rel), []);
+  assert(EI.isEventId(prev["off-the-beaten-orbit"].add.find((e) => e.id === "pewabic-holiday-showcase").eventId));
+  console.log("ok - Preview fixture links Pewabic only; release overlay links nothing");
+}
