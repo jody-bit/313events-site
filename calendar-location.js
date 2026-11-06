@@ -300,6 +300,71 @@
     });
   }
 
+
+  // ---- safe directions (draft, 2026-11-06) ---------------------------------
+  // safeDirections() decides whether a "Get directions" link may be shown. A Maps search on a partial
+  // address (a bare number, a street with no number, a region, a truncated city or ZIP, a placeholder)
+  // routes somewhere wrong, which is worse than no link. It never repairs or invents: it only says
+  // ready / not ready and why, and builds the query from the parts the data actually carries.
+  //   input: { name, address, city, state, zip, country, entrance }
+  //   -> { ready, reason, query, label }   reason: "" when ready, else a short code
+  // "entrance" is an explicit, data-supplied named entrance or meeting point (parks, campuses). It is
+  // never derived: when present it makes Directions ready with that label.
+  var PLACEHOLDER = /^(?:tba|tbd|tba\b.*|venue tba|location tba|location to be (?:announced|determined)|to be (?:announced|determined)|various(?: locations?)?|multiple locations?|secret(?: location)?|undisclosed(?: location)?|private(?: location| residence)?|online|virtual)\.?$/i;
+  var REGION_WORDS = /^(?:michigan|ohio|ontario|canada|usa|united states|mi|oh|on|us|ca)\.?$/i;
+  function validZip(z) { z = clean(z); return US_ZIP.test(z) || CA_POSTAL.test(z) ? z.toUpperCase() : ""; }
+  function stripTrailing(s) { return clean(s).replace(/[\s,;]+$/, "").replace(/^[\s,;]+/, ""); }
+  function safeDirections(input) {
+    input = input || {};
+    var name = clean(input.name), addr = stripTrailing(input.address), city = stripTrailing(input.city);
+    var no = function (reason) { return { ready: false, reason: reason, query: "", label: "" }; };
+    if (PLACEHOLDER.test(name) || PLACEHOLDER.test(addr) || PLACEHOLDER.test(city)) return no("placeholder");
+    // a city column that carries more than a city ("Warren, MI 48092") is parsed together with the address
+    var p = /[,\d]/.test(city) ? parseAddress(addr ? addr + ", " + city : city, "") : parseAddress(addr, city);
+    var street = tidyStreet(p.street), c = stripTrailing(p.city) || (/[,\d]/.test(city) ? "" : city);
+    var state = clean(input.state).toUpperCase() || p.state, zip = validZip(input.zip || p.zip);
+    var country = clean(input.country) || p.country;
+    var entrance = stripTrailing(input.entrance);
+    if (entrance && !PLACEHOLDER.test(entrance) && !/^\d+$/.test(entrance)) {
+      var ctxE = [c, state, zip].filter(Boolean).join(", ");
+      return { ready: true, reason: "", query: [entrance, ctxE].filter(Boolean).join(", "), label: entrance };
+    }
+    if (!street && !c) return no(addr || city ? (REGION_WORDS.test(addr) || REGION_WORDS.test(city) ? "region_only" : "empty") : "empty");
+    if (!street) return no(REGION_WORDS.test(city) ? "region_only" : "city_only");
+    if (REGION_WORDS.test(street)) return no("region_only");
+    if (/^\d+$/.test(street.replace(/[\s,]/g, ""))) return no("number_only");
+    if (!hasHouseNumber(street)) return no("street_only");
+    // a house number needs a street NAME after it ("123 St", "123 Dr" are not addresses)
+    var seg = street.split(",").map(clean).filter(function (x) { return /^\d+[A-Za-z]?\b/.test(x); })[0] || "";
+    var rest = seg.replace(/^\d+[A-Za-z]?\s*/, "").toLowerCase().replace(/[.,]/g, "").split(/\s+/).filter(function (w) { return w && !CORE_DROP.test(w) && !/^\d+[A-Za-z]?$/.test(w); });
+    if (!rest.length || !rest.some(function (w) { return /[a-z]/.test(w) || /^\d+(?:st|nd|rd|th)$/.test(w); })) {
+      if (!/\b\d+(?:st|nd|rd|th)\b|\b\d+\s+(?:mile|mi)\b/i.test(seg)) return no("number_only");
+    }
+    // no separate city is acceptable only when the address itself carries a state and a valid ZIP/postal code
+    if (!c && !(state && zip)) return no("city_missing");
+    if (c && (REGION_WORDS.test(c) || STATE_NAMES[c.toLowerCase()])) return no("region_only");
+    if (c && (/\d/.test(c) || /\s[A-Za-z]\.?$/.test(c) || c.length < 3)) return no("truncated_city");
+    var regionOk = CA_PROVINCES.test(state) || (US_STATE.test(state) && !CA_PROVINCES.test(state));
+    var ctx = [c, [regionOk ? state : "", zip].filter(Boolean).join(" ")];
+    // Country is added only when the data says which one: a Canadian province or postal code => Canada,
+    // a US state or ZIP => USA. A bare "Windsor" is left bare rather than guessed in either direction.
+    var isCA = CA_PROVINCES.test(state) || CA_POSTAL.test(zip) || /^canada$/i.test(country);
+    var isUS = (US_STATE.test(state) && !CA_PROVINCES.test(state)) || US_ZIP.test(zip) || COUNTRY_US.test(country) || country === "US";
+    var cty = isCA ? "Canada" : (isUS ? "USA" : "");
+    var q = [street].concat(ctx, [cty]).filter(Boolean).join(", ");
+    return { ready: true, reason: "", query: q, label: "" };
+  }
+
+  // Event pages: the resolver's chosen parts (event address first, venue fallback, nothing invented),
+  // unless the event's and venue's addresses disagree, in which case no link (existing conflict rule).
+  function directionsForEvent(e) {
+    e = e || {};
+    var line = streetLineParts(e);
+    if (line.conflict) return { ready: false, reason: "conflict", query: "", label: "" };
+    var r = resolveForEvent(e);
+    return safeDirections({ name: e.venue, address: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country, entrance: e.entrance });
+  }
+
   // ---- serialisation -------------------------------------------------------
   // RFC 5545 §3.3.11 TEXT: escape backslash first, then ; , and newlines.
   function icsEscape(str) {
@@ -330,6 +395,8 @@
     resolve: resolve,
     resolveForEvent: resolveForEvent,
     streetLineForEvent: streetLineForEvent,
+    safeDirections: safeDirections,
+    directionsForEvent: directionsForEvent,
     sharedStreetLine: sharedStreetLine,
     parseAddress: parseAddress,
     icsEscape: icsEscape,
