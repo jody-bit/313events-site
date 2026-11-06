@@ -327,6 +327,7 @@
    {
     "id": "pewabic-holiday-showcase",
     "name": "Pewabic Holiday Showcase",
+    "eventId": "d37e3f8e-1859-4377-a04c-56de5a26e715",
     "city": "Detroit",
     "region": "MI",
     "categories": [
@@ -424,6 +425,7 @@
    {
     "id": "walkerville-brewery-holiday-market",
     "name": "Walkerville Brewery Holiday Market",
+    "eventId": "3c070389-19a4-4719-bfd1-4196b1bebec7",
     "city": "Windsor",
     "region": "ON",
     "categories": [

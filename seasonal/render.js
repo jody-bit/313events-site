@@ -88,6 +88,8 @@
   }
   function chainOf(img) {
     var r = linkedOf(img), list = [];
+    // The linked event's own image (events.image_url, set by seasonal/page.js from event-image.js) leads; the collection cover below is the fallback.
+    if (/^https?:\/\//.test(img.canonical || "")) list.push(img.canonical);
     if (r) list.push(r.src);
     list.push(img.src);
     (img.alternates || []).forEach(function (u) { list.push(u); });
@@ -107,6 +109,7 @@
   var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
   function creditLine(e) {
     var img = e.image, r = linkedOf(img);
+    if (img.canonical && pickSrc(img) === img.canonical) return "";
     if (r && pickSrc(img) === r.src) return !r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
@@ -117,10 +120,13 @@
   function isGenericPlaceholder(src) { return !src || /\/assets\/placeholders\//.test(String(src)); }
   function media(e, col) {
     var chain = chainOf(e.image), r = linkedOf(e.image), first = pickSrc(e.image);
-    var viaLink = !!r && first === r.src;
+    var viaCanon = !!e.image.canonical && first === e.image.canonical;
+    var viaLink = !!r && first === r.src && !viaCanon;
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
-    var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
+    var owner = !viaLink && !viaCanon && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
     var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
+    // Canonical event image showing: no label. But if it fails and the cover is the generic placeholder, the card must say "Photo pending" (hidden until the card falls back).
+    if (viaCanon) return html + (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image.src) && !e.image.illustrative ? '<span class="sc-pending sc-pending-fb">Photo pending</span>' : "") + '</div>';
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
     if (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image && e.image.src) && !e.image.illustrative) return html + '<span class="sc-pending">Photo pending</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
