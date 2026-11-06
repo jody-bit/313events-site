@@ -68,6 +68,7 @@ const CONNECTORS = [
   ["cron-ticketmaster.js", "REJECTED"],
   ["cron-trinosophes.js", "no-undefined"],
   ["cron-visitdetroit.js", "no-undefined"],
+  ["cron-walkervillebrewery.js", "no-undefined"],
   ["cron-wdet.js", "LATENT"],
 ];
 

@@ -60,6 +60,7 @@ const EXPECTED_CONNECTORS = [
   "cron-ticketmaster.js",
   "cron-trinosophes.js",
   "cron-visitdetroit.js",
+  "cron-walkervillebrewery.js",
   "cron-wdet.js",
 ];
 
