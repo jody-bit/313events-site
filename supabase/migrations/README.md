@@ -34,3 +34,10 @@ default**, and new projects get far fewer. `20261006000002_baseline_grants.sql`
 therefore states them explicitly so a rebuilt database matches production.
 They are intentionally broad and **scheduled to be tightened by SZ-01** (a
 later migration, staging first); the baseline does not endorse them.
+
+## Authority going forward (owner decision 2026-10-24)
+- `supabase/migrations/` is the only source of schema changes. Each file is applied through the normal migration mechanism so the native history records it in both projects, staging first, with the applicable release gate and owner approval before production.
+- Existing records are preserved: `public.schema_migrations` is a frozen legacy log, and no history row is edited, deleted or consolidated without a separate approval.
+- `20261024000000_baseline_marker.sql` is a comment-only marker that starts the clean line; it does not change the database.
+- Fingerprint check: run `supabase/verify/core_fingerprint.sql` on each project (read-only) and compare with `node scripts/fingerprint-diff.js a.json b.json`. The committed `supabase/verify/core-fingerprint-baseline.json` and `test/fingerprint-baseline.test.js` keep the baseline honest; update the baseline in the same change as any schema migration.
+- `supabase/proposed/` is never history. A file moves into this directory only when it is applied.
