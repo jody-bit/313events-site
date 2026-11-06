@@ -66,7 +66,7 @@
   already does in index.html for neighborhood_id — see loadVenueLatLng()
   below. A venue whose name matches a venues row with real lat/lng gets a
   precise pin; everything else falls back to its city's centroid from the
-  same LOCATIONS table that already backs the radius filter everywhere else
+  same KNOWN_PLACES table that already backs the radius filter everywhere else
   on the site. Approximate pins are visually marked (dashed ring, dimmer
   fill) and labeled "city center" rather than presented as exact — never
   fabricated precision, same standard as the price/free tags elsewhere.
@@ -477,6 +477,8 @@
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
 <script src="/place-eligibility.js"></script>
+<script src="/place-list.js"></script>
+<script src="/blocked-names.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
@@ -617,112 +619,16 @@ function dominantCategory(events){
 // See those files for the full sourcing comment. Same two tiers: Detroit's
 // 39 named neighborhoods (origin-only) and every in-scope city (matched
 // against event data).
-const LOCATIONS = [
-  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
-  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
-  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
-  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
-  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
-  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
-  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
-  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
-  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
-  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
-  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
-  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
-  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
-  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
-  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
-  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
-  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
-  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
-  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
-  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
-  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
-  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
-  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
-  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
-  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
-  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
-  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
-  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
-  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
-  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
-  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
-  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
-  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
-  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
-  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
-  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
-  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
-  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
-  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
-  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
-  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
-  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
-  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
-  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
-  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
-  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
-  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
-  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
-  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
-  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
-  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
-  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
-  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
-  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
-  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
-  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
-  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
-  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
-  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
-  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
-  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
-  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
-  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
-  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
-  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
-  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
-  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
-  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
-  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
-  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
-  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
-  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
-  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
-  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
-  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
-  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
-  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
-  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
-  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
-  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
-  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
-  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
-  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
-  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
-  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
-  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
-  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
-  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
-  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
-  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
-  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
-  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
-  // Copied exactly from discovery.js `places` (the project's existing sourced
-  // coordinates) so map.html and discovery agree. Phase 1 city resolution.
-  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
-  {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
-  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56},
-];
+// The place list is the shared /place-list.js (issue #16: one copy for the homepage, calendar and map). A fresh array, so this page can
+// add its own Phase 2 cities below without touching the shared list.
+const KNOWN_PLACES = PlaceList.locations();
 
 // Phase 2: sourced coordinates for 30 more in-orbit cities (city-table-phase2.js), each gated on
 // the event's source feed as jurisdiction evidence (see city-resolution.js).
-PHASE2_CITIES.forEach(c => LOCATIONS.push({name:c.name, type:'city', region:c.region, lat:c.lat, lng:c.lng, sources:c.sources}));
+PHASE2_CITIES.forEach(c => KNOWN_PLACES.push({name:c.name, type:'city', region:c.region, lat:c.lat, lng:c.lng, sources:c.sources}));
 
 const CITY_LOOKUP = new Map(
-  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
+  KNOWN_PLACES.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
 );
 
 function haversineMiles(lat1, lng1, lat2, lng2){
@@ -759,13 +665,6 @@ EVENTS.forEach(e=>{ addToByDate(byDate, e); });
 const _navToday0 = new Date();
 void _navToday0; // no month navigation on this page — kept only for parity with the other pages' init order, harmless no-op.
 
-const BLOCKED_NAMES = ["Augustus Williams"];
-function isBlockedEvent(e){
-  return BLOCKED_NAMES.some(name => {
-    const n = name.toLowerCase();
-    return e.title && e.title.toLowerCase().includes(n);
-  });
-}
 
 const FEATURE_CHIPS = [
   { key: 'tickets', label: 'Tickets available' },
@@ -858,7 +757,7 @@ function getWeekendDates(){
 // has no month to browse, so it's always evaluated against the live
 // EVENTS set as a whole, not one day/list slice at a time.
 function matchesFilters(e){
-  if(isBlockedEvent(e)) return false;
+  if(BlockedNames.isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
   if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
@@ -1531,7 +1430,7 @@ function renderLocationSuggestions(q){
     return;
   }
   const ql = q.trim().toLowerCase();
-  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  const matches = KNOWN_PLACES.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
   if(!matches.length){
     box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
   } else {
@@ -1783,7 +1682,7 @@ function readStateFromURL(){
 
   const locParam = params.get('loc');
   if(locParam){
-    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
+    const found = KNOWN_PLACES.find(l => l.name.toLowerCase() === locParam.toLowerCase());
     if(found){
       originLocation = found;
       const radiusParam = params.get('radius');
