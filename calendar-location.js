@@ -312,13 +312,19 @@
   // never derived: when present it makes Directions ready with that label.
   var PLACEHOLDER = /^(?:tba|tbd|tba\b.*|venue tba|location tba|location to be (?:announced|determined)|to be (?:announced|determined)|various(?: locations?)?|multiple locations?|secret(?: location)?|undisclosed(?: location)?|private(?: location| residence)?|online|virtual)\.?$/i;
   var REGION_WORDS = /^(?:michigan|ohio|ontario|canada|usa|united states|mi|oh|on|us|ca)\.?$/i;
+  var SECRECY = /\b(?:secret|undisclosed|secluded)\b|\bprivate (?:location|residence|address|home)\b|\brsvp\b[^|]{0,40}\baddress\b|\baddress\b[^|]{0,40}\b(?:after|upon) (?:rsvp|registration|purchase)\b|\blocation\b[^|]{0,30}\b(?:shared|sent|revealed|released|announced|provided|given)\b[^|]{0,30}\b(?:after|upon|to ticket|to rsvp|via email|by email)\b|\bsecret location\b/i;
   function validZip(z) { z = clean(z); return US_ZIP.test(z) || CA_POSTAL.test(z) ? z.toUpperCase() : ""; }
   function stripTrailing(s) { return clean(s).replace(/[\s,;]+$/, "").replace(/^[\s,;]+/, ""); }
   function safeDirections(input) {
     input = input || {};
     var name = clean(input.name), addr = stripTrailing(input.address), city = stripTrailing(input.city);
     var no = function (reason) { return { ready: false, reason: reason, query: "", label: "" }; };
-    if (PLACEHOLDER.test(name) || PLACEHOLDER.test(addr) || PLACEHOLDER.test(city)) return no("placeholder");
+    // A secrecy marker anywhere (name, address or description text) always wins: the location is deliberately withheld.
+    if (SECRECY.test([name, addr, input.description].map(clean).join(" | "))) return no("secrecy");
+    if (PLACEHOLDER.test(addr) || PLACEHOLDER.test(city)) return no("placeholder");
+    // A placeholder NAME ("Venue TBA") does not by itself hide a stated street address, but only when the caller
+    // passes addressVerified === true from the data (the event publishes a complete public address). Default: not ready.
+    if (PLACEHOLDER.test(name) && input.addressVerified !== true) return no("placeholder");
     // a city column that carries more than a city ("Warren, MI 48092") is parsed together with the address
     var p = /[,\d]/.test(city) ? parseAddress(addr ? addr + ", " + city : city, "") : parseAddress(addr, city);
     var street = tidyStreet(p.street), c = stripTrailing(p.city) || (/[,\d]/.test(city) ? "" : city);
@@ -362,7 +368,7 @@
     var line = streetLineParts(e);
     if (line.conflict) return { ready: false, reason: "conflict", query: "", label: "" };
     var r = resolveForEvent(e);
-    return safeDirections({ name: e.venue, address: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country, entrance: e.entrance });
+    return safeDirections({ name: e.venue, description: e.description, addressVerified: e.addressVerified === true, address: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country, entrance: e.entrance });
   }
 
   // ---- serialisation -------------------------------------------------------

@@ -39,7 +39,8 @@ notReady({ address: "", city: "Detroit" }, "city_only", "bare city"); notReady({
 notReady({ address: "123 Main St", city: "Bloomfield H" }, "truncated_city", "truncated city");
 notReady({ address: "123 Main St", city: "" }, "city_missing", "no city");
 ok("bare city, empty, truncated city and missing city are not ready");
-for (const nm of ["TBA", "Venue TBA", "Various Locations", "Secret", "TBA - Detroit MI USA"]) notReady({ name: nm, address: "123 Main St", city: "Detroit" }, "placeholder", nm);
+for (const nm of ["TBA", "Venue TBA", "Various Locations", "TBA - Detroit MI USA"]) notReady({ name: nm, address: "123 Main St", city: "Detroit" }, "placeholder", nm);
+notReady({ name: "Secret", address: "123 Main St", city: "Detroit" }, "secrecy", "Secret");
 notReady({ address: "Various Locations" }, "placeholder", "placeholder address");
 ok("placeholder names and addresses are not ready");
 
@@ -60,6 +61,24 @@ assert.strictEqual(C.directionsForEvent(base).ready, true);
 const conflict = Object.assign({}, base, { locVenueAddress: "100 Other St", locVenueCity: "Detroit" });
 r = C.directionsForEvent(conflict); assert(!r.ready && r.reason === "conflict");
 assert.strictEqual(C.directionsForEvent({ venue: "Venue TBA", locEventAddress: "6221 Merriman Road", locEventCity: "Garden City" }).reason, "placeholder");
+// Jody 15:14Z: a placeholder NAME alone does not suppress a complete public address, but only with an explicit data flag
+{
+  const tba = { venue: "TBA - Detroit MI USA", locEventAddress: "1151 Taylor St", locEventCity: "Detroit" };
+  const a = C.directionsForEvent(Object.assign({}, tba, { addressVerified: true }));            // (a) verified => ready with the street query
+  assert(a.ready && a.query === "1151 Taylor St, Detroit");
+  const b = C.directionsForEvent(tba);                                                            // (b) no flag => not ready (location pending)
+  assert(!b.ready && b.reason === "placeholder");
+  const c1 = C.directionsForEvent(Object.assign({}, tba, { addressVerified: true, venue: "TBA - Secret Location" }));          // (c) secrecy in the name
+  const c2 = C.directionsForEvent(Object.assign({}, tba, { addressVerified: true, description: "Location shared after RSVP." })); // (c) secrecy in the description
+  const c3 = C.directionsForEvent(Object.assign({}, tba, { addressVerified: true, description: "RSVP for address." }));
+  assert(!c1.ready && c1.reason === "secrecy" && !c2.ready && c2.reason === "secrecy" && !c3.ready && c3.reason === "secrecy");
+  const d = C.directionsForEvent({ venue: "Venue TBA", addressVerified: true, locEventAddress: "6221 Merriman Road", locEventCity: "Garden City", locVenueAddress: "9 Elsewhere Ave", locVenueCity: "Garden City" });
+  assert(!d.ready && d.reason === "conflict", "(d) event/venue conflict is still not ready even when verified");
+  assert(C.directionsForEvent({ venue: "Venue TBA", addressVerified: true, locEventAddress: "6221 Merriman Road", locEventCity: "Garden City" }).ready);
+  assert(!C.directionsForEvent(Object.assign({}, tba, { addressVerified: "yes" })).ready, "only boolean true counts");
+  assert(!C.safeDirections({ name: "Venue TBA", addressVerified: true, address: "Woodward Ave", city: "Detroit" }).ready, "verified flag never rescues a partial address");
+  assert(C.directionsForEvent({ venue: "Fox Theatre", description: "Doors at 7. Private parties welcome at the lounge.", locEventAddress: "2211 Woodward Ave", locEventCity: "Detroit" }).ready, "ordinary 'private parties' text is not a secrecy marker");
+}
 assert.strictEqual(C.directionsForEvent({ venue: "Some Hall", locEventAddress: "Woodward", locEventCity: "Detroit" }).ready, false);
 ok("event page: complete ready, event/venue conflict not ready, TBA venue not ready, partial not ready");
 
