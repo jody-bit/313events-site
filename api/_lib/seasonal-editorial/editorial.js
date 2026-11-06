@@ -116,6 +116,8 @@ function publicEntry(e) {
   const im = e.image || {}, out = { id: e.id, name: e.name, city: e.city, region: e.region, categories: e.categories.slice(), featured: !!e.featured,
     status: "PUBLISHED", summary: e.summary };
   if (e.website) out.website = e.website;
+  // Optional link to a canonical event (events.id). The card then shows that event's image first (event-image.js); the cover below is the fallback.
+  if (typeof e.eventId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.eventId)) out.eventId = e.eventId;
   // An access advisory is shown only where the record carries an approved public text (owner-confirmed 2026-10-12).
   if (e.accessAdvisories && typeof e.accessAdvisories.publicText === "string" && e.accessAdvisories.publicText.trim()) out.advisory = e.accessAdvisories.publicText.trim();
   // Scheduled placement removal (owner direction 2026-11-04): the public page drops the card at removeAt (America/Detroit); lastDay is the confirmed last operating date shown on the card.
