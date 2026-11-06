@@ -229,6 +229,10 @@
   }
   footer.site .footer-links a:hover, footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
@@ -238,11 +242,13 @@
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="site">
       <a class="wordmark" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="26"></a>
       <a class="back-link" href="/">All events</a>
     </header>
+<main id="main" tabindex="-1">
 
     <div id="loadingState">Loading event…</div>
 
@@ -283,7 +289,8 @@
       </div>
     </article>
 
-    <footer class="site">
+    </main>
+<footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
       <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
