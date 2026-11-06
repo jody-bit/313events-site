@@ -527,10 +527,26 @@
     "summary": "Browse local makers inside Walkerville Brewery, with Saturday devoted to pottery from Windsor-area makers. Give the trip a Walkerville story rather than treating Windsor as an afterthought. Friday November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m.",
     "website": "https://www.walkervillebrewery.com/events/holidaymarket-2026",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
+     "src": "/assets/seasonal/off-the-beaten-orbit-walkerville-holiday-market-card.webp",
+     "alt": "Gold script reading Walkerville Brewery Holiday Market, framed by evergreen boughs, holly, red ornaments, a gingerbread house, iced cookies and a cranberry cocktail.",
      "illustrative": false,
-     "pending": true,
-     "pendingNote": "Photo pending: no cleared photograph yet. Must render the visible label 'Photo pending'; never an illustration badge."
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-walkerville-holiday-market-card.webp",
+      "bytes": 258284,
+      "sha256": "0f6495c9dafe1282a65ad6f7d49dee09a2ee1aeccd9ee4300a8f3152c98d2246",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-06"
+     },
+     "ownerClearance": {
+      "statement": "Owner-supplied promotional artwork for the Walkerville Brewery Holiday Market, supplied by Jody in the 313.events project thread 2026-11-06 with the request to add the event. Creator, source URL and licence are NOT recorded and none is invented. The artwork carries no dates.",
+      "recordedAt": "2026-11-06",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMbCd7bF3WB1P6JxTyZzCZ2ME",
+      "original": {
+       "sha256": "214e8e7b9aae8092c7cdccd0b80dc87106ddc77137f88c9fa5f0444b35f7b541",
+       "note": "1536x1024 PNG, preserved at project files event-intelligence/walkerville-2026-11-06/holiday-market/image/original/; card is the full frame resized to 1280x853, no crop."
+      }
+     }
     },
     "lastDay": "2026-11-21",
     "removeAt": "2026-11-22T00:00:00-05:00",
