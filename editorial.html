@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>313.events editor</title>
+<style>
+  :root { --bg:#111; --card:#1c1c1e; --fg:#f2f2f2; --mut:#a0a0a8; --acc:#ff6a3d; --ok:#3ecf8e; --bad:#ff5c5c; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.4 -apple-system, system-ui, sans-serif; padding:env(safe-area-inset-top) 16px 40px; }
+  main { max-width:560px; margin:0 auto; }
+  h1 { font-size:22px; margin:20px 0 4px; } p.sub { color:var(--mut); margin:0 0 16px; font-size:15px; }
+  section { background:var(--card); border-radius:14px; padding:14px; margin:12px 0; }
+  label { display:block; font-size:14px; color:var(--mut); margin:8px 0 4px; }
+  input, button { font:inherit; width:100%; padding:13px; border-radius:10px; border:1px solid #333; background:#000; color:var(--fg); }
+  button { background:var(--acc); border:0; color:#000; font-weight:600; margin-top:10px; }
+  button.secondary { background:#2a2a2d; color:var(--fg); }
+  button:disabled { opacity:.45; }
+  .ev { padding:12px; border:1px solid #333; border-radius:10px; margin:8px 0; cursor:pointer; }
+  .ev.sel { border-color:var(--acc); } .ev small { color:var(--mut); display:block; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); } .mut { color:var(--mut); font-size:14px; }
+  img.prev { max-width:100%; border-radius:10px; margin-top:8px; }
+  a { color:var(--acc); } pre { white-space:pre-wrap; word-break:break-word; font-size:13px; color:var(--mut); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>313.events editor</h1>
+  <p class="sub">Add a flyer to an event from your phone. Nothing is published or replaced until you tap Apply.</p>
+
+  <section id="signin" hidden>
+    <b>Sign in once on this phone</b>
+    <p class="mut">Enter the editor token. It is exchanged for a session that lasts 30 days on this phone and is not stored itself.</p>
+    <label for="tok">Editor token</label>
+    <input id="tok" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button id="signinBtn">Sign in</button>
+    <p id="signinMsg" class="bad"></p>
+  </section>
+
+  <div id="app" hidden>
+    <section>
+      <b>1. Find the event</b>
+      <label for="q">Title or venue</label>
+      <input id="q" type="search" placeholder="e.g. Pop Tronics" autocapitalize="off">
+      <button id="findBtn" class="secondary">Search</button>
+      <div id="results"></div>
+    </section>
+
+    <section id="pickSec" hidden>
+      <b>2. Choose the flyer</b>
+      <p class="mut" id="chosen"></p>
+      <input id="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      <label for="credit">Credit / where it came from (optional)</label>
+      <input id="credit" placeholder="e.g. supplied by the organizer">
+      <img id="prev" class="prev" alt="" hidden>
+      <button id="checkBtn" disabled>Check it</button>
+    </section>
+
+    <section id="checkSec" hidden>
+      <b>3. Check, then apply</b>
+      <div id="checkOut"></div>
+      <button id="applyBtn" hidden>Apply this image</button>
+    </section>
+
+    <section id="doneSec" hidden>
+      <b>4. Result</b>
+      <div id="doneOut"></div>
+    </section>
+
+    <p class="mut"><a href="#" id="signout">Sign out of this phone</a></p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var API = "/api/editorial-gateway";
+  var KEY = "313events.editor.session";
+  var $ = function (id) { return document.getElementById(id); };
+  var session = null, picked = null, selected = null, expectedHash = null;
+
+  function store(v) { try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) {} }
+  function load() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function call(headers, body, query) {
+    return fetch(API + (query || ""), { method: "POST", headers: headers, body: body }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, json: j }; });
+    });
+  }
+  function rest(op, args) {
+    var body = JSON.stringify(Object.assign({ op: op }, args || {}));
+    return call({ "Content-Type": "application/json", Authorization: "Bearer " + session }, body).then(function (r) {
+      if (r.status === 401) { store(null); session = null; show(); throw new Error("Your sign-in expired. Sign in again."); }
+      if (!r.json.ok) throw new Error((r.json.error && r.json.error.message) || "Request failed.");
+      return r.json.result;
+    });
+  }
+  function show() { session = load(); $("signin").hidden = !!session; $("app").hidden = !session; }
+
+  $("signinBtn").onclick = function () {
+    var t = $("tok").value.trim(); $("signinMsg").textContent = "";
+    if (!t) return;
+    call({ "Content-Type": "application/json", Authorization: "Bearer " + t }, JSON.stringify({ op: "create_session", label: "phone", ttl_days: 30 })).then(function (r) {
+      if (!r.json.ok) { $("signinMsg").textContent = r.status === 401 ? "That token was not accepted." : "Sign-in failed."; return; }
+      $("tok").value = ""; store(r.json.result.session); show();
+    }).catch(function () { $("signinMsg").textContent = "Could not reach the site."; });
+  };
+  $("signout").onclick = function (e) { e.preventDefault(); store(null); show(); };
+
+  $("findBtn").onclick = function () {
+    var q = $("q").value.trim(); if (!q) return;
+    $("results").innerHTML = '<p class="mut">Searching…</p>';
+    rest("find_event", { query: q }).then(function (r) {
+      var list = r.events || [];
+      if (!list.length) { $("results").innerHTML = '<p class="mut">No matching events. Nothing is created from this page.</p>'; return; }
+      $("results").innerHTML = list.map(function (e, i) {
+        return '<div class="ev" data-i="' + i + '">' + esc(e.title) + '<small>' + esc(e.start_date) + ' · ' + esc(e.venue || e.venue_name_raw || "") + ' · ' + esc(e.status) + (e.has_image || e.image_url ? ' · has image' : '') + '</small></div>';
+      }).join("");
+      Array.prototype.forEach.call($("results").children, function (el) {
+        el.onclick = function () {
+          selected = list[+el.getAttribute("data-i")];
+          Array.prototype.forEach.call($("results").children, function (x) { x.classList.remove("sel"); });
+          el.classList.add("sel");
+          $("chosen").textContent = selected.title + " — " + selected.start_date;
+          $("pickSec").hidden = false; $("checkSec").hidden = true; $("doneSec").hidden = true;
+        };
+      });
+    }).catch(function (e) { $("results").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
+  };
+
+  $("file").onchange = function () {
+    picked = this.files && this.files[0] || null;
+    $("checkBtn").disabled = !picked; $("checkSec").hidden = true;
+    if (picked) { $("prev").src = URL.createObjectURL(picked); $("prev").hidden = false; } else $("prev").hidden = true;
+  };
+
+  function upload(dry) {
+    var q = "?event_id=" + encodeURIComponent(selected.id) + "&dry_run=" + (dry ? "true" : "false") + "&client=phone-editor"
+      + ($("credit").value.trim() ? "&source_note=" + encodeURIComponent($("credit").value.trim()) : "")
+      + (expectedHash && !dry ? "&expected_sha256=" + expectedHash : "");
+    return call({ "Content-Type": picked.type || "application/octet-stream", Authorization: "Bearer " + session }, picked, q).then(function (r) {
+      if (r.status === 401) { store(null); show(); throw new Error("Your sign-in expired. Sign in again."); }
+      if (!r.json.ok) {
+        var c = r.json.error && r.json.error.code;
+        throw new Error(c === "image_already_set" ? "This event already has an image. It was not changed." : ((r.json.error && r.json.error.message) || "Upload failed."));
+      }
+      return r.json.result;
+    });
+  }
+
+  $("checkBtn").onclick = function () {
+    $("checkOut").innerHTML = '<p class="mut">Checking…</p>'; $("checkSec").hidden = false; $("applyBtn").hidden = true; $("doneSec").hidden = true;
+    upload(true).then(function (r) {
+      expectedHash = r.image.sha256;
+      var already = r.outcome === "already_applied";
+      $("checkOut").innerHTML = '<p class="ok">' + (already ? "This exact image is already on the event." : "Looks good. Nothing has been saved yet.") + '</p>'
+        + '<p class="mut">' + esc(r.image.type) + ' · ' + r.image.width + '×' + r.image.height + ' · ' + r.image.bytes + ' bytes<br>Original file, stored without re-compression.</p>';
+      $("applyBtn").hidden = already;
+    }).catch(function (e) { $("checkOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
+  };
+
+  $("applyBtn").onclick = function () {
+    $("applyBtn").disabled = true;
+    upload(false).then(function (r) {
+      return rest("verify_event", { event_id: selected.id, expected_sha256: expectedHash }).then(function (v) {
+        var rows = (v.checks || []).map(function (c) { return '<div class="' + (c.ok ? "ok" : "bad") + '">' + (c.ok ? "✓ " : "✗ ") + esc(c.name.replace(/_/g, " ")) + "</div>"; }).join("");
+        $("doneOut").innerHTML = '<p class="' + (v.ok ? "ok" : "bad") + '">' + (v.ok ? "Saved and verified." : "Saved, but a check failed.") + "</p>" + rows
+          + '<p><a href="/event.html?id=' + encodeURIComponent(selected.id) + '" target="_blank" rel="noopener">Open the live event page</a></p>';
+        $("doneSec").hidden = false; $("applyBtn").hidden = true;
+      });
+    }).catch(function (e) { $("doneOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; $("doneSec").hidden = false; })
+      .then(function () { $("applyBtn").disabled = false; });
+  };
+
+  show();
+})();
+</script>
+</body>
+</html>
