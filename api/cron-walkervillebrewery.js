@@ -8,8 +8,9 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { applyPublicationGate } = require("./_lib/event-contract");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
-const { parseWalkervilleEvents, buildRow, SITE, VENUE_NAME } = require("./_lib/walkerville-rows");
+const { parseWalkervilleEvents, buildRow, findDuplicate, SITE, VENUE_NAME } = require("./_lib/walkerville-rows");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
@@ -60,7 +61,29 @@ async function handler(req, res) {
   const today = new Date().toISOString().slice(0, 10);
   const byId = new Map();
   for (const e of items) { const row = buildRow(e, today); if (row && !byId.has(row.external_id)) byId.set(row.external_id, row); }
-  const rows = Array.from(byId.values());
+  const candidateRows = Array.from(byId.values());
+  let rows = candidateRows;
+  const duplicates = [];
+  try {
+    // Same-date rows already in the table from another source (e.g. Tourism Windsor Essex): never write a second copy.
+    const dates = Array.from(new Set(candidateRows.map((r) => r.start_date)));
+    const existingSameDay = [];
+    for (let i = 0; i < dates.length; i += 50) {
+      const q = `${SUPABASE_URL}/rest/v1/events?start_date=in.(${dates.slice(i, i + 50).join(",")})&select=id,title,external_id,start_date,status,image_url&limit=1000`;
+      const r = await fetch(q, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
+      if (!r.ok) throw new Error("duplicate lookup HTTP " + r.status);
+      existingSameDay.push(...(await r.json()));
+    }
+    rows = candidateRows.filter((r) => {
+      const d = findDuplicate(r, existingSameDay);
+      if (d) duplicates.push({ external_id: r.external_id, title: r.title, duplicate_of: d.id, existing_has_image: !!d.image_url });
+      return !d;
+    });
+  } catch (dupErr) {
+    await finishRun(runHandle, { outcome: "failed", http_status: 502, error_sample: "Duplicate lookup failed: " + dupErr.message });
+    res.status(502).json({ upserted: 0, error: "Duplicate lookup failed, aborting rather than risk writing duplicates: " + dupErr.message });
+    return;
+  }
   if (!rows.length) {
     await finishRun(runHandle, { outcome: "success", records_fetched: itemsFound, records_parsed: items.length, records_written: 0 });
     res.status(200).json({ upserted: 0, note: "No current Walkerville Brewery events parsed.", skipped });
@@ -76,16 +99,28 @@ async function handler(req, res) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const withStatus = rows.map((r) => ({ ...r, venue_id: resolveVenueId(venueMap, r.venue_name_raw), status: existing.get(r.external_id) || DEFAULT_STATUS }));
-    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, withStatus);
+    // Shared publication gate: new rows get DEFAULT_STATUS only if every rule passes; an existing row keeps its stored status.
+    const gate = applyPublicationGate(
+      rows.map((r) => ({ ...r, venue_id: resolveVenueId(venueMap, r.venue_name_raw) })),
+      { existingStatus: existing, intendedStatus: DEFAULT_STATUS, ctx: {} }
+    );
+    const rowsWithStatus = gate.rows;
+    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
-      const t = await resp.text();
-      await finishRun(runHandle, { outcome: "failed", http_status: resp.status, records_fetched: itemsFound, records_parsed: items.length, records_written: resp.written, error_sample: "Supabase upsert failed: " + t });
-      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + t });
+      const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: itemsFound,
+        records_parsed: items.length,
+        records_written: resp.written,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
+      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
-    await finishRun(runHandle, { outcome: "success", http_status: resp.status, records_fetched: itemsFound, records_parsed: items.length, records_written: withStatus.length });
-    res.status(200).json({ upserted: withStatus.length, venue: VENUE_NAME, skipped });
+    await finishRun(runHandle, { outcome: "success", http_status: resp.status, records_fetched: itemsFound, records_parsed: items.length, records_written: rowsWithStatus.length });
+    res.status(200).json({ upserted: rowsWithStatus.length, venue: VENUE_NAME, skipped, duplicates_not_written: duplicates });
   } catch (err) {
     await finishRun(runHandle, { outcome: "failed", records_fetched: itemsFound, records_parsed: items.length, error_sample: err.message });
     res.status(500).json({ upserted: 0, error: err.message });

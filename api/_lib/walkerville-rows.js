@@ -111,4 +111,19 @@ function buildRow(e, today) {
   };
 }
 
-module.exports = { parseWalkervilleEvents, buildRow, listItems, localParts, VENUE_NAME, IMAGE_SOURCE_NOTE, SITE };
+// Cross-source duplicate check. The Tourism Windsor Essex feed already carries Walkerville Brewery events
+// (R&Q prod read 2026-11-06: 7 rows, image_url NULL on all, titles like "<Show> at Walkerville Brewery").
+// A row from this connector that matches an existing row on the same date is NOT written; it is reported so
+// the existing row can be enriched (image) in a separate, reviewed step.
+function normTitle(t) {
+  return String(t || "").toLowerCase().replace(/\b(at|@)\s+(the\s+)?walkerville brewery\b/g, " ").replace(/\bwalkerville brewery\b/g, " ")
+    .replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").replace(/\b(the|a|an)\b/g, " ").replace(/\s+/g, " ").trim();
+}
+function findDuplicate(row, existingRows) {
+  const n = normTitle(row.title);
+  if (!n) return null;
+  return (existingRows || []).find((x) => x.start_date === row.start_date && x.external_id !== row.external_id &&
+    (normTitle(x.title) === n || normTitle(x.title).includes(n) || n.includes(normTitle(x.title)) && normTitle(x.title).length > 6)) || null;
+}
+
+module.exports = { normTitle, findDuplicate, parseWalkervilleEvents, buildRow, listItems, localParts, VENUE_NAME, IMAGE_SOURCE_NOTE, SITE };

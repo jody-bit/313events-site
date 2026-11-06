@@ -4,7 +4,7 @@
 "use strict";
 require("./fixtures/freeze-clock.js").freezeClock("2026-11-06T15:00:00Z");
 const assert = require("assert");
-const { parseWalkervilleEvents, buildRow } = require("../api/_lib/walkerville-rows.js");
+const { parseWalkervilleEvents, buildRow, findDuplicate } = require("../api/_lib/walkerville-rows.js");
 const vercel = require("../vercel.json");
 
 // Nov 20 2026 5pm EST = 22:00Z; Nov 21 11am EST = 16:00Z
@@ -34,6 +34,10 @@ assert.ok(!("image_credit" in row)); // no visible credit by policy
 const pop = buildRow(events[2], today);
 assert.strictEqual(pop.venue_name_raw, "Some Hall"); assert.strictEqual(pop.venue_address_raw, "100 Other St");
 assert.strictEqual(parseWalkervilleEvents(null).events.length, 0);
+const ex = [{ id: "d1", title: "Bob Dylan - The Never Ending Tribute Show at Walkerville Brewery", start_date: "2026-11-07", external_id: "tourism-1" }];
+assert.ok(findDuplicate({ title: "Bob Dylan - The Never Ending Tribute Show", start_date: "2026-11-07", external_id: "w-1" }, ex), "same show, same day, other source");
+assert.ok(!findDuplicate({ title: "Bob Dylan - The Never Ending Tribute Show", start_date: "2026-11-08", external_id: "w-1" }, ex), "other day is not a duplicate");
+assert.ok(!findDuplicate({ title: "Jazz Night", start_date: "2026-11-07", external_id: "w-2" }, ex));
 // DRAFT: must not be scheduled until Jody activates the source
 assert.ok(!JSON.stringify(vercel).includes("cron-walkervillebrewery"), "connector must not be scheduled in the draft");
 console.log("cron-walkervillebrewery-parse: ok");
