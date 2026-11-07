@@ -318,6 +318,12 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
   }
 
+  if (parsed.status === "region_only") {
+    // Only a region was stated ("ON"): no venue, no address, no city is invented, and it is not a "says nothing" location, so
+    // the feed's default city is never attached (rowsWithNoStatedLocation takes "blank" only). Shown as the existing "Venue TBA".
+    return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+  }
+
   if (parsed.status === "unparseable") {
     // BUG-012 (2026-10-04): the text is still kept whole as the honest raw
     // location; no venue name, no street address and no venue link is
@@ -1118,3 +1124,5 @@ const handleRequest = async (req, res) => {
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
 module.exports.feedSourceFailures = feedSourceFailures;
 module.exports.feedLimits = feedLimits;
+module.exports.resolveIcsEventVenue = resolveIcsEventVenue; // test seam (region-only LOCATION)
+module.exports.icsEventsToRows = icsEventsToRows; // test seam (region-only LOCATION never takes the feed's default city)
