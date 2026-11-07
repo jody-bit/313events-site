@@ -339,9 +339,29 @@
     "summary": "Find a gift with a making story at Pewabic’s Holiday Showcase, and add a museum visit or a separately booked workshop to the trip. Showcase begins November 5, 2026; closing date being confirmed.",
     "website": "https://www.pewabic.org/pages/holiday-showcase",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
-     "illustrative": false
+    "src": "/assets/seasonal/pewabic-holiday-showcase-card.webp",
+    "illustrative": false,
+    "alt": "Three turquoise ceramic snowflake ornaments hanging from lavender ribbons, framed by evergreen and sage greenery on a dark background.",
+    "acquired": {
+     "file": "/assets/seasonal/pewabic-holiday-showcase-card.webp",
+     "bytes": 268618,
+     "sha256": "ae737d1f36d6a6884cb81e5c47a1157a9d7f76d16f36c869ee2741437f1b1843",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-11-06"
+    },
+    "ownerClearance": {
+     "statement": "Jody, 313.events project timeline 2026-11-06 01:28Z: \"Jody supplies attached pewabic_snowflakes_2022-1.png.webp and requests using this promotional image for Pewabic Holiday Showcase.\" Owner-supplied promotional artwork, not owner-photographed. Photographer, source URL and licence are NOT recorded and none is asserted. The 2022 in the file name is not an event year and the image is not claimed to depict 2026.",
+     "recordedBy": "Claude Code (Editorial)",
+     "recordedAt": "2026-11-06",
+     "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb26FraywzmHT3i3uKiktRrD",
+     "original": {
+      "file": "/assets/guides/source/pewabic-holiday-showcase-snowflake-ornaments-original.webp",
+      "sha256": "84ff281931c327f00c645d792d2df29a36115de804a0445ac1fb3091ca1d038f",
+      "note": "Owner-supplied upload (pewabic_snowflakes_2022-1.png.webp, 1600x1600, 677798 bytes), kept unmodified; card is a 1600x1067 crop (y 260 to 1327, all three ornaments intact) resized to 1280x853, no upscaling."
+     }
     }
+   }
    },
    {
     "id": "post-make-the-gift-workshops",
