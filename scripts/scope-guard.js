@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // #256 Auto-Repair step time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).
+  "api/_lib/step-runner.js", "api/_lib/auto-repair-steps.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
   "api/_lib/control-tower.js",
   // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
