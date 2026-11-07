@@ -8,8 +8,8 @@
 //   node scripts/prod-smoke.js [--base https://313.events] [--min-events N] [--out report.json]
 //   env: SMOKE_COMMIT_SHA, SMOKE_PR, SMOKE_DISPATCHED_BY  (recorded in the report as release evidence, never validated; dispatched_by is who ran it, NOT an owner release approval)
 //
-// Exit 0 = all checks passed; 1 = at least one failed; 2 = could not run. The report names the deployment id
-// (x-vercel-id header, a per-request tracing id, not a deployment id), the commit if supplied, every check with its evidence, and the execution time, for the
+// Exit 0 = all checks passed; 1 = at least one failed; 2 = could not run. The report records the request id
+// (x-vercel-id header, a per-request tracing id, NOT a deployment id), the commit exactly as supplied (never validated; this report does not prove which SHA is deployed), every check with its evidence, and the execution time, for the
 // release-evidence template in project/DEFINITION_OF_DONE.md.
 "use strict";
 const fs = require("fs");
@@ -114,7 +114,7 @@ async function runSmoke(opts) {
 }
 
 function format(report) {
-  const lines = ["prod-smoke " + (report.ok ? "PASS" : "FAIL") + "  base=" + report.evidence.base + "  deployment=" + (report.evidence.vercel_request_id || "unknown") + "  commit=" + (report.evidence.commit || "not supplied") + "  " + report.duration_ms + "ms"];
+  const lines = ["prod-smoke " + (report.ok ? "PASS" : "FAIL") + "  base=" + report.evidence.base + "  request_id=" + (report.evidence.vercel_request_id || "unknown") + "  commit=" + (report.evidence.commit ? report.evidence.commit + " (supplied, unvalidated)" : "not supplied") + "  " + report.duration_ms + "ms"];
   for (const c of report.checks) lines.push((c.ok ? "  ok   " : "  FAIL ") + c.name + (c.detail ? "  (" + c.detail + ")" : ""));
   return lines.join("\n");
 }

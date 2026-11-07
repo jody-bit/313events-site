@@ -39,6 +39,10 @@ function makeFetch(over) {
   assert.strictEqual(r.ok, true, S.format(r));
   assert.strictEqual(r.evidence.vercel_request_id, "iad1::abc-123");
   assert.strictEqual(r.evidence.commit, "abc1234");
+  const line = S.format(r).split("\n")[0];
+  assert.ok(line.includes("request_id=iad1::abc-123"), "header line must label the x-vercel-id as request_id: " + line);
+  assert.ok(!/deployment=/.test(line), "x-vercel-id is a per-request trace id, never labelled deployment");
+  assert.ok(line.includes("commit=abc1234 (supplied, unvalidated)"), "commit is shown as supplied and unvalidated: " + line);
   assert.ok(r.checks.length >= 8);
   // read-only: every request is a GET, and the only credential is the public anon key on the REST call
   assert.ok(f.calls.every((c) => c.method === "GET"), "non-GET request issued");
