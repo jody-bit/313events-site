@@ -369,9 +369,23 @@ const TICKET_STATUS_NOTES = {
 };
 function ticketStatusNoteHtml(e){
   if(e.ticketUrl && safeUrl(e.ticketUrl)) return null;
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return null;
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && !haloVenueLinkLabel(e)) return null;
   if(!e.ticketStatus) return null;
   return TICKET_STATUS_NOTES[e.ticketStatus] || null;
+}
+
+// HALO Detroit sells no advance tickets (owner decision 2026-10-19): its events without a ticket link point to the venue's own
+// website, labelled for what it is. Keep this function identical in index.html, calendar.html, map.html and event-template.html
+// (test/halo-venue-link.test.js checks they match).
+function haloVenueLinkLabel(e){
+  if(e.source !== 'HALO Detroit' || (e.ticketUrl && safeUrl(e.ticketUrl)) || !(e.eventPageUrl && safeUrl(e.eventPageUrl))) return '';
+  if(e.ticketStatus === 'door') return 'Venue website';
+  if(e.ticketStatus === 'rsvp_no_advance_sale') return 'Event information';
+  return '';
+}
+function eventLinkLabel(e){
+  if(e.free) return 'More info';
+  return haloVenueLinkLabel(e) || 'Tickets & info';
 }
 
 // Resale marketplace search links (2026-09-16, Jody: "see if the event is
@@ -816,7 +830,7 @@ function renderEvent(e){
   // "Tickets & info" uses ticket_url when valid, otherwise event_url.
   const primaryUrl = (e.ticketUrl && safeUrl(e.ticketUrl)) ? e.ticketUrl : e.eventPageUrl;
   if(primaryUrl && safeUrl(primaryUrl)){
-    actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(primaryUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets & info'}</a>`;
+    actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(primaryUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(eventLinkLabel(e))}</a>`;
   }
   if(e.ticketUrl && safeUrl(e.ticketUrl) && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl){
     actionsHtml += `<a class="btn-secondary" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`;
