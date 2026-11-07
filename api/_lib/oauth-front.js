@@ -108,6 +108,13 @@ const challenge = (origin) => `Bearer resource_metadata="${origin}/.well-known/o
 // A Host/X-Forwarded-Host that is not on that list is ignored in favour of the deployment's own URL (R&Q gap 17).
 function allowedHosts() {
   const hosts = new Set(["313.events", "www.313.events"]);
+  // Optional, non-secret, per-environment EXTRA exact hostnames (comma-separated), e.g. one temporary connector-test host on a Preview.
+  // Inert unless the env var is set. Each entry must be an exact hostname under 313.events: no wildcard, no port, no path, no
+  // empty label, and neither the apex nor www (already listed). Anything else is ignored, so a mistyped value cannot widen trust.
+  for (const h of String(process.env.EDITORIAL_OAUTH_EXTRA_HOSTS || "").split(",")) {
+    const v = h.trim().toLowerCase();
+    if (v !== "313.events" && v !== "www.313.events" && /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+313\.events$/.test(v)) hosts.add(v);
+  }
   for (const k of ["VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL"]) if (process.env[k]) hosts.add(String(process.env[k]).replace(/^https?:\/\//, "").replace(/\/.*$/, ""));
   return hosts;
 }

@@ -51,3 +51,41 @@ assert.strictEqual(m.authorizationServer.authorization_response_iss_parameter_su
 assert.strictEqual(tk.body.expires_in, 86400);
 assert.strictEqual(o.toolAuthError("https://preview.example")._meta["mcp/www_authenticate"][0].includes("oauth-protected-resource"), true);
 console.log("PASS: oauth-front draft: discovery, stateless registration, owner approval, PKCE code exchange, revocation by token rotation");
+
+// ---- gw-test issuer host (exact, env-gated; inert unless EDITORIAL_OAUTH_EXTRA_HOSTS is set) ----
+{
+  const saved = {};
+  for (const k of ["EDITORIAL_OAUTH_EXTRA_HOSTS", "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL"]) { saved[k] = process.env[k]; delete process.env[k]; }
+  const iss = (host, xfh) => o.issuerFor(Object.assign({ host }, xfh ? { "x-forwarded-host": xfh } : {}));
+  try {
+    // unset: gw-test is NOT trusted (falls back to production), exactly today's behaviour
+    assert.strictEqual(iss("gw-test.313.events"), "https://313.events");
+    assert.strictEqual(iss("313.events"), "https://313.events");
+    assert.strictEqual(iss("www.313.events"), "https://www.313.events");
+
+    process.env.EDITORIAL_OAUTH_EXTRA_HOSTS = "gw-test.313.events";
+    assert.strictEqual(iss("gw-test.313.events"), "https://gw-test.313.events", "exact configured host is trusted");
+    assert.strictEqual(iss("x", "gw-test.313.events"), "https://gw-test.313.events", "proxy-forwarded host is validated the same way");
+    assert.strictEqual(iss("GW-TEST.313.events"), "https://gw-test.313.events", "case-insensitive");
+    // unknown / lookalike / sibling / deeper / port / path hosts fail safe to production
+    for (const bad of ["evil.com", "x.evil.com", "gw-test.313.events.evil.com", "other.313.events", "a.gw-test.313.events", "gw-test.313.events:8443", "gw-test.313.events/x", "gw-test-313.events", "evilgw-test.313.events"]) {
+      assert.strictEqual(iss(bad), "https://313.events", "must not trust " + bad);
+    }
+    assert.strictEqual(iss("gw-test.313.events", "evil.com"), "https://313.events", "forwarded host wins and is checked");
+
+    // malformed / hostile config is ignored, never widens trust
+    for (const cfg of ["*.313.events", "*", "evil.com", ".313.events", "313.events.", "a..313.events", "-x.313.events", "gw-test.313.events:443", "https://gw-test.313.events", "gw test.313.events"]) {
+      process.env.EDITORIAL_OAUTH_EXTRA_HOSTS = cfg;
+      assert.strictEqual(iss("gw-test.313.events"), "https://313.events", "config " + JSON.stringify(cfg) + " must not trust anything");
+      assert.strictEqual(iss("evil.com"), "https://313.events");
+    }
+    // a list: valid entries kept, invalid dropped
+    process.env.EDITORIAL_OAUTH_EXTRA_HOSTS = " gw-test.313.events , *.313.events, evil.com ";
+    assert.strictEqual(iss("gw-test.313.events"), "https://gw-test.313.events");
+    assert.strictEqual(iss("evil.com"), "https://313.events");
+    assert.strictEqual(iss("anything.313.events"), "https://313.events");
+  } finally {
+    for (const k of Object.keys(saved)) { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; }
+  }
+  console.log("PASS: oauth-front issuerFor: exact gw-test host only when configured; wildcard/lookalike/port/malformed config fail safe");
+}
