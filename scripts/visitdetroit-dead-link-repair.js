@@ -94,6 +94,7 @@ async function repairVisitDetroitDeadLinks({
   fetchFn = fetch,
   // Per-run budget (P0 2026-10-16): the 2026-10-16 Auto-Repair run hit the 300 s function limit and lost its counts.
   // Stop checking at maxChecks or when deadlineMs has passed since the start, report what was done, and log samples as we go.
+  shouldStop = () => false, // #256: Auto-Repair step soft stop (aborted mid-request results are discarded)
   maxChecks = 150,
   deadlineMs = 240000,
   nowFn = Date.now,
@@ -101,6 +102,9 @@ async function repairVisitDetroitDeadLinks({
 } = {}) {
   const startedAt = nowFn();
   const counts = {
+    stoppedEarly: false,
+    deferred: 0,
+    checked: 0,
     totalConsidered: 0,
     samples: [],
     ok: 0,
@@ -148,15 +152,19 @@ async function repairVisitDetroitDeadLinks({
   }
 
   let checked = 0;
-  for (const event of candidates) {
+  for (let i = 0; i < candidates.length; i++) {
+    const event = candidates[i];
     if (!event.ticket_url || !event.ticket_url.trim()) continue; // defensive re-check
-    if (checked >= maxChecks || nowFn() - startedAt >= deadlineMs) {
+    if (shouldStop() || checked >= maxChecks || nowFn() - startedAt >= deadlineMs) {
       counts.stoppedEarly = true; // budget reached: the remaining rows are checked on the next run
+      counts.deferred = candidates.length - i;
       break;
     }
     checked++;
 
     const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn, requireIdentity: true });
+    if (shouldStop()) { counts.stoppedEarly = true; counts.deferred = candidates.length - i; break; } // aborted mid-request: result is an artifact, write nothing
+    counts.checked++;
     // Log what the check actually saw for the first rows (P0 2026-10-16: evidence for stamps we could not reproduce).
     if (counts.samples.length < 10) logger.log("[link-check sample] " + JSON.stringify({ id: event.id, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null }));
     if (counts.samples.length < 10) counts.samples.push({ id: event.id, url: event.ticket_url, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null, identityConfirmed: result.identityConfirmed === undefined ? null : result.identityConfirmed });

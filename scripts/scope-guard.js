@@ -17,8 +17,16 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
+  "api/_lib/ics-location.js",
+  // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
+  "api/_lib/zero-write-reasons.js",
+  // RA telemetry (draft, 2026-11-07): pure run-summary builder/reader and Admin RA read endpoint; its own reviewed PR.
+  "api/_lib/ra-run-summary.js", "api/admin-ra.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // #256 Auto-Repair step time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).
+  "api/_lib/step-runner.js", "api/_lib/auto-repair-steps.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
   "api/_lib/control-tower.js",
   // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
@@ -74,6 +82,8 @@ const ALLOWED = [
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
+  // Decision 7: rotating link check (dry by default).
+  "api/_lib/link-check-run.js", "api/cron-link-check.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",

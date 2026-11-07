@@ -84,6 +84,7 @@ const { SLUGS } = require("../api/_lib/source-slugs");
 const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
+const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const {
   RA_ID_PATTERN,
   parseCandidateIds,
@@ -142,7 +143,9 @@ function deriveTimeDisplayAndEndDate(startIso, endIso) {
   const end = endIso ? parseIsoLocal(endIso) : null;
   const endDate = end && start && end.date !== start.date ? end.date : null;
   const startClock = start ? formatClock(start.hour, start.minute) : null;
-  const endClock = end ? formatClock(end.hour, end.minute) : null;
+  // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+  const placeholderEnd = !!end && end.hour === 23 && end.minute === 59;
+  const endClock = end && !placeholderEnd ? formatClock(end.hour, end.minute) : null;
   let timeDisplay = null;
   if (startClock && endClock) timeDisplay = `${startClock}–${endClock}`;
   else if (startClock) timeDisplay = startClock;
@@ -796,6 +799,7 @@ async function completeRaSyncSession(opts) {
     SUPABASE_SERVICE_ROLE_KEY,
     runId,
     events,
+    detailReport = null, // optional device report: {attempted, blocked, blockedIds}
     fetchFn = fetch,
     finishRunFn = finishRun,
     buildVenueNameToIdMapFn = buildVenueNameToIdMap,
@@ -889,7 +893,7 @@ async function completeRaSyncSession(opts) {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rowsToUpsert.map((r) => r.row.external_id),
-        { select: `external_id,status,${MERGE_BLANK_FIELDS.join(",")}` }
+        { select: `external_id,status,source,internal_note,${MERGE_BLANK_FIELDS.join(",")}` }
       );
 
       // No existing row at all (the normal, overwhelmingly common case --
@@ -902,7 +906,10 @@ async function completeRaSyncSession(opts) {
       const toMerge = [];
       for (const entry of rowsToUpsert) {
         const existing = existingRows.get(entry.row.external_id);
-        if (existing) toMerge.push({ ...entry, existing });
+        // An owner-supplied or editorially held row is never filled by automation, not even a blank (the owner may have
+        // left it blank on purpose). Reported as skipped so the session still counts it as addressed.
+        if (existing && isOwnerSuppliedRow(existing)) skipped.push({ id: entry.id, reason: "OWNER_PROTECTED" });
+        else if (existing) toMerge.push({ ...entry, existing });
         else toInsert.push(entry);
       }
 
@@ -1016,6 +1023,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors.slice(0, 20),
     duplicateDetail: duplicates.slice(0, 20),
+    importedIds: imported.map((x) => x.id),
+    ...(detailReport ? { detailReport } : {}),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, run.id, finalSessionData, fetchFn);
 
@@ -1035,6 +1044,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors,
     duplicateDetail: duplicates,
+    importedIds: imported.map((x) => x.id),
+    submitted: events.length,
   };
 }
 

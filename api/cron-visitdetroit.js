@@ -255,8 +255,15 @@ function deriveDateTimeFields(h) {
   let timeDisplay = null;
   if (!h.isAllDay) {
     timeDisplay = formatTime(startParts.hour, startParts.minute);
+    // 23:59 is VisitDetroit's end-of-day filler, not a published end time
+    // (194 of 194 approved upcoming rows that end at 11:59 PM came from it): an
+    // end shown as "to 11:59 PM" is false on the card and becomes a false
+    // DTEND in "Add to calendar". Keep the start only; the calendar export
+    // then uses its own 2-hour default (project/DECISIONS.md end-time fallback).
+    const placeholderEnd = endParts && endParts.hour === 23 && endParts.minute === 59;
     if (
       endParts &&
+      !placeholderEnd &&
       endParts.date === startParts.date &&
       (endParts.hour !== startParts.hour || endParts.minute !== startParts.minute)
     ) {

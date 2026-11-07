@@ -580,7 +580,7 @@ function renderControlTower(data) {
       + '<td><b>' + escapeHtml(s.label.replace(/\s*\(.*\)$/, '')) + '</b><br>' + towerChip(s.status) + '</td>'
       + '<td>' + (s.schedule ? escapeHtml(s.schedule.expr || 'external') + (s.schedule.cadenceHours ? ' (' + s.schedule.cadenceHours + 'h)' : '') : '<b style="color:var(--bad)">none</b>') + '</td>'
       + '<td>' + (s.runLogged ? escapeHtml(towerWhen(s.lastAttemptAt)) + ' ' + escapeHtml(s.lastOutcome || '') + '<br>ok ' + escapeHtml(towerWhen(s.lastSuccessAt)) : 'no run log') + '</td>'
-      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') : '—') + '</td>'
+      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') + (s.lastWritten === 0 && s.zeroWrite && s.zeroWrite.known ? '<br><small>' + escapeHtml(s.zeroWrite.text) + '</small>' : '') : '—') + '</td>'
       + '<td style="white-space:nowrap">' + dim(s.dimensions || {}) + '</td>'
       + '<td>' + s.upcomingPublic + (s.upcomingPending ? ' (+' + s.upcomingPending + ' pending)' : '') + '</td>'
       + '<td>' + towerPct(s.reseenShare) + '<br>' + escapeHtml(towerWhen(s.lastSeenPublicAt)) + (s.missingLinkRate !== null ? '<br>weak links ' + towerPct(s.missingLinkRate) : '') + '</td>'
@@ -1174,6 +1174,14 @@ async function autoRepairFollowup() {
       // recovery -- itself failed (e.g. the live Squarespace feed was
       // unreachable). That failure must never be silently absorbed into
       // what otherwise reads as a clean success line.
+      // #256: steps now run under a time budget. A run that did not finish
+      // every step says so and names each step that did not complete.
+      if (data.partial) {
+        const notDone = (data.steps || []).filter((st) => st.status !== 'completed')
+          .map((st) => `${st.label} (${String(st.status).replace(/_/g, ' ')})`);
+        summary += ` PARTIAL RUN — not all steps completed${notDone.length ? ': ' + notDone.join(', ') : ''}. Run Auto-Repair again to continue.`;
+        statusEl.classList.add('refresh-error');
+      }
       if (data.outerLimitsDescriptionError) {
         summary += ` Outer Limits description repair failed: ${data.outerLimitsDescriptionError}.`;
         statusEl.classList.add('refresh-error');
@@ -1434,6 +1442,21 @@ function formatRaCounts(run) {
   return parts.join(', ');
 }
 
+// Four-count RA telemetry line. Absent values read "unknown", never 0/success.
+// Listing promotions are pending_review (hidden) and never counted as public.
+function formatRaTelemetry(run) {
+  const t = run && run.telemetry;
+  if (!t || !t.known) return 'Run detail (listing / detail fetch / pending_review / public): unknown — not recorded for this run';
+  const c = t.counts || {};
+  const v = (x) => (x === null || x === undefined ? 'unknown' : x);
+  const per = Array.isArray(t.perCandidate) ? t.perCandidate : [];
+  const blocked = per.filter((p) => p.status === 'blocked' || p.detailBlocked).length;
+  const never = per.filter((p) => p.status === 'never_attempted').length;
+  let line = `Listing: ${v(c.listingCandidates)} candidates, ${v(c.listingNew)} new · Detail fetch: ${v(c.detailSucceeded)} succeeded, ${v(c.detailBlocked)} blocked (attempted ${v(c.detailAttempted)}) · Hidden pending_review: ${v(c.pendingReview)}, deferred by cap: ${v(c.deferredByCap)} · Public: ${v(c.public)}`;
+  if (per.length) line += ` · Candidates blocked ${blocked}, never attempted ${never}`;
+  return line;
+}
+
 function renderRaSync(data) {
   const banner = document.getElementById('raSyncBanner');
   const { latestRun, lastSuccessfulRun } = data;
@@ -1464,6 +1487,11 @@ function renderRaSync(data) {
     banner.innerHTML = `
       ✗ <b>Resident Advisor sync ${escapeHtml(latestRun.outcome || 'failed')}</b> <span class="checked-at">— ${escapeHtml(startedAt)} — ${escapeHtml(formatRaCounts(latestRun))}</span>
     `;
+  }
+
+  banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">${escapeHtml(formatRaTelemetry(latestRun))}</div>`;
+  if (latestRun.telemetry && latestRun.telemetry.summaryText) {
+    banner.innerHTML += `<div class="checked-at" style="margin-top:4px;">${escapeHtml(latestRun.telemetry.summaryText)}</div>`;
   }
 
   // Surface the last time it genuinely worked whenever the latest run
