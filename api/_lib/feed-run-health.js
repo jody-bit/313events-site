@@ -44,6 +44,21 @@ const FAILURE_RE = /^(Fetch failed|Error:|Skipped — unrecognized|Parsed \d+ ev
 const EMPTY_RE = /^Fetched OK — 0 events found/;
 const HAD_EVENTS_RE = /^([1-9]\d*) events? found/;
 
+// A bare "fetch failed" hides why. The underlying Node/undici error carries a short machine code (ECONNRESET,
+// ENOTFOUND, UND_ERR_CONNECT_TIMEOUT, ...) on err.code or err.cause.code. Only an allowlisted shape is ever recorded:
+// an upper-case code token, or one of the known undici error names. Never the message, URL, host, address,
+// headers, stack or any other text of the error (those can carry private values).
+const SAFE_CODE_RE = /^[A-Z][A-Z0-9_]{2,40}$/;
+const SAFE_ERROR_NAMES = new Set(["ConnectTimeoutError", "HeadersTimeoutError", "BodyTimeoutError", "SocketError", "AbortError"]);
+function describeFetchError(err) {
+  const seen = [];
+  for (let e = err, depth = 0; e && typeof e === "object" && depth < 3; e = e.cause, depth++) {
+    if (typeof e.code === "string" && SAFE_CODE_RE.test(e.code)) seen.push(e.code);
+    else if (typeof e.name === "string" && SAFE_ERROR_NAMES.has(e.name) && depth > 0) seen.push(e.name);
+  }
+  return seen.length ? ` (cause: ${[...new Set(seen)].join(", ")})` : "";
+}
+
 const stripVolatile = (s) => String(s || "").replace(/\d+/g, "#").slice(0, 160);
 
 function classifyFeedResult(result, previousResult) {
@@ -199,6 +214,7 @@ module.exports = {
   compactResults,
   otherRunInProgress,
   TIMED_OUT_RESULT,
+  describeFetchError,
   DEFERRED_RESULT,
   NOT_A_CALENDAR_RESULT,
   RUN_FAILURE_KINDS,

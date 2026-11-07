@@ -1109,7 +1109,7 @@ const handleRequest = async (req, res) => {
         }
       }
     } catch (err) {
-      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
+      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message + health.describeFetchError(err);
     }
 
     results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult), ms: Date.now() - feedStartedAt });
