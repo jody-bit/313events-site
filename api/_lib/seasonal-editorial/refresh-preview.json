@@ -43,13 +43,13 @@
     "featured": true
    },
    "long-family-orchard-and-farm": {
-    "summary": "Commerce Township orchard and farm market with fresh-pressed cider through Thanksgiving Eve, November 25, 2026. The Fun Farm and corn maze ended November 1.",
+    "summary": "Commerce Township orchard and farm market with fresh-pressed cider through Thanksgiving Eve. The Fun Farm and corn maze ended November 1.",
     "featured": false,
     "lastDay": "2026-11-25",
     "removeAt": "2026-11-26T00:00:00-05:00"
    },
    "plymouth-orchards-and-cider-mill": {
-    "summary": "Plymouth orchard with award-winning cider and donuts. The Red Shed, at a separate address, stays open through November 25.",
+    "summary": "Plymouth orchard with award-winning cider and donuts. The cider mill's last day is November 8. The separate Red Shed Market, at another address, stays open through November 25.",
     "featured": false,
     "lastDay": "2026-11-08",
     "removeAt": "2026-11-09T00:00:00-05:00"
@@ -365,7 +365,7 @@
    },
    {
     "id": "post-make-the-gift-workshops",
-    "name": "POST: make-the-gift workshops",
+    "name": "POST workshops",
     "city": "Detroit (Jefferson-Chalmers)",
     "region": "MI",
     "categories": [
@@ -379,7 +379,7 @@
      "src": "/assets/placeholders/event-800.webp",
      "illustrative": false
     },
-    "checkUrl": "https://www.mutualadoration.com/"
+    "checkUrl": "https://www.mutualadoration.com/collections/workshops-at-post"
    },
    {
     "id": "detroit-urban-craft-fair",
