@@ -497,8 +497,27 @@
     "summary": "Go beyond a conventional car display at Stahls, where motor history shares the space with a remarkable music collection. The November evening opening gives the trip a timely reason. Night at the Museum: November 19, 5 to 8 p.m.",
     "website": "https://www.stahlsauto.com/visit/",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
-     "illustrative": false
+     "src": "/assets/seasonal/stahls-motors-and-music-card-1280.webp",
+     "alt": "Stahls Night at the Museum, motors, music, after dark: a chrome-grilled classic car in the Stahls Motors & Music Experience showroom, Chesterfield, Michigan, under the title Night at the Museum.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/stahls-motors-and-music-card-1280.webp",
+      "bytes": 93146,
+      "sha256": "6c31555a1be91b0f12668eaa943489938cde0cb3e1960304264b86c7197fc596",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-07"
+     },
+     "ownerClearance": {
+      "statement": "Jody, 313.events project timeline 2026-11-06 02:56Z, supplying the Stahls Night at the Museum artwork: \"use these images for these events\". Owner-supplied promotional artwork; creator, source URL and licence are NOT recorded and none is asserted; not owner-photographed. The artwork prints no date: dates and hours on this card come only from the official source. Recorded here for the collection card as a draft use that the owner's words (which named the events) do not explicitly cover; release words are Jody's.",
+      "recordedBy": "Claude Code (Editorial)",
+      "recordedAt": "2026-11-07",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb4SR24q4uKTwtEVyyfUqd8W",
+      "original": {
+       "sha256": "eb5d02568a9c25f0acba1615b4f892edf277919572e5956143cf4245aaffcc4e",
+       "note": "1500x1000 PNG, 1,224,014 bytes, identical to the upload; preserved at project files editorial/stahls-card-2026-11-07/image/original/. The card is the same 3:2 frame resized to 1280x853, no crop, no upscaling."
+      }
+     }
     }
    },
    {
