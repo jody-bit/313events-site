@@ -210,6 +210,10 @@
       "destination": "/copyright.html"
     },
     {
+      "source": "/photo-credits",
+      "destination": "/photo-credits.html"
+    },
+    {
       "source": "/editorial-policy",
       "destination": "/editorial-policy.html"
     },
