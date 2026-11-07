@@ -31,6 +31,51 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/g
 const GENERIC_IMAGE = /\/Images\/SocialMedia\/|\/Assets\/|\/Images\/|logo|favicon|sprite|spacer|pixel|placeholder|default[-_]?image|IconModule|\/icons?\//i;
 const POSTER_PATH = /^\/ImageRepository\//i;
 const CANDIDATE_URL = /\/calendar\.aspx\?EID=\d+/i;
+const FETCH_TIMEOUT_MS = 10000;
+const MAX_PAGE_BYTES = 2 * 1024 * 1024;
+const MAX_REDIRECTS = 3;
+
+// event_url is ingested data, so it is validated BEFORE any request: https only, no credentials/port, a real public-looking
+// hostname (no IP literal, localhost, single-label or internal suffix), and exactly /calendar.aspx?EID=<digits>.
+// `allowedHosts` (optional Set of exact hostnames) narrows further when a caller supplies one.
+function validateFetchUrl(raw, allowedHosts) {
+  let u;
+  try { u = new URL(raw); } catch { return { ok: false, reason: "url_unparseable" }; }
+  if (u.protocol !== "https:") return { ok: false, reason: "url_not_https" };
+  if (u.username || u.password) return { ok: false, reason: "url_has_credentials" };
+  if (u.port) return { ok: false, reason: "url_has_port" };
+  const h = u.hostname.toLowerCase();
+  if (h.startsWith("[") || /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || /^[\d.]+$/.test(h)) return { ok: false, reason: "url_ip_literal" };
+  if (!h.includes(".") || /(^|\.)(localhost|local|internal|localdomain|lan|corp|home)$/.test(h)) return { ok: false, reason: "url_non_public_host" };
+  if (!/^[a-z0-9.-]+$/.test(h)) return { ok: false, reason: "url_odd_hostname" };
+  if (u.pathname.toLowerCase() !== "/calendar.aspx" || !/^\?EID=\d+$/i.test(u.search)) return { ok: false, reason: "url_not_civicplus_event" };
+  if (allowedHosts && !allowedHosts.has(h)) return { ok: false, reason: "url_host_not_allowed" };
+  return { ok: true, url: u };
+}
+
+async function timedFetch(url, opts, fetchImpl) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
+  try { return await fetchImpl(url, { ...opts, signal: ctl.signal }); } finally { clearTimeout(t); }
+}
+
+async function readCapped(resp, maxBytes) {
+  if (resp.body && typeof resp.body.getReader === "function") {
+    const reader = resp.body.getReader();
+    const chunks = [];
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.length;
+      if (total > maxBytes) { try { await reader.cancel(); } catch {} return null; }
+      chunks.push(Buffer.from(value));
+    }
+    return Buffer.concat(chunks).toString("utf8");
+  }
+  const text = await resp.text();
+  return Buffer.byteLength(text) > maxBytes ? null : text;
+}
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
@@ -58,7 +103,7 @@ function metaContent(html, prop) {
 
 // Image elements in the page body only (everything before <head> closes is ignored; scripts/styles stripped).
 function bodyImages(html, base) {
-  const body = html.replace(/<head\b[\s\S]*?<\/head>/i, " ").replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, " ");
+  const body = html.replace(/<!--[\s\S]*?-->/g, " ").replace(/<head\b[\s\S]*?<\/head>/i, " ").replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, " ");
   const out = [];
   for (const tag of body.match(/<img\b[^>]*>/gi) || []) {
     const src = /\bsrc\s*=\s*["']([^"']+)["']/i.exec(tag);
@@ -91,7 +136,7 @@ function normalizeTitle(t) {
 async function checkImage(url, fetchImpl = fetch) {
   let resp;
   try {
-    resp = await fetchImpl(url, { method: "HEAD", redirect: "manual" });
+    resp = await timedFetch(url, { method: "HEAD", redirect: "manual" }, fetchImpl);
   } catch {
     return { ok: false, reason: "image_head_failed" };
   }
@@ -104,12 +149,33 @@ async function checkImage(url, fetchImpl = fetch) {
   return { ok: true, type, bytes };
 }
 
-async function fetchPage(url, fetchImpl = fetch) {
-  const resp = await fetchImpl(url, { headers: { "User-Agent": "313events-image-check" }, redirect: "follow" });
-  if (!resp.ok) return { ok: false, reason: `page_http_${resp.status}` };
-  const finalUrl = resp.url || url;
-  if (new URL(finalUrl).host !== new URL(url).host) return { ok: false, reason: "page_redirected_other_host" };
-  return { ok: true, html: await resp.text(), finalUrl };
+// Manual redirects: every hop is validated BEFORE it is requested and must stay on the original host (https only).
+async function fetchPage(url, fetchImpl = fetch, allowedHosts = null) {
+  const first = validateFetchUrl(url, allowedHosts);
+  if (!first.ok) return { ok: false, reason: first.reason };
+  const host = first.url.hostname.toLowerCase();
+  let current = first.url.href;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    let resp;
+    try {
+      resp = await timedFetch(current, { headers: { "User-Agent": "313events-image-check" }, redirect: "manual" }, fetchImpl);
+    } catch { return { ok: false, reason: "page_fetch_failed" }; }
+    if (resp.status >= 300 && resp.status < 400) {
+      const loc = resp.headers && resp.headers.get && resp.headers.get("location");
+      let next;
+      try { next = new URL(loc, current); } catch { return { ok: false, reason: "page_bad_redirect" }; }
+      if (next.protocol !== "https:" || next.hostname.toLowerCase() !== host || next.port || next.username || next.password) {
+        return { ok: false, reason: "page_redirected_other_host" }; // never requested
+      }
+      current = next.href;
+      continue;
+    }
+    if (!resp.ok) return { ok: false, reason: `page_http_${resp.status}` };
+    const html = await readCapped(resp, MAX_PAGE_BYTES);
+    if (html === null) return { ok: false, reason: "page_too_large" };
+    return { ok: true, html, finalUrl: current };
+  }
+  return { ok: false, reason: "page_too_many_redirects" };
 }
 
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, limit = 200) {
@@ -126,6 +192,15 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
   const rows = await resp.json();
   if (!Array.isArray(rows)) throw new Error("Unexpected response shape fetching image repair candidates");
   return rows;
+}
+
+// True when the same image is already stored on an event with a DIFFERENT normalized title (a series reuse is fine).
+async function imageInUseByOtherTitles(SUPABASE_URL, sbHeaders, imageUrl, title, fetchImpl = fetch) {
+  const resp = await fetchImpl(`${SUPABASE_URL}/rest/v1/events?image_url=eq.${encodeURIComponent(imageUrl)}&select=id,title&limit=20`, { headers: sbHeaders });
+  if (!resp.ok) throw new Error(`image-in-use lookup failed: HTTP ${resp.status}`);
+  const rows = await resp.json();
+  if (!Array.isArray(rows)) throw new Error("image-in-use lookup: unexpected shape");
+  return rows.some((r) => normalizeTitle(r.title) !== normalizeTitle(title));
 }
 
 // Conditional PATCH: image still blank AND the row untouched since it was read. Zero rows => false (a person got there first).
@@ -158,6 +233,8 @@ async function repairEventPageImages({
   fetchPageFn = fetchPage,
   checkImageFn = checkImage,
   applyPatchFn = applyPatch,
+  imageInUseFn = imageInUseByOtherTitles,
+  allowedHosts = null,
 } = {}) {
   const counts = {
     dryRun: !!dryRun, considered: 0, skippedOwnerLocked: 0, skippedNotCandidateUrl: 0, rejected: 0, accepted: 0,
@@ -169,18 +246,21 @@ async function repairEventPageImages({
   const proposals = [];
   for (const event of rows) {
     counts.considered++;
-    if (!CANDIDATE_URL.test(String(event.event_url || ""))) { counts.skippedNotCandidateUrl++; continue; }
+    if (!validateFetchUrl(String(event.event_url || ""), allowedHosts).ok) { counts.skippedNotCandidateUrl++; continue; }
     if (event.image_url) continue; // blank only
     if (ownerCorrectedFields(event.internal_note).has("image_url")) { counts.skippedOwnerLocked++; continue; }
     const reject = (reason) => { counts.rejected++; counts.rejectedReasons[reason] = (counts.rejectedReasons[reason] || 0) + 1; counts.report.push({ id: event.id, verdict: "rejected", reason }); };
     let page;
-    try { page = await fetchPageFn(event.event_url); } catch { reject("page_fetch_failed"); continue; }
+    try { page = await fetchPageFn(event.event_url, undefined, allowedHosts); } catch { reject("page_fetch_failed"); continue; }
     if (!page.ok) { reject(page.reason); continue; }
     const verdict = classifyPage({ html: page.html, pageUrl: page.finalUrl });
     if (!verdict.accept) { reject(verdict.reason); continue; }
     let img;
     try { img = await checkImageFn(verdict.imageUrl); } catch { img = { ok: false, reason: "image_head_failed" }; }
     if (!img.ok) { reject(img.reason); continue; }
+    let inUse = false;
+    try { inUse = await imageInUseFn(SUPABASE_URL, sbHeaders, verdict.imageUrl, event.title); } catch { inUse = true; } // unknown => review, never write
+    if (inUse) { counts.sharedForReview++; counts.reviewIds.push(event.id); counts.report.push({ id: event.id, verdict: "review_shared_image", image: verdict.imageUrl, reason: "already_on_other_event" }); continue; }
     proposals.push({ event, pageUrl: page.finalUrl, imageUrl: verdict.imageUrl, type: img.type, bytes: img.bytes });
   }
 
@@ -215,7 +295,7 @@ async function repairEventPageImages({
 }
 
 module.exports = {
-  repairEventPageImages, classifyPage, metaContent, bodyImages, checkImage, fetchPage, fetchRepairCandidates, applyPatch, provenanceLine,
+  repairEventPageImages, classifyPage, validateFetchUrl, imageInUseByOtherTitles, metaContent, bodyImages, checkImage, fetchPage, fetchRepairCandidates, applyPatch, provenanceLine,
   MIN_BYTES, MAX_BYTES,
 };
 
