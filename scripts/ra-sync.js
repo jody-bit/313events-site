@@ -140,7 +140,9 @@ function deriveTimeDisplayAndEndDate(startIso, endIso) {
   const end = endIso ? parseIsoLocal(endIso) : null;
   const endDate = end && start && end.date !== start.date ? end.date : null;
   const startClock = start ? formatClock(start.hour, start.minute) : null;
-  const endClock = end ? formatClock(end.hour, end.minute) : null;
+  // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+  const placeholderEnd = !!end && end.hour === 23 && end.minute === 59;
+  const endClock = end && !placeholderEnd ? formatClock(end.hour, end.minute) : null;
   let timeDisplay = null;
   if (startClock && endClock) timeDisplay = `${startClock}–${endClock}`;
   else if (startClock) timeDisplay = startClock;
