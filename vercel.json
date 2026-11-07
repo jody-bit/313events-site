@@ -112,18 +112,6 @@
     {
       "path": "/api/cron-antonartcenter",
       "schedule": "15 14 * * *"
-    },
-    {
-      "path": "/api/cron-link-check",
-      "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/cron-link-check",
-      "schedule": "30 16 * * *"
-    },
-    {
-      "path": "/api/cron-link-check",
-      "schedule": "30 19 * * *"
     }
   ],
   "functions": {
