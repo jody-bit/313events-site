@@ -54,13 +54,19 @@ module.exports = async function handler(req, res) {
   const token = configured();
   const notReady = () => res.status(503).json({ error: "temporarily_unavailable" });
 
+  // One line per discovery or preflight request: facts only (who is asking, how), never a credential. Shows which client probes which document.
+  if (route === "protected-resource" || route === "authorization-server") console.log(JSON.stringify({ editorial_oauth: "discovery", route, method: req.method, ua: String(req.headers["user-agent"] || "").slice(0, 60) || null, origin_header: !!req.headers.origin, accept: String(req.headers.accept || "").slice(0, 40) || null, vercel_env: process.env.VERCEL_ENV || null }));
   if (route === "protected-resource") { res.status(200).json(front.metadata(o).protectedResource); return; }
   if (route === "authorization-server") { res.status(200).json(front.metadata(o).authorizationServer); return; }
   if (!token) { notReady(); return; }
 
   if (route === "register") {
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); res.status(405).json({ error: "invalid_request" }); return; }
-    const r = front.register(token, typeof req.body === "string" ? safeJson(req.body) : req.body);
+    const parsed = typeof req.body === "string" ? safeJson(req.body) : req.body;
+    const r = front.register(token, parsed);
+    // One line per registration: facts only (outcome, content type, redirect hosts, requested grant types), never a client_id or token.
+    const hosts = (parsed && Array.isArray(parsed.redirect_uris) ? parsed.redirect_uris : []).slice(0, 5).map((u) => { try { const x = new URL(u); return `${x.protocol}//${x.hostname}`; } catch (_) { return "unparseable"; } });
+    console.log(JSON.stringify({ editorial_oauth: "register", status: r.status, error: r.body && r.body.error || null, content_type: String(req.headers["content-type"] || "").split(";")[0] || null, body_parsed: !!parsed && typeof parsed === "object", redirect_hosts: hosts, grant_types: parsed && Array.isArray(parsed.grant_types) ? parsed.grant_types.slice(0, 4) : null, auth_method: parsed && typeof parsed.token_endpoint_auth_method === "string" ? parsed.token_endpoint_auth_method.slice(0, 30) : null, vercel_env: process.env.VERCEL_ENV || null }));
     res.status(r.status).json(r.body);
     return;
   }
