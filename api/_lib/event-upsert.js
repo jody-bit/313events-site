@@ -84,6 +84,8 @@
 const { fillBlankOrganizerEventUrls } = require("./organizer-links");
 const { OWNER_CORRECTION_MARKER, OWNER_LOCKABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
 const { normalizeRowLinks } = require("./link-field");
+const { sanitizeRowText } = require("./text-sanitize");
+const { applyVenueCategoryPolicy } = require("./venue-category-policy");
 
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
@@ -194,7 +196,7 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
 
   if (table === DEFAULT_TABLE) {
     // Q17: only an absolute http(s) event page is stored in a link field (api/_lib/link-field.js).
-    rows = Array.from(rows).map(normalizeRowLinks);
+    rows = Array.from(rows).map(normalizeRowLinks).map(sanitizeRowText).map(applyVenueCategoryPolicy);
     try {
       rows = protectOwnerCorrections(Array.from(rows), await loadOwnerCorrections(supabaseUrl, serviceRoleKey)).rows;
     } catch (err) {

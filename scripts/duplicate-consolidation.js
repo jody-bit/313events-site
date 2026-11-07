@@ -388,6 +388,8 @@ function planConsolidation(rows) {
       }
     }
   }
+  const { crossTitleReviews } = require("./cross-title-duplicate-review");
+  reviews.push(...crossTitleReviews(rows.filter((r) => r && !merged.has(r.id)), { normalizeStartTime, normalizeTitle, distinctMarked }));
   return { merges, reviews, groupsConsidered: groups.size };
 }
 
