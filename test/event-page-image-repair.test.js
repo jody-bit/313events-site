@@ -12,7 +12,14 @@ const houndHtml = page(HOUND, `<div class="detail"><img src="${HOUND}" alt="Insp
 const summitHtml = page(SUMMIT, `<div><img src="/ImageRepository/Document?documentID=11810" alt="Summit Flyer"></div>`);
 const PU = (n) => `https://livonia.gov/calendar.aspx?EID=${n}`;
 const ok = { ok: true, type: "image/jpeg", bytes: 120000 };
-const run = (o) => lib.repairEventPageImages(Object.assign({ imageInUseFn: async () => false }, o));
+const run = async (o) => {
+  const opts = Object.assign({ imageInUseFn: async () => false }, o);
+  if (opts.dryRun === false) { // writes require an explicit scope; default the helper to "all candidate ids" + livonia.gov
+    if (!opts.allowedHosts) opts.allowedHosts = new Set(["livonia.gov"]);
+    if (!opts.eventIds) opts.eventIds = new Set((await opts.fetchCandidates()).map((r) => r.id));
+  }
+  return lib.repairEventPageImages(opts);
+};
 
 (async () => {
   // --- parsing: the two accepted fixtures
@@ -161,9 +168,9 @@ const run = (o) => lib.repairEventPageImages(Object.assign({ imageInUseFn: async
 
   // image already stored on an event with a different title -> review, not written; lookup failure -> review (never write)
   patches = [];
-  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("n", 4800)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn, imageInUseFn: async () => true });
+  c = await run({ dryRun: false, logger, fetchCandidates: async () => [ev("n", 4800)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn, imageInUseFn: async () => true });
   assert.strictEqual(c.sharedForReview, 1); assert.strictEqual(patches.length, 0);
-  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("o", 4800)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn, imageInUseFn: async () => { throw new Error("db down"); } });
+  c = await run({ dryRun: false, logger, fetchCandidates: async () => [ev("o", 4800)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn, imageInUseFn: async () => { throw new Error("db down"); } });
   assert.strictEqual(c.sharedForReview, 1); assert.strictEqual(patches.length, 0);
   assert.strictEqual(await lib.imageInUseByOtherTitles("https://s", {}, HOUND, "Series Night", async () => ({ ok: true, json: async () => [{ title: "Series night" }] })), false);
   assert.strictEqual(await lib.imageInUseByOtherTitles("https://s", {}, HOUND, "Series Night", async () => ({ ok: true, json: async () => [{ title: "Other" }] })), true);
@@ -180,6 +187,17 @@ const run = (o) => lib.repairEventPageImages(Object.assign({ imageInUseFn: async
   assert.ok(seen.url.includes("id=eq.id1") && seen.url.includes("or=(image_url.is.null,image_url.eq.)") && seen.url.includes("updated_at=eq.2026-11-07T10%3A00%3A00%2B00%3A00"));
   assert.strictEqual(seen.opts.method, "PATCH");
   assert.strictEqual(await lib.applyPatch("https://s.example", {}, { id: "id1", updated_at: "x" }, { image_url: HOUND }, async () => ({ ok: true, json: async () => [] })), false);
+
+  // write path refuses without allowedHosts AND eventIds scope; eventIds narrows considered rows
+  await assert.rejects(() => lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [], eventIds: new Set(["a"]) }), /allowedHosts is required/);
+  await assert.rejects(() => lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [], allowedHosts: new Set(["livonia.gov"]) }), /eventIds scope is required/);
+  patches = [];
+  c = await run({ dryRun: false, logger, allowedHosts: new Set(["livonia.gov"]), eventIds: new Set(["p"]), fetchCandidates: async () => [ev("p", 4800), ev("q", 4817)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.considered, 1); assert.deepStrictEqual(patches.map((x) => x.id), ["p"]);
+  // allowedHosts enforced at selection: other host is never fetched
+  let fetchedOther = 0;
+  c = await run({ logger, allowedHosts: new Set(["livonia.gov"]), fetchCandidates: async () => [ev("r", 1, { event_url: "https://www.romi.gov/calendar.aspx?EID=8152" })], fetchPageFn: async () => { fetchedOther++; return { ok: false, reason: "x" }; }, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(fetchedOther, 0); assert.strictEqual(c.skippedNotCandidateUrl, 1);
 
   console.log("PASS: event-page-image-repair -- parsing, generic/other-host/http/mismatch rejects, type+size, owner lock, race guard, shared-image review, dry-run default");
 })().catch((e) => { console.error(e); process.exit(1); });

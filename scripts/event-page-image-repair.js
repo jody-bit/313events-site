@@ -18,8 +18,8 @@
 // SAFETY: owner-locked image_url is skipped at selection; the PATCH re-asserts image_url blank AND updated_at unchanged, so a
 // person's edit between read and write wins (zero rows = skippedConcurrentChange). Provenance is appended to internal_note.
 //
-// Usage: node scripts/event-page-image-repair.js            (dry run, report only)
-//        node scripts/event-page-image-repair.js --write    (explicit write; not authorized to run without owner GO)
+// Usage: node scripts/event-page-image-repair.js [--allowed-hosts=livonia.gov] [--event-ids=id1,id2]   (dry run, report only)
+//        ... --write   (EXECUTABLE write path: refuses unless BOTH --allowed-hosts and --event-ids are given; needs owner GO to run)
 "use strict";
 
 const path = require("path");
@@ -244,7 +244,10 @@ async function repairEventPageImages({
   applyPatchFn = applyPatch,
   imageInUseFn = imageInUseByOtherTitles,
   allowedHosts = null,
+  eventIds = null, // optional Set of event ids: only these rows are considered (scoped backfill)
 } = {}) {
+  if (!dryRun && !(allowedHosts && allowedHosts.size)) throw new Error("refusing to write: allowedHosts is required for a non-dry-run");
+  if (!dryRun && !(eventIds && eventIds.size)) throw new Error("refusing to write: an explicit eventIds scope is required for a non-dry-run");
   const counts = {
     dryRun: !!dryRun, considered: 0, skippedOwnerLocked: 0, skippedNotCandidateUrl: 0, rejected: 0, accepted: 0,
     sharedForReview: 0, written: 0, skippedConcurrentChange: 0, rejectedReasons: {}, report: [], reviewIds: [], writtenIds: [],
@@ -254,6 +257,7 @@ async function repairEventPageImages({
 
   const proposals = [];
   for (const event of rows) {
+    if (eventIds && !eventIds.has(event.id)) continue;
     counts.considered++;
     if (!validateFetchUrl(String(event.event_url || ""), allowedHosts).ok) { counts.skippedNotCandidateUrl++; continue; }
     if (event.image_url) continue; // blank only
@@ -309,8 +313,11 @@ module.exports = {
 };
 
 if (require.main === module) {
+  // CLI: dry run unless --write. --write additionally REQUIRES --allowed-hosts=<h1,h2> and --event-ids=<id1,id2> (it refuses otherwise).
+  const arg = (n) => { const a = process.argv.find((x) => x.startsWith(`--${n}=`)); return a ? a.slice(n.length + 3) : null; };
+  const list = (n) => { const v = arg(n); return v ? new Set(v.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean)) : null; };
   const dryRun = !process.argv.includes("--write");
-  repairEventPageImages({ dryRun })
+  repairEventPageImages({ dryRun, allowedHosts: list("allowed-hosts"), eventIds: list("event-ids") })
     .then((c) => { console.log(`\nEvent-page image repair ${dryRun ? "(dry run) " : ""}summary:`); console.log(c); })
     .catch((err) => { console.error("Event-page image repair failed:", err); process.exitCode = 1; });
 }
