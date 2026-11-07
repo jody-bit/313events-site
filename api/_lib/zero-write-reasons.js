@@ -37,4 +37,27 @@ function zeroWriteReasons(fetched, counts) {
   };
 }
 
-module.exports = { zeroWriteReasons, REASON_CLASS };
+const LABEL = {
+  unparsed: "not an event or no usable date",
+  past_date: "already past",
+  no_start_date: "no start date",
+  venue_city_not_allowed: "venue or city outside the covered area",
+  category_unmapped: "category not mapped",
+  dedup: "duplicates",
+  rejected: "rejected",
+  error: "errors",
+};
+
+// Read side (Admin / control tower): persisted block -> one human-readable line.
+// Absent block = UNKNOWN. An unreported fetched count is never shown as 0.
+function readZeroWriteReasons(block) {
+  if (!block || typeof block !== "object" || !block.reasons || typeof block.reasons !== "object") return { known: false, text: null };
+  const parts = Object.entries(block.reasons)
+    .filter(([k, v]) => LABEL[k] && Number.isInteger(v) && v > 0)
+    .map(([k, v]) => `${v} ${LABEL[k]}`);
+  if (Number.isInteger(block.unexplained) && block.unexplained > 0) parts.push(`${block.unexplained} unexplained`);
+  const head = Number.isInteger(block.fetched) ? `${block.fetched} fetched, none written` : "fetched count not recorded, none written";
+  return { known: true, text: parts.length ? `${head}: ${parts.join(", ")}` : head };
+}
+
+module.exports = { zeroWriteReasons, readZeroWriteReasons, REASON_CLASS };
