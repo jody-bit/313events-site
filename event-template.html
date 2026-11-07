@@ -811,9 +811,18 @@ function renderEvent(e){
   const addrEl = document.getElementById('evtAddress');
   const streetLine = CalendarLocation.streetLineForEvent(e);
   if(streetLine.conflict){ addrEl.dataset.locationConflict = streetLine.conflict; } else { delete addrEl.dataset.locationConflict; }
-  if(streetLine.text){
-    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(streetLine.text)}`;
-    addrEl.textContent = `📍 ${streetLine.text} — Get directions`;
+  // Directions are offered only for a complete address (CalendarLocation.directionsForEvent): house number,
+  // street name and city, a named entrance supplied by the data, and no event/venue conflict. An incomplete
+  // address is shown as plain text, never as a Maps link that would route somewhere wrong.
+  const dir = CalendarLocation.directionsForEvent(e);
+  addrEl.dataset.directions = dir.ready ? 'ready' : (dir.reason || 'none');
+  if(streetLine.text && dir.ready){
+    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dir.query)}`;
+    addrEl.textContent = `📍 ${dir.label ? dir.label : streetLine.text} — Get directions`;
+    addrEl.style.display = 'block';
+  } else if(streetLine.text){
+    addrEl.removeAttribute('href');
+    addrEl.textContent = `📍 ${streetLine.text}`;
     addrEl.style.display = 'block';
   } else {
     addrEl.style.display = 'none';
@@ -1013,6 +1022,12 @@ async function init(){
     const rows = await resp.json();
     if(!Array.isArray(rows) || !rows.length) throw new Error('not found');
     currentEvent = mapRow(rows[0]);
+    // Placeholder-name rescue (CalendarLocation.addressVerifiedFor): a reviewed record in /data/address-verified.json.
+    // A failed or missing file just leaves addressVerified unset, which keeps Directions off for placeholder names.
+    try {
+      const vr = await fetch('/data/address-verified.json', {cache: 'no-cache'});
+      if(vr.ok){ const vj = await vr.json(); currentEvent.addressVerified = CalendarLocation.addressVerifiedFor(currentEvent, vj && vj.entries); }
+    } catch(_) {}
     renderEvent(currentEvent);
     loadEditorialLink(currentEvent.id);
   } catch (err) {
