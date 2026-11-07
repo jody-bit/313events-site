@@ -21,8 +21,8 @@ function makeFetch(over) {
     if (u.pathname === "/config.js") return mk(200, 'window.__313_CONFIG = ' + JSON.stringify({ environment: "production", supabaseUrl: "https://" + REF + ".supabase.co", supabaseAnonKey: "anon-key" }) + ";");
     if (u.pathname === "/rest/v1/events_public") return mk(206, JSON.stringify([{ id: "e1", title: "Jazz & Blues" }]), { "content-range": "0-0/2300" });
     if (u.pathname === "/") return mk(200, "<html>paged-fetch.js" + big + "</html>");
-    if (u.pathname === "/calendar") return mk(200, '<html><div id="calGrid"></div>' + big + "</html>");
-    if (u.pathname === "/map") return mk(200, "<html>leaflet" + big + "</html>");
+    if (u.pathname === "/calendar.html") return mk(200, '<html><div id="calGrid"></div>' + big + "</html>");
+    if (u.pathname === "/map.html") return mk(200, "<html>leaflet" + big + "</html>");
     if (u.pathname === "/event.html") return mk(200, '<title id="pageTitle">Jazz &amp; Blues — Friday — 313.events</title>');
     if (u.pathname === "/sitemap.xml") return mk(200, "<urlset>" + "<loc>a</loc>".repeat(20) + "</urlset>");
     if (u.pathname === "/api/admin-events") return mk(401, "{}");
@@ -45,6 +45,20 @@ function makeFetch(over) {
   assert.ok(f.calls.filter((c) => !/\/rest\/v1\//.test(c.url)).every((c) => !c.headers.Authorization && !c.headers.apikey), "credential sent to a non-API URL");
   assert.ok(!f.calls.some((c) => /x-admin-secret/i.test(JSON.stringify(c.headers))), "admin secret header sent");
 
+  // canonical paths only: /calendar and /map have no rewrite in vercel.json and 404 on a real deployment
+  const paths = f.calls.map((c) => new URL(c.url).pathname);
+  assert.ok(paths.includes("/calendar.html") && paths.includes("/map.html"), "must request /calendar.html and /map.html");
+  assert.ok(!paths.includes("/calendar") && !paths.includes("/map"), "must not request non-canonical /calendar or /map");
+  // pin the assumption to the repo: those static pages exist and carry the markers the smoke looks for
+  const fs = require("fs");
+  const root = path.join(__dirname, "..");
+  assert.ok(fs.existsSync(path.join(root, "calendar.html")) && fs.existsSync(path.join(root, "map.html")));
+  assert.ok(fs.readFileSync(path.join(root, "calendar.html"), "utf8").includes('id="calGrid"'), "calendar.html lost calGrid marker");
+  assert.ok(/leaflet/i.test(fs.readFileSync(path.join(root, "map.html"), "utf8")), "map.html lost leaflet marker");
+  assert.ok(fs.readFileSync(path.join(root, "index.html"), "utf8").includes("paged-fetch.js"), "index.html lost paged-fetch.js marker");
+  const vj = fs.readFileSync(path.join(root, "vercel.json"), "utf8");
+  assert.ok(!/"source":\s*"\/(map|calendar)"/.test(vj), "vercel.json now rewrites /map or /calendar: revisit the smoke paths");
+
   // each broken shape fails exactly the right check
   const cases = [
     ["config points at staging", { "/config.js": (u, mk) => mk(200, 'window.__313_CONFIG = {"environment":"preview","supabaseUrl":"https://efxjdlogohcggpuftivm.supabase.co","supabaseAnonKey":"k"};') }, "config.js names the PRODUCTION database"],
@@ -52,7 +66,7 @@ function makeFetch(over) {
     ["inventory empty", { "/rest/v1/events_public": (u, mk) => mk(200, "[]", { "content-range": "*/0" }) }, "events_public returns upcoming events (count above floor)"],
     ["homepage truncated", { "/": (u, mk) => mk(200, "<html></html>") }, "homepage loads with its data client"],
     ["event page shows another title", { "/event.html": (u, mk) => mk(200, '<title id="pageTitle">Event details — 313.events</title>') }, "event detail page serves the event's own title"],
-    ["calendar page without its grid (nav text only)", { "/calendar": (u, mk) => mk(200, "<html><nav>calendar</nav>" + "x".repeat(5000) + "</html>") }, "calendar page loads"],
+    ["calendar page without its grid (nav text only)", { "/calendar.html": (u, mk) => mk(200, "<html><nav>calendar</nav>" + "x".repeat(5000) + "</html>") }, "calendar page loads"],
     ["sitemap empty", { "/sitemap.xml": (u, mk) => mk(200, "<urlset></urlset>") }, "sitemap lists events"],
     ["admin API open", { "/api/admin-events": (u, mk) => mk(200, "{}") }, "admin API refuses anonymous callers"],
   ];

@@ -72,7 +72,8 @@ async function runSmoke(opts) {
     return total + " upcoming events (floor " + minEvents + ")";
   });
 
-  for (const [name, p, mark] of [["homepage loads with its data client", "/", "paged-fetch.js"], ["calendar page loads", "/calendar", 'id="calGrid"'], ["map page loads", "/map", "leaflet"]]) {
+  // Canonical static paths: vercel.json has no rewrite for /calendar or /map, so those 404 (proven on a Preview, 2026-11-07).
+  for (const [name, p, mark] of [["homepage loads with its data client", "/", "paged-fetch.js"], ["calendar page loads", "/calendar.html", 'id="calGrid"'], ["map page loads", "/map.html", "leaflet"]]) {
     await check(name, async () => {
       const { resp } = await get(base + p);
       need(resp.status === 200, "status " + resp.status);
