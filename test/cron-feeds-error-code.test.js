@@ -1,5 +1,6 @@
-// test/cron-feeds-error-code.test.js — a network-level "fetch failed" records its allowlisted underlying error code,
-// and nothing else from the error (no URL, host, query, header, token, stack or message of the cause).
+// test/cron-feeds-error-code.test.js — a network-level "fetch failed" records its underlying error code only if it is in
+// an explicit known-code set; the NEW suffix carries nothing else (no URL, host, query, header, token, stack, cause message).
+// The pre-existing "Error: " + err.message text is not touched or redacted by this change.
 // Unchanged by design: the failure classification, the 12 s timeout, the fetched URL and every write path.
 //
 // Run: node test/cron-feeds-error-code.test.js
@@ -30,10 +31,21 @@ function makeRes() {
   assert.strictEqual(health.describeFetchError(Object.assign(new TypeError("fetch failed"), { cause: Object.assign(new Error("getaddrinfo ENOTFOUND host.private.example"), { code: "ENOTFOUND" }) })), " (cause: ENOTFOUND)");
   // name used only for a known undici name on the cause, never on the top-level error
   assert.strictEqual(health.describeFetchError(Object.assign(new TypeError("fetch failed"), { cause: Object.assign(new Error("x"), { name: "SocketError" }) })), " (cause: SocketError)");
+  // Secret-shaped but upper-case codes must NOT pass: only the explicit known set is recorded.
+  for (const code of ["PRIVATE_API_TOKEN_123", "SECRET123", "SUPABASE_SERVICE_ROLE_KEY", "UND_ERR_NOT_A_REAL_CODE", "ECONNRESET_X"]) {
+    for (const holder of ["top", "cause", "deep"]) {
+      const inner = Object.assign(new Error("x"), { code });
+      const err = holder === "top" ? Object.assign(new TypeError("fetch failed"), { code })
+        : holder === "cause" ? Object.assign(new TypeError("fetch failed"), { cause: inner })
+        : Object.assign(new TypeError("fetch failed"), { cause: { cause: inner } });
+      assert.strictEqual(health.describeFetchError(err), "", `unknown/secret-shaped code ${code} (${holder}) must be omitted`);
+    }
+  }
   // non-allowlisted shapes record nothing: lower-case code, spaces, URL-like, too long, non-string, no cause
   for (const code of ["connect to https://x/y", "has space", "lower_case", "A", "X".repeat(60), 42, null, {}]) {
     assert.strictEqual(health.describeFetchError(Object.assign(new TypeError("fetch failed"), { cause: { code } })), "", `rejects ${String(code).slice(0, 20)}`);
   }
+  assert.strictEqual(health.describeFetchError(Object.assign(new TypeError("fetch failed"), { code: "ECONNRESET" })), " (cause: ECONNRESET)");
   assert.strictEqual(health.describeFetchError(new TypeError("fetch failed")), "");
   assert.strictEqual(health.describeFetchError(null), "");
   assert.strictEqual(health.describeFetchError("string error"), "");
