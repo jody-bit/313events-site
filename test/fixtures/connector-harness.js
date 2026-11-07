@@ -79,7 +79,7 @@ async function runConnector(file, options) {
   const log = console.log, error = console.error, realSetTimeout = global.setTimeout;
   console.log = () => {}; console.error = () => {};
   if (options && options.fastTimers) global.setTimeout = (fn, _ms, ...args) => setImmediate(fn, ...args);
-  try { await withFixedNow(() => handler({ headers: {}, query: {} }, res)); } finally {
+  try { await withFixedNow(() => handler({ headers: {}, query: (options && options.query) || {} }, res)); } finally {
     console.log = log; console.error = error; global.setTimeout = realSetTimeout;
   }
   return res;
