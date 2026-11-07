@@ -1,0 +1,111 @@
+// test/event-page-image-repair.test.js -- CivicPlus blank-image recovery draft (dry run by default). Run: node test/event-page-image-repair.test.js
+"use strict";
+const assert = require("assert");
+const lib = require("../scripts/event-page-image-repair");
+
+const page = (og, body, extraHead = "") =>
+  `<html><head><meta property="og:image" content="${og}"><meta name="twitter:image" content="${og}">${extraHead}</head><body><nav><img src="/Images/Logo.png"></nav>${body}<script>var x='<img src="/ImageRepository/Document?documentID=999">';</script></body></html>`;
+const HOUND = "https://livonia.gov/ImageRepository/Document?documentID=11785";
+const SUMMIT = "https://livonia.gov/ImageRepository/Document?documentID=11810";
+const ICON = "https://livonia.gov/Images/SocialMedia/IconModuleCalendar.png";
+const houndHtml = page(HOUND, `<div class="detail"><img src="${HOUND}" alt="Inspector Hound Ticket Poster"></div>`);
+const summitHtml = page(SUMMIT, `<div><img src="/ImageRepository/Document?documentID=11810" alt="Summit Flyer"></div>`);
+const PU = (n) => `https://livonia.gov/calendar.aspx?EID=${n}`;
+const ok = { ok: true, type: "image/jpeg", bytes: 120000 };
+
+(async () => {
+  // --- parsing: the two accepted fixtures
+  assert.deepStrictEqual(lib.classifyPage({ html: houndHtml, pageUrl: PU(4800) }), { accept: true, imageUrl: HOUND, reason: "poster_in_body_matches_og_image" });
+  assert.strictEqual(lib.classifyPage({ html: summitHtml, pageUrl: PU(4817) }).imageUrl, SUMMIT); // relative body src resolved
+  // script-embedded <img> text is not a body image
+  assert.strictEqual(lib.classifyPage({ html: page("https://livonia.gov/ImageRepository/Document?documentID=999", ""), pageUrl: PU(1) }).reason, "no_body_image_agreement");
+
+  // --- parsing: rejects
+  const rej = (html, url, reason) => assert.strictEqual(lib.classifyPage({ html, pageUrl: url }).reason, reason);
+  rej(page(ICON, `<p>text only</p>`), PU(4820), "not_image_repository_path");                     // generic icon, no poster
+  rej(page(ICON, `<img src="${ICON}">`), PU(4820), "not_image_repository_path");                  // icon even if echoed in body
+  rej(page("https://www.madisonheightsmi.gov/ImageRepository/Document?documentID=520", `<p>text</p>`), "https://www.madisonheightsmi.gov/calendar.aspx?EID=3704", "no_body_image_agreement");
+  rej(page("https://cdn.example.com/ImageRepository/Document?documentID=1", `<img src="https://cdn.example.com/ImageRepository/Document?documentID=1">`), PU(1), "image_other_host");
+  rej(page("http://livonia.gov/ImageRepository/Document?documentID=1", `<img src="http://livonia.gov/ImageRepository/Document?documentID=1">`), PU(1), "image_not_https");
+  rej(page("javascript:alert(1)", ""), PU(1), "image_not_https");
+  rej(page("data:image/png;base64,AAAA", ""), PU(1), "image_not_https");
+  rej(page(HOUND, `<img src="/ImageRepository/Document?documentID=OTHER">`), PU(1), "no_body_image_agreement"); // og differs from body
+  rej(page("https://livonia.gov/ImageRepository/Document?documentID=7&name=logo.png", `<img src="https://livonia.gov/ImageRepository/Document?documentID=7&name=logo.png">`), PU(1), "generic_image");
+  rej("<html><head></head><body><img src='/x.png'></body></html>", PU(1), "no_og_image");
+  rej(houndHtml, "http://livonia.gov/calendar.aspx?EID=1", "page_not_https");
+  rej("", PU(1), "empty_page");
+
+  // --- image check: type and size
+  const head = (type, len, status = 200) => async () => ({ ok: status === 200, status, headers: { get: (h) => ({ "content-type": type, "content-length": len }[h.toLowerCase()] ?? null) } });
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/jpeg", "120000"))).ok, true);
+  assert.strictEqual((await lib.checkImage(HOUND, head("text/html", "120000"))).reason, "image_type_rejected");
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/svg+xml", "9000"))).reason, "image_type_rejected");
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/png", "100"))).reason, "image_size_out_of_range");
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/png", String(50 * 1024 * 1024)))).reason, "image_size_out_of_range");
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/png", null))).reason, "image_size_unchecked");
+  assert.strictEqual((await lib.checkImage(HOUND, head("image/png", "9000", 404))).reason, "image_head_status");
+
+  // --- fetchPage: refuses a redirect to another host
+  assert.strictEqual((await lib.fetchPage(PU(1), async () => ({ ok: true, url: "https://evil.example.com/x", text: async () => "" }))).reason, "page_redirected_other_host");
+
+  // --- orchestration
+  const logs = [];
+  const logger = { log: (...a) => logs.push(a.join(" ")), warn: () => {} };
+  const ev = (id, n, o = {}) => ({ id, title: "T" + id, source: "City of Livonia", event_url: PU(n), start_date: "2026-11-10", internal_note: null, updated_at: "2026-11-07T10:00:00+00:00", image_url: null, ...o });
+  const pages = { [PU(4800)]: houndHtml, [PU(4817)]: summitHtml, [PU(4820)]: page(ICON, "<p>text</p>"), [PU(5000)]: houndHtml };
+  const fetchPageFn = async (u) => (pages[u] ? { ok: true, html: pages[u], finalUrl: u } : { ok: false, reason: "page_http_404" });
+  let patches = [];
+  const applyPatchFn = async (url, headers, e, patch) => { patches.push({ id: e.id, patch }); return true; };
+
+  // dry run (default): reports accepted, writes nothing
+  patches = [];
+  let c = await lib.repairEventPageImages({ logger, fetchCandidates: async () => [ev("a", 4800), ev("b", 4817), ev("c", 4820)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.dryRun, true);
+  assert.strictEqual(c.accepted, 2); assert.strictEqual(c.rejected, 1); assert.strictEqual(c.rejectedReasons.not_image_repository_path, 1);
+  assert.strictEqual(patches.length, 0, "dry run must not write"); assert.strictEqual(c.written, 0);
+
+  // owner lock skipped at selection (never fetched)
+  let fetched = 0;
+  c = await lib.repairEventPageImages({ logger, fetchCandidates: async () => [ev("d", 4800, { internal_note: "OWNER-CORRECTION 2026-11-07T01:00Z edit1 fields=image_url | {}" })], fetchPageFn: async (u) => { fetched++; return fetchPageFn(u); }, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.skippedOwnerLocked, 1); assert.strictEqual(fetched, 0); assert.strictEqual(c.accepted, 0);
+  // owner lock on a different field does not block
+  c = await lib.repairEventPageImages({ logger, fetchCandidates: async () => [ev("d2", 4800, { internal_note: "OWNER-CORRECTION 2026-11-07T01:00Z edit1 fields=title | {}" })], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.accepted, 1);
+  // non-blank image and non-CivicPlus url never touched
+  c = await lib.repairEventPageImages({ logger, fetchCandidates: async () => [ev("e", 4800, { image_url: "https://x/y.jpg" }), ev("f", 1, { event_url: "https://www.instagram.com/bigtimebingo/" })], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.accepted, 0); assert.strictEqual(c.skippedNotCandidateUrl, 1);
+
+  // explicit write: patch carries image + provenance; existing note kept
+  patches = [];
+  c = await lib.repairEventPageImages({ dryRun: false, logger, now: () => "2026-11-07T18:00:00Z", fetchCandidates: async () => [ev("g", 4800, { internal_note: "prior line" })], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.written, 1);
+  assert.strictEqual(patches[0].patch.image_url, HOUND);
+  assert.ok(patches[0].patch.internal_note.startsWith("prior line\nIMAGE_RECOVERY 2026-11-07T18:00:00Z source=event-page page=" + PU(4800)));
+  assert.deepStrictEqual(Object.keys(patches[0].patch).sort(), ["image_url", "internal_note"]); // nothing else is written
+
+  // race guard: patch applier reports zero rows -> counted, not an error, not written
+  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("h", 4800)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn: async () => false });
+  assert.strictEqual(c.written, 0); assert.strictEqual(c.skippedConcurrentChange, 1);
+
+  // shared image: different titles -> review, not written; same title (series) -> accepted
+  patches = [];
+  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("i", 4800), ev("j", 5000)], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.sharedForReview, 2); assert.strictEqual(patches.length, 0);
+  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("k", 4800, { title: "Series Night" }), ev("l", 5000, { title: "Series  night!" })], fetchPageFn, checkImageFn: async () => ok, applyPatchFn });
+  assert.strictEqual(c.written, 2);
+
+  // image check failure rejects without writing
+  patches = [];
+  c = await lib.repairEventPageImages({ dryRun: false, logger, fetchCandidates: async () => [ev("m", 4800)], fetchPageFn, checkImageFn: async () => ({ ok: false, reason: "image_type_rejected" }), applyPatchFn });
+  assert.strictEqual(patches.length, 0); assert.strictEqual(c.rejectedReasons.image_type_rejected, 1);
+
+  // write guard shape: conditional PATCH URL re-asserts blank image AND unchanged updated_at; no other columns
+  let seen;
+  const applied = await lib.applyPatch("https://s.example", {}, { id: "id1", updated_at: "2026-11-07T10:00:00+00:00" }, { image_url: HOUND }, async (url, opts) => { seen = { url, opts }; return { ok: true, json: async () => [{ id: "id1" }] }; });
+  assert.strictEqual(applied, true);
+  assert.ok(seen.url.includes("id=eq.id1") && seen.url.includes("or=(image_url.is.null,image_url.eq.)") && seen.url.includes("updated_at=eq.2026-11-07T10%3A00%3A00%2B00%3A00"));
+  assert.strictEqual(seen.opts.method, "PATCH");
+  assert.strictEqual(await lib.applyPatch("https://s.example", {}, { id: "id1", updated_at: "x" }, { image_url: HOUND }, async () => ({ ok: true, json: async () => [] })), false);
+
+  console.log("PASS: event-page-image-repair -- parsing, generic/other-host/http/mismatch rejects, type+size, owner lock, race guard, shared-image review, dry-run default");
+})().catch((e) => { console.error(e); process.exit(1); });
