@@ -9,7 +9,9 @@ function appliesToAndyArts(row) {
   if (row.venue_id === ANDY_ARTS_ID) return true;
   const name = String(row.venue_name_raw || "").trim().toLowerCase().replace(/\s+/g, " ");
   const city = String(row.venue_city_raw || "").trim().toLowerCase();
-  return ANDY_NAMES.has(name) && city === "detroit";
+  // RA Detroit listing recovery has no city field. Do not invent one;
+  // the owner category policy still applies to these exact venue aliases.
+  return ANDY_NAMES.has(name) && (city === "detroit" || (!city && row.source === "Resident Advisor"));
 }
 function applyVenueCategoryPolicy(row) {
   return appliesToAndyArts(row) && row.category === "nightlife"

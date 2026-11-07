@@ -72,6 +72,8 @@
 // successful production RA syncs have run through this pipeline — then
 // they can be retired.
 "use strict";
+const { sanitizeRowText } = require("../api/_lib/text-sanitize");
+const { applyVenueCategoryPolicy } = require("../api/_lib/venue-category-policy");
 
 const {
   lookupExistingRows,
@@ -288,7 +290,7 @@ function deriveEventRow(raw, venueMap) {
     note: hasAddress ? null : "Venue location not yet announced by the event.",
     status: "approved",
   };
-  return { row, errors: [] };
+  return { row: applyVenueCategoryPolicy(sanitizeRowText(row)), errors: [] };
 }
 
 // ---------------------------------------------------------------------------

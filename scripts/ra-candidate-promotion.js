@@ -1,4 +1,6 @@
 "use strict";
+const { sanitizeRowText } = require("../api/_lib/text-sanitize");
+const { applyVenueCategoryPolicy } = require("../api/_lib/venue-category-policy");
 
 // scripts/ra-candidate-promotion.js
 //
@@ -281,13 +283,14 @@ async function promoteRaCandidates({
     );
     const venueNameRaw = typeof meta.venueName === "string" && meta.venueName.trim() ? meta.venueName.trim() : null;
 
-    const draftRow = {
+    const draftRow = applyVenueCategoryPolicy(sanitizeRowText({
       external_id: id,
       title,
       category: deriveCategoryFn(title, ""),
       venue_name_raw: venueNameRaw,
       start_date: startDate,
-    };
+      source: "Resident Advisor",
+    }));
 
     const dupe = await findConservativeDuplicateFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, draftRow, fetchFn);
     if (dupe) {
