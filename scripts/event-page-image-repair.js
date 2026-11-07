@@ -34,6 +34,7 @@ const CANDIDATE_URL = /\/calendar\.aspx\?EID=\d+/i;
 const FETCH_TIMEOUT_MS = 10000;
 const MAX_PAGE_BYTES = 2 * 1024 * 1024;
 const MAX_REDIRECTS = 3;
+// NOTE: no DNS-rebinding protection (public name resolving to a private IP). Any live/--write use must pass allowedHosts.
 
 // event_url is ingested data, so it is validated BEFORE any request: https only, no credentials/port, a real public-looking
 // hostname (no IP literal, localhost, single-label or internal suffix), and exactly /calendar.aspx?EID=<digits>.
@@ -45,6 +46,7 @@ function validateFetchUrl(raw, allowedHosts) {
   if (u.username || u.password) return { ok: false, reason: "url_has_credentials" };
   if (u.port) return { ok: false, reason: "url_has_port" };
   const h = u.hostname.toLowerCase();
+  if (h.endsWith(".") || h.includes("..")) return { ok: false, reason: "url_odd_hostname" }; // "localhost." must not dodge the checks
   if (h.startsWith("[") || /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || /^[\d.]+$/.test(h)) return { ok: false, reason: "url_ip_literal" };
   if (!h.includes(".") || /(^|\.)(localhost|local|internal|localdomain|lan|corp|home)$/.test(h)) return { ok: false, reason: "url_non_public_host" };
   if (!/^[a-z0-9.-]+$/.test(h)) return { ok: false, reason: "url_odd_hostname" };
@@ -171,7 +173,14 @@ async function fetchPage(url, fetchImpl = fetch, allowedHosts = null) {
       continue;
     }
     if (!resp.ok) return { ok: false, reason: `page_http_${resp.status}` };
-    const html = await readCapped(resp, MAX_PAGE_BYTES);
+    let html;
+    try {
+      let timer;
+      html = await Promise.race([
+        readCapped(resp, MAX_PAGE_BYTES),
+        new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("body_timeout")), FETCH_TIMEOUT_MS); }),
+      ]).finally(() => clearTimeout(timer));
+    } catch { return { ok: false, reason: "page_body_timeout" }; }
     if (html === null) return { ok: false, reason: "page_too_large" };
     return { ok: true, html, finalUrl: current };
   }

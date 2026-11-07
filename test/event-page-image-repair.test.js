@@ -57,6 +57,9 @@ const run = (o) => lib.repairEventPageImages(Object.assign({ imageInUseFn: async
   assert.strictEqual(v("https://[::1]/calendar.aspx?EID=1"), "url_ip_literal");
   assert.strictEqual(v("https://localhost/calendar.aspx?EID=1"), "url_non_public_host");
   assert.strictEqual(v("https://intranet/calendar.aspx?EID=1"), "url_non_public_host");
+  for (const h of ["localhost.", "x.internal.", "x.local.", "livonia.gov.", "a..b.gov"]) assert.strictEqual(v(`https://${h}/calendar.aspx?EID=1`), "url_odd_hostname", h);
+  for (const h of ["x.internal", "x.local", "foo.localhost"]) assert.strictEqual(v(`https://${h}/calendar.aspx?EID=1`), "url_non_public_host", h);
+  for (const h of ["2130706433", "0x7f.1", "127.1"]) assert.notStrictEqual(v(`https://${h}/calendar.aspx?EID=1`), "ok", h);
   assert.strictEqual(v("https://db.internal/calendar.aspx?EID=1"), "url_non_public_host");
   assert.strictEqual(v("https://user:pw@livonia.gov/calendar.aspx?EID=1"), "url_has_credentials");
   assert.strictEqual(v("https://livonia.gov:8443/calendar.aspx?EID=1"), "url_has_port");
@@ -98,6 +101,13 @@ const run = (o) => lib.repairEventPageImages(Object.assign({ imageInUseFn: async
   // timeout: a fetch that never resolves is aborted (signal passed through)
   res = await lib.fetchPage(PU(1), (u, o) => new Promise((_, rej2) => { assert.ok(o.signal); o.signal.addEventListener("abort", () => rej2(new Error("aborted"))); setTimeout(() => o.signal.dispatchEvent(new Event("abort")), 5); }));
   assert.strictEqual(res.reason, "page_fetch_failed");
+  // slow body is time-bounded (reader that never finishes)
+  const realSetTimeout = global.setTimeout;
+  global.setTimeout = (fn, ms, ...a) => realSetTimeout(fn, ms === 10000 ? 5 : ms, ...a);
+  try {
+    res = await lib.fetchPage(PU(1), async () => ({ ok: true, status: 200, headers: hdr(null), text: () => new Promise(() => {}) }));
+    assert.strictEqual(res.reason, "page_body_timeout");
+  } finally { global.setTimeout = realSetTimeout; }
   // HEAD uses manual redirect and a signal
   let headOpts;
   await lib.checkImage(HOUND, async (u, o) => { headOpts = o; return { ok: true, headers: { get: (h) => ({ "content-type": "image/png", "content-length": "9000" }[h.toLowerCase()] ?? null) } }; });
