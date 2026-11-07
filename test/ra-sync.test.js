@@ -408,6 +408,36 @@ async function run() {
   console.log("PASS: startRaSyncSession -- dedupe, known/new diff, legacy exclusion, session_data persisted, cap-ready shape");
 
   {
+    // Listing-only candidate rows (ra-candidate-promotion) with a blank time or address are re-queued for detail;
+    // complete rows, approved rows, non-RA rows and owner-corrected rows are not.
+    const cand = (o) => Object.assign({ status: "pending_review", source: "Resident Advisor", time_display: null, venue_address_raw: null,
+      internal_note: "RA_PROVENANCE | v1 | ra_id=x | status=unresolved" }, o);
+    const rows = new Map([
+      ["ra-1", cand({})],
+      ["ra-2", cand({ time_display: "20:00", venue_address_raw: "2545 Bagley" })],
+      ["ra-3", cand({ status: "approved" })],
+      ["ra-4", cand({ source: "Other" })],
+      ["ra-5", cand({ internal_note: "RA_PROVENANCE | status=unresolved\nOWNER-CORRECTION x" })],
+      ["ra-6", cand({ time_display: "21:00" })],
+    ]);
+    let sd;
+    const result = await lib.startRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      candidateIds: ["ra-1", "ra-2", "ra-3", "ra-4", "ra-5", "ra-6", "ra-7"],
+      fetchFn: async (u, o) => { sd = JSON.parse(o.body).session_data; return { ok: true, text: async () => "" }; },
+      lookupExistingRowsFn: async (u, k, ids) => new Map(ids.filter((i) => rows.has(i)).map((i) => [i, rows.get(i)])),
+      lookupKnownSourceIdsFn: async () => new Set(),
+      startRunFn: async () => ({ runId: "run-r", startedAtMs: Date.now() }),
+    });
+    assert.deepStrictEqual(result.ids.sort(), ["ra-1", "ra-6", "ra-7"]); // ra-7 new; ra-1, ra-6 retry
+    assert.strictEqual(result.newCount, 1);
+    assert.strictEqual(result.retryCount, 2);
+    assert.deepStrictEqual(sd.retryIds.sort(), ["ra-1", "ra-6"]);
+    assert.deepStrictEqual(sd.newIds.sort(), ["ra-1", "ra-6", "ra-7"]); // complete() accepts retry ids
+  }
+  console.log("PASS: startRaSyncSession -- re-queues listing-only candidates missing time/address, skips complete/approved/non-RA/owner-corrected");
+
+  {
     // identity-widening: a candidate with no row under its own
     // external_id, but a prior conservative dedupe match recorded in
     // event_source_identities, must be classified "known", not "new" --
