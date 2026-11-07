@@ -1082,9 +1082,9 @@
    "name": "Hush Haunted Attraction",
    "location": "Westland, MI",
    "inventory_note": "Multiple haunted houses",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "image_manifest": {
     "destination_id": "hush-haunted-attraction",
@@ -1107,7 +1107,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",

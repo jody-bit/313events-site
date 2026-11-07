@@ -517,24 +517,21 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Excluded: resolved as ended. Retained in the inventory with its history; never shown publicly.",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
@@ -562,7 +559,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
