@@ -87,7 +87,7 @@ function summarizeRun(row) {
     incomplete,
     candidateCount: typeof sd.candidateCount === "number" ? sd.candidateCount : null,
     knownCount: typeof sd.knownCount === "number" ? sd.knownCount : null,
-    newCount: typeof sd.newIds !== "undefined" ? sd.newIds.length : (typeof sd.allNewCount === "number" ? sd.allNewCount : null),
+    newCount: typeof sd.newIds !== "undefined" ? sd.newIds.length - (Array.isArray(sd.retryIds) ? sd.retryIds.length : 0) : (typeof sd.allNewCount === "number" ? sd.allNewCount : null),
     allNewCount: typeof sd.allNewCount === "number" ? sd.allNewCount : null,
     imported: typeof sd.imported === "number" ? sd.imported : null,
     duplicates: typeof sd.duplicates === "number" ? sd.duplicates : null,

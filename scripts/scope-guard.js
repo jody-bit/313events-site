@@ -42,6 +42,8 @@ const ALLOWED = [
   "api/_lib/event-contract.js", "api/_lib/event-upsert.js", "api/_lib/link-field.js",
   // N7 / #224 shared text sanitizer (entities, tags, CSS/RTF blocks) applied in the shared events writer; owner GO to be confirmed at release.
   "api/_lib/text-sanitize.js",
+  // RA retry: Admin "new" count excludes re-queued candidates (one line).
+  "api/admin-ra.js",
   // Owner directive Nov 7: exact Andy Arts category policy, reviewed with the live-ingestion fix.
   "api/_lib/venue-category-policy.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).

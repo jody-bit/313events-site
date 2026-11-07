@@ -508,6 +508,7 @@ async function patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 // linking.js), with the real implementation wired as the default so
 // production call sites (api/cron-ra.js) don't need to pass anything extra.
 
+const DEFAULT_MAX_RETRY_PER_RUN = 10; // listing-only candidates re-queued for a detail fetch, on top of the new-id cap
 const DEFAULT_MAX_NEW_PER_RUN = 30; // same cap the old prompt's Step 4 used
 
 // Listing-card-level fields the browser walk can plausibly read straight
@@ -672,6 +673,14 @@ function parseRaListingDate(dateStr, now = new Date()) {
 // here IS the session id a completeRaSyncSession() call later depends on,
 // so handing back a diff with no way to ever complete it would silently
 // break the two-phase contract. See RaSyncSessionError below.
+function isListingOnlyCandidateNeedingDetail(row) {
+  if (!row || row.status !== "pending_review" || row.source !== "Resident Advisor") return false;
+  const note = String(row.internal_note || "");
+  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || note.includes("OWNER-CORRECTION")) return false;
+  const blank = (v) => v === null || v === undefined || v === "";
+  return blank(row.time_display) || blank(row.venue_address_raw);
+}
+
 async function startRaSyncSession(opts) {
   const {
     SUPABASE_URL,
@@ -679,6 +688,8 @@ async function startRaSyncSession(opts) {
     candidateIds,
     listingMetadata,
     maxNewPerRun = DEFAULT_MAX_NEW_PER_RUN,
+    maxRetryPerRun = DEFAULT_MAX_RETRY_PER_RUN,
+    nowMs = Date.now(),
     fetchFn = fetch,
     lookupExistingRowsFn = lookupExistingRows,
     lookupKnownSourceIdsFn = lookupKnownSourceIds,
@@ -688,7 +699,7 @@ async function startRaSyncSession(opts) {
   const parsed = parseCandidateIds(candidateIds);
 
   const existingRows = await lookupExistingRowsFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, parsed, {
-    select: "external_id",
+    select: "external_id,status,source,time_display,venue_address_raw,internal_note",
   });
   const existingIdSet = new Set(existingRows.keys());
 
@@ -712,6 +723,15 @@ async function startRaSyncSession(opts) {
   const knownIds = computeKnownIds(parsed, existingIdSet);
   const allNewIds = computeCandidateNewIds(parsed, existingIdSet);
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
+  // Listing-only candidates (ra-candidate-promotion rows) already have an events row, so the diff above calls
+  // them "known" and their detail page was never fetched: time/address stayed blank forever. Re-queue those, and
+  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected rows are skipped.
+  // Eligible ids are sorted, then rotated by day, so a row whose detail page never loads (removed, blocked) cannot
+  // hold the 10 retry slots forever and starve the rest of the backlog.
+  const eligible = parsed.filter((id) => isListingOnlyCandidateNeedingDetail(existingRows.get(id))).sort();
+  const offset = eligible.length ? Math.floor(nowMs / 86400000) % eligible.length : 0;
+  const retryIds = eligible.slice(offset).concat(eligible.slice(0, offset)).slice(0, maxRetryPerRun);
+  const idsToFetch = newIdsThisRun.concat(retryIds);
   const cleanListingMetadata = sanitizeListingMetadata(parsed, listingMetadata);
 
   const runHandle = await startRunFn(SLUGS.residentAdvisor);
@@ -727,7 +747,8 @@ async function startRaSyncSession(opts) {
     knownCount: knownIds.length,
     allNewCount: allNewIds.length,
     allNewIds, // full, UNCAPPED backlog -- every genuinely-new id, not just this run's detail-fetch batch. The 30/run cap is a detail-fetch workload limit, not a discovery limit -- a blocked or partial run must never strand ids this call already knows are new.
-    newIds: newIdsThisRun,
+    newIds: idsToFetch, // complete() accepts only ids listed here; retry ids ride along so the merge path can run
+    retryIds,
     listingMetadata: cleanListingMetadata, // listing-card evidence (title/date/venue/etc, whatever the device actually read off the listing page), keyed by id, for EVERY candidate submitted -- persisted here, before any detail page is ever opened, so a DataDome block partway through detail acquisition can never erase it.
     startedAt: new Date().toISOString(),
   };
@@ -738,9 +759,10 @@ async function startRaSyncSession(opts) {
     candidateCount: parsed.length,
     knownCount: knownIds.length,
     newCount: newIdsThisRun.length,
+    retryCount: retryIds.length,
     allNewCount: allNewIds.length,
     allNewIds, // uncapped -- lets the caller persist/track the full backlog, not just this run's capped detail-fetch batch
-    ids: newIdsThisRun,
+    ids: idsToFetch,
     listingMetadataCount: Object.keys(cleanListingMetadata).length,
   };
 }
