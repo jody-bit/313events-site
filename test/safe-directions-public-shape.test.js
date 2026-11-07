@@ -27,7 +27,7 @@ function fnSource(name) {
   return html.slice(start, i + 1);
 }
 const ctx = vm.createContext({ EventDates });
-vm.runInContext(["decodeEntities", "resolveVenueDisplay", "mapRow"].map(fnSource).join("\n") + "\nthis.mapRow = mapRow;", ctx);
+vm.runInContext(["decodeEntities", "resolveVenueDisplay", "absWebUrl", "mapRow"].map(fnSource).join("\n") + "\nthis.mapRow = mapRow;", ctx);
 const mapRow = ctx.mapRow;
 
 // 3) rows exactly in the public shape: only the selected columns, a venues embed object or null
