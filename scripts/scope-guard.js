@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
   "api/_lib/ics-location.js",
+  // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
+  "api/_lib/zero-write-reasons.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
   // #256 Auto-Repair step time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).

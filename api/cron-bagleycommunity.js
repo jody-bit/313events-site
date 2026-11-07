@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { zeroWriteReasons } = require("./_lib/zero-write-reasons");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
@@ -443,6 +444,10 @@ module.exports = async (req, res) => {
       records_parsed: 0,
       records_written: 0,
       error_sample: fetchErrors.join("; ") || undefined,
+      session_data: zeroWriteReasons(recordsFetched, {
+        unparsed: recordsFetched - tier1RowsAll.length - tier2RowsAll.length,
+        past_date: excludedAsPast,
+      }),
     });
     res.status(200).json({ upserted: 0, recordsFetched, excludedAsPast, errors: fetchErrors, fetchedAt: new Date().toISOString() });
     return;
