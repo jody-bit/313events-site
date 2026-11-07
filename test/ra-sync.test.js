@@ -436,6 +436,27 @@ async function run() {
     assert.deepStrictEqual(sd.newIds.sort(), ["ra-1", "ra-6", "ra-7"]); // complete() accepts retry ids
   }
   console.log("PASS: startRaSyncSession -- re-queues listing-only candidates missing time/address, skips complete/approved/non-RA/owner-corrected");
+  {
+    // cap + rotation: 3 eligible, cap 1 -> different day picks a different row (no permanent starvation)
+    const mk = () => ({ status: "pending_review", source: "Resident Advisor", time_display: null, venue_address_raw: null,
+      internal_note: "RA_PROVENANCE | status=unresolved" });
+    const rows = new Map([["ra-1", mk()], ["ra-2", mk()], ["ra-3", mk()]]);
+    const picks = new Set();
+    for (const day of [0, 1, 2]) {
+      const r = await lib.startRaSyncSession({
+        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds: ["ra-3", "ra-1", "ra-2"], maxRetryPerRun: 1, nowMs: day * 86400000,
+        fetchFn: async () => ({ ok: true, text: async () => "" }),
+        lookupExistingRowsFn: async (u, k, ids) => new Map(ids.filter((i) => rows.has(i)).map((i) => [i, rows.get(i)])),
+        lookupKnownSourceIdsFn: async () => new Set(),
+        startRunFn: async () => ({ runId: "run-c", startedAtMs: Date.now() }),
+      });
+      assert.strictEqual(r.retryCount, 1);
+      assert.strictEqual(r.newCount, 0);
+      picks.add(r.ids[0]);
+    }
+    assert.strictEqual(picks.size, 3);
+  }
+  console.log("PASS: startRaSyncSession -- retry cap rotates daily, never starves");
 
   {
     // identity-widening: a candidate with no row under its own

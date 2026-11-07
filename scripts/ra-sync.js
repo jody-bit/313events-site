@@ -689,6 +689,7 @@ async function startRaSyncSession(opts) {
     listingMetadata,
     maxNewPerRun = DEFAULT_MAX_NEW_PER_RUN,
     maxRetryPerRun = DEFAULT_MAX_RETRY_PER_RUN,
+    nowMs = Date.now(),
     fetchFn = fetch,
     lookupExistingRowsFn = lookupExistingRows,
     lookupKnownSourceIdsFn = lookupKnownSourceIds,
@@ -725,13 +726,11 @@ async function startRaSyncSession(opts) {
   // Listing-only candidates (ra-candidate-promotion rows) already have an events row, so the diff above calls
   // them "known" and their detail page was never fetched: time/address stayed blank forever. Re-queue those, and
   // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected rows are skipped.
-  const retryIds = [];
-  for (const id of parsed) {
-    if (retryIds.length >= maxRetryPerRun) break;
-    const row = existingRows.get(id);
-    if (!isListingOnlyCandidateNeedingDetail(row)) continue;
-    retryIds.push(id);
-  }
+  // Eligible ids are sorted, then rotated by day, so a row whose detail page never loads (removed, blocked) cannot
+  // hold the 10 retry slots forever and starve the rest of the backlog.
+  const eligible = parsed.filter((id) => isListingOnlyCandidateNeedingDetail(existingRows.get(id))).sort();
+  const offset = eligible.length ? Math.floor(nowMs / 86400000) % eligible.length : 0;
+  const retryIds = eligible.slice(offset).concat(eligible.slice(0, offset)).slice(0, maxRetryPerRun);
   const idsToFetch = newIdsThisRun.concat(retryIds);
   const cleanListingMetadata = sanitizeListingMetadata(parsed, listingMetadata);
 
