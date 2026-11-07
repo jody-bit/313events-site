@@ -799,6 +799,7 @@ async function completeRaSyncSession(opts) {
     SUPABASE_SERVICE_ROLE_KEY,
     runId,
     events,
+    detailReport = null, // optional device report: {attempted, blocked, blockedIds}
     fetchFn = fetch,
     finishRunFn = finishRun,
     buildVenueNameToIdMapFn = buildVenueNameToIdMap,
@@ -1022,6 +1023,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors.slice(0, 20),
     duplicateDetail: duplicates.slice(0, 20),
+    importedIds: imported.map((x) => x.id),
+    ...(detailReport ? { detailReport } : {}),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, run.id, finalSessionData, fetchFn);
 
@@ -1041,6 +1044,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors,
     duplicateDetail: duplicates,
+    importedIds: imported.map((x) => x.id),
+    submitted: events.length,
   };
 }
 
