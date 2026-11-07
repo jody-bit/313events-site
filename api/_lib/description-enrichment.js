@@ -43,6 +43,8 @@ const MONTH_NAMES = [
 
 // "2026-10-05" -> "October 5". Returns null on anything not shaped like an
 // ISO date — never guesses at a date from a malformed string.
+const { sanitizeText } = require("./text-sanitize");
+
 function formatFactualDate(isoDate) {
   if (typeof isoDate !== "string") return null;
   const m = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -80,8 +82,11 @@ function isDescriptionBlank(event) {
 // sentence for a row that turns out to be malformed).
 function buildFactualDescription(event) {
   if (!event || typeof event.title !== "string" || !event.title.trim()) return null;
-  const title = event.title.trim();
-  const venueName = resolveFactualVenueName(event);
+  // Generated copy is written by a direct PATCH (not upsertEventRows), so it must clean its own inputs: a stored venue/title can
+  // still carry a literal named entity (e.g. "Schoolcraft College&rsquo;s VisTaTech Center") from before the shared sanitizer.
+  const title = sanitizeText(event.title.trim());
+  const rawVenue = resolveFactualVenueName(event);
+  const venueName = typeof rawVenue === "string" ? sanitizeText(rawVenue) : rawVenue;
   const dateText = formatFactualDate(event.start_date);
   const timeText =
     event.is_all_day
