@@ -933,7 +933,11 @@ function renderEvent(e){
     const d = document.getElementById('evtDesc');
     // Readable blocks from the stored text (description-format.js): source breaks, lists and lineups kept, links checked, never innerHTML.
     const body = document.createElement('div');
-    if(DescriptionFormat.render(body, e.description, safeUrl)){
+    // If /description-format.js failed to load, show the stored text as plain paragraphs (text nodes only) rather than dropping the block.
+    const rendered = (typeof DescriptionFormat !== 'undefined' && DescriptionFormat && typeof DescriptionFormat.render === 'function')
+      ? DescriptionFormat.render(body, e.description, safeUrl)
+      : String(e.description).split(/\n{2,}/).map(t => t.trim()).filter(Boolean).map(t => { const p = document.createElement('p'); p.textContent = t; body.appendChild(p); return p; }).length;
+    if(rendered){
       const h = document.createElement('h2');
       h.className = 'evt-about-h';
       h.textContent = 'About this event';
