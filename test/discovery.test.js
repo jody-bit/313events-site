@@ -75,7 +75,7 @@ function run() {
     assert.deepStrictEqual(Object.keys(D), [
       "VERSION", "categories", "features", "places", "whens", "radii",
       "defaults", "normalize", "change", "toQuery", "fromQuery", "href",
-      "matches", "window", "count", "facets", "featuresOf", "describe", "inventoryFilter",
+      "matches", "unconfirmedOn", "window", "count", "facets", "featuresOf", "describe", "inventoryFilter",
     ], "the public interface is exactly this");
   }
   console.log("PASS: one global, loads with no DOM/network/storage, coexists with pages' own copies, frozen, interface as approved");

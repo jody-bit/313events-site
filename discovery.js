@@ -946,6 +946,25 @@
 
     function matches(event, state, ctx) { return test(event, normalize(state), resolveCtx(ctx)); }
 
+    // Schedule-unverified multiday ranges (no date_semantics) are not attendable on any specific
+    // date, so matches() never returns them for a date window. A visitor on Today / Tomorrow still
+    // cannot be left blind to them (P1 discovery incident, 2026-11-07: Planet 9 Film Fest, The World of
+    // Anna Sui). unconfirmedOn() says whether such an event's STORED range covers the one day Today or
+    // Tomorrow is showing, and passes the same what / where / search filters. It is a separate list:
+    // callers show it as "Dates not confirmed", never count it with matches()/count(), never offer a
+    // calendar export. Other windows (tonight, weekend, picked dates) return false: nothing is inferred.
+    function unconfirmedOn(event, state, ctx) {
+      var s = normalize(state), c = resolveCtx(ctx);
+      if (!event || isBlocked(event)) return false;
+      var w = windowOf(s, c);
+      if (w.mode !== "today" && w.mode !== "tomorrow") return false;
+      var ED = (typeof EventDates !== "undefined") ? EventDates : null;
+      if (!ED || ED.availabilityOn(event, w.from) !== "unverified") return false;
+      var end = (typeof event.endDate === "string" && event.endDate > event.date) ? event.endDate : event.date;
+      if (w.mode === "today" && end === c.today && endedByClock(event.time, c.minutes)) return false;
+      return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined);
+    }
+
     // Distinct events — never event-days. An id seen twice (a surface
     // passing the same event once per day of its run) is counted once.
     function eachDistinct(events, fn) {
@@ -1085,6 +1104,7 @@
       href: href,
       // semantics
       matches: matches,
+      unconfirmedOn: unconfirmedOn,
       window: windowFor,
       count: count,
       facets: facets,

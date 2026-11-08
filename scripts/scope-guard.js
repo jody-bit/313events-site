@@ -35,6 +35,8 @@ const ALLOWED = [
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
   "api/_lib/feed-run-health.js",
+  // Schedule-evidence Stage 1 support (owner approval 2026-10-18 14:58Z): pure robots.txt parser and read-only polite fetcher; no callers, no writes.
+  "api/_lib/robots.js", "api/_lib/evidence-fetch.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
@@ -79,7 +81,7 @@ const ALLOWED = [
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
   // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
   "api/_lib/localist-rows.js",
-  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
+  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js", "api/_lib/meeting-classifier.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   // Decision 7: rotating link check (dry by default).
@@ -135,7 +137,10 @@ const ALLOWED = [
   "api/_lib/editorial-verification.js",
   "api/admin-editorial.js",
   "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
-  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql"
+  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql",
+  // Schedule-evidence pass, Stage 1 (owner approval 2026-10-18): pure read-only extraction and decision rules + the source allow-list data. No network, no database write.
+  "api/_lib/schedule-evidence.js",
+  "api/_lib/schedule-evidence-sources.json"
 ];
 
 class ScopeGuardError extends Error {}
