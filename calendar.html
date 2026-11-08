@@ -364,6 +364,8 @@
      for state, not decoration) is a hierarchy correction, not new styling
      for its own sake. */
   .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;max-width:132px;overflow-wrap:break-word;font-weight:700;padding-top:2px;}
+  /* "Time not confirmed" for schedule-unverified rows (Dates not confirmed): same label and 11px floor as index.html, wraps only between words. */
+  .evt-time small.evt-time-unconfirmed{display:block;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;font-weight:700;}
   /* Free-text hours from the source (e.g. "Select nights; Friday 7–11 PM, ...") can be a full sentence. Without a cap the time column took the whole row and pushed the title aside; with it the text wraps inside a fixed gutter and the title stays beside it. */
   .evt-main{flex:1;}
   /* Thumbnail (2026-09-04) — same "flex row inside .evt-main, only when an
@@ -2121,7 +2123,7 @@ function placePopupHtml(place){
   const rows = place.events.map(e => `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
-      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${EventDates.scheduleState(e) === 'unverified' ? ' · Time not confirmed' : e.time ? ' · '+escapeHtml(e.time) : ''}</div>
     </div>
   `).join('');
   const jump = place.events.length > 1
@@ -2191,7 +2193,7 @@ function renderCityRail(places){
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(e=>`
           <div class="evt-row">
-            <div class="evt-time">${escapeHtml(e.time)||''}</div>
+            <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
             <div class="evt-main">
               <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
               <div class="evt-meta">
@@ -2277,7 +2279,7 @@ function renderUnconfirmedResults(){
     ? `${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u2013 ${new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
   el.innerHTML = `<div class="list-day-group"><div class="list-day-heading">Dates not confirmed</div>` + hits.map(e=>`
     <div class="evt-row">
-      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-time"><small class="evt-time-unconfirmed">Time not confirmed</small></div>
       <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
