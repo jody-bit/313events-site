@@ -26,7 +26,8 @@ const { normalizeLinkField } = require("./link-field");
 
 // Single-venue connectors: events.source -> the connector's own SOURCE_URL / events page.
 const SOURCE_CALENDAR_PAGES = Object.freeze({
-  "HALO Detroit": "https://www.thehalodetroit.com/currentevents",
+  // "HALO Detroit" is deliberately NOT listed: a fallback here would switch on the scheduled cron-halo door-row link write,
+  // which is held under its own owner GO (stripped from RC3). Add it only with that GO.
   "Trinosophes": "https://trinosophes.com/Events",
   "GottaGacha": "https://www.gottagacha.com/events",
   "Redford Theatre": "https://redfordtheatre.com/events/",

@@ -31,14 +31,15 @@ function recorder(matchedCounts) {
 
 (async () => {
   // 1. the registry: only the four single-venue connectors, each a valid absolute page, none a calendar-feed endpoint
-  assert.deepStrictEqual(Object.keys(SOURCE_CALENDAR_PAGES).sort(), ["GottaGacha", "HALO Detroit", "Redford Theatre", "Trinosophes"]);
+  assert.deepStrictEqual(Object.keys(SOURCE_CALENDAR_PAGES).sort(), ["GottaGacha", "Redford Theatre", "Trinosophes"]);
   for (const [src, url] of Object.entries(SOURCE_CALENDAR_PAGES)) {
     assert.ok(/^https:\/\/[^/]+\.[a-z]+\//i.test(url), src + " is an absolute https page");
     assert.ok(!/\.ics|icalendar/i.test(url), src + " is not a feed endpoint");
   }
   // the registry matches what each connector actually writes as `source` and uses as its own events page
   const read = (f) => fs.readFileSync(path.join(REPO_DIR, "api", f), "utf8");
-  assert.ok(read("cron-halo.js").includes('source: "HALO Detroit"') && read("cron-halo.js").includes(`SOURCE_URL = "${SOURCE_CALENDAR_PAGES["HALO Detroit"]}"`));
+  assert.strictEqual(SOURCE_CALENDAR_PAGES["HALO Detroit"], undefined, "HALO is held out on purpose: a fallback would enable the held cron-halo link write");
+  assert.strictEqual(calendarFallbackFor({ source: "HALO Detroit" }), null);
   assert.ok(read("cron-trinosophes.js").includes('source: "Trinosophes"') && read("cron-trinosophes.js").includes(`SOURCE_URL = "${SOURCE_CALENDAR_PAGES["Trinosophes"]}"`));
   assert.ok(read("cron-gottagacha.js").includes('source: "GottaGacha"') && read("cron-gottagacha.js").includes(`OFFICIAL_EVENTS_PAGE = "${SOURCE_CALENDAR_PAGES["GottaGacha"]}"`));
   assert.ok(read("cron-redford-theatre.js").includes('SOURCE_NAME = "Redford Theatre"') && read("cron-redford-theatre.js").includes(`SOURCE_URL = "${SOURCE_CALENDAR_PAGES["Redford Theatre"]}"`));
@@ -48,8 +49,8 @@ function recorder(matchedCounts) {
   assert.deepStrictEqual(
     calendarFallbackFor({ source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/calendar" }),
     { by: "feed_source_id", key: "fs-1", url: "https://www.livonia.gov/calendar", label: "City of Livonia - Community Events" });
-  assert.deepStrictEqual(calendarFallbackFor({ source: "HALO Detroit" }).url, SOURCE_CALENDAR_PAGES["HALO Detroit"]);
-  assert.strictEqual(calendarFallbackFor({ source: "HALO Detroit" }).by, "source");
+  assert.deepStrictEqual(calendarFallbackFor({ source: "Trinosophes" }).url, SOURCE_CALENDAR_PAGES["Trinosophes"]);
+  assert.strictEqual(calendarFallbackFor({ source: "Trinosophes" }).by, "source");
   for (const bad of [null, undefined, "x", {}, { source: "Eventbrite" }, { source: "constructor" }, { source: "__proto__" },
     { feed_source_id: "fs-1", source: "X", _calendarUrl: null },
     { feed_source_id: "fs-1", source: "X", _calendarUrl: "" },
@@ -98,7 +99,7 @@ function recorder(matchedCounts) {
     const rows = [
       { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/calendar" },
       { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/calendar" },
-      { source: "HALO Detroit" },
+      { source: "Trinosophes" },
       { source: "Some other connector", ticket_url: "https://x.org/t" },
     ];
     const out = await fillBlankSourceCalendarLinks(BASE, KEY, rows, fetchImpl, new Date("2026-10-19T23:30:00Z"));
@@ -113,8 +114,8 @@ function recorder(matchedCounts) {
     }
     assert.ok(decodeURIComponent(calls[0].url).includes("feed_source_id=eq.fs-1"));
     assert.strictEqual(calls[0].body.event_url, "https://www.livonia.gov/calendar");
-    assert.ok(decodeURIComponent(calls[1].url).includes("source=eq.HALO Detroit"));
-    assert.strictEqual(calls[1].body.event_url, SOURCE_CALENDAR_PAGES["HALO Detroit"]);
+    assert.ok(decodeURIComponent(calls[1].url).includes("source=eq.Trinosophes"));
+    assert.strictEqual(calls[1].body.event_url, SOURCE_CALENDAR_PAGES["Trinosophes"]);
     for (const c of calls) {
       const q = decodeURIComponent(c.url);
       for (const marker of ["OWNER-CORRECTION", "EDITORIAL-HOLD", "EDITORIAL_HOLD", "EDITORIAL HOLD"]) {
@@ -122,7 +123,7 @@ function recorder(matchedCounts) {
       }
       assert.ok(q.includes("or(internal_note.is.null,and("), "a null note is allowed, a locked note is not");
     }
-    assert.deepStrictEqual(out, { patched: 8, bySource: { "City of Livonia - Community Events": 5, "HALO Detroit": 3 } }, "affected rows are counted per source from what the database changed");
+    assert.deepStrictEqual(out, { patched: 8, bySource: { "City of Livonia - Community Events": 5, "Trinosophes": 3 } }, "affected rows are counted per source from what the database changed");
     console.log("PASS: blank-only on both fields, event_url only, scoped per source, counted per source");
   }
 
@@ -152,9 +153,9 @@ function recorder(matchedCounts) {
   // 5. failure never fails a run; a non-ok response counts nothing
   {
     const boom = async () => { throw new Error("network"); };
-    assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], boom), { patched: 0, bySource: {} });
+    assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "Trinosophes" }], boom), { patched: 0, bySource: {} });
     const notOk = async () => ({ ok: false, status: 500, json: async () => { throw new Error("no body"); } });
-    assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], notOk), { patched: 0, bySource: {} });
+    assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "Trinosophes" }], notOk), { patched: 0, bySource: {} });
     assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [], boom), { patched: 0, bySource: {} });
     assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, null, boom), { patched: 0, bySource: {} });
     console.log("PASS: a failed back-fill is swallowed and counts nothing");
@@ -169,13 +170,13 @@ function recorder(matchedCounts) {
       if (opts.method === "GET" || !opts.method) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; // owner-corrections lookup
       return { ok: status < 300, status, json: async () => ({}), text: async () => "err" };
     };
-    const row = { external_id: "halo-1", title: "Show", category: "music", start_date: "2026-10-30", status: "approved", source: "HALO Detroit" };
+    const row = { external_id: "halo-1", title: "Show", category: "music", start_date: "2026-10-30", status: "approved", source: "Trinosophes" };
     const saved = global.fetch;
     try {
       global.fetch = mk(201);
       const ok = await upsertEventRows(BASE, KEY, [row]);
       assert.ok(ok.ok);
-      const patches = log.filter((l) => l.method === "PATCH" && decodeURIComponent(l.url).includes("source=eq.HALO Detroit"));
+      const patches = log.filter((l) => l.method === "PATCH" && decodeURIComponent(l.url).includes("source=eq.Trinosophes"));
       assert.strictEqual(patches.length, 1, "one fallback PATCH after a successful write");
       assert.ok(!log.filter((l) => l.method === "POST").some((l) => /event_url/.test(l.body || "")), "the upsert itself never carries the fallback link");
 
