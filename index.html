@@ -6056,7 +6056,12 @@ function streamRows(ctx){
       if(seen.has(e.id)) return;
       seen.add(e.id);
     }
-    if(!Discovery.matches(e, state, ctx)) return;
+    if(!Discovery.matches(e, state, ctx)){
+      // Today / Tomorrow: an unclassified long run whose stored range covers the day is offered under "Dates not
+      // confirmed" instead of vanishing (P1 discovery incident 2026-11-07). Never counted as a confirmed event.
+      if(Discovery.unconfirmedOn(e, state, ctx)) unverifiedRows.push({event: e, day: null});
+      return;
+    }
     if(EventDates.scheduleState(e) === 'unverified'){ unverifiedRows.push({event: e, day: null}); return; }
     const listableFrom = e.date < floor ? floor : e.date;
     let day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
@@ -6296,6 +6301,11 @@ function renderList(){
   }
 
   const total = rows.length;
+  // On Today / Tomorrow the heading counts confirmed events only; the unconfirmed ones are named beside it.
+  const dayMode = (m => m === 'today' || m === 'tomorrow')(Discovery.window(state, ctx).mode);
+  const unconfirmedN = dayMode ? rows.filter(r => r.day === null).length : 0;
+  const headTotal = total - unconfirmedN;
+  const unconfirmedNote = unconfirmedN ? ` &middot; plus ${unconfirmedN.toLocaleString('en-US')} with dates not confirmed, below` : '';
   const shown = Math.min(streamShown, total);
   const todayIso = getTodayISO();
   const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
@@ -6303,7 +6313,7 @@ function renderList(){
 
   const filtered = Discovery.describe(state).length > 0;
   const head = (meta.countLabel || filtered)
-    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`)
+    ? headHtml(`<p class="list-count-heading">Showing ${headTotal.toLocaleString('en-US')} event${headTotal===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unconfirmedNote}</p>`)
     : headHtml(`<p class="sec-sub">${total.toLocaleString('en-US')} current + upcoming event${total===1?'':'s'}, in date order.</p>`);
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
