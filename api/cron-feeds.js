@@ -857,7 +857,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
       rows.map((r) => r.external_id),
-      { select: "external_id,status,title,description,description_source,event_url,note" }
+      { select: "external_id,status,source,title,description,description_source,event_url,note,internal_note" }
     );
     existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {

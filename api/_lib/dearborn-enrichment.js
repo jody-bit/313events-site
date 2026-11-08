@@ -1,5 +1,7 @@
 "use strict";
 
+const { isOwnerSuppliedRow } = require("../../scripts/owner-supplied-row");
+
 // api/_lib/dearborn-enrichment.js -- links and category hints for City of Dearborn ICS rows.
 //
 // WHY: the city's "Website Calendar" ICS (the source of truth for dates, times and places) carries no URL and
@@ -160,7 +162,11 @@ async function enrichRows(rows, _feedSource, opts) {
 function backfillPatch(stored, enrichment) {
   const patch = {};
   if (!stored || !enrichment) return patch;
-  if (enrichment.event_url && !stored.event_url) patch.event_url = enrichment.event_url;
+  // A row the owner supplied or protected (OWNER-CORRECTION / EDITORIAL-HOLD in internal_note, or Manual source) is never
+  // touched by automation, not even to fill a blank (scripts/owner-supplied-row.js). The caller must select internal_note and source.
+  if (isOwnerSuppliedRow(stored)) return patch;
+  const storedLink = typeof stored.event_url === "string" ? stored.event_url.trim() : stored.event_url;
+  if (enrichment.event_url && !storedLink) patch.event_url = enrichment.event_url;
   const note = String(stored.note || "");
   if (enrichment.category && !/Source page category:/i.test(note)) {
     patch.note = `${note ? note + " " : ""}Source page category: ${enrichment.category}.`;

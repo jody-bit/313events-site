@@ -55,6 +55,15 @@ async function run() {
   assert.deepStrictEqual(backfillPatch({ event_url: null, note: null }, E), { event_url: E.event_url, note: "Source page category: City Event." });
   assert.deepStrictEqual(backfillPatch({ event_url: "https://reviewer.example/own", note: "Source page category: Meeting." }, E), {}, "a stored link and an existing hint are never replaced");
   assert.deepStrictEqual(backfillPatch({ event_url: "https://reviewer.example/own", note: "n" }, { event_url: E.event_url }), {}, "stored link kept even when no category");
+  // Owner lock (P1, #140 writer contract): a row carrying OWNER-CORRECTION or EDITORIAL-HOLD, or a Manual row, is never touched, not even to fill a blank.
+  for (const internal_note of ['OWNER-CORRECTION 2026-10-18T04:00:00Z e-1 fields=title | {}', "EDITORIAL-HOLD keep blank", "editorial_hold", "EDITORIAL HOLD"]) {
+    assert.deepStrictEqual(backfillPatch({ event_url: null, note: null, internal_note }, E), {}, "locked row untouched: " + internal_note);
+  }
+  assert.deepStrictEqual(backfillPatch({ event_url: null, note: null, source: "Manual" }, E), {}, "a Manual row is untouched");
+  assert.deepStrictEqual(backfillPatch({ event_url: null, note: null, internal_note: "ordinary breadcrumb" }, E), { event_url: E.event_url, note: "Source page category: City Event." }, "an ordinary note does not block the fill");
+  // Null guard: a whitespace-only stored link counts as empty, and "   " is never treated as a real link.
+  assert.deepStrictEqual(backfillPatch({ event_url: "   ", note: "x" }, { event_url: E.event_url }), { event_url: E.event_url }, "whitespace-only link is empty");
+  assert.deepStrictEqual(backfillPatch({ event_url: "", note: "x" }, { event_url: E.event_url }), { event_url: E.event_url }, "empty-string link is empty");
   assert.deepStrictEqual(backfillPatch({ event_url: null, note: "n" }, { event_url: null, category: null }), {}, "nothing to add, nothing written");
   assert.deepStrictEqual(backfillPatch(null, E), {});
   console.log("PASS: backfillPatch fills only empty links and adds the hint once");
