@@ -87,6 +87,8 @@ function parsePriceFrom(input) {
 // submit ticketUrl/imageUrl as "javascript:..." or another non-http scheme —
 // index.html now escapes and scheme-checks again before rendering (defense
 // in depth), but rejecting it here means it never even reaches the database.
+const { checkImageUrl, imageSourceNote } = require("./_lib/image-url-guard");
+
 function isSafeHttpUrl(url) {
   if (!url) return true; // both fields are optional
   try {
@@ -232,7 +234,7 @@ module.exports = async (req, res) => {
   if (!isValidEmail(contactEmail)) errors.push("a valid contactEmail is required");
   if (!isSafeHttpUrl(ticketUrl)) errors.push("ticketUrl must be a valid http(s) link");
   if (!isSafeHttpUrl(eventUrl)) errors.push("eventUrl must be a valid http(s) link");
-  if (!isSafeHttpUrl(imageUrl)) errors.push("imageUrl must be a valid http(s) link");
+  if (!checkImageUrl(imageUrl).ok) errors.push("imageUrl must be a public https link to an image");
 
   if (errors.length) {
     res.status(400).json({ error: "Invalid submission: " + errors.join("; ") });
@@ -279,6 +281,8 @@ module.exports = async (req, res) => {
     // event_url only; it never replaces a link and never touches ticket_url.
     event_url: withOrganizerEventUrl({ title, submitter_org_name: orgName, event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null }),
     image_url: imageUrl || null,
+    // Provenance for the reviewer: a pasted link is hotlinked, not hosted by this site.
+    ...(imageSourceNote(imageUrl, SUPABASE_URL) ? { internal_note: imageSourceNote(imageUrl, SUPABASE_URL) } : {}),
     source: "Venue Submission",
     status: "pending_review",
     submitter_org_name: orgName.trim(),
