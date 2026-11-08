@@ -184,9 +184,13 @@ function escapeHtml(str) {
 let ALL_VENUES = []; // [{id, name, address, city, neighborhood}]
 let filterQuery = '';
 
-function getTodayISO(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+// Detroit "today" (not the browser's local date), identical to venue-template.html's detroitTodayISO, so the directory count
+// and the venue page agree near midnight and for visitors outside Detroit.
+function detroitTodayISO(now){
+  const p = {};
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Detroit', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(now || new Date()).forEach(x => { p[x.type] = x.value; });
+  return p.year + '-' + p.month + '-' + p.day;
 }
 
 function matchesQuery(v, q){
@@ -297,7 +301,7 @@ async function init(){
     const [venuesResult, neighResp, eventsResult] = await Promise.all([
       fetchAllRows(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,neighborhood_id&order=name.asc,id.asc`, headers),
       fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
-      fetchAllRows(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${getTodayISO()},and(date_semantics.eq.continuous,end_date.gte.${getTodayISO()}))&venue_id=not.is.null&select=id,venue_id&order=id.asc`, headers).catch(() => ({ rows: [] })),
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${detroitTodayISO()},and(date_semantics.eq.continuous,end_date.gte.${detroitTodayISO()}))&venue_id=not.is.null&select=id,venue_id&order=id.asc`, headers).catch(() => ({ rows: [] })),
     ]);
     const venueRows = venuesResult.rows;
     const neighRows = neighResp.ok ? await neighResp.json() : [];

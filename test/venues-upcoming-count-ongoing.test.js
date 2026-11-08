@@ -5,11 +5,18 @@ const dir = process.env.REPO_DIR || process.cwd();
 const html = fs.readFileSync(`${dir}/venues.html`, "utf8");
 const t = [...html.matchAll(/fetchAllRows\(`([^`]+)`/g)].map((m) => m[1]).find((x) => /\/events\?/.test(x));
 assert.ok(t, "events count query not found");
-const url = t.split("${SUPABASE_URL}").join("https://x.test").split("${getTodayISO()}").join("2026-11-08");
+const url = t.split("${SUPABASE_URL}").join("https://x.test").split("${detroitTodayISO()}").join("2026-11-08");
 assert.ok(url.includes("status=eq.approved"), "approved only");
 assert.ok(url.includes("or=(start_date.gte.2026-11-08,and(date_semantics.eq.continuous,end_date.gte.2026-11-08))"), "ongoing continuous rows counted");
 assert.ok(url.includes("venue_id=not.is.null") && url.includes("select=id,venue_id") && /order=id\.asc$/.test(url), "paging order and select unchanged");
 assert.ok(!/date_semantics\.eq\.(recurring|single)/.test(url), "recurring and unverified past rows not counted");
+assert.ok(!/getTodayISO/.test(html), "venues.html no longer uses the browser-local date");
+const fnSrc = (src) => (src.match(/function detroitTodayISO\(now\)\{[\s\S]*?\n\}\n/) || [""])[0];
+const vtSrc = fs.readFileSync(`${dir}/venue-template.html`, "utf8");
+assert.ok(fnSrc(html) && fnSrc(html) === fnSrc(vtSrc), "same detroitTodayISO as the venue page");
+// 2026-11-09 01:30 UTC is still Nov 8 in Detroit (EST); local-date/UTC would say Nov 9
+const detroit = new Function(`${fnSrc(html)}; return detroitTodayISO(new Date("2026-11-09T01:30:00Z"));`)();
+assert.strictEqual(detroit, "2026-11-08", "Detroit date near midnight");
 const vt = fs.readFileSync(`${dir}/venue-template.html`, "utf8");
 assert.ok(vt.includes("or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))"), "same rule as the venue page");
 // mock: and() inside or= is evaluated
