@@ -78,3 +78,11 @@ assert.ok(Discovery.unconfirmedOn(EVENTS[5], today, { now: new Date("2026-11-07T
 const all = run(Discovery.defaults());
 assert.strictEqual(all.filter((r) => r.endsWith("Planet 9 Film Fest")).length, 1);
 console.log("PASS: Today/Tomorrow offer unclassified ranges as 'Dates not confirmed'; counts, filters and other windows unchanged");
+
+// FOLLOW-UP (owner decision 2026-11-08): a row listed under "Dates not confirmed" (dayIso === null) never exposes its
+// start time; it says "Time not confirmed". Dated rows keep their time. The published range is untouched.
+const rowM = html.match(/function streamRowHtml\(e, dayIso, ctx\)\{[\s\S]*?\n\}\n/);
+assert.ok(rowM, "streamRowHtml not found");
+assert.ok(/dayIso === null \? '<small class="evt-time-unconfirmed">Time not confirmed<\/small>' : timeCellHtml\(e\.time\)/.test(rowM[0]), "unconfirmed rows show 'Time not confirmed', dated rows show their time");
+assert.ok(/Published \$\{escapeHtml\(formatRangeLabel/.test(html), "published range label preserved");
+console.log("PASS: unconfirmed rows say 'Time not confirmed'");

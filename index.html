@@ -6084,7 +6084,7 @@ function streamRowHtml(e, dayIso, ctx){
     : '';
   return `
         <div class="evt-row">
-          <div class="evt-time">${timeCellHtml(e.time)}</div>
+          <div class="evt-time">${dayIso === null ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : timeCellHtml(e.time)}</div>
           <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
           <div class="evt-main">
             <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
