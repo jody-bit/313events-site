@@ -10,7 +10,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
 
 const CTX = { now: new Date("2026-10-28T20:00:00Z") };
 // Shaped like index.html's mapSupabaseRow() output for the production events_public row:
