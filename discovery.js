@@ -408,7 +408,11 @@
   function endedByClock(timeStr, minutes) {
     var range = parseTimeRange(timeStr);
     if (!range || !range.end || range.end.h < range.start.h) return false;
-    return range.end.h * 60 + range.end.m < minutes;
+    var endMin = range.end.h * 60 + range.end.m;
+    // An end that is not after the start ("12:00 AM - 12:00 AM", "8:00 PM - 8:00 PM") is a zero-length
+    // placeholder, not a known end: the event is not over (P1 discovery T3).
+    if (endMin <= range.start.h * 60 + range.start.m) return false;
+    return endMin < minutes;
   }
 
   function haversineMiles(lat1, lng1, lat2, lng2) {
