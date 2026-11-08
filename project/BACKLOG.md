@@ -363,6 +363,17 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Discovered Work:** `DEBT-007` (admin label), `DEBT-008` (homepage load window — corrected), `DEBT-009` (homepage rules still outside the shared contract, and decisions they need).
 - **Product Decisions Required:** final approval to merge and deploy (with `STORY-024`). Everything else in the adoption — the behaviour changes above, the interface additions and `DEC-027` — was approved 2026-10-03.
 
+
+### STORY-026 — An explicitly public visitor-information field (provisionally `public_note`)
+
+- **Type:** STORY · **Status:** BACKLOG (requirement captured 2026-10-06, not designed) · **Priority:** Medium
+- **Epic:** EPIC-004 (editorial workflow) / touches EPIC-018 · **Recommended Model:** Opus 5 for the data-model decision, then Sonnet 5 · **Complexity:** Small–Medium
+- **Dependencies:** `BUG-011` hotfix (live); SZ-01 / `TASK-008` (delivered and ACCEPTED 2026-10-06; the new column must join its anonymous allowlist deliberately, never by default); a field-authority rule for who may write it (`DEBT-011`).
+- **Problem/User Need:** `BUG-011` stopped every public surface from using `events.note`, because that column also held editorial commentary on approved events. As a side effect, genuine visitor information stored there ("Doors: 7:00 PM", "Entrance in the rear", "21+", price tiers) no longer appears. The Product Owner accepted that loss temporarily — privacy and editorial integrity come first.
+- **Requirement:** a field that is explicitly classified public, holds only visitor-facing information, and is the only free-text caveat any public surface may render. `public_note` is provisional; use a better name if the data model suggests one (the existing `note` name must NOT be reused, because its history makes it untrustworthy). New values enter only through a deliberate act (Admin edit, or a connector that writes visitor information by definition, e.g. Planet Ant "Entrance in the rear"); nothing is back-filled automatically. Existing `note` values are reviewed by a person before any is copied across; the original data is never deleted or modified.
+- **Out of scope:** implementing it during the `BUG-011` hotfix; re-enabling `note`.
+- **Product Decisions Required:** name; whether connectors may write it; the review route for existing `note` values (the distinct approved values were listed 2026-10-06 and sorted by hand into visitor information and commentary; the list is held by the Product Owner, not reproduced here).
+
 ---
 
 ## Tasks
@@ -654,6 +665,18 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
   6. the existing wrong rows have been dealt with or explicitly accepted, so a reopened tier does not build on them.
 - **How to release:** set `WEB_SEARCH_ENRICHMENT_ENABLED=true` for the Production environment in Vercel and redeploy. Removing the variable closes it again.
 - **Product Decisions Required:** the release conditions above; whether search may ever create venues; what happens to the stored wrong descriptions and venues; whether article-derived descriptions should keep the `authoritative` label.
+
+
+---
+
+### BUG-011 — Public pages displayed internal/editorial commentary from `events.note`
+
+- **Type:** BUG (privacy / editorial) · **Status:** REVIEW (hotfix live 2026-10-06; durable fix delivered as SZ-01 / `TASK-008`, ACCEPTED 2026-10-06; acceptance of this bug itself is for the Product Owner to record) · **Priority:** Critical
+- **Epic:** — · **Discovered:** 2026-10-06, Product Owner report of internal editorial commentary visible on the live site (the text is deliberately not quoted here).
+- **Cause:** the text is in `events.note`, a column documented as a visitor-facing caveat that staff and research sessions also used for editorial commentary. Every public surface read it: homepage cards, calendar, map, the event page, the `.ics` description, share text and search matching. It was also readable by anonymous clients from the base table and the `events_public` view. Scope: a material share of approved events had a non-empty `note`, some of it commentary (counts held in the 2026-10-06 audit record, not reproduced here).
+- **Hotfix (live, `dcd4e23`):** public pages no longer select, render, export or search `note`; regression test `test/no-internal-fields-public.test.js`. No data or schema change; the stored text is untouched.
+- **Durable fix:** SZ-01 (`TASK-008`, migration `20261006000003_sz01_public_access_boundary.sql`) — an anonymous column allowlist that excludes `note`, so the database refuses the read. Delivered; see `TASK-008` for its production evidence.
+- **Follow-up:** `STORY-026` (an explicitly public visitor-information field).
 
 ---
 
