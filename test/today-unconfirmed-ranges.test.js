@@ -86,3 +86,6 @@ assert.ok(rowM, "streamRowHtml not found");
 assert.ok(/dayIso === null \? '<small class="evt-time-unconfirmed">Time not confirmed<\/small>' : timeCellHtml\(e\.time\)/.test(rowM[0]), "unconfirmed rows show 'Time not confirmed', dated rows show their time");
 assert.ok(/Published \$\{escapeHtml\(formatRangeLabel/.test(html), "published range label preserved");
 console.log("PASS: unconfirmed rows say 'Time not confirmed'");
+// Experience 375px defect: the label must wrap at word boundaries only, and stay 9px where a later rule enlarges .evt-time small.
+assert.ok(/\.evt-time small\.evt-time-unconfirmed\{[^}]*overflow-wrap:normal[^}]*hyphens:none[^}]*font-size:9px/.test(html), "unconfirmed time label wraps only between words at 375px");
+console.log("PASS: unconfirmed time label never breaks mid-word");

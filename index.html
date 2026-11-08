@@ -4156,6 +4156,9 @@
        thumbnail), and the thumbnail gets more space around it. */
     .evt-time{overflow-wrap:break-word;}
     .evt-time .t-brk::before{content:"\200b";}
+    /* "Time not confirmed" (rows under Dates not confirmed): wrap only between words, never mid-word, and keep it
+       at 9px even where a later rule enlarges .evt-time small. */
+    .evt-time small.evt-time-unconfirmed{overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:9px;line-height:1.25;}
     .evt-cal a + a::before{content:'·';margin-right:.6ch;}
     .evt-link::before, .evt-share::after, .evt-cal a::after{content:none;}
   }
