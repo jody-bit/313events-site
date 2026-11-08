@@ -172,6 +172,6 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "23757ef9fec372e84e107df3f26095a3bea2d3341e882ebed68a333e49443f47", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "cf86ea094af454a402ded5b244652ace7a1ba30c361f277b50743f1e42065605", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");

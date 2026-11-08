@@ -17144,7 +17144,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "ENDED",
    "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -17234,6 +17234,16 @@
    "approval": {
     "by": "Jody Tyree",
     "at": "2026-10-12"
+   },
+   "season": {
+    "end": "2026-10-31",
+    "endSource": "https://www.essexregionconservation.ca/conservation-areas — ERCA (operator): \"open for day use from 6am – 8pm daily, from mid-April – end of October annually\" (read 2026-11-08 through a summarizing page reader, not a verbatim capture; artifact editorial/holiday-beach-244-2026-11-08/ERCA-HOLIDAY-BEACH-SEASON-SOURCE-2026-11-08.md, sha256 451b3998a6ab…). Final day 2026-10-31, closes 8 pm America/Detroit."
+   },
+   "expiryDisposition": {
+    "action": "unpublish",
+    "by": "PROPOSED, NOT OWNER-APPROVED: draft for owner review (prior owner direction 2026-11-08 20:13Z: expire #244 via the #260 mechanism, no reword)",
+    "at": "2026-11-08",
+    "note": "Draft only. Retained as a non-public record; evidence, image and rights records, and the destination are preserved. Supersedes the 'mid-April to Thanksgiving' reading in #244."
    }
   },
   {
