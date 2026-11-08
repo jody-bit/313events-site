@@ -224,7 +224,9 @@ async function run() {
         if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
         if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
         if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return { ok: true, status: 204, json: async () => ({}) };
-        if (url.includes("/rest/v1/events") && opts.method === "PATCH") { calls.patches.push({ url, body: JSON.parse(opts.body) }); return patchOk ? { ok: true, status: 204, text: async () => "" } : { ok: false, status: 500, text: async () => "boom" }; }
+        if (url.includes("/rest/v1/events") && opts.method === "PATCH") { calls.patches.push({ url, body: JSON.parse(opts.body) }); return patchOk ? { ok: true, status: 200, json: async () => [{ id: "x" }], text: async () => "" } : { ok: false, status: 500, text: async () => "boom" }; }
+        // The guarded fill reads the door rows it may fill (id, links, note, version) before it writes: answer that read from what was upserted.
+        if (url.includes("/rest/v1/events") && url.includes("select=id,external_id,status,source,event_url")) return { ok: true, status: 200, json: async () => (calls.post || []).filter((r) => !r.event_url && !r.ticket_url).map((r) => ({ id: "id-" + r.external_id, external_id: r.external_id, source: "HALO Detroit", status: "approved", event_url: null, ticket_url: null, internal_note: null, updated_at: "2026-11-01T00:00:00+00:00" })) };
         if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
         if (url.includes("/rest/v1/events") && opts.method === "POST") { calls.post = JSON.parse(opts.body); return strictWriteResponse(url, opts); }
         throw new Error("unmocked URL in test: " + url);
@@ -240,9 +242,10 @@ async function run() {
     assert.strictEqual(ok.calls.patches.length, 1, "exactly one fill PATCH");
     const p = ok.calls.patches[0];
     assert.ok(p.url.includes("event_url=is.null"), "the fill only touches rows whose event_url is empty");
-    assert.ok(p.url.includes(byTitle["Curtain Call Cabaret"].external_id), "the door event with no link is in the fill");
+    assert.ok(p.url.includes("id=eq.id-" + byTitle["Curtain Call Cabaret"].external_id), "the door event with no link is in the fill");
     assert.deepStrictEqual(p.body, { event_url: "https://www.thehalodetroit.com/currentevents" }, "body is only the venue website, nothing else");
     assert.ok(!p.url.includes(byTitle["Hot Ash Cigar Social"].external_id), "events that carry a link are not in the fill");
+    assert.ok(p.url.includes("status=eq.approved") && p.url.includes("updated_at=eq."), "the fill is conditional on the row just read");
     const bad = await run1(false);
     assert.strictEqual(bad.res._status, 200, "a failed fill does not fail the run");
     assert.strictEqual(bad.res._body.venueWebsiteFill.ok, false);

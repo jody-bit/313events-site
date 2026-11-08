@@ -382,7 +382,7 @@ const haloHandler = async (req, res) => {
     const doorIds = rowsWithStatus.filter((r) => r.ticket_status === "door" && !r.event_url).map((r) => r.external_id);
     if (doorIds.length) {
       venueWebsiteFill.attempted = doorIds.length;
-      try { await fillVenueWebsite(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, doorIds); }
+      try { const fillStats = await fillVenueWebsite(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, doorIds); venueWebsiteFill = { ...venueWebsiteFill, ...fillStats, ok: fillStats.failed === 0 }; }
       catch (fillErr) { venueWebsiteFill = { attempted: doorIds.length, ok: false, error: fillErr.message }; }
     }
     await finishRun(runHandle, {
@@ -404,25 +404,53 @@ const haloHandler = async (req, res) => {
   }
 };
 
-// Fills HALO's own events page into door events whose event_url is still empty. PATCH ... event_url=is.null never touches a
-// row that already has a link. Non-fatal: if it fails the events simply keep no link, as before 2026-10-19.
+// Fills HALO's own events page into door events whose event_url is still empty. Guarded writer (held; needs its own GO):
+//   - READ first (id, status, links, internal_note, updated_at), then write one row at a time;
+//   - approved rows only; a row the owner supplied or protected (OWNER-CORRECTION / EDITORIAL-HOLD in internal_note, or a
+//     Manual source; scripts/owner-supplied-row.js) is never touched, not even to fill a blank;
+//   - fills only a NULL, empty or whitespace-only event_url, and only a door event (ticket_url also blank): a stored link of
+//     either kind is never replaced;
+//   - the PATCH is conditional on the exact state just read (status, updated_at, and the exact event_url preimage), so an edit
+//     made after the read makes the PATCH match nothing (counted as a conflict, never overwritten);
+//   - source-scoped (source=HALO Detroit). Returns counts; a read failure throws (the caller treats it as non-fatal).
+const { isOwnerSuppliedRow } = require("../scripts/owner-supplied-row");
+
+const blankLink = (v) => v === null || v === undefined || (typeof v === "string" && !v.trim());
+
 async function fillVenueWebsite(supabaseUrl, key, externalIds) {
-  let filled = 0;
+  const stats = { attempted: externalIds.length, filled: 0, skippedNotApproved: 0, skippedProtected: 0, skippedHasLink: 0, conflicts: 0, failed: 0 };
+  const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
   for (let i = 0; i < externalIds.length; i += 100) {
     const chunk = externalIds.slice(i, i + 100);
     // external_ids here are slugs ([a-z0-9-]), the same shape lookupExistingStatuses puts in its in.(...) filter
-    const r = await fetch(`${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&event_url=is.null&external_id=in.(${chunk.join(",")})`, {
-      method: "PATCH",
-      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-      body: JSON.stringify({ event_url: HALO_WEBSITE_URL }),
-    });
-    if (!r.ok) throw new Error("venue website fill HTTP " + r.status);
-    filled += chunk.length;
+    const read = await fetch(
+      `${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&external_id=in.(${chunk.join(",")})&select=id,external_id,status,source,event_url,ticket_url,internal_note,updated_at`,
+      { headers }
+    );
+    if (!read.ok) throw new Error("venue website read HTTP " + read.status);
+    const rows = await read.json();
+    if (!Array.isArray(rows)) throw new Error("venue website read: unexpected response");
+    for (const row of rows) {
+      if (row.status !== "approved") { stats.skippedNotApproved++; continue; }
+      if (isOwnerSuppliedRow(row)) { stats.skippedProtected++; continue; }
+      if (!blankLink(row.event_url) || !blankLink(row.ticket_url)) { stats.skippedHasLink++; continue; }
+      const linkFilter = row.event_url === null || row.event_url === undefined ? "event_url=is.null" : `event_url=eq.${encodeURIComponent(row.event_url)}`;
+      const versionFilter = row.updated_at ? `updated_at=eq.${encodeURIComponent(row.updated_at)}` : "updated_at=is.null";
+      const r = await fetch(
+        `${supabaseUrl}/rest/v1/events?id=eq.${encodeURIComponent(row.id)}&source=eq.HALO%20Detroit&status=eq.approved&${linkFilter}&ticket_url=is.null&${versionFilter}`,
+        { method: "PATCH", headers: { ...headers, Prefer: "return=representation" }, body: JSON.stringify({ event_url: HALO_WEBSITE_URL }) }
+      );
+      if (!r.ok) { stats.failed++; continue; }
+      const changed = await r.json().catch(() => null);
+      if (Array.isArray(changed) && changed.length === 1) stats.filled++;
+      else stats.conflicts++; // the row changed after it was read: nothing was written
+    }
   }
-  return filled;
+  return stats;
 }
 
 module.exports = haloHandler;
 module.exports.parseHaloEvents = parseHaloEvents; // exposed for test/cron-halo-ticket-status.test.js only
 module.exports.resolveHaloUrl = resolveHaloUrl;
 module.exports.HALO_WEBSITE_URL = HALO_WEBSITE_URL;
+module.exports.fillVenueWebsite = fillVenueWebsite; // exposed for test/cron-halo-venue-website-writer.test.js only
