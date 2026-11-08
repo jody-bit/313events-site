@@ -23,7 +23,11 @@ function run(mutate) {
   const d = JSON.parse(fs.readFileSync(f, "utf8"));
   mutate(d["fall-color"].find((x) => x.id === ID));
   fs.writeFileSync(f, JSON.stringify(d, null, 1) + "\n");
-  const r = spawnSync(process.execPath, [path.join(tmp, "scripts/build-seasonal-launch.js")], { cwd: tmp, encoding: "utf8" });
+  // CI re-runs every test with NODE_OPTIONS="--require ./test/fixtures/shift-clock.js" (a path relative to the repo); the child runs in a temp
+  // cwd, so point that path at the repo.
+  const env = Object.assign({}, process.env);
+  if (env.NODE_OPTIONS) env.NODE_OPTIONS = env.NODE_OPTIONS.replace(/(--require\s+)\.\//g, "$1" + REPO + "/");
+  const r = spawnSync(process.execPath, [path.join(tmp, "scripts/build-seasonal-launch.js")], { cwd: tmp, encoding: "utf8", env });
   fs.rmSync(tmp, { recursive: true, force: true });
   return r;
 }
