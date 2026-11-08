@@ -218,8 +218,10 @@ function detroitTodayISO(now){
   return p.year + '-' + p.month + '-' + p.day;
 }
 function venueEventsUrl(base, venueId, todayISO){
-  return `${base}/rest/v1/events_public?venue_id=eq.${encodeURIComponent(venueId)}&or=(start_date.gte.${todayISO},end_date.gte.${todayISO})&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates&order=start_date.asc,id.asc&limit=100`;
+  return `${base}/rest/v1/events_public?venue_id=eq.${encodeURIComponent(venueId)}&or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates&order=start_date.asc,id.asc&limit=100`;
 }
+// The query already narrows earlier-starting rows to continuous + not ended, so unverified past ranges cannot
+// crowd out the 100-row limit; the filter below stays as the eligibility rule.
 // Starts today or later: listed as before. Started earlier: listed only when its schedule is verified as
 // continuous (an exhibition) and it has not ended. Unverified multi-day ranges that began in the past are not
 // listed as attendable (owner rule 2026-10-16).

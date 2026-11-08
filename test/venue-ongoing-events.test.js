@@ -31,7 +31,7 @@ assert.strictEqual(sb.detroitTodayISO(new Date("2026-07-08T03:30:00Z")), "2026-0
 // Query: approved-only public view, venue-scoped, started-or-still-running, and the columns the filter needs.
 const url = sb.venueEventsUrl("https://x.supabase.co", "v1", "2026-11-07");
 assert.ok(url.includes("/rest/v1/events_public?venue_id=eq.v1"));
-assert.ok(url.includes("or=(start_date.gte.2026-11-07,end_date.gte.2026-11-07)"));
+assert.ok(url.includes("or=(start_date.gte.2026-11-07,and(date_semantics.eq.continuous,end_date.gte.2026-11-07))"), "server filter excludes past-start non-continuous rows so they cannot fill the 100-row limit");
 for (const c of ["end_date", "date_semantics", "occurrence_dates", "time_display"]) assert.ok(url.includes(c), c);
 
 const T = "2026-11-07";
