@@ -19,3 +19,8 @@ for (const [n, h] of [["calendar", cal], ["map", map]]) {
   assert.ok(/overflow-wrap:normal;word-break:normal/.test(h), n + ": wraps only between words");
 }
 console.log("unconfirmed-time-calendar-map: ok");
+// Popups/pins (pe-meta) must not expose the stored time for unverified rows.
+for (const [n, h] of [["calendar", cal], ["map", map]]) {
+  assert.ok(/pe-meta[^\n]*scheduleState\(e\) === 'unverified' \? ' · Time not confirmed' : e\.time/.test(h), n + ": popup meta hides unverified time");
+}
+console.log("popup guard ok");

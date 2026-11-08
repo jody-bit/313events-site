@@ -1328,7 +1328,7 @@ function placePopupHtml(place){
     return `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
-      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${EventDates.scheduleState(e) === 'unverified' ? ' · Time not confirmed' : e.time ? ' · '+escapeHtml(e.time) : ''}</div>
       ${municipalityHtml(e)}${where}
     </div>
   `;
