@@ -128,6 +128,13 @@ if (require.main === module) {
   const problems = validateAssets();
   if (problems.length) { console.error("asset validation failed:\n" + problems.join("\n")); process.exit(1); }
 }
+// Owner decision 2026-10-20: report-first expiration. The build fails ONLY for a verified-ended entry that is still PUBLISHED with no
+// editorial disposition. Missing or uncertain end dates never fail the build and never hide anything.
+if (require.main === module) {
+  const X = require("../api/_lib/seasonal-editorial/expiration.js");
+  const rep = X.expirationReport(ED.entries(), X.detroitToday());
+  if (rep.failures.length) { console.error("seasonal expiration: verified-ended entries still published without a disposition:\n" + rep.failures.join("\n")); process.exit(1); }
+}
 let stale = [];
 if (require.main === module) {
   const pub = path.join(root, PUBLISHED_FILE), src = publishedSource();
