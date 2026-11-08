@@ -120,7 +120,7 @@ function localist() {
   assert.strictEqual(rave._defaultStatusForRow, "pending_review", "status untouched");
   const [conf] = rowsOf("Campus Neon Rave", "music");
   assert.strictEqual(conf.category, "music", "a source-confident category is never overridden");
-  const [plain] = rowsOf("Student Recital", null);
+  const [plain] = rowsOf("Campus Parking Update", null);
   assert.strictEqual(plain.category, "community");
   console.log("PASS: Localist — new advertised rave is Nightlife; confident category and plain events unchanged");
 }
