@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const read = (p) => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
 require("../search-match.js");
-const { Discovery } = require("../discovery.js");
+const { Discovery } = require("./fixtures/load-discovery.js");
 
 const ev = (id, city) => ({ id, title: "T" + id, venue: "V", city, cat: "music", date: "2026-11-15" });
 const events = [ev("a", "Detroit"), ev("b", "Warren"), ev("c", "Dryden"), ev("d", "Nowhereville")];

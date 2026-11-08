@@ -11,7 +11,7 @@ const root = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
 
 const SearchMatch = require("../search-match.js");
-const { Discovery } = require("../discovery.js");
+const { Discovery } = require("./fixtures/load-discovery.js");
 const M = (e, q, o) => SearchMatch.matches(e, q, o);
 const ev = (o) => Object.assign({ id: "e1", title: "Shades of HUNKS", venue: "Dryden Bar and Grill", searchCity: "Dryden", cat: "nightlife",
   neighborhood: "Corktown", source: "Avenue Ticketing", description: "A very special night with the legendary Elvis tribute", date: "2026-11-15" }, o);
