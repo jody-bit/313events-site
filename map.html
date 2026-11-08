@@ -1941,8 +1941,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return ''; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  }
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
