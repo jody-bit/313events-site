@@ -34,7 +34,7 @@
 
   var CSS = "footer.site .footer-social{display:flex;flex-wrap:wrap;align-items:center;gap:0 20px;}"
     + "footer.site .footer-social .fs-label{opacity:.75;}"
-    + "footer.site .footer-social a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink,#F2F0E8);text-decoration:underline;text-underline-offset:3px;}"
+    + "footer.site .footer-social a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;color:var(--ink,#F2F0E8);text-decoration:underline;text-underline-offset:3px;}"
     + "footer.site .footer-social a:focus-visible{outline:2px solid var(--accent,#D7FF00);outline-offset:2px;}"
     + "@media (max-width:480px){footer.site .footer-social{gap:0 22px;}footer.site .footer-social a{font-size:14px;}}";
 

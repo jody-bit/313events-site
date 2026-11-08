@@ -46,3 +46,6 @@ const bad = [
 ];
 assert.strictEqual(SL.html(bad), "");
 console.log("social-links ok (" + withRow + " pages)");
+// Tap target: every footer social link is at least 44x44 (min-width as well as min-height).
+{ const css = require("../social-links.js"); const src = require("fs").readFileSync(require("path").join(__dirname, "..", "social-links.js"), "utf8");
+  assert(/footer-social a\{[^}]*min-height:44px;min-width:44px/.test(src), "footer social links need min-width:44px and min-height:44px"); void css; }
