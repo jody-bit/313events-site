@@ -78,3 +78,16 @@ assert.ok(Discovery.unconfirmedOn(EVENTS[5], today, { now: new Date("2026-11-07T
 const all = run(Discovery.defaults());
 assert.strictEqual(all.filter((r) => r.endsWith("Planet 9 Film Fest")).length, 1);
 console.log("PASS: Today/Tomorrow offer unclassified ranges as 'Dates not confirmed'; counts, filters and other windows unchanged");
+
+// FOLLOW-UP (owner decision 2026-11-08): a row listed under "Dates not confirmed" (dayIso === null) never exposes its
+// start time; it says "Time not confirmed". Dated rows keep their time. The published range is untouched.
+const rowM = html.match(/function streamRowHtml\(e, dayIso, ctx\)\{[\s\S]*?\n\}\n/);
+assert.ok(rowM, "streamRowHtml not found");
+assert.ok(/dayIso === null \? '<small class="evt-time-unconfirmed">Time not confirmed<\/small>' : timeCellHtml\(e\.time\)/.test(rowM[0]), "unconfirmed rows show 'Time not confirmed', dated rows show their time");
+assert.ok(/Published \$\{escapeHtml\(formatRangeLabel/.test(html), "published range label preserved");
+console.log("PASS: unconfirmed rows say 'Time not confirmed'");
+// Experience 375px defect: the label must wrap at word boundaries only, and be at least 11px (owner: 9px not accepted) and sit in a 64px column on tablet/phone (Space Mono 'confirmed' = 9 x 0.612em = 60.6px at 11px).
+assert.ok(/\.evt-time small\.evt-time-unconfirmed\{[^}]*overflow-wrap:normal[^}]*hyphens:none[^}]*font-size:11px/.test(html), "unconfirmed time label is 11px and wraps only between words at 375px");
+assert.ok(/@media \(max-width:640px\)\{ \.evt-row--unconfirmed\{grid-template-columns:64px /.test(html) && /@media \(max-width:980px\)\{ \.evt-row--unconfirmed\{grid-template-columns:64px /.test(html), "unconfirmed rows widen the time column to fit the 11px label");
+assert.ok(/class="evt-row\$\{dayIso === null \? ' evt-row--unconfirmed' : ''\}"/.test(html), "unconfirmed rows carry the modifier class");
+console.log("PASS: unconfirmed time label never breaks mid-word");

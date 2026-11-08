@@ -76,6 +76,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
   #notFoundState{display:none;}
@@ -312,7 +314,7 @@ function renderVenue(v, events){
       return `
         <div class="venue-event-row">
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
             ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
           </div>
@@ -384,5 +386,6 @@ async function init(){
 }
 init();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

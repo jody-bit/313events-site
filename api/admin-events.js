@@ -301,6 +301,18 @@ module.exports = async (req, res) => {
       }
 
       let url;
+      let searchAnnotate = false;
+      // ?id=<event id>: one event of any status with what a correction needs (row_version, owner_corrected, edits). Read-only.
+      const lookupId = typeof req.query?.id === "string" ? req.query.id.trim() : "";
+      if (lookupId) {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(lookupId)}&select=*`, { headers: sbHeaders });
+        const found = r.ok ? await r.json() : null;
+        if (!r.ok || !Array.isArray(found)) { res.status(502).json({ error: "Could not read the event" }); return; }
+        if (!found[0]) { res.status(404).json({ error: "Event not found" }); return; }
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: [{ ...found[0], row_version: found[0].updated_at || null, ...ownerCorrectionView(found[0]) }] });
+        return;
+      }
       if (incomplete) {
         const todayISO = new Date().toISOString().slice(0, 10);
         // venue_id + the embedded venues(address,city) let admin.html's
@@ -340,10 +352,14 @@ module.exports = async (req, res) => {
         // as-is here, same as the working title=ilike.${encoded} branch below.
         const encoded = encodeURIComponent(`%${search}%`);
         const statusFilter = includePending ? "status=in.(approved,pending_review)" : "status=eq.approved";
-        const matchFilter = includePending
-          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded})`
+        // match=any (Live events editing): title, venue or source, so an editor who knows the venue but not the exact
+        // title can find the event. Opt-in: the takedown search and Press coverage keep their behaviour.
+        const wide = req.query?.match === "any";
+        const matchFilter = includePending || wide
+          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded}${wide ? `,source.ilike.${encoded}` : ""})`
           : `title=ilike.${encoded}`;
         url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
+        searchAnnotate = true;
       } else if (hidden) {
         // Recently hidden/rejected, most recent first — the undo list.
         // 200, not 20: one nightly run can retire sixty rows (duplicates
@@ -375,6 +391,12 @@ module.exports = async (req, res) => {
 
       const resp = await fetch(url, { headers: sbHeaders });
       const rows = await resp.json();
+      if (resp.ok && searchAnnotate && Array.isArray(rows)) {
+        // Additive: the version to send back with a correction, and which fields a person has already corrected.
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: rows.map((e) => ({ ...e, row_version: e.updated_at || null, ...ownerCorrectionView(e) })) });
+        return;
+      }
       res.status(resp.ok ? 200 : 502).json(resp.ok ? { events: rows } : { error: rows });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -561,7 +583,7 @@ module.exports = async (req, res) => {
         // (even if that got filled in by another tab, or a cron re-run,
         // between page load and clicking Save).
         const currentResp = await fetch(
-          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")}`,
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")},internal_note,updated_at`,
           { headers: sbHeaders }
         );
         const currentRows = await currentResp.json();
@@ -581,13 +603,27 @@ module.exports = async (req, res) => {
           res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
           return;
         }
-        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+        // A person's fill is a correction like any other: it is recorded as an OWNER-CORRECTION line, which is also the
+        // lock that keeps the next ingestion run from writing over it, and the write is conditional on the version just read.
+        const contract = require("./_lib/event-contract");
+        const now = new Date().toISOString();
+        const editId = `e-${now.replace(/[-:.]/g, "").slice(0, 15)}Z-${crypto.randomBytes(2).toString("hex")}`;
+        const changes = Object.keys(patch).map((field) => ({ field, before: current[field] == null ? null : current[field], after: patch[field] }));
+        const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes, note: "follow-up fill" });
+        const guarded = { ...patch, internal_note: contract.appendNoteLine(current.internal_note, line), updated_at: now };
+        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "";
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}${versionGuard}`, {
           method: "PATCH",
           headers: { ...sbHeaders, Prefer: "return=representation" },
-          body: JSON.stringify(patch),
+          body: JSON.stringify(guarded),
         });
         const rows = await resp.json();
-        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
+        if (resp.ok && Array.isArray(rows) && !rows[0]) {
+          res.status(409).json({ error: "row changed", message: "This event changed after it was read. Nothing was saved. Reload it and try again." });
+          return;
+        }
+        const { internal_note: _hidden, ...publicEvent } = (resp.ok && rows[0]) || {};
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: publicEvent, row_version: rows[0].updated_at, edit_id: editId, ...contract.ownerCorrectionView(rows[0]) } : { error: rows });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }

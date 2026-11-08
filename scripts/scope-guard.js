@@ -37,6 +37,8 @@ const ALLOWED = [
   "api/_lib/feed-run-health.js",
   // Schedule-evidence Stage 1 support (owner approval 2026-10-18 14:58Z): pure robots.txt parser and read-only polite fetcher; no callers, no writes.
   "api/_lib/robots.js", "api/_lib/evidence-fetch.js",
+  // Seasonal expiration safeguard, report-first (owner decision 2026-10-20).
+  "api/_lib/seasonal-editorial/expiration.js", "api/_lib/seasonal-editorial/EDITORIAL_EXPIRATION_PROCESS.md",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
