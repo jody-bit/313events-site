@@ -427,7 +427,7 @@ function radarCardHtml(item){
           <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
             <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
           </a>
-          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat, {size:'compact'})}</div>` : ''}
+          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat)}</div>` : ''}
           <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
           <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
           <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
