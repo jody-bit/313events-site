@@ -3451,6 +3451,11 @@
   .nav-search-btn:hover, .nav-toggle:hover{color:var(--ink);}
   .nav-search-btn svg, .nav-toggle svg{display:block;width:20px;height:20px;}
   .nav-toggle{display:none;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  @media (min-width:901px){.site-nav-link{position:relative;}.site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}}
   .submit-btn{
     display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;
     font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
