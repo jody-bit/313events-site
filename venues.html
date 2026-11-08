@@ -189,6 +189,13 @@ function getTodayISO(){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
+// The "N upcoming" count: events that start today or later, plus ongoing exhibitions (date_semantics continuous, not yet
+// ended) that began earlier, the same rule the venue page lists (venue-template.html venueEventsUrl, #365). Unverified
+// past ranges and recurring rows are not counted. date_semantics is anon-readable on events (grant applied 2026-10-13).
+function upcomingCountUrl(base, todayISO){
+  return `${base}/rest/v1/events?status=eq.approved&or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))&venue_id=not.is.null&select=id,venue_id&order=id.asc`;
+}
+
 function matchesQuery(v, q){
   if(!q) return true;
   const hay = [v.name, v.city, v.neighborhood].filter(Boolean).join(' ').toLowerCase();
@@ -296,7 +303,7 @@ async function init(){
     const [venuesResult, neighResp, eventsResult] = await Promise.all([
       fetchAllRows(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,neighborhood_id&order=name.asc,id.asc`, headers),
       fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
-      fetchAllRows(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&venue_id=not.is.null&select=id,venue_id&order=id.asc`, headers).catch(() => ({ rows: [] })),
+      fetchAllRows(upcomingCountUrl(SUPABASE_URL, getTodayISO()), headers).catch(() => ({ rows: [] })),
     ]);
     const venueRows = venuesResult.rows;
     const neighRows = neighResp.ok ? await neighResp.json() : [];
