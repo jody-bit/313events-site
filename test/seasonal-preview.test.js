@@ -70,7 +70,7 @@ assert.ok(/November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m./.t
     require.cache[cache("published-entries.js")] = { id: cache("published-entries.js"), filename: cache("published-entries.js"), loaded: true, exports: { [slug]: d.entries }, children: [], paths: [] };
     ["collections.js", "render.js"].forEach((f) => delete require.cache[cache(f)]);
     const DATA = require(cache("collections.js")), R = require(cache("render.js"));
-    const col = Object.assign({}, DATA.COLLECTIONS[slug] || {}, d.meta || {}, { entries: d.entries });
+    const col = Object.assign({}, DATA.COLLECTIONS[slug] || {}, d.meta || {}, { entries: d.entries, readableEventIds: { "c66d10e1-960b-4d8c-a4dd-d5650a346c8b": true } });   // the gate opens once the event row is readable (see seasonal-event-page-gate test)
     const html = R.main(col);
     LEADS[slug].forEach((id) => assert.ok(html.includes('data-entry="' + id + '"'), slug + ": card for " + id));
     if (slug === "off-the-beaten-orbit") assert.ok(html.includes('href="/event.html?id=c66d10e1-960b-4d8c-a4dd-d5650a346c8b"'), "the Noel Night card links its own event page (no website)");

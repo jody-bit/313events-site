@@ -214,8 +214,15 @@
   // The only way an entry becomes public: declared PUBLISHED and derived PUBLISHED.
   function isPublic(e) { return !e.fixture && e.status === "PUBLISHED" && readiness(e).state === "PUBLISHED"; }
   function isShown(e) { return PROJECTED.indexOf(e) >= 0 ? (!e.fixture && e.status === "PUBLISHED") : isPublic(e); }
-  function published(c) { return c.entries.filter(isShown); }
-  function entriesPublic(c) { return c.entries.filter(isShown).length; }
+  // An entry with no official website of its own may fall back to its 313.events event page (entry.eventPageId). Such an entry is
+  // excluded from every list, count, filter and map until that exact event is known to be readable in events_public
+  // (c.readableEventIds[id] === true, filled once in the browser by EventImage.checkPages). Missing, rejected or errored
+  // lookups leave it excluded (fail closed), so the card can never point at a missing event page. Entries with a website are untouched.
+  var EVENT_PAGE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  function pageFallbackId(e) { return e && !e.website && typeof e.eventPageId === "string" && EVENT_PAGE_ID.test(e.eventPageId) ? e.eventPageId : ""; }
+  function pageReady(c) { return function (e) { var id = pageFallbackId(e); return !id || !!(c.readableEventIds && c.readableEventIds[id] === true); }; }
+  function published(c) { return c.entries.filter(isShown).filter(pageReady(c)); }
+  function entriesPublic(c) { return published(c).length; }
   // Scheduled removal from a collection placement. An entry's public `removeAt` (ISO instant) takes it out of the displayed list from that
   // moment; the destination record, images and history stay in the private data. In the browser `now` is the visitor's clock; in Node
   // (build, tests) no instant is applied unless one is passed, so generated pages and tests do not depend on the day they run.
@@ -225,5 +232,5 @@
   }
 
   return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, PAUSED: PAUSED, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
-    readiness: readiness, gate: gate, isPublic: isPublic };
+    readiness: readiness, gate: gate, isPublic: isPublic, pageFallbackId: pageFallbackId };
 });

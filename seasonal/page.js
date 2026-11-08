@@ -14,9 +14,17 @@
   // Entries that carry eventId show that event's image first; their own cover stays the fallback. Progressive: nothing happens
   // unless an entry links an event, and any failure leaves the page as rendered. The lookup lives in /event-image.js.
   function hydrateEventImages(redraw) {
-    if (!col || !(col.entries || []).some(function (e) { return e && e.eventId; })) return;
+    var ents = col && col.entries || [];
+    var withImage = ents.some(function (e) { return e && e.eventId; });
+    var withPage = ents.some(function (e) { return e && !e.website && e.eventPageId; });   // gated until its public event row is readable
+    if (!withImage && !withPage) return;
     var sc = document.createElement("script"); sc.src = "/event-image.js";
-    sc.onload = function () { if (window.EventImage) window.EventImage.hydrate(col.entries, function (u, o) { return fetch(u, o); }, function () { redraw(false); }); };
+    sc.onload = function () {
+      if (!window.EventImage) return;
+      var f = function (u, o) { return fetch(u, o); };
+      if (withImage) window.EventImage.hydrate(col.entries, f, function () { redraw(false); });
+      if (withPage) window.EventImage.checkPages(col, f, function () { redraw(false); });
+    };
     document.head.appendChild(sc);
   }
 
