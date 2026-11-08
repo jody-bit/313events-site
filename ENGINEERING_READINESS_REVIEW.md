@@ -32,4 +32,4 @@ Backup and restore readiness (tooling in review, tracked in #195 and the backup 
 Some source comments cite section numbers of the earlier full review (for example "§11"). Those references are historical; the cited topics are covered by the documents above and by the private tracker.
 
 ## Disclosure
-Security reports: the owner will publish a private reporting contact; until then, please do not post details publicly.
+Security reports: the owner will publish a private reporting contact.
