@@ -131,6 +131,12 @@
   }
   .nav-search-btn:hover{color:var(--ink);}
   .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  .site-nav-link{position:relative;}
+  .site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
@@ -322,6 +328,8 @@
   .evt-row{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;}
   .evt-row:first-of-type{border-top:none;}
   .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);min-width:0;font-weight:700;padding-top:2px;}
+  /* "Time not confirmed" for schedule-unverified rows (Dates not confirmed): same label and 11px floor as index.html, wraps only between words. */
+  .evt-time small.evt-time-unconfirmed{display:block;max-width:64px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;font-weight:700;}
   .evt-main{flex:1;min-width:0;}
   .evt-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
   a.evt-title-link{color:inherit;text-decoration:none;}
@@ -338,7 +346,7 @@
   .tag.free{background:#3fbf6a;}
   .tag.price{background:var(--panel-hover);color:var(--ink);}
   .note{font-size:11.5px;color:#d1b34a;margin-top:3px;font-style:italic;}
-  .src{font-size:10.5px;color:var(--ink-dim);font-style:italic;}
+  .src{font-size:12px;color:var(--ink-dim);font-style:italic;}
   .evt-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
@@ -469,6 +477,10 @@
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
@@ -483,6 +495,7 @@
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <header class="site">
@@ -507,6 +520,7 @@
       <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
     </div>
   </header>
+<main id="main" tabindex="-1">
 
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
@@ -574,7 +588,8 @@
     <div class="city-rail" id="cityRail"></div>
   </div>
 
-  <footer class="site">
+  </main>
+<footer class="site">
     <p>Always confirm dates, times, and venues before making plans. Pins without a known street address are placed at their city or suburb's center, not an exact venue.</p>
     <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
@@ -793,8 +808,7 @@ let selectedPlaceKey = null;
 
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  return EventDates.detroitClock().iso; // America/Detroit, same as the homepage (2026-10-16)
 }
 
 function parseHour(timeStr){
@@ -843,14 +857,13 @@ function timeSortMinutes(timeStr){
   return range ? range.start.h*60 + range.start.m : Infinity;
 }
 function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay();
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  const c = EventDates.detroitClock();
+  const deltaToFriday = c.dow === 0 ? -2 : 5 - c.dow;
+  const fri = new Date(c.iso + "T12:00:00Z");
+  fri.setUTCDate(fri.getUTCDate() + deltaToFriday);
   return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+    const x = new Date(fri); x.setUTCDate(fri.getUTCDate()+off);
+    return x.toISOString().slice(0,10);
   });
 }
 
@@ -859,11 +872,13 @@ function getWeekendDates(){
 // the entire point of this page existing. Unlike calendar.html this page
 // has no month to browse, so it's always evaluated against the live
 // EVENTS set as a whole, not one day/list slice at a time.
+// "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
+function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
 function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('tickets') && !hasTicketLink(e)) return false;
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
@@ -882,7 +897,7 @@ function matchesFilters(e){
       if(whenMode === 'now'){
         const range = parseTimeRange(e.time);
         if(range && range.end && range.end.h >= range.start.h){
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const nowHour = EventDates.detroitClock().hours;
           const endHour = range.end.h + range.end.m/60;
           if(endHour < nowHour) return false;
         }
@@ -1170,11 +1185,11 @@ function priceTag(e){
 function evtRowHtml(e){
   return `
     <div class="evt-row">
-      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
       <div class="evt-main">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          ${Categories.tagHtml(e.cat, {fill:'pill'})}
+          ${Categories.tagHtml(e.cat)}
           ${priceTag(e)}
           <span>${EventDates.scheduleState(e) === 'unverified' ? 'Dates not confirmed' : new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
           ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
@@ -1326,7 +1341,7 @@ function placePopupHtml(place){
     return `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
-      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${EventDates.scheduleState(e) === 'unverified' ? ' · Time not confirmed' : e.time ? ' · '+escapeHtml(e.time) : ''}</div>
       ${municipalityHtml(e)}${where}
     </div>
   `;
@@ -1943,8 +1958,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return ''; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  }
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
@@ -2019,7 +2037,7 @@ async function fetchLiveEvents() {
   // returns at most its "Max rows" setting (1,000 here) per request no
   // matter what `limit=` asks for, with no error. fetchAllRows() (paged-fetch.js)
   // pages through the whole result instead; `id.asc` makes the order total, which paging needs.
-  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
   const [, result] = await Promise.all([
     loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run, but not before this fetch starts
     fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded
@@ -2028,5 +2046,6 @@ async function fetchLiveEvents() {
 }
 loadSupabaseEvents();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>
