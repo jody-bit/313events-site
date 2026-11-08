@@ -97,11 +97,11 @@ for (const slug of Object.keys(e0)) {
   const projected = e0[slug].filter(ED.COLLECTIONS.isPublic).map(ED.publicEntry);
   assert.deepStrictEqual(projected, before[slug], slug + ": identical public projection with the new private fields set (ended entries still shown, nothing leaked)");
 }
-assert.deepStrictEqual(counts(before), { fall: 38, halloween: 25, "fall-color": 41 }, "published counts unchanged (38/25/41 on main)");
+assert.deepStrictEqual(counts(before), { fall: 38, halloween: 7, "fall-color": 41 }, "published counts unchanged (38/7/41 on main; halloween was 25 until the Halloween expiry waves, re-pinned 2026-11-08)");
 assert.ok(!/"(season|reviewOn|expiryDisposition|schedule)":/.test(fs.readFileSync(path.join(__dirname, "..", "seasonal/published-entries.js"), "utf8")), "private fields absent from the generated public file");
 // the committed data carries no season.end yet, so today the report changes nothing
 const nowReport = X.expirationReport(real, "2026-11-08");
-assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 104);
+assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 86); // 38+7+41; was 104 before the Halloween expiry waves, re-pinned 2026-11-08
 
 // ---- ENDED status (owner decision 2026-10-20, option A) ----
 {
