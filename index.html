@@ -4229,6 +4229,12 @@
   /* Owner condition: a little room at the card's left edge on phones (must follow the 640px block,
      which sets the padding and gap). Thumbnail gap stays at the original 10px. */
   @media (max-width:480px){ .evt-row{padding-left:8px;} }
+  /* "Time not confirmed" (rows under Dates not confirmed): 11px like the rest of the small-text floor, wraps only between words.
+     Space Mono advances 0.612em, so "confirmed" (9 characters) is 60.6px at 11px: the rows that carry it get a 64px time column
+     on tablet and phone (the desktop column is already 68px). Confirmed rows keep their own column widths. */
+  .evt-time small.evt-time-unconfirmed{overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;}
+  @media (max-width:980px){ .evt-row--unconfirmed{grid-template-columns:64px 80px minmax(0,1fr) 24px;} }
+  @media (max-width:640px){ .evt-row--unconfirmed{grid-template-columns:64px 62px minmax(0,1fr) 20px;} }
   .stream-foot{
     display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
     padding:18px 0 8px;margin-top:8px;border-top:1px solid var(--ink);
@@ -6100,8 +6106,8 @@ function streamRowHtml(e, dayIso, ctx){
     ? `<a href="${escapeHtml(eventUrl(e))}" aria-label="Open ${escapeHtml(e.title)}">&rarr;</a>`
     : '';
   return `
-        <div class="evt-row">
-          <div class="evt-time">${timeCellHtml(e.time)}</div>
+        <div class="evt-row${dayIso === null ? ' evt-row--unconfirmed' : ''}">
+          <div class="evt-time">${dayIso === null ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : timeCellHtml(e.time)}</div>
           <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
           <div class="evt-main">
             <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
