@@ -24,6 +24,9 @@ const LINEUP_DJ = /\b(djs?|spins?|b2b|resident djs?|dj set)\b/i;
 const VETO_CONTEXT = /\b(baby|toddler|kids?|children|family|library|school|laser tag|storytime|pre-?k|senior)\b/i;
 const VETO_VENUE = /\b(library|school|church|museum|community center|recreation)\b/i;
 const AMENITY_DJ = /\b(food trucks?|beer tent|raffles?|bake sale|patio|lawn games|vendors?|kids)\b/i;
+// A comedy / theatre night whose title reuses the word "rave" ("Rave Reviews") is not a dance event (P1 review of cc18c80d).
+// A negative second signal, so the owner-approved positive rule (type word + one corroborator) is unchanged.
+const COMEDY_CONTEXT = /\b(comedy|stand-?up|improv|open mic|sketch|rave reviews?)\b/i;
 const NIGHTLIFE_VENUE = /\b(nightclub|night club|lounge|warehouse)\b/i;
 
 function startHour24(timeDisplay) {
@@ -59,6 +62,10 @@ function classifyNightlife(row) {
   if (row && row.category_confident === true) return { decision: "no_opinion", reason: "source_category_confident", evidence };
   if (VETO_CONTEXT.test(title) || VETO_VENUE.test(venue)) {
     return { decision: "no_opinion", reason: "family_or_institutional_context", evidence: ["veto:" + (title.match(VETO_CONTEXT) || venue.match(VETO_VENUE))[0].toLowerCase()] };
+  }
+
+  if (COMEDY_CONTEXT.test(title)) {
+    return { decision: "no_opinion", reason: "comedy_or_theatre_context", evidence: ["veto:" + title.match(COMEDY_CONTEXT)[0].toLowerCase()] };
   }
 
   const titleType = EVENT_TYPE_TITLE.exec(title);

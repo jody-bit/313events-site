@@ -106,7 +106,7 @@ function recorder(matchedCounts) {
     for (const c of calls) {
       assert.strictEqual(c.method, "PATCH");
       const q = decodeURIComponent(c.url);
-      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.2026-10-19,end_date.gte.2026-10-19))"), "BOTH fields blank, and not past: " + q);
+      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.2026-10-19,end_date.gte.2026-10-19),"), "BOTH fields blank, and not past: " + q);
       assert.ok(q.includes("status=eq.approved"), "approved rows only: " + q);
       assert.deepStrictEqual(Object.keys(c.body), ["event_url"], "the payload is event_url alone; ticket_url is never written");
       assert.ok(!/ticket_url["']?\s*:/.test(JSON.stringify(c.body)));
@@ -115,6 +115,13 @@ function recorder(matchedCounts) {
     assert.strictEqual(calls[0].body.event_url, "https://www.livonia.gov/calendar");
     assert.ok(decodeURIComponent(calls[1].url).includes("source=eq.HALO Detroit"));
     assert.strictEqual(calls[1].body.event_url, SOURCE_CALENDAR_PAGES["HALO Detroit"]);
+    for (const c of calls) {
+      const q = decodeURIComponent(c.url);
+      for (const marker of ["OWNER-CORRECTION", "EDITORIAL-HOLD", "EDITORIAL_HOLD", "EDITORIAL HOLD"]) {
+        assert.ok(q.includes(`internal_note.not.ilike.*${marker}*`), `rows carrying ${marker} are outside the filter (P1 F1): ` + q);
+      }
+      assert.ok(q.includes("or(internal_note.is.null,and("), "a null note is allowed, a locked note is not");
+    }
     assert.deepStrictEqual(out, { patched: 8, bySource: { "City of Livonia - Community Events": 5, "HALO Detroit": 3 } }, "affected rows are counted per source from what the database changed");
     console.log("PASS: blank-only on both fields, event_url only, scoped per source, counted per source");
   }

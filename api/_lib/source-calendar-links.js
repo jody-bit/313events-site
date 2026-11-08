@@ -16,6 +16,7 @@
 //     `_calendarUrl`) ONLY if it is itself a calendar or event-listing page by path (looksLikeCalendarPage). A bare homepage
 //     is never filled: "the town's website" is not a link to the event. A value that is not an absolute http(s) page (or is
 //     a calendar-feed endpoint) is ignored. Never guessed.
+//   - rows carrying OWNER-CORRECTION or EDITORIAL-HOLD in internal_note are never filled (database filter).
 //   - approved, non-past rows only (the PATCH filter): a pending or rejected row is not touched, and neither is an event
 //     that is over. Both are checked in the database filter, not in application logic.
 //   - failure is swallowed: the link is an enhancement and must never fail an ingestion run.
@@ -56,6 +57,10 @@ function looksLikeCalendarPage(value) {
   const segments = new URL(url).pathname.split("/").filter(Boolean).map((seg) => seg.replace(/\.(?:aspx?|html?|php)$/i, ""));
   return segments.some((seg) => CALENDAR_SEGMENT.test(seg));
 }
+
+// Rows a person corrected or held are never touched by automation, not even to fill a blank (scripts/owner-supplied-row.js:
+// OWNER-CORRECTION or EDITORIAL-HOLD / EDITORIAL_HOLD / EDITORIAL HOLD in internal_note). Enforced in the database filter.
+const NOT_OWNER_LOCKED = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL-HOLD*,internal_note.not.ilike.*EDITORIAL_HOLD*,internal_note.not.ilike.*EDITORIAL%20HOLD*))";
 
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
@@ -98,7 +103,7 @@ async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, f
   let patched = 0;
   for (const t of targets.values()) {
     // Approved rows only; non-past = starts today or later, or has an end date of today or later (a multi-day run in progress).
-    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}))`;
+    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}),${NOT_OWNER_LOCKED})`;
     try {
       const resp = await doFetch(
         `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}&select=id`,
