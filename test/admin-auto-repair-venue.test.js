@@ -125,7 +125,7 @@ async function runPart1() {
     assert.strictEqual(res._body.written, 1);
     assert.strictEqual(res._body.fieldsWritten, 2, "both venue_address_raw and venue_city_raw were blank -- 2 fields, 1 event");
     assert.deepStrictEqual(patchedIds, ["evt-1"]);
-    assert.deepStrictEqual(patchBodies[0].body, { venue_address_raw: "1464 Gratiot Ave", venue_city_raw: "Detroit" });
+    { const { internal_note, ...f } = patchBodies[0].body; assert.deepStrictEqual(f, { venue_address_raw: "1464 Gratiot Ave", venue_city_raw: "Detroit" }); assert.ok(/^AUTO-FILL /.test(internal_note), "the fill leaves a dated line"); }
     assert.ok(!("status" in patchBodies[0].body), "the PATCH body must never include status");
     assert.ok(!("venue_id" in patchBodies[0].body) || patchBodies[0].body.venue_id === undefined, "venue_id was already set on this event -- must not be re-sent");
   }
@@ -147,7 +147,7 @@ async function runPart1() {
     assert.strictEqual(res._body.written, 2);
     assert.strictEqual(res._body.fieldsWritten, 3, "event 1 contributes 2 fields, event 2 contributes 1 (city only) -- 3 total");
     const evt2Patch = patchBodies.find((p) => p.id === "evt-2");
-    assert.deepStrictEqual(evt2Patch.body, { venue_city_raw: "Detroit" }, "event 2 already had venue_address_raw -- must not be resent or overwritten");
+    assert.deepStrictEqual((({ internal_note, ...f }) => f)(evt2Patch.body), { venue_city_raw: "Detroit" }, "event 2 already had venue_address_raw -- must not be resent or overwritten");
   }
   console.log("PASS: fieldsWritten correctly sums per-event field counts, including a partially-blank event");
 
