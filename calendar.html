@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name='impact-site-verification' value='8597fd2a-b17d-42b6-a53d-66d15db4baea'>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<!-- Google tag (gtag.js): sends only from the production hostnames, never from Preview, localhost or other hosts. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-1078BKN0M3');
+  if (/^(www\.)?313\.events$/.test(location.hostname)) {
+    var gaTag = document.createElement('script');
+    gaTag.async = true;
+    gaTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3';
+    document.head.appendChild(gaTag);
+    gtag('js', new Date());
+    gtag('config', 'G-1078BKN0M3');
+  }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calendar — 313.events</title>
@@ -138,6 +143,12 @@
   }
   .nav-search-btn:hover{color:var(--ink);}
   .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  .site-nav-link{position:relative;}
+  .site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
@@ -652,6 +663,10 @@
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <!-- Leaflet (Map view, added 2026-08-28 — see the "Detroit Orbit Map" view-toggle
      button below). Hash verified against the real leaflet@1.9.4 npm package. -->
@@ -669,6 +684,7 @@
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <header class="site">
@@ -700,6 +716,7 @@
       <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
     </div>
   </header>
+<main id="main" tabindex="-1">
 
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
@@ -797,7 +814,8 @@
 
   <div id="dayPanel"></div>
 
-  <footer class="site">
+  </main>
+<footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
     <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
@@ -1401,12 +1419,14 @@ function getWeekendDates(){
   });
 }
 
+// "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
+function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
 function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
   // FEATURE_CHIPS filters — see their declaration above for the reasoning.
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('tickets') && !hasTicketLink(e)) return false;
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
