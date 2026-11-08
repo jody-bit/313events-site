@@ -24,3 +24,6 @@ for (const [n, h] of [["calendar", cal], ["map", map]]) {
   assert.ok(/pe-meta[^\n]*scheduleState\(e\) === 'unverified' \? ' · Time not confirmed' : e\.time/.test(h), n + ": popup meta hides unverified time");
 }
 console.log("popup guard ok");
+// City rail (calendar map mode) rows come from buildPlaces(), which can include unverified rows: they get the label.
+assert.ok(/city-row-body[\s\S]{0,400}scheduleState\(e\) === 'unverified' \? '<small class="evt-time-unconfirmed">Time not confirmed<\/small>' : escapeHtml\(e\.time\)/.test(cal), "calendar city rail switches on unverified");
+console.log("city rail guard ok");

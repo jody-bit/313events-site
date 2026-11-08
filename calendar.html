@@ -2176,7 +2176,7 @@ function renderCityRail(places){
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(e=>`
           <div class="evt-row">
-            <div class="evt-time">${escapeHtml(e.time)||''}</div>
+            <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
             <div class="evt-main">
               <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
               <div class="evt-meta">
