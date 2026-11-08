@@ -10,6 +10,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
+require(`${REPO_DIR}/search-match.js`); // discovery.js needs the shared matcher loaded first (like the pages do)
 const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
 
 const CTX = { now: new Date("2026-10-28T20:00:00Z") };

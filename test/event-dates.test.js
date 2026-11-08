@@ -16,7 +16,7 @@ const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const ED = require(`${REPO_DIR}/event-dates.js`);
 // Pages load /event-dates.js as a global before /discovery.js; do the same here.
 global.EventDates = ED;
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
 
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
 
