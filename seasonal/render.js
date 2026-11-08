@@ -155,8 +155,9 @@
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
-    // An entry with no official website of its own (owner-supplied flyer only) links to its first-party event page by eventId; nothing is invented.
-    var eventPage = !e.website && typeof e.eventId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.eventId) ? "/event.html?id=" + e.eventId : "";
+    // An entry with no official website of its own (owner-supplied flyer only) links to its first-party event page by eventPageId; nothing is invented.
+    // eventPageId only links: unlike eventId it does not swap the card cover for the event's image.
+    var eventPage = !e.website && typeof e.eventPageId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.eventPageId) ? "/event.html?id=" + e.eventPageId : "";
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : eventPage

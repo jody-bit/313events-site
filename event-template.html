@@ -543,6 +543,7 @@ function upcomingOccurrences(e){
   const up = days.filter(d=>d >= today);
   return up.length ? up : [days[days.length - 1]];
 }
+function range_hasEnd(e){ const r = parseTimeRange(e.time); return !!(r && r.end); }
 function pad2(n){ return String(n).padStart(2,'0'); }
 function eventDateTimeParts(e){
   const occ = nextOccurrence(e);
@@ -936,6 +937,27 @@ function renderEvent(e){
     "description": e.description || metaDesc,
     "url": window.location.href,
   };
+  // Structured-data precision (2026-11-08): a single-day event with a stated start time gets a dated-and-timed startDate/endDate in
+  // America/Detroit, and a complete street address (the same one that earns the "Get directions" link) becomes a PostalAddress.
+  // Recurring/all-day/multi-day events and incomplete addresses keep the previous output exactly.
+  try {
+    if(!occurrenceDays(e) && !(e.endDate && e.endDate > e.date)){
+      const tp = eventDateTimeParts(e);
+      if(tp && !tp.allDay && tp.startTime){
+        const off = (ymd, hms) => {
+          const dt = new Date(Date.UTC(+ymd.slice(0,4), +ymd.slice(4,6)-1, +ymd.slice(6,8), +hms.slice(0,2), +hms.slice(2,4)));
+          const z = new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', timeZoneName:'longOffset'}).formatToParts(dt).find(x => x.type === 'timeZoneName').value;
+          return z === 'GMT' ? 'Z' : z.replace('GMT','');
+        };
+        const iso = (ymd, hms) => `${ymd.slice(0,4)}-${ymd.slice(4,6)}-${ymd.slice(6,8)}T${hms.slice(0,2)}:${hms.slice(2,4)}:00${off(ymd, hms)}`;
+        ld.startDate = iso(tp.startDate, tp.startTime);
+        if(range_hasEnd(e)) ld.endDate = iso(tp.endDate, tp.endTime);
+      }
+    }
+    if(dir.ready && e.locEventAddress && e.locEventCity){
+      ld.location.address = { "@type": "PostalAddress", "streetAddress": e.locEventAddress, "addressLocality": e.locEventCity };
+    }
+  } catch(_) { /* keep the plain block */ }
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
   if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
   const ldScript = document.createElement('script');
