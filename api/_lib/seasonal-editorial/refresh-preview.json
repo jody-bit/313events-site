@@ -601,6 +601,54 @@
       "note": "Details from the production event row (R&Q read-only export 2026-11-06, source checked 2026-11-05); organizer page not re-read from this environment. Category 'markets' is the closest existing fit (Canterbury Village is a shopping village); flagged for owner."
      }
     ]
+   },
+   {
+    "id": "fleatroit-carousel-noel-night-satellite-popup",
+    "name": "Fleatroit \u00d7 Carousel: Noel Night Satellite Pop-Up",
+    "eventId": "c66d10e1-960b-4d8c-a4dd-d5650a346c8b",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "markets"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fleatroit and Carousel set up a satellite pop-up in the garage at 441 W. Canfield St. in the Cass Corridor, between Robyn and Shinola: vintage clothing, housewares, gifts and crafts. Saturday December 5, 4 to 10 p.m.",
+    "image": {
+     "src": "/assets/seasonal/off-the-beaten-orbit-fleatroit-noel-night-card.webp",
+     "alt": "Hand-lettered poster on red and pink stripes reading Fleatroit x Carousel, Satellite Pop-Up, Vintage Clothing, Housewares, Gifts, Crafts, Noel Night.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-fleatroit-noel-night-card.webp",
+      "bytes": 60506,
+      "sha256": "61b12eb514f7f9f4647e5bb24af14a3f01521067f3fd5129a90a8e03bf98bc2b",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-08"
+     },
+     "ownerClearance": {
+      "statement": "Owner-supplied promotional flyer (IMG_2766.jpeg) supplied by Jody in the 313.events project thread 2026-11-08 with the request to publish the event and add it to Off the Beaten Orbit. Creator, source URL and licence are NOT recorded and none is asserted; no visible credit is shown.",
+      "recordedBy": "Claude Code (Event Intelligence thread)",
+      "recordedAt": "2026-11-08",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb2SuJ5v396sp1Zsyg97kEwC",
+      "original": {
+       "sha256": "ab85c23f821a51bb64f4d674105eab7e610de0d1a8393cd72cf4fbab925c45ef",
+       "note": "1320x1755 JPEG (315,960 bytes), preserved unmodified at assets/events/source/fleatroit-noel-night-2026-12-05-owner-supplied-original.jpeg. The card is the top 1320x880 band (3:2) resized to 1280x853, so the Instagram interface icons at the bottom of the screenshot are not shown."
+      }
+     }
+    },
+    "lastDay": "2026-12-05",
+    "removeAt": "2026-12-06T00:00:00-05:00",
+    "lastDayKind": "event",
+    "evidence": [
+     {
+      "level": "owner-supplied-flyer",
+      "websiteChecked": false,
+      "checkedAt": "2026-11-08",
+      "checkedBy": "Claude Code (Event Intelligence thread)",
+      "note": "No official Fleatroit or Carousel website is known; details are read from the owner-supplied flyer only. 441 W. Canfield St., Detroit 48201 is the Cass Corridor Canfield address per third-party listings (the flyer prints '441 Canfield St.'); whether the garage sits on that property is not independently verified. No admission, vendor or ticket information is stated and none is shown."
+     }
+    ]
    }
   ],
   "lead": [
