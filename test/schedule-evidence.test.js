@@ -1,0 +1,274 @@
+// test/schedule-evidence.test.js — Stage 1 schedule-evidence extraction and decision rules (pure, no network).
+// FIXTURE TEXT IS SYNTHETIC: written to mimic the shape of the Erebus sources (hours list, season sentence, dark-day sentence).
+// It is not a copy of any page. Run: node test/schedule-evidence.test.js
+"use strict";
+const assert = require("assert");
+const se = require("../api/_lib/schedule-evidence");
+
+const HOURS_TEXT = `Hours:
+Monday – Thursday: 7:30 PM – 10:30 PM
+Friday: 7:00 PM – 12:00 AM (Midnight)
+Saturday: 6:00 PM – 12:00 AM (Midnight)
+Sunday: 6:00 PM – 11:00 PM
+Season Dates: September 18, 2026 – November 7, 2026`;
+const MEDIA_TEXT = `Erebus in Pontiac opens on Friday, Sept. 18. It is open on weekends through September. From Thursday, Oct. 1, it runs every day through Nov. 7. Dark days: Oct. 5-6, Oct. 12, Oct. 19 and Nov. 2-5.`;
+const Y = 2026;
+
+// 1. season, hours, closures extract with quotes; no quote means no value
+{
+  const s = se.extractSeasonRange(HOURS_TEXT, Y);
+  assert.deepStrictEqual([s.start, s.end], ["2026-09-18", "2026-11-07"]);
+  assert.ok(s.quote.includes("September 18"));
+  const h = se.extractWeeklyHours(HOURS_TEXT);
+  assert.strictEqual(h.byDay[1], "7:30 PM-10:30 PM");
+  assert.strictEqual(h.byDay[4], "7:30 PM-10:30 PM");
+  assert.strictEqual(h.byDay[5], "7:00 PM-12:00 AM");
+  assert.strictEqual(h.byDay[6], "6:00 PM-12:00 AM");
+  assert.strictEqual(h.byDay[0], "6:00 PM-11:00 PM");
+  const c = se.extractClosedDates(MEDIA_TEXT, Y);
+  assert.deepStrictEqual(c.dates, ["2026-10-05", "2026-10-06", "2026-10-12", "2026-10-19", "2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"]);
+  assert.ok(c.quote.includes("Dark days"));
+  assert.strictEqual(se.extractSeasonRange("Open nightly in fall.", Y), null);
+  assert.strictEqual(se.extractWeeklyHours("Call for hours."), null);
+  assert.strictEqual(se.extractClosedDates("Open every night.", Y), null);
+  assert.strictEqual(se.extractWeeklyHours("Friday: 7:00 PM"), null, "a single time is not a range of hours");
+}
+console.log("PASS: 1. extractors return quoted values and nothing without a quote");
+
+// 2. blocked / failed pages never become evidence and are reported as blocked
+{
+  const pages = [
+    se.extractFromPage({ url: "https://example.org/a", tier: "official", blocked: "robots" }, Y),
+    se.extractFromPage({ url: "https://example.org/b", tier: "official", blocked: "dynamic" }, Y),
+    se.extractFromPage({ url: "https://example.org/c", tier: "media", retrieved_at: "2026-10-18T14:40:00Z", text: MEDIA_TEXT }, Y),
+  ];
+  const r = se.proposeSchedule({ pages, stored: {}, internalNote: "" });
+  assert.deepStrictEqual(r.blocked.map((b) => b.reason), ["robots", "dynamic"]);
+  assert.ok(r.proposed.closed_dates, "the readable media page still yields evidence");
+  assert.ok(r.unsupported.includes("weekly_hours"), "no hours evidence stays unsupported, not guessed");
+}
+console.log("PASS: 2. a blocked page is reported blocked and does not stop other sources");
+
+// 3. the Erebus shape: season from three pages is high confidence; hours are advertised, not confirmed dates
+{
+  const pages = [
+    se.extractFromPage({ url: "https://dir.example/erebus", tier: "directory", retrieved_at: "t1", text: HOURS_TEXT }, Y),
+    se.extractFromPage({ url: "https://tv.example/roundup", tier: "media", retrieved_at: "t2", text: "Erebus runs Sept. 18 through Nov. 7. " + MEDIA_TEXT }, Y),
+    se.extractFromPage({ url: "https://mag.example/list", tier: "media", retrieved_at: "t3", text: "Erebus: Sept. 18 to Nov. 7." }, Y),
+  ];
+  const r = se.proposeSchedule({ pages, stored: {}, internalNote: "" });
+  assert.strictEqual(r.conflicts.length, 0);
+  assert.deepStrictEqual(r.proposed.season.value, { start: "2026-09-18", end: "2026-11-07" });
+  assert.strictEqual(r.proposed.season.confidence, "high");
+  assert.strictEqual(r.proposed.weekly_hours.kind, "advertised_hours");
+  assert.strictEqual(r.proposed.weekly_hours.confidence, "medium");
+  assert.ok(r.proposed.closed_dates.evidence.every((e) => e.url && e.quote && e.retrieved_at));
+}
+// known limit: an opening date and a closing date in separate sentences are not joined into a season
+// 3b. opening and closing in separate sentences (WXYZ-style wording) are joined, with the spanning quote
+{
+  const sp = se.extractSeasonRange(MEDIA_TEXT, Y);
+  assert.deepStrictEqual([sp.start, sp.end], ["2026-09-18", "2026-11-07"]);
+  assert.ok(sp.quote.startsWith("opens on Friday, Sept. 18") && sp.quote.endsWith("through Nov. 7"));
+  assert.strictEqual(se.extractSeasonRange("Erebus opens Friday, Sept. 18. Tickets online.", Y), null, "no closing date, no season");
+  assert.strictEqual(se.extractSeasonRange("Erebus runs daily through Nov. 7.", Y), null, "no opening date, no season");
+  assert.strictEqual(se.extractSeasonRange("Opens Sept. 18. " + "x".repeat(450) + " through Nov. 7", Y), null, "closing date too far from the opening date");
+  assert.strictEqual(se.extractSeasonRange("Opens Nov. 7 and runs through Sept. 18", Y), null, "end before start is refused");
+}
+console.log("PASS: 3. season corroboration sets confidence; hours stay advertised hours");
+
+// 4. disagreement is one conflict with both quotes, nothing chosen
+{
+  const a = se.extractFromPage({ url: "https://a.example", tier: "official", text: "Season: Sept. 18 – Nov. 7" }, Y);
+  const b = se.extractFromPage({ url: "https://b.example", tier: "media", text: "Open Sept. 25 to Nov. 7" }, Y);
+  const r = se.proposeSchedule({ pages: [a, b], stored: {}, internalNote: "" });
+  assert.strictEqual(r.conflicts.length, 1);
+  assert.strictEqual(r.conflicts[0].field, "season");
+  assert.strictEqual(r.conflicts[0].candidates.length, 2);
+  assert.ok(!r.proposed.season, "a conflicting field is not proposed");
+}
+console.log("PASS: 4. conflicting sources produce one conflict and no value");
+
+// 5. stronger stored value wins: OWNER-CORRECTION > verified/manual > tier
+{
+  const page = se.extractFromPage({ url: "https://tv.example", tier: "media", text: "Season: Sept. 18 – Nov. 7" }, Y);
+  const owner = se.proposeSchedule({ pages: [page], stored: { season: { value: { start: "2026-09-20", end: "2026-11-07" }, rank_source: "owner_correction" } }, internalNote: "" });
+  assert.ok(owner.kept.some((k) => k.field === "season") && !owner.proposed.season);
+  const verified = se.proposeSchedule({ pages: [page], stored: { season: { value: {}, rank_source: "verified" } }, internalNote: "" });
+  assert.ok(!verified.proposed.season);
+  const weakerTier = se.proposeSchedule({ pages: [page], stored: { season: { value: {}, rank_source: "tier", tier: "official" } }, internalNote: "" });
+  assert.ok(!weakerTier.proposed.season, "an official stored value outranks media evidence");
+  const lowerStored = se.proposeSchedule({ pages: [page], stored: { season: { value: {}, rank_source: "tier", tier: "directory" } }, internalNote: "" });
+  assert.ok(lowerStored.proposed.season, "media evidence replaces a directory-tier stored value");
+  const blankStored = se.proposeSchedule({ pages: [page], stored: { season: { value: null } }, internalNote: "" });
+  assert.ok(blankStored.proposed.season, "a blank stored value is filled");
+  assert.ok(se.rankOf({ rank_source: "owner_correction" }) > se.rankOf({ rank_source: "verified" }));
+  assert.ok(se.rankOf({ rank_source: "manual" }) > se.rankOf({ rank_source: "tier", tier: "official" }));
+}
+console.log("PASS: 5. stronger stored values are kept");
+
+// 6. an OWNER-CORRECTION line on time_display locks weekly hours
+{
+  // built by hand in the documented shape so the test runs on main before #210 (which adds buildOwnerCorrectionLine)
+  const line = 'OWNER-CORRECTION 2026-10-18T10:00:00.000Z e1 fields=time_display | {"actor":"admin","changes":[{"f":"time_display","b":"7:00 PM","a":"7:30 PM"}]}';
+  assert.ok(se.lockedByOwner(line, "time_display"));
+  const page = se.extractFromPage({ url: "https://d.example", tier: "directory", text: HOURS_TEXT }, Y);
+  const r = se.proposeSchedule({ pages: [page], stored: {}, internalNote: line });
+  assert.ok(r.kept.some((k) => k.field === "weekly_hours" && /OWNER-CORRECTION/.test(k.reason)));
+  assert.ok(!r.proposed.weekly_hours);
+}
+console.log("PASS: 6. OWNER-CORRECTION lock is honoured");
+
+// 7. calendar: closures override recurring hours; Erebus Oct 18-Nov 7 gives 21 days, 5 closed, 16 open
+{
+  const h = se.extractWeeklyHours(HOURS_TEXT).byDay;
+  const closed = se.extractClosedDates(MEDIA_TEXT, Y).dates;
+  const cal = se.buildCalendar({ season: { start: "2026-09-18", end: "2026-11-07" }, weeklyHours: h, closedDates: closed, from: "2026-10-18" });
+  assert.strictEqual(cal.length, 21);
+  assert.strictEqual(cal.filter((d) => !d.open).length, 5);
+  assert.strictEqual(cal.filter((d) => d.open).length, 16);
+  const by = Object.fromEntries(cal.map((d) => [d.date, d]));
+  assert.strictEqual(by["2026-10-18"].hours, "6:00 PM-11:00 PM");   // Sunday
+  assert.strictEqual(by["2026-10-19"].open, false);                  // Monday, dark
+  assert.strictEqual(by["2026-10-20"].hours, "7:30 PM-10:30 PM");  // Tuesday
+  assert.strictEqual(by["2026-10-23"].hours, "7:00 PM-12:00 AM");  // Friday
+  assert.strictEqual(by["2026-10-24"].hours, "6:00 PM-12:00 AM");  // Saturday
+  assert.deepStrictEqual(["2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"].map((d) => by[d].open), [false, false, false, false]);
+  assert.strictEqual(by["2026-11-07"].hours, "6:00 PM-12:00 AM");  // Saturday
+  assert.deepStrictEqual(se.buildCalendar({ season: null, weeklyHours: h }), [], "no season, no calendar");
+  const partial = se.buildCalendar({ season: { start: "2026-10-19", end: "2026-10-20" }, weeklyHours: { 2: "7:30 PM-10:30 PM" } });
+  assert.deepStrictEqual(partial.map((d) => d.date), ["2026-10-20"], "a weekday with no stated hours is left out, never defaulted");
+}
+console.log("PASS: 7. closures override recurring hours; Erebus calendar matches the approved 21/5/16");
+
+// 8. output shape matches the seasonal entry `schedule` object (Experience, PR #214)
+{
+  const pages = [
+    se.extractFromPage({ url: "https://dir.example/erebus", tier: "directory", retrieved_at: "2026-10-18", text: HOURS_TEXT }, Y),
+    se.extractFromPage({ url: "https://tv.example/roundup", tier: "media", retrieved_at: "2026-10-18", text: "Erebus runs Sept. 18 through Nov. 7. " + MEDIA_TEXT }, Y),
+  ];
+  const sch = se.toEntrySchedule(se.proposeSchedule({ pages, stored: {}, internalNote: "" }));
+  assert.deepStrictEqual(sch.season, { start: "2026-09-18", end: "2026-11-07", timezone: "America/Detroit" });
+  assert.deepStrictEqual(sch.weeklyHours, { sun: "6:00 PM-11:00 PM", mon: "7:30 PM-10:30 PM", tue: "7:30 PM-10:30 PM", wed: "7:30 PM-10:30 PM", thu: "7:30 PM-10:30 PM", fri: "7:00 PM-12:00 AM", sat: "6:00 PM-12:00 AM" });
+  assert.deepStrictEqual(sch.darkDays, ["2026-10-05", "2026-10-06", "2026-10-12", "2026-10-19", "2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"]);
+  assert.strictEqual(sch.explicitClosuresOverrideHours, true);
+  assert.deepStrictEqual(Object.keys(sch.provenance).sort(), ["darkDays", "season", "weeklyHours"]);
+  assert.ok(sch.provenance.season.sources.length === 2 && sch.provenance.season.retrievedAt === "2026-10-18");
+  assert.deepStrictEqual(se.toEntrySchedule({ proposed: {} }), { explicitClosuresOverrideHours: true, provenance: {} }, "no evidence, no fields");
+}
+console.log("PASS: 8. proposal maps to the seasonal entry schedule shape");
+
+// 9. real-world date and schedule formats (synthetic text in the styles pages use)
+{
+  const day = (t) => se.extractWeeklyHours(t).byDay;
+  assert.deepStrictEqual(day("Fri & Sat 7pm-midnight"), { 5: "7:00 PM-12:00 AM", 6: "7:00 PM-12:00 AM" });
+  assert.deepStrictEqual(day("Fridays and Saturdays, 7 p.m. to 11 p.m."), { 5: "7:00 PM-11:00 PM", 6: "7:00 PM-11:00 PM" });
+  assert.deepStrictEqual(day("Open Thursday through Sunday 6-10 pm"), { 0: "6:00 PM-10:00 PM", 4: "6:00 PM-10:00 PM", 5: "6:00 PM-10:00 PM", 6: "6:00 PM-10:00 PM" });
+  assert.deepStrictEqual(day("Mon-Fri 9am-5pm; Sat 10am-2pm"), { 1: "9:00 AM-5:00 PM", 2: "9:00 AM-5:00 PM", 3: "9:00 AM-5:00 PM", 4: "9:00 AM-5:00 PM", 5: "9:00 AM-5:00 PM", 6: "10:00 AM-2:00 PM" });
+  assert.deepStrictEqual(day("Weekends from noon to 5 PM"), { 0: "12:00 PM-5:00 PM", 6: "12:00 PM-5:00 PM" });
+  assert.deepStrictEqual(Object.keys(day("Weekdays 4-9 PM")).map(Number), [1, 2, 3, 4, 5]);
+  assert.strictEqual(Object.keys(day("nightly 7 PM to 11 PM")).length, 7);
+  assert.strictEqual(se.extractWeeklyHours("Open Fridays and Saturdays."), null, "days without times are not hours");
+  assert.strictEqual(se.extractWeeklyHours("Weekends 11-2 PM"), null, "an ambiguous meridiem is refused, not guessed");
+  assert.strictEqual(se.extractWeeklyHours("Sat 7-10"), null, "a closing time with no AM/PM is not evidence");
+  assert.strictEqual(se.extractSeasonRange("Open Oct. 3 - Nov. 1", Y).start, "2026-10-03");
+  assert.strictEqual(se.extractSeasonRange("October 3 through November 1, 2026", Y).end, "2026-11-01");
+  assert.strictEqual(se.extractSeasonRange("Opening night: September 18th. Closes Nov 7.", Y).end, "2026-11-07");
+}
+console.log("PASS: 9. varied weekly-hours and season formats");
+
+// 10. overnight hours
+{
+  const w = se.extractWeeklyHours("Fri 7pm-12 AM, Sat 6pm-2am, Sun 6-11 PM");
+  assert.deepStrictEqual(w.overnight, { 5: true, 6: true });
+  assert.strictEqual(w.byDay[6], "6:00 PM-2:00 AM");
+  assert.strictEqual(se.isOvernight("7:00 PM-12:00 AM"), true);
+  assert.strictEqual(se.isOvernight("6:00 PM-11:00 PM"), false);
+  const cal = se.buildCalendar({ season: { start: "2026-10-23", end: "2026-10-25" }, weeklyHours: w.byDay });
+  assert.deepStrictEqual(cal.map((d) => [d.date, d.overnight]), [["2026-10-23", true], ["2026-10-24", true], ["2026-10-25", false]]);
+  const page = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Fri & Sat 7pm-midnight" }, Y);
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [page], stored: {}, internalNote: "" }).proposed.weekly_hours.overnight_days, [5, 6]);
+}
+console.log("PASS: 10. overnight hours are flagged");
+
+// 11. explicit closures and exceptions
+{
+  assert.deepStrictEqual(se.extractClosedDates("Open daily except Oct. 19 and Nov. 2-5.", Y).dates, ["2026-10-19", "2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"]);
+  assert.deepStrictEqual(se.extractClosedDates("Closed Oct. 31.", Y).dates, ["2026-10-31"]);
+  assert.deepStrictEqual(se.extractClosedDates("No shows Nov. 26.", Y).dates, ["2026-11-26"]);
+  assert.strictEqual(se.extractClosedDates("Closed Sundays.", Y), null, "a closed weekday with no dates is not a dated closure");
+  assert.strictEqual(se.extractClosedDates("Closes Nov. 7.", Y), null, "'closes' (season end) is not a closure");
+  // two pages list different closures: both are kept (a longer list is not a disagreement)
+  const a = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Dark Oct. 19." }, Y);
+  const b = se.extractFromPage({ url: "https://b.example", tier: "media", text: "Closed Nov. 2-3." }, Y);
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [a, b], stored: {}, internalNote: "" }).proposed.closed_dates.value, ["2026-10-19", "2026-11-02", "2026-11-03"]);
+}
+console.log("PASS: 11. explicit closures and exceptions");
+
+// 12. conflicts and partial metadata
+{
+  // partial pages merge per day
+  const a = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Fri & Sat 7pm-midnight" }, Y);
+  const b = se.extractFromPage({ url: "https://b.example", tier: "media", text: "Sunday: 6 PM - 11 PM" }, Y);
+  const merged = se.proposeSchedule({ pages: [a, b], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(Object.keys(merged.proposed.weekly_hours.value).map(Number).sort(), [0, 5, 6]);
+  assert.strictEqual(merged.conflicts.length, 0);
+  // the same day with different hours on two pages is one conflict naming the day, with both quotes
+  const c = se.extractFromPage({ url: "https://c.example", tier: "official", text: "Saturday: 5 PM - 10 PM" }, Y);
+  const clash = se.proposeSchedule({ pages: [a, c], stored: {}, internalNote: "" });
+  assert.strictEqual(clash.conflicts.length, 1);
+  assert.deepStrictEqual(clash.conflicts[0].days, [6]);
+  assert.strictEqual(clash.conflicts[0].candidates.length, 2);
+  assert.ok(!clash.proposed.weekly_hours);
+  // one page contradicting itself is also routed to review
+  const self = se.extractFromPage({ url: "https://d.example", tier: "media", text: "Saturday 6-10 PM. Saturday 7-11 PM." }, Y);
+  assert.strictEqual(self.weekly_hours, null, "a day with two hours on one page yields no hours at all");
+  // hours only: season and closures are unsupported, not guessed
+  const only = se.proposeSchedule({ pages: [a], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(only.unsupported.sort(), ["closed_dates", "season"]);
+  assert.ok(only.proposed.weekly_hours);
+  // no page at all
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [], stored: {}, internalNote: "" }).unsupported.sort(), ["closed_dates", "season", "weekly_hours"]);
+}
+console.log("PASS: 12. partial pages merge per day; same-day disagreements and self-contradiction go to review");
+
+// 13. evidence is preserved on every proposed field
+{
+  const page = se.extractFromPage({ url: "https://e.example/x", tier: "media", retrieved_at: "2026-10-18T15:30:00Z", text: "Runs Sept. 18 - Nov. 7. Fri 7pm-midnight. Dark: Oct. 19." }, Y);
+  const r = se.proposeSchedule({ pages: [page], stored: {}, internalNote: "" });
+  for (const f of ["season", "weekly_hours", "closed_dates"]) {
+    const ev = r.proposed[f].evidence[0];
+    assert.strictEqual(ev.url, "https://e.example/x");
+    assert.strictEqual(ev.retrieved_at, "2026-10-18T15:30:00Z");
+    assert.ok(ev.quote && ev.quote.length > 3, f + " carries its quote");
+    assert.ok(["advertised_season", "advertised_hours", "listed_closures"].includes(r.proposed[f].kind));
+  }
+  // a blocked page contributes no value and is listed
+  const blocked = se.extractFromPage({ url: "https://f.example", tier: "official", blocked: "robots_unavailable" }, Y);
+  const r2 = se.proposeSchedule({ pages: [blocked], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(r2.blocked, [{ url: "https://f.example", reason: "robots_unavailable" }]);
+  assert.deepStrictEqual(r2.proposed, {});
+}
+console.log("PASS: 13. quotes, URLs and retrieval times are kept; blocked pages add nothing");
+
+// 14. lockedByOwner uses the canonical OWNER-CORRECTION reader (#210) with no local copy
+{
+  const canonical = require("../api/_lib/event-contract").ownerCorrectedFields;
+  assert.strictEqual(typeof canonical, "function");
+  assert.strictEqual(se.fallbackOwnerCorrectedFields, undefined, "the temporary fallback reader is gone");
+  const notes = [
+    'OWNER-CORRECTION 2026-10-18T10:00:00Z e1 fields=time_display,category | {"actor":"admin","changes":[]}',
+    "no marker here",
+    "OWNER-CORRECTION malformed line",
+    'x\nOWNER-CORRECTION 2026-10-18T10:00:00Z e2 fields=title | {}\nOWNER-CORRECTION 2026-10-19T10:00:00Z e3 fields=time_display | {}',
+    "OWNER-CORRECTION 2026-10-18T10:00:00Z e4 fields=description | {}",
+    null,
+  ];
+  for (const n of notes) assert.strictEqual(se.lockedByOwner(n, "time_display"), canonical(n).has("time_display"), "parity on: " + n);
+  assert.strictEqual(se.lockedByOwner(notes[0], "time_display"), true);
+  assert.strictEqual(se.lockedByOwner(notes[1], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(notes[2], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(notes[4], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(null, "time_display"), false);
+  console.log("PASS: 14. schedule evidence uses the canonical OWNER-CORRECTION reader; marker fixtures agree");
+}
