@@ -72,5 +72,8 @@ const rule = page.slice(page.indexOf(".evt-detail-desc{"), page.indexOf("}", pag
 assert.ok(/max-width:\s*40em/.test(rule) && /font-size:\s*16\.5px/.test(rule) && /line-height:\s*1\.65/.test(rule), "readable column, size and spacing");
 assert.ok(!/white-space:\s*pre-line/.test(rule), "no pre-line wall");
 assert.ok(!/Read more/i.test(page.slice(page.indexOf("evt-about-h"))), "no Read more collapse");
+// If description-format.js fails to load the notes block must still render (plain text nodes, never innerHTML).
+assert.ok(/typeof DescriptionFormat !== 'undefined'/.test(page), "render is guarded against a missing DescriptionFormat");
+assert.ok(/p\.textContent = t; body\.appendChild\(p\)/.test(page), "plain-text fallback builds paragraphs from text nodes");
 
 console.log("PASS: event description formatting — structure kept, long text grouped safely, HTML never becomes markup");
