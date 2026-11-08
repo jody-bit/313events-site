@@ -322,6 +322,8 @@
   .evt-row{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;}
   .evt-row:first-of-type{border-top:none;}
   .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);min-width:0;font-weight:700;padding-top:2px;}
+  /* "Time not confirmed" for schedule-unverified rows (Dates not confirmed): same label and 11px floor as index.html, wraps only between words. */
+  .evt-time small.evt-time-unconfirmed{display:block;max-width:64px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;font-weight:700;}
   .evt-main{flex:1;min-width:0;}
   .evt-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
   a.evt-title-link{color:inherit;text-decoration:none;}
@@ -1170,7 +1172,7 @@ function priceTag(e){
 function evtRowHtml(e){
   return `
     <div class="evt-row">
-      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
       <div class="evt-main">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
