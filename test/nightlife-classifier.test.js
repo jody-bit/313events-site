@@ -30,6 +30,8 @@ const CASES = [
   ["Description-only rave word at a nightclub, late, with DJs: qualifies on three pieces of evidence", { title: "Citywave: Magical Funk", description: "A rave night with DJs spinning funk and house all night.", venue_name_raw: "Citywave at Nightclub", time_display: "9:00 PM – 1:00 AM" }, "nightlife"],
   ["Citywave title only (RECONSTRUCTED): no opinion", { title: "Citywave: Magical Funk", description: "", venue_name_raw: "GottaGacha", time_display: "9:00 PM – 1:00 AM" }, "no_opinion"],
   ["Student recital: no signal", { title: "Student Recital: Sofia Vasileiadou, soprano", description: "", venue_name_raw: "Moore Musical Arts Center", time_display: "6:00 PM" }, "no_opinion"],
+  ["Comedy night \"Rave Reviews\" at 9 PM: not a dance event (P1 F-rave)", { title: "Rave Reviews: A Stand-Up Comedy Night", description: "", venue_name_raw: "The Comedy Club", time_display: "9:00 PM" }, "no_opinion"],
+  ["Bare \"Rave Reviews\" title at 9 PM: no opinion", { title: "Rave Reviews", description: "", venue_name_raw: "Some Theatre", time_display: "9:30 PM – 11:00 PM" }, "no_opinion"],
   ["Empty row: no signal, no throw", {}, "no_opinion"],
 ];
 
