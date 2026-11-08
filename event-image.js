@@ -51,5 +51,36 @@
     if (typeof document === "undefined") return;
     var sc = document.createElement("script"); sc.src = "/config.js"; sc.onload = function () { go(G.__313_CONFIG); }; document.head.appendChild(sc);
   }
-  return { hydrate: hydrate, eventImageUrl: eventImageUrl, isEventId: isEventId, linkedIds: linkedIds, apply: apply };
+  // Collection entries that fall back to their own event page (no official website): the event ids whose public row must exist first.
+  function pageIds(entries) {
+    var seen = {}, out = [];
+    (entries || []).forEach(function (e) { if (e && !e.website && isEventId(e.eventPageId) && !seen[e.eventPageId]) { seen[e.eventPageId] = 1; out.push(e.eventPageId); } });
+    return out;
+  }
+  // {id: true} for the requested ids that came back as events_public rows; anything else (wrong shape, extra ids) is ignored.
+  function readableSet(ids, rows) {
+    var want = {}, out = {};
+    (ids || []).forEach(function (i) { want[i] = 1; });
+    (rows || []).forEach(function (r) { if (r && isEventId(r.id) && want[r.id]) out[r.id] = true; });
+    return out;
+  }
+  // Browser: one anonymous read of events_public (same config and view the event pages use; no credentials, no new API). Sets
+  // col.readableEventIds and calls done once on success. Missing config, a non-OK response, a rejection or bad JSON change nothing.
+  function checkPages(col, fetchFn, done) {
+    var ids = pageIds(col && col.entries), G = typeof globalThis !== "undefined" ? globalThis : root, cfg = G.__313_CONFIG || null;
+    if (!ids.length) return;
+    function go(c) {
+      if (!c || !c.supabaseUrl || !c.supabaseAnonKey) return;
+      var req;
+      try { req = fetchFn(c.supabaseUrl + "/rest/v1/events_public?select=id&id=in.(" + ids.join(",") + ")", { headers: { apikey: c.supabaseAnonKey } }); } catch (x) { return; }
+      Promise.resolve(req)
+        .then(function (r) { return r && r.ok ? r.json() : []; })
+        .then(function (rows) { var set = readableSet(ids, Array.isArray(rows) ? rows : []); if (Object.keys(set).length) { col.readableEventIds = set; if (done) done(); } })
+        .catch(function () {});
+    }
+    if (cfg) return go(cfg);
+    if (typeof document === "undefined") return;
+    var sc = document.createElement("script"); sc.src = "/config.js"; sc.onload = function () { go(G.__313_CONFIG); }; document.head.appendChild(sc);
+  }
+  return { checkPages: checkPages, pageIds: pageIds, readableSet: readableSet, hydrate: hydrate, eventImageUrl: eventImageUrl, isEventId: isEventId, linkedIds: linkedIds, apply: apply };
 });
