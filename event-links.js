@@ -48,12 +48,28 @@
     return TICKET_VENDORS.some(function (h) { return host === h || host.endsWith("." + h); });
   }
 
+  // HALO Detroit (owner, 2026-10-19 and 2026-11-08): most HALO door events have no event page of their own, so the connector
+  // stores HALO's general events page (/currentevents). That page is the venue's site, not information about one event, so it is
+  // treated like a bare homepage ("Venue website"). A HALO page that is specific to one event (e.g. /events/<slug>) is labelled
+  // "Event information". Only the exact host thehalodetroit.com is affected.
+  function isHaloHost(value) {
+    const u = cleanUrl(value);
+    return !!u && u.hostname.replace(/^www\./, "").toLowerCase() === "thehalodetroit.com";
+  }
+  function isHaloGenericPage(value) {
+    const u = cleanUrl(value);
+    if (!u || !isHaloHost(value)) return false;
+    const path = u.pathname.replace(/\/+$/, "").toLowerCase();
+    return (path === "" || path === "/currentevents") && !u.hash;
+  }
+  function isVenueLevel(value) { return isBareHomepage(value) || isHaloGenericPage(value); }
+
   // e: { ticketUrl, eventPageUrl, free }. Returns { primary, event, venue }, each null or { url, label }.
   function resolve(e) {
     const ticket = e && cleanUrl(e.ticketUrl) ? String(e.ticketUrl).trim() : null;
     const page = e && cleanUrl(e.eventPageUrl) ? String(e.eventPageUrl).trim() : null;
-    const ticketSpecific = ticket && !isBareHomepage(ticket) ? ticket : null;
-    const pageSpecific = page && !isBareHomepage(page) ? page : null;
+    const ticketSpecific = ticket && !isVenueLevel(ticket) ? ticket : null;
+    const pageSpecific = page && !isVenueLevel(page) ? page : null;
     const homepage = (ticket && !ticketSpecific ? ticket : null) || (page && !pageSpecific ? page : null);
     
     // Labels (owner, 2026-10-23 and 2026-10-24): "Get tickets" only for a ticketing destination; any other event-specific page,
@@ -61,15 +77,20 @@
     // exists, so the label does not depend on e.free.
     const vendorUrl = ticketSpecific && isTicketVendor(ticketSpecific) ? ticketSpecific : null;
     const infoUrl = (ticketSpecific && !vendorUrl ? ticketSpecific : null) || pageSpecific;
-    const primary = vendorUrl ? { url: vendorUrl, label: "Get tickets" } : infoUrl ? { url: infoUrl, label: "Event details" } : null;
+    const infoLabel = infoUrl && isHaloHost(infoUrl) ? "Event information" : "Event details";
+    const primary = vendorUrl ? { url: vendorUrl, label: "Get tickets" } : infoUrl ? { url: infoUrl, label: infoLabel } : null;
     return {
       primary: primary,
-      event: vendorUrl && infoUrl && infoUrl !== vendorUrl ? { url: infoUrl, label: "Event details" } : null,
+      event: vendorUrl && infoUrl && infoUrl !== vendorUrl ? { url: infoUrl, label: infoLabel } : null,
       venue: homepage ? { url: homepage, label: "Venue website" } : null
     };
   }
 
-  const api = { resolve: resolve, isBareHomepage: isBareHomepage, isTicketVendor: isTicketVendor };
+  // True when the event has a real event-specific link (primary or event); a venue-website-only link does not count, so the
+  // ticket-status note ("Pay at the door") stays visible beside it.
+  function hasEventLink(e) { const L = resolve(e); return !!(L.primary || L.event); }
+
+  const api = { resolve: resolve, hasEventLink: hasEventLink, isBareHomepage: isBareHomepage, isTicketVendor: isTicketVendor };
   if (typeof module !== "undefined" && module.exports) module.exports = { EventLinks: api };
   else (typeof window !== "undefined" ? window : globalThis).EventLinks = api;
 })(this);

@@ -155,9 +155,14 @@
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
+    // An entry with no official website of its own (owner-supplied flyer only) links to its first-party event page by eventPageId; nothing is invented.
+    // eventPageId only links: unlike eventId it does not swap the card cover for the event's image.
+    var eventPage = !e.website && typeof e.eventPageId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.eventPageId) ? "/event.html?id=" + e.eventPageId : "";
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
-      : esc(e.name);
+      : eventPage
+        ? '<a class="sc-card-link" href="' + esc(eventPage) + '">' + esc(e.name) + '<span class="sc-sr"> (313.events event page)</span></a>'
+        : esc(e.name);
     // Shared mobile word-breaking rule (every seasonal page, same code path): a card title whose longest word (split at spaces and hyphens) has 10+ letters
     // carries its length, so the 2-column mobile grid can set the title just small enough for that word to fit instead of breaking it mid-word.
     // The CSS only ever shrinks a title that would not fit; every other title keeps the approved 21px.
@@ -172,7 +177,7 @@
       lastDayLine(e) + distanceLine(e, opts.state) + ontarioLine(e) +
       checkLine(e) +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
-      (e.website ? arrow : "") + '</li>';
+      (e.website || eventPage ? arrow : "") + '</li>';
   }
 
   // Presentation only: "Categories: 1 of 7 selected \u2014 Music" (or "0 of 7 selected \u2014 showing all destinations"). Read-only text, no extra controls;

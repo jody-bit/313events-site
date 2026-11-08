@@ -68,6 +68,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   .page-head{margin-bottom:24px;}
   h1.page-title{
@@ -427,7 +429,7 @@ function radarCardHtml(item){
           <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
             <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
           </a>
-          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat, {size:'compact'})}</div>` : ''}
+          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat)}</div>` : ''}
           <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
           <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
           <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
@@ -504,5 +506,6 @@ function render(){
 
 loadArticles();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

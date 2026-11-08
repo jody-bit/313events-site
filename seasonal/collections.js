@@ -38,12 +38,17 @@
  *           owner; the generation tool and its terms are not recorded). It says nothing about any real photograph.
  *   5. explicit publication approval: `approval` {by, at}. Only the approving person adds this; nothing in this repo
  *      writes it. The owner-photo route never satisfies item 5.
- * `status` is the ledger state the editor declares. The five states, derived by readiness():
+ * `status` is the ledger state the editor declares. The six states, derived by readiness():
  *   HOLD_UNVERIFIED   no official-source verification and/or relevance yet
  *   CONTENT_VERIFIED  1 + 2 complete; image work not started
  *   IMAGE_PENDING     1 + 2 complete; image started but 3 and/or 4 incomplete
  *   READY_FOR_REVIEW  1-4 complete; awaiting explicit approval (5)
  *   PUBLISHED         1-5 complete
+ *   ENDED             1-5 complete (it was publishable) AND its operating season has concluded: a verified private
+ *                     `season.end` + `season.endSource` and a recorded `expiryDisposition {action: "unpublish", by, at, note}`.
+ *                     Never public. Keeps every gate record, the approval and its history, and can return to PUBLISHED
+ *                     (EDITORIAL_EXPIRATION_PROCESS.md). Not a data-quality state: a record that fails items 1-3 is
+ *                     HOLD_UNVERIFIED whatever it declares.
  * A declared status that disagrees with the derived one fails the tests, so a status can never be used to bypass the
  * gate. See api/_lib/seasonal-editorial/EDITORIAL_HANDOFF.md.
  *
@@ -150,7 +155,7 @@
     "fall-color": { label: "Fall Colors", route: "/fall-color", img: "/assets/seasonal/fall-color-card-1.webp" }
   };
 
-  var STATES = ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED"];
+  var STATES = ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED", "ENDED"];
   var DATE = /^\d{4}-\d{2}-\d{2}$/, HTTPS = /^https:\/\//, SHA = /^[0-9a-f]{64}$/, PHOTO_ID = /^313p-[0-9a-f]{8}(-[0-9a-z]+)?$/;
   function has(v) { return typeof v === "string" && v.trim().length > 0; }
 
@@ -200,7 +205,10 @@
     // A record the editor has resolved as a duplicate of another record, or as closed, is retained in the inventory with its
     // history but is never shown: `disposition {type}` forces it out of every public state, whatever else it carries.
     var excluded = !!(e.disposition && has(e.disposition.type));
-    return { official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,
+    // ENDED (owner decision 2026-10-20): a verified end date plus a recorded decision to unpublish. Private fields only.
+    var se = e.season, xd = e.expiryDisposition;
+    var ended = !!(se && DATE.test(se.end || "") && has(se.endSource) && xd && xd.action === "unpublish" && has(xd.by) && DATE.test(xd.at || "") && has(xd.note));
+    return { ended: ended, official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,
       imageStarted: imageStarted, approval: approval, imageRoute: imageRoute, rightsRoute: rightsRoute, excluded: excluded };
   }
   function readiness(e) {
@@ -208,14 +216,22 @@
     if (g.excluded || !(g.official && g.relevance && g.identity)) state = "HOLD_UNVERIFIED";
     else if (!(g.acquired && g.rights)) state = g.imageStarted ? "IMAGE_PENDING" : "CONTENT_VERIFIED";
     else if (!g.approval) state = "READY_FOR_REVIEW";
+    else if (g.ended) state = "ENDED";
     else state = "PUBLISHED";
     return { state: state, gate: g };
   }
   // The only way an entry becomes public: declared PUBLISHED and derived PUBLISHED.
   function isPublic(e) { return !e.fixture && e.status === "PUBLISHED" && readiness(e).state === "PUBLISHED"; }
   function isShown(e) { return PROJECTED.indexOf(e) >= 0 ? (!e.fixture && e.status === "PUBLISHED") : isPublic(e); }
-  function published(c) { return c.entries.filter(isShown); }
-  function entriesPublic(c) { return c.entries.filter(isShown).length; }
+  // An entry with no official website of its own may fall back to its 313.events event page (entry.eventPageId). Such an entry is
+  // excluded from every list, count, filter and map until that exact event is known to be readable in events_public
+  // (c.readableEventIds[id] === true, filled once in the browser by EventImage.checkPages). Missing, rejected or errored
+  // lookups leave it excluded (fail closed), so the card can never point at a missing event page. Entries with a website are untouched.
+  var EVENT_PAGE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  function pageFallbackId(e) { return e && !e.website && typeof e.eventPageId === "string" && EVENT_PAGE_ID.test(e.eventPageId) ? e.eventPageId : ""; }
+  function pageReady(c) { return function (e) { var id = pageFallbackId(e); return !id || !!(c.readableEventIds && c.readableEventIds[id] === true); }; }
+  function published(c) { return c.entries.filter(isShown).filter(pageReady(c)); }
+  function entriesPublic(c) { return published(c).length; }
   // Scheduled removal from a collection placement. An entry's public `removeAt` (ISO instant) takes it out of the displayed list from that
   // moment; the destination record, images and history stay in the private data. In the browser `now` is the visitor's clock; in Node
   // (build, tests) no instant is applied unless one is passed, so generated pages and tests do not depend on the day they run.
@@ -225,5 +241,5 @@
   }
 
   return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, PAUSED: PAUSED, CROSS: CROSS, STATES: STATES, published: published, live: live, entriesPublic: entriesPublic,
-    readiness: readiness, gate: gate, isPublic: isPublic };
+    readiness: readiness, gate: gate, isPublic: isPublic, pageFallbackId: pageFallbackId };
 });

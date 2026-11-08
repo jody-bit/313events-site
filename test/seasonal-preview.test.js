@@ -51,9 +51,14 @@ assert.ok(!/since 1837/.test(byId["franklin-cider-mill"].summary), "no uninterru
 const out = Object.fromEntries(H.previewData("outside-the-ordinary").entries.map((e) => [e.id, e]));
 assert.ok(/Edsel Ford/.test(out["highland-state-recreation-area"].summary) && !/Henry Ford/.test(out["highland-state-recreation-area"].summary));
 Object.values(out).filter((e) => LEADS["outside-the-ordinary"].includes(e.id)).forEach((e) => assert.ok(!/peak (color|colour|foliage)/i.test(e.summary), e.id));
-// off the beaten orbit: Fleatroit is not a card; the Walkerville window is the two stated days; nothing says "continuously"
+// off the beaten orbit: the August "Fleatroit Junk City" is not a card; the only Fleatroit card is the owner-requested Dec 5 Noel Night pop-up (2026-11-08);
+// the Walkerville window is the two stated days; nothing says "continuously"
 const ob = H.previewData("off-the-beaten-orbit").entries;
-assert.ok(!ob.some((e) => /fleatroit/i.test(e.id + e.name + e.summary)), "Fleatroit stays unpublished");
+const fleat = ob.filter((e) => /fleatroit/i.test(e.id + e.name + e.summary));
+assert.deepStrictEqual(fleat.map((e) => e.id), ["fleatroit-carousel-noel-night-satellite-popup"], "only the Dec 5 Noel Night pop-up; never Junk City");
+assert.ok(!/junk city|august|aug\.? 30/i.test(JSON.stringify(fleat)), "no Junk City / August 30 content on the Noel Night card");
+assert.ok(/December 5, 4 to 10 p\.m\./.test(fleat[0].summary) && fleat[0].lastDay === "2026-12-05" && fleat[0].removeAt === "2026-12-06T00:00:00-05:00", "Dec 5 window; removed after Dec 5");
+assert.ok(!fleat[0].website && !/\$|tickets?|free admission/i.test(fleat[0].summary), "no invented website, price or ticketing");
 assert.ok(/November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m./.test(ob.find((e) => e.id === "walkerville-brewery-holiday-market").summary));
 
 // the shared renderer draws the leads server-side the same way the browser does
@@ -65,9 +70,10 @@ assert.ok(/November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m./.t
     require.cache[cache("published-entries.js")] = { id: cache("published-entries.js"), filename: cache("published-entries.js"), loaded: true, exports: { [slug]: d.entries }, children: [], paths: [] };
     ["collections.js", "render.js"].forEach((f) => delete require.cache[cache(f)]);
     const DATA = require(cache("collections.js")), R = require(cache("render.js"));
-    const col = Object.assign({}, DATA.COLLECTIONS[slug] || {}, d.meta || {}, { entries: d.entries });
+    const col = Object.assign({}, DATA.COLLECTIONS[slug] || {}, d.meta || {}, { entries: d.entries, readableEventIds: { "c66d10e1-960b-4d8c-a4dd-d5650a346c8b": true } });   // the gate opens once the event row is readable (see seasonal-event-page-gate test)
     const html = R.main(col);
     LEADS[slug].forEach((id) => assert.ok(html.includes('data-entry="' + id + '"'), slug + ": card for " + id));
+    if (slug === "off-the-beaten-orbit") assert.ok(html.includes('href="/event.html?id=c66d10e1-960b-4d8c-a4dd-d5650a346c8b"'), "the Noel Night card links its own event page (no website)");
     assert.ok(DATA.live(col).length === d.entries.length, slug + ": every previewed entry shows");
   }
   ["collections.js", "render.js", "published-entries.js"].forEach((f) => delete require.cache[cache(f)]);
