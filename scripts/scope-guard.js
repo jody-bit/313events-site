@@ -92,6 +92,8 @@ const ALLOWED = [
   "api/_lib/paged-rows.js", "api/sitemap.js",
   // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
   "api/admin-venues.js", "api/_lib/venue-lookup.js",
+  // Owner-approved 2026-11-09 (#70): read-only Ticketmaster report module; no writes, keys or schedules.
+  "api/_lib/ticketmaster-report.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
