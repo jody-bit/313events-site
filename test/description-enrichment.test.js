@@ -28,6 +28,14 @@ async function run() {
   }
   console.log("PASS: matches the Product Owner's exact safe example verbatim");
 
+  // --- 1b. A placeholder "11:59 PM" end is never baked into the stored sentence; a real end is kept. ---
+  {
+    const base = { title: "Show", venue_name_raw: "The Hall", start_date: "2026-11-20" };
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 11:59 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 9:00 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM – 9:00 PM.");
+  }
+  console.log("PASS: placeholder 11:59 PM end is dropped from the stored description; a real end is kept");
+
   // --- 2. Never invents anything beyond the given fields — no genre, no
   //     promotional language, no adjectives of any kind. ---
   {
