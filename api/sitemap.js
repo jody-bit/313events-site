@@ -40,6 +40,7 @@
 // explicitly-configured env var (if one's ever added later) still wins.
 const { publicConfig, siteUrl } = require("./_lib/environment");
 const { fetchAllPagedRows } = require("./_lib/paged-rows");
+const EventDates = require("../event-dates.js");
 // Non-production has NO production fallback (api/_lib/environment.js).
 const _cfg = publicConfig();
 const SUPABASE_URL = _cfg.ok ? _cfg.supabaseUrl : "";
@@ -86,11 +87,15 @@ module.exports = async (req, res) => {
   let eventRows = [];
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
-      const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${floorISO(7)}&select=id,updated_at&order=start_date.asc,id.asc`;
+      // Upcoming = starts from a week ago on, OR still running / has a later occurrence (end_date >= Detroit today); the shared
+      // EventDates rule then decides which of the fetched rows are listed (ongoing exhibitions and recurring series were skipped before).
+      const grace = floorISO(7);
+      const today = EventDates.detroitClock().iso;
+      const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${grace},end_date.gte.${today})&select=id,updated_at,start_date,end_date,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
       const result = await fetchAllPagedRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` });
       // A partial read is still listed (fail-soft, as before) but is never silent.
       if (!result.ok) console.warn(`[sitemap] events read incomplete (${result.rows.length} rows): ${result.error}`);
-      eventRows = result.rows;
+      eventRows = result.rows.filter((r) => (r.start_date && r.start_date >= grace) || EventDates.isUpcoming(r, today));
     } catch (err) {
       // Fall through with whatever we have (just the static pages) rather
       // than fail the whole sitemap over one bad Supabase request — a

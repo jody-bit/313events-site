@@ -28,6 +28,16 @@ function makeRes() {
   return res;
 }
 
+const ED = require("../event-dates.js");
+const iso = (n) => { const d = new Date(ED.detroitClock().iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+// rows the old start-only rule dropped or kept wrongly (relative to Detroit today)
+const special = [
+  { id: "x-ongoing", status: "approved", title: "Running exhibition", start_date: iso(-60), end_date: iso(30), date_semantics: "continuous", occurrence_dates: null, updated_at: null, ticket_url: "https://example.com/e/x-ongoing-show", event_url: null, link_check_status: null, link_checked_at: null, source: "fixture" },
+  { id: "x-recurring", status: "approved", title: "Weekly series", start_date: iso(-60), end_date: iso(60), date_semantics: "recurring", occurrence_dates: [iso(-50), iso(10)], updated_at: null, ticket_url: "https://example.com/e/x-recurring-show", event_url: null, link_check_status: null, link_checked_at: null, source: "fixture" },
+  { id: "x-ended", status: "approved", title: "Ended exhibition", start_date: iso(-60), end_date: iso(-20), date_semantics: "continuous", occurrence_dates: null, updated_at: null, ticket_url: "https://example.com/e/x-ended-show", event_url: null, link_check_status: null, link_checked_at: null, source: "fixture" },
+  { id: "x-recurring-over", status: "approved", title: "Series, all occurrences past", start_date: iso(-60), end_date: iso(60), date_semantics: "recurring", occurrence_dates: [iso(-50), iso(-30)], updated_at: null, ticket_url: "https://example.com/e/x-recurring-over-show", event_url: null, link_check_status: null, link_checked_at: null, source: "fixture" },
+];
+
 async function main() {
   // --- helper ---
   let db = install({ events: events.slice(), venues: venues.slice() });
@@ -71,6 +81,24 @@ async function main() {
   assert.strictEqual(venLocs.length, 1250, "sitemap lists all 1,250 venues");
   console.log("PASS: sitemap lists every event and venue past 1,000 rows");
 
+  // shared upcoming rule in the sitemap: running exhibitions and recurring series with a later date are listed; ended ones are not
+  install({ events: events.concat(special), venues: [] });
+  const sm2 = freshRequire("../api/sitemap.js");
+  const res2 = makeRes();
+  await sm2({}, res2);
+  assert.ok(res2.body.includes("event.html?id=x-ongoing"), "running exhibition is listed");
+  assert.ok(/event\.html\?id=x-recurring<\/loc>/.test(res2.body), "recurring series with a later occurrence is listed");
+  assert.ok(!res2.body.includes("event.html?id=x-ended"), "ended exhibition is not listed");
+  assert.ok(!res2.body.includes("event.html?id=x-recurring-over"), "series with every occurrence past is not listed");
+  console.log("PASS: sitemap includes ongoing and recurring upcoming events (shared EventDates rule), omits ended ones");
+
+  // dedupe: a row repeated across pages (data shifted between requests) is returned once
+  let page = 0;
+  const shifting = async () => { page++; const rows = page === 1 ? [{ id: "a" }, { id: "b" }] : page === 2 ? [{ id: "b" }, { id: "c" }] : []; return { ok: true, status: 200, json: async () => rows }; };
+  const dd = await fetchAllPagedRows(`${SUPABASE_URL}/rest/v1/events?select=id&order=id.asc`, {}, { fetch: shifting });
+  assert.deepStrictEqual(dd.rows.map((r) => r.id), ["a", "b", "c"]);
+  console.log("PASS: a row repeated across pages is returned once");
+
   // --- link check: reads all rows, selection still capped by LINK_CHECK_LIMIT, writes nothing in dry mode ---
   process.env.SUPABASE_SERVICE_ROLE_KEY = "svc-fixture";
   process.env.CRON_SECRET = "cron-fixture";
@@ -85,5 +113,14 @@ async function main() {
   assert.strictEqual(lres.body.mode, "dry");
   assert.ok(!db.log.some((l) => /PATCH/i.test(JSON.stringify(l))), "dry mode performs no PATCH");
   console.log("PASS: link check reads all 2,300 candidates; dry mode writes nothing");
+
+  // link check candidate pool uses the shared rule (ongoing / later-occurrence rows in, ended ones out); still dry, no PATCH
+  db = install({ events: special.map((e) => ({ ...e })) });
+  const link2 = freshRequire("../api/cron-link-check.js");
+  const l2 = makeRes();
+  await link2({ method: "GET", headers: { authorization: "Bearer cron-fixture" }, query: {} }, l2);
+  assert.strictEqual(l2.body.candidates, 2, "ongoing and later-occurrence rows are candidates; ended and fully-past ones are not");
+  assert.ok(!db.log.some((l) => /PATCH/i.test(JSON.stringify(l))), "still no PATCH in dry mode");
+  console.log("PASS: link check candidates follow the shared upcoming rule");
 }
 main().then(() => console.log("server-paged-reads: ok"), (e) => { console.error(e); process.exit(1); });

@@ -16,6 +16,12 @@
 const PAGE_SIZE = 1000;
 const MAX_PAGE_REQUESTS = 60;
 
+// Offset paging can repeat a row when data shifts between pages; keep the first copy of each id.
+function dedupe(rows) {
+  const seen = new Set();
+  return rows.filter((r) => { if (!r || r.id == null) return true; if (seen.has(r.id)) return false; seen.add(r.id); return true; });
+}
+
 async function fetchAllPagedRows(url, headers, options) {
   if (/[?&](limit|offset)=/.test(url)) throw new Error("fetchAllPagedRows: the url must not contain limit= or offset=");
   if (!/[?&]order=[^&]*\bid\.asc\b/.test(url)) throw new Error("fetchAllPagedRows: the url needs a deterministic order ending in id.asc");
@@ -34,11 +40,11 @@ async function fetchAllPagedRows(url, headers, options) {
     }
     if (!resp.ok) return { ok: false, rows, pages, error: `HTTP ${resp.status}` };
     if (!Array.isArray(body)) return { ok: false, rows, pages, error: "Unexpected response shape" };
-    if (body.length === 0) return { ok: true, rows, pages };
+    if (body.length === 0) return { ok: true, rows: dedupe(rows), pages };
     rows.push(...body);
     pages++;
   }
-  return { ok: false, rows, pages, error: `Still reading after ${maxRequests} requests (${rows.length} rows)` };
+  return { ok: false, rows: dedupe(rows), pages, error: `Still reading after ${maxRequests} requests (${rows.length} rows)` };
 }
 
 module.exports = { fetchAllPagedRows, PAGE_SIZE, MAX_PAGE_REQUESTS };
