@@ -6345,8 +6345,8 @@ function renderList(){
   }
 
   const total = rows.length;
-  // On Today / Tomorrow the heading counts confirmed events only; the unconfirmed ones are named beside it.
-  const dayMode = (m => m === 'today' || m === 'tomorrow')(Discovery.window(state, ctx).mode);
+  // On Today / Tomorrow / a picked date or range the heading counts confirmed events only; the unconfirmed ones are named beside it.
+  const dayMode = (m => m === 'today' || m === 'tomorrow' || m === 'dates')(Discovery.window(state, ctx).mode);
   const unconfirmedN = dayMode ? rows.filter(r => r.day === null).length : 0;
   const headTotal = total - unconfirmedN;
   const unconfirmedNote = unconfirmedN ? ` &middot; plus ${unconfirmedN.toLocaleString('en-US')} with dates not confirmed, below` : '';
