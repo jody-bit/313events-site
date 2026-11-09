@@ -26,6 +26,7 @@ function recorder(matchedCounts, candidateSets) {
     const method = (opts && opts.method) || "GET";
     calls.push({ url: String(url), method, body: opts && opts.body ? JSON.parse(opts.body) : null, headers: opts && opts.headers });
     if (method === "GET") {
+      if (!/[?&]offset=0(&|$)/.test(String(url))) return { ok: true, status: 200, json: async () => [], text: async () => "" }; // paging: later pages are empty
       const set = candidateSets ? candidateSets[g++] : Array.from({ length: (matchedCounts && matchedCounts[g++]) || 0 }, (_, k) => ({ id: k + 1, source: "x", internal_note: null }));
       return { ok: true, status: 200, json: async () => set || [], text: async () => "" };
     }
@@ -112,8 +113,9 @@ function recorder(matchedCounts, candidateSets) {
     const out = await fillBlankSourceCalendarLinks(BASE, KEY, rows, fetchImpl, new Date("2026-10-19T23:30:00Z"));
     const calls = patches();
     assert.strictEqual(calls.length, 2, "one PATCH per source, none for a source with no registered page");
-    assert.strictEqual(all.length, 4, "each source: one candidate read, then one write");
-    assert.deepStrictEqual(all.map((c) => c.method), ["GET", "PATCH", "GET", "PATCH"], "read before write");
+    const firstPages = all.filter((c) => c.method !== "GET" || /[?&]offset=0(&|$)/.test(c.url)); // the paged read's terminating empty page is not a separate read
+    assert.strictEqual(firstPages.length, 4, "each source: one candidate read, then one write");
+    assert.deepStrictEqual(firstPages.map((c) => c.method), ["GET", "PATCH", "GET", "PATCH"], "read before write");
     for (const c of calls) {
       assert.strictEqual(c.method, "PATCH");
       const q = decodeURIComponent(c.url);
@@ -225,6 +227,7 @@ function recorder(matchedCounts, candidateSets) {
     const mk = (status) => async (url, opts) => {
       log.push({ url: String(url), method: opts.method, body: opts.body });
       if (opts.method === "PATCH") return { ok: true, status: 200, json: async () => [{ id: 1 }], text: async () => "" };
+      if ((opts.method === "GET" || !opts.method) && /select=id,source,internal_note/.test(String(url)) && !/[?&]offset=0(&|$)/.test(String(url))) return { ok: true, status: 200, json: async () => [], text: async () => "[]" };
       if ((opts.method === "GET" || !opts.method) && /select=id,source,internal_note/.test(String(url))) return { ok: true, status: 200, json: async () => [{ id: 1, source: "HALO Detroit", internal_note: null }], text: async () => "[]" }; // the back-fill's candidate read
       if (opts.method === "GET" || !opts.method) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; // owner-corrections lookup
       return { ok: status < 300, status, json: async () => ({}), text: async () => "err" };
@@ -255,6 +258,37 @@ function recorder(matchedCounts, candidateSets) {
     assert.strictEqual((src.match(/_calendarUrl: feedSource\.website \|\| null/g) || []).length, 2, "ICS and RSS builders set the marker from feed_sources.website");
     assert.ok(/fillBlankSourceCalendarLinks\(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, keep\)/.test(src));
     console.log("PASS: cron-feeds strips the marker before the write and back-fills only after it");
+  }
+
+  // 8. paged candidate read + chunked write: >1000 candidates are all read; an incomplete read writes nothing; PATCH urls stay short
+  {
+    const mkRows = (n) => Array.from({ length: n }, (_, k) => ({ id: "00000000-0000-4000-8000-" + String(k).padStart(12, "0"), source: "HALO Detroit", internal_note: null }));
+    const run = async (all, failPage2) => {
+      const calls = [];
+      const f = async (url, opts) => {
+        const method = (opts && opts.method) || "GET";
+        calls.push({ url: String(url), method });
+        if (method === "GET") {
+          const off = +(/[?&]offset=(\d+)/.exec(url) || [0, 0])[1];
+          if (failPage2 && off > 0) return { ok: false, status: 500, json: async () => ({}) };
+          return { ok: true, status: 200, json: async () => all.slice(off, off + 1000) };
+        }
+        const m = /id=in\.\(([^)]*)\)/.exec(decodeURIComponent(url));
+        return { ok: true, status: 200, json: async () => m[1].split(",").map((id) => ({ id })) };
+      };
+      const out = await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], f, new Date("2026-10-19T23:30:00Z"));
+      return { out, calls };
+    };
+    const big = await run(mkRows(1250), false);
+    const patches8 = big.calls.filter((c) => c.method === "PATCH");
+    assert.strictEqual(big.out.patched, 1250, "every candidate across both pages is patched and summed");
+    assert.strictEqual(patches8.length, 13, "ids go in chunks of 100");
+    assert.ok(patches8.every((c) => c.url.length < 5000), "no PATCH url carries more than ~100 ids");
+    assert.ok(/order=id\.asc/.test(big.calls[0].url), "candidate read is ordered by id for stable paging");
+    const bad = await run(mkRows(1250), true);
+    assert.strictEqual(bad.out.patched, 0);
+    assert.strictEqual(bad.calls.filter((c) => c.method === "PATCH").length, 0, "an incomplete read writes nothing");
+    console.log("PASS: paged candidate read, chunked write, failure-closed on an incomplete read");
   }
   console.log("ALL source-calendar-links tests passed");
 })().catch((e) => { console.error(e); process.exit(1); });

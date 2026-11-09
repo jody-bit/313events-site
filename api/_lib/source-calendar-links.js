@@ -22,6 +22,7 @@
 "use strict";
 
 const { normalizeLinkField } = require("./link-field");
+const { fetchAllPagedRows } = require("./paged-rows");
 const path = require("path");
 const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "..", "scripts", "owner-supplied-row")); // the shared owner-supplied rule (trims the source)
 
@@ -93,6 +94,8 @@ function todayDetroit(now) {
 // exact-equality filter cannot, so the JS re-check below (isOwnerSuppliedRow, the shared rule) covers padded values.)
 const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)),or(source.is.null,source.not.ilike.manual)";
 
+const PATCH_CHUNK = 100;
+
 async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, fetchImpl, now) {
   const doFetch = fetchImpl || fetch;
   const today = todayDetroit(now);
@@ -113,27 +116,30 @@ async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, f
     try {
       // Step 1 (read): the candidate rows under the SAME database filter. The filter cannot trim a padded source (" manual "), so step 2 re-checks
       // each candidate in JS with the shared owner-supplied rule (which does trim) and drops every owner-supplied row before any write.
-      const read = await doFetch(`${scope}&select=id,source,internal_note`, { method: "GET", headers });
-      if (!read || !read.ok) continue;
-      const candidates = await read.json();
-      if (!Array.isArray(candidates)) continue;
-      const ids = candidates.filter((r) => r && r.id !== undefined && r.id !== null && !isOwnerSuppliedRow(r)).map((r) => r.id);
+      // Paged (Supabase caps one request at 1,000 rows); an incomplete read writes nothing for this source.
+      const read = await fetchAllPagedRows(`${scope}&select=id,source,internal_note&order=id.asc`, headers, { fetch: doFetch });
+      if (!read.ok) continue;
+      const ids = read.rows.filter((r) => r && r.id !== undefined && r.id !== null && !isOwnerSuppliedRow(r)).map((r) => r.id);
       if (!ids.length) continue;
       // Step 3 (write): blank-only as before. The identical database filter is repeated on the write (race-safe: a link or lock set since the read
       // still wins), narrowed to the ids that passed the JS check. Payload is event_url alone.
-      const resp = await doFetch(
-        `${scope}&id=in.(${ids.map((id) => encodeURIComponent(id)).join(",")})&select=id`,
-        {
-          method: "PATCH",
-          headers: { ...headers, Prefer: "return=representation" },
-          body: JSON.stringify({ event_url: t.url }),
+      // Chunked so the id list never makes the URL too long (a 414 / non-ok would be swallowed as 0).
+      for (let i = 0; i < ids.length; i += PATCH_CHUNK) {
+        const chunk = ids.slice(i, i + PATCH_CHUNK);
+        const resp = await doFetch(
+          `${scope}&id=in.(${chunk.map((id) => encodeURIComponent(id)).join(",")})&select=id`,
+          {
+            method: "PATCH",
+            headers: { ...headers, Prefer: "return=representation" },
+            body: JSON.stringify({ event_url: t.url }),
+          }
+        );
+        if (resp && resp.ok) {
+          const changed = await resp.json();
+          const n = Array.isArray(changed) ? changed.length : 0;
+          patched += n;
+          bySource[t.label] = (bySource[t.label] || 0) + n;
         }
-      );
-      if (resp && resp.ok) {
-        const changed = await resp.json();
-        const n = Array.isArray(changed) ? changed.length : 0;
-        patched += n;
-        bySource[t.label] = (bySource[t.label] || 0) + n;
       }
     } catch {
       /* never fail an ingestion run for a link back-fill */
