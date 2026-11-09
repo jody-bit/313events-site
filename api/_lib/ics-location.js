@@ -82,9 +82,9 @@ const { knownCity, MAX_CITY_WORDS } = require("./orbit-cities");
 //
 // 2026-10-04 (BUG-012): a LOCATION with no letter or digit in it ("-",
 // "--", an en dash) states no location at all and is "blank", never a
-// venue. A bare region ("MI", "ON") is NOT treated this way: it is left as
-// the text it is, for a person, because turning it into the "Venue TBA"
-// placeholder would let the placeholder's own city be attached to it.
+// venue. A bare region ("MI", "ON") is not "blank" either (the feed's default
+// city must not be attached to it): since 2026-11-06 it has its own status,
+// "region_only" -- no venue name is stored for it (see parseIcsLocation).
 
 function decodeHtmlEntities(str) {
   if (!str) return str;
@@ -474,11 +474,18 @@ function findTrailingCity(cleanedRaw) {
   return { trailingCity: city, trailingRegion: region, trailingPostal: postal };
 }
 
+const REGION_ONLY_RE = /^(?:ON|MI|OH|Ontario|Michigan|Ohio)\.?$/; // case-sensitive: "On" / "Mi" are ordinary words
+
 function parseIcsLocation(raw) {
   if (typeof raw !== "string") return { status: "blank" };
   const cleaned = lightlyClean(raw).trim();
   if (!cleaned) return { status: "blank" };
   if (isEmptyMarker(cleaned)) return { status: "blank" }; // "-": no location stated (BUG-012)
+
+  // A LOCATION that is only a region ("ON", "MI", "Ontario") names no place. It is neither a venue (it was being stored
+  // as venue_name_raw) nor "says nothing" (feedDefaultCity must not attach the feed's city to it: BUG-012). Its own status
+  // lets callers keep the stated region without inventing a venue or a city.
+  if (REGION_ONLY_RE.test(cleaned)) return { status: "region_only", candidateRegion: cleaned.trim() };
 
   const tribe = tryTribeGrammar(cleaned);
   if (tribe) return tribe;

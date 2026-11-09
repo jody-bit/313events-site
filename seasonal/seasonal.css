@@ -31,6 +31,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .sc-fell-back .sc-credit{display:none}
 .sc-pending{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--accent,#F5C400);color:#0A0A0A;padding:3px 7px;position:absolute;left:6px;bottom:6px;font-weight:700}
+.sc-pending-fb{display:none}
+.sc-fell-back .sc-pending-fb{display:block}
 .sc-pending-hero{left:auto;right:10px;top:10px;bottom:auto;z-index:2}
 .sc-illus-hero{left:auto;right:10px;top:10px;bottom:auto;z-index:2}
 .sc-filters{display:grid;grid-template-columns:1fr minmax(240px,360px);gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}

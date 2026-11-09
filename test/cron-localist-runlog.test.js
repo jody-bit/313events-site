@@ -341,6 +341,28 @@ async function run() {
   }
   console.log("PASS: campus buildings are not linked to the one venue on file at their shared address");
 
+  // --- 8a. An owner-corrected or editorially held row is never withdrawn, even when the source stops listing it. ---
+  {
+    const held = event("Held Recital", { instances: [instance("2026-10-20", "19:30")], types: ["Concerts & Performances"], ...PLACES.MACOMB_CENTER });
+    const plain = event("Plain Recital", { instances: [instance("2026-10-21", "19:30")], types: ["Concerts & Performances"], ...PLACES.MACOMB_CENTER });
+    const others = Array.from({ length: 12 }, (_, i) => event(`Talk ${i + 1}`, { instances: [instance(isoPlusDays("2026-10-25", i), "18:00")], ...PLACES.CENTER_CAMPUS }));
+    const t = tenants({ today: "2026-10-05", macomb: [held, plain, ...others] });
+    const { tables } = world({ venues: [], upstream: t.upstream });
+    const id = (e) => `localist-macomb-${e._schedule[0].id}`;
+    await runConnector("cron-localist.js");
+    Object.assign(byId(tables, id(held)), { status: "approved", internal_note: "EDITORIAL-HOLD 2026-11-04 owner: keep" });
+    Object.assign(byId(tables, id(plain)), { status: "approved" });
+    t.setToday("2026-10-06");
+    held.status = "canceled"; plain.status = "canceled";
+    const res = await runConnector("cron-localist.js");
+    assert.strictEqual(res._status, 200, JSON.stringify(res._body));
+    assert.strictEqual(byId(tables, id(plain)).status, "rejected", "control: an ordinary approved row is withdrawn when cancelled");
+    assert.strictEqual(byId(tables, id(held)).status, "approved", "a held row is left exactly as the owner left it");
+    assert.ok(!/Withdrawn by the Localist connector/.test(byId(tables, id(held)).internal_note), "and gets no withdrawal line");
+    assert.strictEqual(res._body.withdrawn, 1);
+  }
+  console.log("PASS: owner-held rows are not withdrawn");
+
   // --- 8. Withdrawal, return, and what a run must not erase. ---
   {
     const concert = event("Fall Choral Concert", { instances: [instance("2026-10-20", "19:30")], types: ["Concerts & Performances"], ...PLACES.MACOMB_CENTER });

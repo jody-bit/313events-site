@@ -44,6 +44,31 @@ const FAILURE_RE = /^(Fetch failed|Error:|Skipped — unrecognized|Parsed \d+ ev
 const EMPTY_RE = /^Fetched OK — 0 events found/;
 const HAD_EVENTS_RE = /^([1-9]\d*) events? found/;
 
+// A bare "fetch failed" hides why. The underlying Node/undici error carries a short machine code on err.code or
+// err.cause.code. Only values in these two fixed sets are ever recorded as NEW metadata: a known network/undici code
+// or a known undici error name. Any other value (an unknown code, a code-shaped secret, free text) is omitted, never
+// echoed. Scope: this constrains only the added " (cause: ...)" suffix. The existing "Error: " + err.message text is
+// unchanged by this patch and is NOT redacted by it.
+const KNOWN_ERROR_CODES = new Set([
+  "ECONNREFUSED", "ECONNRESET", "ECONNABORTED", "ENOTFOUND", "EAI_AGAIN", "ETIMEDOUT", "EHOSTUNREACH", "ENETUNREACH",
+  "EPIPE", "EPROTO", "CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN",
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY", "ERR_TLS_CERT_ALTNAME_INVALID",
+  "ERR_SSL_WRONG_VERSION_NUMBER", "ERR_SSL_PROTOCOL_ERROR", "ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR",
+  "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_HEADERS_TIMEOUT", "UND_ERR_BODY_TIMEOUT", "UND_ERR_SOCKET",
+  "UND_ERR_ABORTED", "UND_ERR_CLOSED", "UND_ERR_DESTROYED", "UND_ERR_REQ_CONTENT_LENGTH_MISMATCH",
+  "UND_ERR_RES_CONTENT_LENGTH_MISMATCH", "UND_ERR_RESPONSE_STATUS_CODE", "UND_ERR_INFO", "UND_ERR_INVALID_ARG",
+  "UND_ERR_NOT_SUPPORTED", "HPE_INVALID_CONSTANT", "HPE_HEADER_OVERFLOW", "HPE_UNEXPECTED_CONTENT_LENGTH",
+]);
+const KNOWN_ERROR_NAMES = new Set(["ConnectTimeoutError", "HeadersTimeoutError", "BodyTimeoutError", "SocketError", "AbortError"]);
+function describeFetchError(err) {
+  const seen = [];
+  for (let e = err, depth = 0; e && typeof e === "object" && depth < 3; e = e.cause, depth++) {
+    if (typeof e.code === "string" && KNOWN_ERROR_CODES.has(e.code)) seen.push(e.code);
+    else if (typeof e.name === "string" && KNOWN_ERROR_NAMES.has(e.name) && depth > 0) seen.push(e.name);
+  }
+  return seen.length ? ` (cause: ${[...new Set(seen)].join(", ")})` : "";
+}
+
 const stripVolatile = (s) => String(s || "").replace(/\d+/g, "#").slice(0, 160);
 
 function classifyFeedResult(result, previousResult) {
@@ -199,6 +224,7 @@ module.exports = {
   compactResults,
   otherRunInProgress,
   TIMED_OUT_RESULT,
+  describeFetchError,
   DEFERRED_RESULT,
   NOT_A_CALENDAR_RESULT,
   RUN_FAILURE_KINDS,

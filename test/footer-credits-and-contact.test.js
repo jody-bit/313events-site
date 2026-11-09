@@ -1,7 +1,7 @@
 // test/footer-credits-and-contact.test.js — Homepage V2 release corrections.
 //
 // 1. Every public page's footer navigation carries a "Photo Credits" link to
-//    /copyright#photo-credits, and keeps every link it had.
+//    /photo-credits, and keeps every link it had.
 // 2. That anchor exists and lists all seven neighbourhood photographs with
 //    creator, source link, license and the modification disclosure.
 // 3. The public business contact is jody@sentientproductions.com, and no
@@ -35,7 +35,7 @@ for (const f of footerPages) {
   const html = read(f);
   const nav = html.match(/<p class="footer-links">([\s\S]*?)<\/p>/)[1];
   NAV.forEach(([href, label]) => assert.ok(nav.includes(`<a href="${href}">${label}</a>`), `${f}: footer keeps "${label}" -> ${href}`));
-  assert.strictEqual((nav.match(/<a href="\/copyright#photo-credits">Photo Credits<\/a>/g) || []).length, 1, `${f}: footer shows one visible "Photo Credits" link to /copyright#photo-credits`);
+  assert.strictEqual((nav.match(/<a href="\/photo-credits">Photo Credits<\/a>/g) || []).length, 1, `${f}: footer shows one visible "Photo Credits" link to /photo-credits`);
   // order: Copyright / DMCA, then Photo Credits, then Accessibility
   assert.ok(nav.indexOf("Copyright / DMCA") < nav.indexOf("Photo Credits") && nav.indexOf("Photo Credits") < nav.indexOf("Accessibility"), `${f}: Photo Credits sits beside Copyright / DMCA`);
 }

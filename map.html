@@ -48,8 +48,9 @@
   copied here rather than shared (no build step exists to bundle a shared
   module — every page in this project duplicates the small helpers it needs;
   see radar.html's own comment for the precedent). The one genuinely new
-  piece is the map itself: Leaflet + CARTO's free no-API-key dark basemap
-  tiles (matches the Detroit Signal dark environment; picked over Mapbox/
+  piece is the map itself: Leaflet + CARTO's dark basemap tiles (the key
+  and monthly allowance now live in the shared map foundation file). Matches the Detroit
+  Signal dark environment; picked over Mapbox/
   Google specifically to avoid adding a paid API key to the one-time-setup
   list in README.md).
 
@@ -66,7 +67,7 @@
   already does in index.html for neighborhood_id — see loadVenueLatLng()
   below. A venue whose name matches a venues row with real lat/lng gets a
   precise pin; everything else falls back to its city's centroid from the
-  same LOCATIONS table that already backs the radius filter everywhere else
+  same KNOWN_PLACES table that already backs the radius filter everywhere else
   on the site. Approximate pins are visually marked (dashed ring, dimmer
   fill) and labeled "city center" rather than presented as exact — never
   fabricated precision, same standard as the price/free tags elsewhere.
@@ -131,6 +132,12 @@
   }
   .nav-search-btn:hover{color:var(--ink);}
   .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  .site-nav-link{position:relative;}
+  .site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
@@ -322,6 +329,8 @@
   .evt-row{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;}
   .evt-row:first-of-type{border-top:none;}
   .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);min-width:0;font-weight:700;padding-top:2px;}
+  /* "Time not confirmed" for schedule-unverified rows (Dates not confirmed): same label and 11px floor as index.html, wraps only between words. */
+  .evt-time small.evt-time-unconfirmed{display:block;max-width:64px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;font-weight:700;}
   .evt-main{flex:1;min-width:0;}
   .evt-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
   a.evt-title-link{color:inherit;text-decoration:none;}
@@ -338,11 +347,12 @@
   .tag.free{background:#3fbf6a;}
   .tag.price{background:var(--panel-hover);color:var(--ink);}
   .note{font-size:11.5px;color:#d1b34a;margin-top:3px;font-style:italic;}
-  .src{font-size:10.5px;color:var(--ink-dim);font-style:italic;}
+  .src{font-size:12px;color:var(--ink-dim);font-style:italic;}
   .evt-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
+  .evt-link:not(:last-child){margin-right:16px;} /* Get tickets / Event details / Venue website must not read as one run (390px) */
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
   @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
@@ -468,19 +478,27 @@
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-links.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
 <script src="/place-eligibility.js"></script>
+<script src="/place-list.js"></script>
+<script src="/blocked-names.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <header class="site">
@@ -505,6 +523,7 @@
       <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
     </div>
   </header>
+<main id="main" tabindex="-1">
 
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
@@ -572,9 +591,10 @@
     <div class="city-rail" id="cityRail"></div>
   </div>
 
-  <footer class="site">
+  </main>
+<footer class="site">
     <p>Always confirm dates, times, and venues before making plans. Pins without a known street address are placed at their city or suburb's center, not an exact venue.</p>
-    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
     <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
     <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -617,112 +637,16 @@ function dominantCategory(events){
 // See those files for the full sourcing comment. Same two tiers: Detroit's
 // 39 named neighborhoods (origin-only) and every in-scope city (matched
 // against event data).
-const LOCATIONS = [
-  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
-  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
-  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
-  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
-  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
-  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
-  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
-  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
-  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
-  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
-  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
-  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
-  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
-  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
-  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
-  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
-  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
-  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
-  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
-  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
-  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
-  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
-  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
-  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
-  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
-  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
-  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
-  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
-  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
-  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
-  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
-  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
-  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
-  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
-  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
-  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
-  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
-  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
-  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
-  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
-  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
-  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
-  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
-  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
-  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
-  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
-  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
-  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
-  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
-  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
-  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
-  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
-  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
-  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
-  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
-  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
-  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
-  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
-  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
-  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
-  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
-  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
-  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
-  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
-  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
-  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
-  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
-  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
-  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
-  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
-  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
-  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
-  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
-  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
-  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
-  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
-  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
-  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
-  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
-  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
-  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
-  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
-  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
-  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
-  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
-  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
-  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
-  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
-  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
-  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
-  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
-  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
-  // Copied exactly from discovery.js `places` (the project's existing sourced
-  // coordinates) so map.html and discovery agree. Phase 1 city resolution.
-  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
-  {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
-  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56},
-];
+// The place list is the shared /place-list.js (issue #16: one copy for the homepage, calendar and map). A fresh array, so this page can
+// add its own Phase 2 cities below without touching the shared list.
+const KNOWN_PLACES = PlaceList.locations();
 
 // Phase 2: sourced coordinates for 30 more in-orbit cities (city-table-phase2.js), each gated on
 // the event's source feed as jurisdiction evidence (see city-resolution.js).
-PHASE2_CITIES.forEach(c => LOCATIONS.push({name:c.name, type:'city', region:c.region, lat:c.lat, lng:c.lng, sources:c.sources}));
+PHASE2_CITIES.forEach(c => KNOWN_PLACES.push({name:c.name, type:'city', region:c.region, lat:c.lat, lng:c.lng, sources:c.sources}));
 
 const CITY_LOOKUP = new Map(
-  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
+  KNOWN_PLACES.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
 );
 
 function haversineMiles(lat1, lng1, lat2, lng2){
@@ -759,13 +683,6 @@ EVENTS.forEach(e=>{ addToByDate(byDate, e); });
 const _navToday0 = new Date();
 void _navToday0; // no month navigation on this page — kept only for parity with the other pages' init order, harmless no-op.
 
-const BLOCKED_NAMES = ["Augustus Williams"];
-function isBlockedEvent(e){
-  return BLOCKED_NAMES.some(name => {
-    const n = name.toLowerCase();
-    return e.title && e.title.toLowerCase().includes(n);
-  });
-}
 
 const FEATURE_CHIPS = [
   { key: 'tickets', label: 'Tickets available' },
@@ -791,8 +708,7 @@ let selectedPlaceKey = null;
 
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  return EventDates.detroitClock().iso; // America/Detroit, same as the homepage (2026-10-16)
 }
 
 function parseHour(timeStr){
@@ -841,14 +757,13 @@ function timeSortMinutes(timeStr){
   return range ? range.start.h*60 + range.start.m : Infinity;
 }
 function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay();
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  const c = EventDates.detroitClock();
+  const deltaToFriday = c.dow === 0 ? -2 : 5 - c.dow;
+  const fri = new Date(c.iso + "T12:00:00Z");
+  fri.setUTCDate(fri.getUTCDate() + deltaToFriday);
   return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+    const x = new Date(fri); x.setUTCDate(fri.getUTCDate()+off);
+    return x.toISOString().slice(0,10);
   });
 }
 
@@ -857,11 +772,13 @@ function getWeekendDates(){
 // the entire point of this page existing. Unlike calendar.html this page
 // has no month to browse, so it's always evaluated against the live
 // EVENTS set as a whole, not one day/list slice at a time.
-function matchesFilters(e){
-  if(isBlockedEvent(e)) return false;
+// "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
+function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
+function matchesFilters(e, skipPlace){
+  if(BlockedNames.isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('tickets') && !hasTicketLink(e)) return false;
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
@@ -880,7 +797,7 @@ function matchesFilters(e){
       if(whenMode === 'now'){
         const range = parseTimeRange(e.time);
         if(range && range.end && range.end.h >= range.start.h){
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const nowHour = EventDates.detroitClock().hours;
           const endHour = range.end.h + range.end.m/60;
           if(endHour < nowHour) return false;
         }
@@ -895,7 +812,11 @@ function matchesFilters(e){
     // now means 75 miles from Detroit's BORDER like the homepage (it was the city centre). A
     // city that cannot be placed is never guessed: it is left out of an active place filter
     // and counted by PlaceEligibility.partition() rather than lost silently.
-    if(!PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).eligible) return false;
+    if(!skipPlace){
+      const at = PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles);
+      // "Show them" lets events with a location we haven't placed through; a placed city outside the radius stays out.
+      if(!at.eligible && !(showUnplaced && at.status === 'unplaced' && isCurrentOrUpcoming(e))) return false;
+    }
   }
   return true;
 }
@@ -1037,6 +958,60 @@ function clearAllFilters(){
   render();
 }
 
+// Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
+// and "Show them" lets them through. Same wording as the homepage.
+let showUnplaced = false;
+// "Show them" and its count only cover current and upcoming events, the same window the homepage counts
+// (the calendar and map also load the last 8 days, which the notice must not count).
+function isCurrentOrUpcoming(e){
+  const today = getTodayISO();
+  const b = EventDates.bounds(e);
+  if(b.dates && b.dates.length) return b.dates.some(d => d >= today);
+  return (b.end || e.date) >= today;
+}
+function isUnmappedNow(e, lookup){
+  return originLocation && radiusMiles !== null && isCurrentOrUpcoming(e)
+    && PlaceEligibility.withinPlace(e, lookup, originLocation, radiusMiles).status === 'unplaced';
+}
+function unplacedCount(){
+  if(!originLocation || radiusMiles === null) return 0;
+  const seen = new Set();
+  let n = 0;
+  EVENTS.forEach(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return; seen.add(e.id); }
+    if(matchesFilters(e, true) && isUnmappedNow(e, CITY_LOOKUP)) n++;
+  });
+  return n;
+}
+let unplacedPlaceKey = '';
+// A different place or radius starts again with them hidden. Runs at the start of render(), before any filtering.
+function syncUnplacedKey(){
+  const key = (originLocation && radiusMiles !== null) ? originLocation.name + '|' + radiusMiles : '';
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
+function renderUnplacedNote(tray){
+  const m = unplacedCount();
+  if(!m) return;
+  const n = m.toLocaleString('en-US');
+  const note = document.createElement('span');
+  note.className = 'af-label';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'unplacedToggle';
+  btn.className = 'af-clear';
+  btn.setAttribute('aria-expanded', String(showUnplaced));
+  if(showUnplaced){
+    note.textContent = `Includes ${n} ${m === 1 ? 'event' : 'events'} with ${m === 1 ? 'a location' : 'locations'} we haven't mapped yet, so we can't confirm ${m === 1 ? 'it is' : 'they are'} inside this area.`;
+    btn.textContent = 'Hide them';
+  } else {
+    note.textContent = `${n} more ${m === 1 ? 'event has a location' : 'events have locations'} we haven't mapped yet.`;
+    btn.textContent = 'Show them';
+  }
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); const b = document.getElementById('unplacedToggle'); if(b) b.focus(); };
+  tray.appendChild(note);
+  tray.appendChild(btn);
+}
+
 function renderActiveFilters(){
   updateCatSummary();
   const tray = document.getElementById('activeFilters');
@@ -1108,6 +1083,7 @@ function renderActiveFilters(){
   clearAll.textContent = 'Clear all';
   clearAll.onclick = ()=>{ clearAllFilters(); };
   tray.appendChild(clearAll);
+  renderUnplacedNote(tray);
 }
 
 function escapeHtml(str) {
@@ -1126,6 +1102,24 @@ function truncateText(str, maxLen){
 function eventUrl(e){
   return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
 }
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
+}
+// Which link(s) an event card offers: one rule for every page, see event-links.js (a bare venue homepage is never the main button).
+function eventLinksHtml(e){
+  const L = EventLinks.resolve(e);
+  const a = (l) => { const u = safeUrl(l.url); return u ? `<a class="evt-link" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  return [L.primary, L.event, L.venue].filter(Boolean).map(a).join('');
+}
+
 function safeUrl(url) {
   if (!url) return '';
   try {
@@ -1150,11 +1144,11 @@ function priceTag(e){
 function evtRowHtml(e){
   return `
     <div class="evt-row">
-      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
       <div class="evt-main">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          ${Categories.tagHtml(e.cat, {fill:'pill'})}
+          ${Categories.tagHtml(e.cat)}
           ${priceTag(e)}
           <span>${EventDates.scheduleState(e) === 'unverified' ? 'Dates not confirmed' : new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
           ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
@@ -1162,8 +1156,7 @@ function evtRowHtml(e){
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
         ${EventDates.scheduleState(e) === 'unverified' ? `<div class="note">Published ${escapeHtml(new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))} \u2013 ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-        ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-        ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+          ${eventLinksHtml(e)}
         ${affiliateDisclosureHtml(e)}
         ${ticketStatusNoteHtml(e)}
       </div>
@@ -1235,7 +1228,14 @@ function resolvePlace(e){
 // calendar.html's own matchesFilters() calls.
 function buildPlaces(){
   const places = new Map();
-  EVENTS.filter(matchesFilters).forEach(e=>{
+  EVENTS.filter(e=>matchesFilters(e)).forEach(e=>{
+    // "Show them": events whose city is not mapped are listed in their own group and get no pin,
+    // never placed inside the chosen area (even when some other field could draw a point).
+    if(showUnplaced && isUnmappedNow(e, CITY_LOOKUP)){
+      if(!places.has('u:unmapped')) places.set('u:unmapped', {key: 'u:unmapped', label: "Not mapped yet", precise: false, unmapped: true, events: []});
+      places.get('u:unmapped').events.push(e);
+      return;
+    }
     const place = resolvePlace(e);
     if(!place) return;
     if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
@@ -1307,7 +1307,7 @@ function placePopupHtml(place){
     return `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
-      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${EventDates.scheduleState(e) === 'unverified' ? ' · Time not confirmed' : e.time ? ' · '+escapeHtml(e.time) : ''}</div>
       ${municipalityHtml(e)}${where}
     </div>
   `;
@@ -1346,6 +1346,7 @@ function renderMap(places){
   // are the foundation's; popup wording and what selecting a pin does stay here.
   const list = [];
   places.forEach(place=>{
+    if(place.unmapped) return; // no pin: its location is not mapped
     list.push({
       key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
       hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
@@ -1374,7 +1375,7 @@ function renderCityRail(places){
           <span class="cr-cat-dot" style="background:${hex}" aria-hidden="true"></span>
           <span class="cr-count">${place.events.length}</span>
           <span class="cr-name">${escapeHtml(place.label)}</span>
-          ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
+          ${place.unmapped ? '<span class="cr-approx">Not on the map</span>' : (!place.precise ? '<span class="cr-approx">City center</span>' : '')}
           <span class="cr-caret">&#9656;</span>
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(evtRowHtml).join('') : ''}</div>
@@ -1434,7 +1435,9 @@ function selectPlace(key, opts){
 }
 
 function updateMapStat(places){
-  const totalEvents = [...places.values()].reduce((sum,p)=> sum + p.events.length, 0);
+  const unmapped = [...places.values()].find(p => p.unmapped);
+  const totalEvents = [...places.values()].reduce((sum,p)=> p.unmapped ? sum : sum + p.events.length, 0);
+  const placeCount = places.size - (unmapped ? 1 : 0);
   const stat = document.getElementById('mapStat');
   loadDiag.plotted = totalEvents;
   if(loadState === 'loading'){ stat.textContent = 'Loading events…'; return; }
@@ -1442,11 +1445,13 @@ function updateMapStat(places){
     stat.innerHTML = `<span class="load-error" role="alert">Events could not be loaded. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>`;
     return;
   }
-  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`
+  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${placeCount.toLocaleString()}</strong> place${placeCount===1?'':'s'} in the Detroit Orbit`
+    + (unmapped ? ` <span class="stat-unmapped">+ ${unmapped.events.length.toLocaleString()} not on the map (location not mapped yet)</span>` : '')
     + (loadDiag.complete === false ? ` <span class="load-error" role="alert">Some events did not load. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>` : '');
 }
 
 function render(){
+  syncUnplacedKey();
   updateWhenButtons();
   updateRadiusButtons();
   updateMobileTriggers();
@@ -1531,7 +1536,7 @@ function renderLocationSuggestions(q){
     return;
   }
   const ql = q.trim().toLowerCase();
-  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  const matches = KNOWN_PLACES.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
   if(!matches.length){
     box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
   } else {
@@ -1783,7 +1788,7 @@ function readStateFromURL(){
 
   const locParam = params.get('loc');
   if(locParam){
-    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
+    const found = KNOWN_PLACES.find(l => l.name.toLowerCase() === locParam.toLowerCase());
     if(found){
       originLocation = found;
       const radiusParam = params.get('radius');
@@ -1818,12 +1823,10 @@ function decodeEntities(str){
 async function loadVenueLatLng(){
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
   try {
-    const url = `${SUPABASE_URL}/rest/v1/venues?select=name,lat,lng&lat=not.is.null&lng=not.is.null&limit=1000`;
-    const resp = await fetch(url, {
-      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-    });
-    if(!resp.ok) return;
-    const rows = await resp.json();
+    // PAGED (fetchAllRows): Supabase returns at most 1,000 rows per request whatever `limit=` says, and `limit=1000` sat exactly on
+    // that cap, so the 1,001st venue with coordinates would silently lose its pin. `order=id.asc` is the unique tiebreak paging needs.
+    const url = `${SUPABASE_URL}/rest/v1/venues?select=name,lat,lng&lat=not.is.null&lng=not.is.null&order=id.asc`;
+    const rows = (await fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` })).rows;
     if(!Array.isArray(rows)) return;
     rows.forEach(v=>{
       if(v.name && typeof v.lat === 'number' && typeof v.lng === 'number'){
@@ -1900,12 +1903,12 @@ function mapSupabaseRow(row) {
     time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink); keeping this
     // field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
   };
@@ -1924,8 +1927,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return ''; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  }
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
@@ -2000,7 +2006,7 @@ async function fetchLiveEvents() {
   // returns at most its "Max rows" setting (1,000 here) per request no
   // matter what `limit=` asks for, with no error. fetchAllRows() (paged-fetch.js)
   // pages through the whole result instead; `id.asc` makes the order total, which paging needs.
-  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
   const [, result] = await Promise.all([
     loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run, but not before this fetch starts
     fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded
@@ -2009,5 +2015,6 @@ async function fetchLiveEvents() {
 }
 loadSupabaseEvents();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>
