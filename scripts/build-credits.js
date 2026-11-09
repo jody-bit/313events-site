@@ -110,7 +110,7 @@ function build() {
     sections.push(`    <h2 class="legal-h" id="credits-${key}">${esc(label)}</h2>\n    <ul class="legal-ul">\n${rows.map(row).join("\n")}\n    </ul>`);
   }
 
-  const intro = "Photos on 313.events come from Wikimedia Commons contributors, event organizers and venues, and 313.events. Where a license asks for credit, it is listed here. Photos may be cropped or resized for display. Illustrations marked as illustrations are not photographs of the place shown.";
+  const intro = "Photos on 313.events come from Wikimedia Commons contributors and 313.events. Where a license asks for credit, it is listed here. Photos may be cropped or resized for display. Illustrations marked as illustrations are not photographs of the place shown.";
   const body = [
     header.replace(/<body>\s*/, "<body>\n  ").trimEnd(),
     "",

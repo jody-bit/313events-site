@@ -19,7 +19,17 @@
    "sharealike": true,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -37,7 +47,17 @@
    "sharealike": true,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -55,7 +75,17 @@
    "sharealike": false,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -73,7 +103,17 @@
    "sharealike": false,
    "recommended_listing": "voluntary (no attribution required)",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -91,7 +131,17 @@
    "sharealike": false,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -109,7 +159,17 @@
    "sharealike": false,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "homepage",
@@ -127,7 +187,17 @@
    "sharealike": false,
    "recommended_listing": "required",
    "public": true,
-   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file."
+   "data_note": "Added by Platform from copyright.html #photo-credits (existing published credits); not part of the Editorial seasonal data file.",
+   "verification": {
+    "state": "CARRIED_FROM_PUBLISHED_CREDIT_NOT_RECHECKED",
+    "checked_in_repo": "Credit text carried from the published copyright.html #photo-credits (added in commit 915a2bc, 2026-10-11). No Commons file-page re-read and no R&Q Mac read is recorded for this row.",
+    "to_check": [
+     "current author",
+     "current license and version",
+     "author-specified attribution wording / requested credit line",
+     "any placement obligation stated on the file page"
+    ]
+   }
   },
   {
    "collection": "fall",
