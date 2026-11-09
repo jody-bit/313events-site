@@ -6,10 +6,16 @@ const dir = process.env.REPO_DIR || process.cwd();
 const { makeMockPostgrest } = require(`${dir}/test/fixtures/mock-postgrest.js`);
 const { fetchAllRows } = require(`${dir}/paged-fetch.js`);
 
+// Known, reviewed exception: radar.html reads editorial_articles (a small press-coverage table, nowhere near 1,000 rows) with limit=2000.
+// Paging it needs `order=...,id.asc`, and whether anon may order by editorial_articles.id is not verified here, so it is left as is
+// and flagged to Platform. The entry must keep matching, so it cannot go stale or be widened.
+const ALLOWED = { "radar.html": /editorial_articles\?[^`]*limit=2000/ };
 // 1. No new capped queries: any rest/v1 URL with limit=N where N >= 1000 (limit above the cap never lifts it).
 for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
   const src = fs.readFileSync(`${dir}/${f}`, "utf8");
+  if (ALLOWED[f]) assert.ok(ALLOWED[f].test(src), `${f}: allow-list entry is stale, remove it`);
   for (const m of src.matchAll(/rest\/v1\/[^`"'\s]*[?&]limit=(\d+)/g)) {
+    if (ALLOWED[f] && ALLOWED[f].test(m[0])) continue;
     assert.ok(Number(m[1]) < 1000, `${f}: query with limit=${m[1]} sits on/above the 1,000-row cap; use fetchAllRows (${m[0].slice(0, 80)})`);
   }
 }
