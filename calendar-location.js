@@ -300,6 +300,98 @@
     });
   }
 
+
+  // ---- safe directions (draft, 2026-11-06) ---------------------------------
+  // safeDirections() decides whether a "Get directions" link may be shown. A Maps search on a partial
+  // address (a bare number, a street with no number, a region, a truncated city or ZIP, a placeholder)
+  // routes somewhere wrong, which is worse than no link. It never repairs or invents: it only says
+  // ready / not ready and why, and builds the query from the parts the data actually carries.
+  //   input: { name, address, city, state, zip, country, entrance }
+  //   -> { ready, reason, query, label }   reason: "" when ready, else a short code
+  // "entrance" is an explicit, data-supplied named entrance or meeting point (parks, campuses). It is
+  // never derived: when present it makes Directions ready with that label.
+  var PLACEHOLDER = /^(?:tba|tbd|tba\b.*|venue tba|location tba|location to be (?:announced|determined)|to be (?:announced|determined)|various(?: locations?)?|multiple locations?|secret(?: location)?|undisclosed(?: location)?|private(?: location| residence)?|online|virtual)\.?$/i;
+  var REGION_WORDS = /^(?:michigan|ohio|ontario|canada|usa|united states|mi|oh|on|us|ca)\.?$/i;
+  var SECRECY = /\b(?:secret|undisclosed|secluded)\b|\bprivate (?:location|residence|address|home)\b|\brsvp\b[^|]{0,40}\baddress\b|\baddress\b[^|]{0,40}\b(?:after|upon) (?:rsvp|registration|purchase)\b|\blocation\b[^|]{0,30}\b(?:shared|sent|revealed|released|announced|provided|given)\b[^|]{0,30}\b(?:after|upon|to ticket|to rsvp|via email|by email)\b|\bsecret location\b/i;
+  // City names that exist in more than one country within reach of the data. Extend only with names that actually occur.
+  var AMBIGUOUS_CITIES = { "windsor": true };
+  function validZip(z) { z = clean(z); return US_ZIP.test(z) || CA_POSTAL.test(z) ? z.toUpperCase() : ""; }
+  function stripTrailing(s) { return clean(s).replace(/[\s,;]+$/, "").replace(/^[\s,;]+/, ""); }
+  function safeDirections(input) {
+    input = input || {};
+    var name = clean(input.name), addr = stripTrailing(input.address), city = stripTrailing(input.city);
+    var no = function (reason) { return { ready: false, reason: reason, query: "", label: "" }; };
+    // A secrecy marker anywhere (name, address or description text) always wins: the location is deliberately withheld.
+    if (SECRECY.test([name, addr, input.description].map(clean).join(" | "))) return no("secrecy");
+    if (PLACEHOLDER.test(addr) || PLACEHOLDER.test(city)) return no("placeholder");
+    // A placeholder NAME ("Venue TBA") does not by itself hide a stated street address, but only when the caller
+    // passes addressVerified === true from the data (the event publishes a complete public address). Default: not ready.
+    if (PLACEHOLDER.test(name) && input.addressVerified !== true) return no("placeholder");
+    // a city column that carries more than a city ("Warren, MI 48092") is parsed together with the address
+    var p = /[,\d]/.test(city) ? parseAddress(addr ? addr + ", " + city : city, "") : parseAddress(addr, city);
+    var street = tidyStreet(p.street), c = stripTrailing(p.city) || (/[,\d]/.test(city) ? "" : city);
+    var state = clean(input.state).toUpperCase() || p.state, zip = validZip(input.zip || p.zip);
+    var country = clean(input.country) || p.country;
+    var entrance = stripTrailing(input.entrance);
+    if (entrance && !PLACEHOLDER.test(entrance) && !/^\d+$/.test(entrance)) {
+      var ctxE = [c, state, zip].filter(Boolean).join(", ");
+      return { ready: true, reason: "", query: [entrance, ctxE].filter(Boolean).join(", "), label: entrance };
+    }
+    if (!street && !c) return no(addr || city ? (REGION_WORDS.test(addr) || REGION_WORDS.test(city) ? "region_only" : "empty") : "empty");
+    if (!street) return no(REGION_WORDS.test(city) ? "region_only" : "city_only");
+    if (REGION_WORDS.test(street)) return no("region_only");
+    if (/^\d+$/.test(street.replace(/[\s,]/g, ""))) return no("number_only");
+    if (!hasHouseNumber(street)) return no("street_only");
+    // a house number needs a street NAME after it ("123 St", "123 Dr" are not addresses)
+    var seg = street.split(",").map(clean).filter(function (x) { return /^\d+[A-Za-z]?\b/.test(x); })[0] || "";
+    var rest = seg.replace(/^\d+[A-Za-z]?\s*/, "").toLowerCase().replace(/[.,]/g, "").split(/\s+/).filter(function (w) { return w && !CORE_DROP.test(w) && !/^\d+[A-Za-z]?$/.test(w); });
+    if (!rest.length || !rest.some(function (w) { return /[a-z]/.test(w) || /^\d+(?:st|nd|rd|th)$/.test(w); })) {
+      if (!/\b\d+(?:st|nd|rd|th)\b|\b\d+\s+(?:mile|mi)\b/i.test(seg)) return no("number_only");
+    }
+    // no separate city is acceptable only when the address itself carries a state and a valid ZIP/postal code
+    if (!c && !(state && zip)) return no("city_missing");
+    if (c && (REGION_WORDS.test(c) || STATE_NAMES[c.toLowerCase()])) return no("region_only");
+    if (c && (/\d/.test(c) || /\s[A-Za-z]\.?$/.test(c) || c.length < 3)) return no("truncated_city");
+    var regionOk = CA_PROVINCES.test(state) || (US_STATE.test(state) && !CA_PROVINCES.test(state));
+    // Which country does the data itself point to? Each signal is only what is stored, never inferred from the city.
+    var sigCA = CA_PROVINCES.test(state) || CA_POSTAL.test(zip) || /^(?:canada|ca|can)$/i.test(country);
+    var sigUS = (US_STATE.test(state) && !CA_PROVINCES.test(state)) || US_ZIP.test(zip) || COUNTRY_US.test(country) || country === "US";
+    // Conflicting evidence (a province with a US ZIP, a US state with a Canadian postal code, ...) is a data error: no link.
+    if (sigCA && sigUS) return no("conflicting_region");
+    // A city name shared by places in different countries ("Windsor": Ontario, Connecticut, ...) needs a stated
+    // region, postal/ZIP code or country. Without one the link would be a guess, so it is not ready (a region is never inferred).
+    if (c && AMBIGUOUS_CITIES[normKey(c)] && !(sigCA || sigUS)) return no("ambiguous_city");
+    var ctx = [c, [regionOk ? state : "", zip].filter(Boolean).join(" ")];
+    // Country is added only when the data says which one: a Canadian province or postal code => Canada,
+    // a US state or ZIP => USA. A bare "Windsor" is left bare rather than guessed in either direction.
+    var cty = sigCA ? "Canada" : (sigUS ? "USA" : "");
+    var q = [street].concat(ctx, [cty]).filter(Boolean).join(", ");
+    return { ready: true, reason: "", query: q, label: "" };
+  }
+
+  // Sourcing for the placeholder-name rescue: an explicit, reviewed record in data/address-verified.json
+  // ({eventId, street, city, verifiedAt, verifiedBy, source}). True only when the record is complete AND the event's
+  // own resolved street and city still equal the recorded ones, so an address that later changes in the source
+  // drops the link until it is re-verified. Pure; the page supplies the parsed JSON.
+  function addressVerifiedFor(e, entries) {
+    e = e || {};
+    if (!Array.isArray(entries) || !e.id) return false;
+    var rec = entries.filter(function (x) { return x && String(x.eventId) === String(e.id); })[0];
+    if (!rec || isBlank(rec.street) || isBlank(rec.city) || isBlank(rec.verifiedAt) || isBlank(rec.verifiedBy) || isBlank(rec.source)) return false;
+    var r = resolveForEvent(e);
+    return !!r.street && !!r.city && streetKey(r.street) === streetKey(rec.street) && normKey(r.city) === normKey(rec.city);
+  }
+
+  // Event pages: the resolver's chosen parts (event address first, venue fallback, nothing invented),
+  // unless the event's and venue's addresses disagree, in which case no link (existing conflict rule).
+  function directionsForEvent(e) {
+    e = e || {};
+    var line = streetLineParts(e);
+    if (line.conflict) return { ready: false, reason: "conflict", query: "", label: "" };
+    var r = resolveForEvent(e);
+    return safeDirections({ name: e.venue, description: e.description, addressVerified: e.addressVerified === true, address: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country, entrance: e.entrance });
+  }
+
   // ---- serialisation -------------------------------------------------------
   // RFC 5545 §3.3.11 TEXT: escape backslash first, then ; , and newlines.
   function icsEscape(str) {
@@ -330,6 +422,9 @@
     resolve: resolve,
     resolveForEvent: resolveForEvent,
     streetLineForEvent: streetLineForEvent,
+    safeDirections: safeDirections,
+    directionsForEvent: directionsForEvent,
+    addressVerifiedFor: addressVerifiedFor,
     sharedStreetLine: sharedStreetLine,
     parseAddress: parseAddress,
     icsEscape: icsEscape,
