@@ -55,8 +55,10 @@ async function readAllVenues(SUPABASE_URL, headers, select) {
 
 // Fetches every venue once per cron run and returns a Map of normalized
 // name -> venue id. Only 83 venues today (bounded, growing slowly by
-// hand-reviewed research, not per-event) — a single unpaged fetch is fine
-// and avoids a per-row network round trip. Returns an empty Map (never
+// hand-reviewed research, not per-event), so this is a handful of requests
+// per run, not one per row. It IS paged (readAllVenues above): Supabase caps
+// a single request at 1,000 rows, so a plain read would silently stop there
+// once the table grew past that. Returns an empty Map (never
 // throws) on any fetch failure, so a lookup outage degrades to "no venue_id
 // this run" rather than failing the whole cron — same fail-soft convention
 // as the rest of this project's crons.
