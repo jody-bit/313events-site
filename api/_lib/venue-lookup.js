@@ -148,8 +148,8 @@ function isBlank(v) {
   return v === null || v === undefined || (typeof v === "string" && v.trim() === "");
 }
 
-// Fetches every venue once per run (same bounded, unpaged-fetch reasoning
-// as buildVenueNameToIdMap above) and returns both:
+// Fetches every venue once per run (paged, same as buildVenueNameToIdMap
+// above) and returns both:
 //   byName: Map<normalized venue name, { id, address, city } | AMBIGUOUS_VENUE_NAME>
 //   byId:   Map<venue id, { id, address, city }>
 // Fails soft to two empty Maps on any problem, same convention as every
