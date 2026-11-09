@@ -76,4 +76,8 @@ After each upsert, `organizer-attribution` applies the same tier A/B rules to th
 ## 8. Gates and open decisions
 
 Held until Jody's explicit GO on each exact artifact: (a) the production migration SQL, (b) the retroactive write after the dry-run counts, (c) any contact publication, (d) every new `scope-guard.js` allow-list entry.
-Decisions needed before Phase 1: route name (`/promoters/<slug>` or `/organizers/<slug>`), role vocabulary, promoter-type vocabulary, whether `locked` tombstones are visible in admin by default.
+Phase 1 many-to-many co-promoters is owner-approved (Jody, 2026-11-09); it is not re-asked. The items below are **proposals** the plan proceeds on; Jody can change them without blocking preparation:
+- **Route:** `/promoters/<slug>` (index at `/promoters/`). Old slugs 301 to the current one via `organizer_slug_history`.
+- **Roles (`event_organizers.role`):** `presenter` (default, at most one primary), `co_promoter`, `host`, `sponsor`. Venue, source and series are never roles (`DEC-005`).
+- **Promoter type (`organizers.type`, editorial, one value):** `promoter`, `collective`, `venue_operator`, `festival`, `nonprofit`, `label_or_station`, `other`. Type is never derived from event categories.
+- **Tombstones:** an admin unlink is kept as a locked row, shown in admin under a "removed links" filter, hidden by default.
