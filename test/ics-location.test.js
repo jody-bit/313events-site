@@ -408,10 +408,9 @@ function run() {
     for (const marker of ["-", "--", " - ", "–", "—", ".", "...", "- -"]) {
       assert.strictEqual(parseIcsLocation(marker).status, "blank", `${JSON.stringify(marker)} states no location`);
     }
-    // A bare region is NOT turned into the placeholder: it is left as the
-    // text it is (one "MI" and one "ON" were in production that day). Nor is
-    // any real word.
-    for (const real of ["MI", "ON", "OH", "Michigan", "Ontario", "Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "M1 Concourse", "Oh!", "On", "TBD", "N/A"]) {
+    // A bare region is neither blank nor a venue: it is "region_only" (below).
+    // Real words, including mixed-case ones, are still kept as text.
+    for (const real of ["Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "M1 Concourse", "Oh!", "On", "TBD", "N/A"]) {
       const result = parseIcsLocation(real);
       assert.strictEqual(result.status, "unparseable", `${JSON.stringify(real)} is kept as text`);
       assert.strictEqual(result.rawText, real);
@@ -645,6 +644,23 @@ function run() {
     assert.strictEqual(knownCity("Sterling Hts", "MI"), "Sterling Heights");
     assert.strictEqual(knownCity("Twp", "MI"), null);
     assert.strictEqual(cityOf("Senior Center Shelby Twp MI 48316"), "Shelby Township");
+  }
+
+  // --- Region-only LOCATION ("ON", "MI", "Ontario"): a stated region, not a venue and not "says nothing". ---
+  {
+    for (const text of ["ON", "MI", "OH", "Ontario", "Michigan", "ON.", " ON ", "<p>ON</p>"]) {
+      const r = parseIcsLocation(text);
+      assert.strictEqual(r.status, "region_only", text);
+      assert.ok(!("candidateName" in r) && !("rawText" in r), text); // no venue name, no raw-text venue
+    }
+    // Unchanged neighbours: blank markers, a real structured venue, and real text that merely contains a region word.
+    assert.strictEqual(parseIcsLocation("-").status, "blank");
+    assert.strictEqual(parseIcsLocation("").status, "blank");
+    assert.strictEqual(parseIcsLocation("The Capitol Theatre, 121 University Ave. W., Windsor, ON, N9A 5P4, Canada").status, "parsed");
+    assert.strictEqual(parseIcsLocation("Online").status, "unparseable");
+    assert.strictEqual(parseIcsLocation("Caesars Windsor, Windsor ON").status, "unparseable");
+    assert.strictEqual(parseIcsLocation("Cedar Point, Sandusky, Ohio").status, "unparseable");
+    assert.strictEqual(parseIcsLocation("Pelee Island, ON").status, "unparseable");
   }
 
   console.log("ics-location.test.js: all assertions passed");

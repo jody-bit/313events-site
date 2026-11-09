@@ -116,8 +116,8 @@ async function open(url, opts) {
   const page = loadPage({
     url: url || "/", now: opts.now || NOW, seed: SEED, fetch: api.fetch,
     geolocation: opts.geolocation,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("place-list.js"), read("blocked-names.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "place-list.js", "blocked-names.js", "discovery.js", "calendar-location.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("place-list.js"), read("blocked-names.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "place-list.js", "blocked-names.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;
@@ -214,12 +214,12 @@ async function run() {
     assert.strictEqual(v.url, "/", "a view with no filters has a clean URL");
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Anytime");
     assert.strictEqual(page.el("whereTriggerSub").textContent, "Everywhere");
-    assert.strictEqual(page.el("filterTriggerSub").textContent, "All types");
+    assert.strictEqual(page.el("filterTriggerSub").textContent, "All categories");
     assert.deepStrictEqual(litCats(page), [], "no category is selected, so no category chip is lit");
-    assert.ok(chip(page, "#allTypesChip").classList.contains("active"), '"All types" is the current choice');
+    assert.ok(chip(page, "#allTypesChip").classList.contains("active"), '"All categories" is the current choice');
     assert.ok(page.el("filterBar").querySelectorAll(".chip").every((c) => !/class="dot"|style=/.test(c.innerHTML)), "no chip carries a colour dot");
     assert.deepStrictEqual(page.el("filterBar").querySelectorAll(".chip").map((c) => c.textContent),
-      ["All types", ...D.categories.map((c) => c.label), "Free only", "Tickets available", "Has photo", "Community submitted", "On the Radar", "Reset filters"],
+      ["All categories", ...D.categories.map((c) => c.label), "Free only", "Tickets available", "Has photo", "Community submitted", "On the Radar", "Reset filters"],
       "the chip row: same chips, same order, same wording (no Clothing optional chip — STORY-023)");
     assert.strictEqual(page.el("whenDateInput").value, day(0), 'the "From" input shows today');
     assert.strictEqual(page.el("whenDateInput").min, day(0));
@@ -454,13 +454,13 @@ async function run() {
     let v = view(page);
     assert.deepStrictEqual(v.state.what.paths, ["music"], "clicking a chip selects that category");
     assert.deepStrictEqual(litCats(page), ["music"], "and it alone is lit");
-    assert.ok(!chip(page, "#allTypesChip").classList.contains("active"), '"All types" is no longer the current choice');
+    assert.ok(!chip(page, "#allTypesChip").classList.contains("active"), '"All categories" is no longer the current choice');
     assert.strictEqual(chip(page, '.chip[data-cat="music"]').getAttribute("aria-pressed"), "true");
     assert.strictEqual(chip(page, '.chip[data-cat="film"]').getAttribute("aria-pressed"), "false");
     assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Out There", "Sunday Show"], "only music events");
     assert.ok(!v.titles.includes("No Category"), "an uncategorised event is not in any selected category");
     assert.deepStrictEqual(v.tray, ["All Upcoming", "1 of 15 categories"], "the tray collapses the selection into one chip, as before");
-    assert.strictEqual(page.el("filterTriggerSub").textContent, "1/15 cats");
+    assert.strictEqual(page.el("filterTriggerSub").textContent, "1 of 15 categories");
     assert.strictEqual(v.url, "/?when=all&cats=music");
 
     // Multi-select adds.
@@ -494,7 +494,7 @@ async function run() {
     assert.deepStrictEqual(litCats(page), []);
     assert.strictEqual(v.url, "/?when=all");
 
-    // Tray ✕ on the category chip, and "All types".
+    // Tray ✕ on the category chip, and "All categories".
     chip(page, '.chip[data-cat="sports"]').click();
     trayRemove(page, "1 of 15 categories");
     assert.deepStrictEqual(view(page).state.what.paths, []);

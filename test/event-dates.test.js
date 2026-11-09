@@ -171,7 +171,7 @@ function run() {
   // The migration and the anon column grant (2026-10-13_events_date_columns_anon_grant.sql) are applied,
   // so every page's main event query asks for the two columns: index.html through the owner-rights view
   // events_public, calendar.html and map.html through the raw events table (anon column grant).
-  const sel = { "index.html": /events_public\?[^`]*select=[^`]*date_semantics,occurrence_dates/, "calendar.html": /rest\/v1\/events\?status=eq\.approved&select=[^`]*date_semantics,occurrence_dates/, "map.html": /rest\/v1\/events\?status=eq\.approved&start_date[^`]*select=[^`]*date_semantics,occurrence_dates/ };
+  const sel = { "index.html": /events_public\?[^`]*select=[^`]*date_semantics,occurrence_dates/, "calendar.html": /rest\/v1\/events\?status=eq\.approved&select=[^`]*date_semantics,occurrence_dates/, "map.html": /rest\/v1\/events\?status=eq\.approved&(?:start_date|or=\(start_date)[^`]*select=[^`]*date_semantics,occurrence_dates/ };
   for (const page of Object.keys(sel)) assert.ok(sel[page].test(read(page)), `${page}: main query selects date_semantics and occurrence_dates`);
   // recurrence_evidence is internal and must never be selected by a page.
   for (const page of ["index.html", "calendar.html", "map.html"]) assert.ok(!/recurrence_evidence/.test(read(page)), `${page}: does not select recurrence_evidence`);

@@ -450,7 +450,9 @@ function run() {
     };
     function readOnPage(surface, url) {
       const page = PAGES[surface];
-      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), PlaceList: require(`${REPO_DIR}/place-list.js`) };
+      const ED = require(`${REPO_DIR}/event-dates.js`);
+      // Calendar/Map take "today" from EventDates.detroitClock (PR-4); pin it to this test's fixed now.
+      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), EventDates: Object.assign({}, ED, { detroitClock: (n) => ED.detroitClock(n || new Date(NOW)) }), PlaceList: require(`${REPO_DIR}/place-list.js`) };
       vm.createContext(sb);
       vm.runInContext(FAKE_DATE(NOW), sb);
       vm.runInContext([
