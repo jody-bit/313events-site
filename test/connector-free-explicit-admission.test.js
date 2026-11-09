@@ -15,7 +15,7 @@ const NOT_FREE = [
   "Free admission for members and children under 12", "Free admission before 5 pm; $15 after", "Free tour with museum admission",
   "Free workshop for ticket holders", "Free opening reception, $20 tickets for the concert", "Not free to attend",
   "Free admission on the first Friday of each month", "Gallery talk. Free parking behind the building.", "Free with museum admission.",
-  "This event is not free of charge", "Admission isn't free",
+  "This event is not free of charge", "Admission isn't free", "Free admission is not available", "Free admission is no longer offered", "Free admission isn't available",
 ];
 const FREE = ["Free admission for everyone.", "Free admission, all welcome.", "Admission is free.", "Free and open to the public.", "Free of charge. Doors at 6.", "A free exhibition. Free entry."];
 (async () => {
