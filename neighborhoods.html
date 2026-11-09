@@ -140,6 +140,8 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
+<script src="/paged-fetch.js"></script>
+<script src="/event-dates.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -161,7 +163,7 @@
 
     <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -188,9 +190,19 @@ function escapeHtml(str) {
 let ALL_NEIGHBORHOODS = []; // [{id, name, areaNote, upcomingCount}]
 let filterQuery = '';
 
+// Detroit "today" from the shared helper (event-dates.js), the same date the homepage, calendar and map use.
 function getTodayISO(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return EventDates.detroitClock().iso;
+}
+
+// Per-neighborhood "N upcoming" from the paged events_public rows (one row per event).
+function neighborhoodCounts(rows){
+  const countByName = new Map();
+  (Array.isArray(rows) ? rows : []).forEach(e=>{
+    if(!e.neighborhood) return;
+    countByName.set(e.neighborhood, (countByName.get(e.neighborhood) || 0) + 1);
+  });
+  return countByName;
 }
 
 function matchesQuery(n, q){
@@ -243,19 +255,18 @@ async function init(){
     // Both requests are independent of each other (the count query doesn't
     // need the neighborhood list to already exist) -- fetched in parallel,
     // not sequentially, same fix as this session's map.html change.
-    const [neighResp, eventsResp] = await Promise.all([
+    // The events count is PAGED (fetchAllRows): Supabase returns at most 1,000 rows per request whatever `limit=` says, so the
+    // old single `limit=3000` request counted an arbitrary first ~1,000 upcoming rows. `order=id.asc` is the unique tiebreak
+    // paging needs. Same rule as the venue directory: starts today or later, plus ongoing exhibitions (date_semantics
+    // continuous, not ended). Today is Detroit's date.
+    const todayISO = getTodayISO();
+    const [neighResp, eventsResult] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name,area_note&order=name.asc&limit=200`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/events_public?select=neighborhood&start_date=gte.${getTodayISO()}&neighborhood=not.is.null&limit=3000`, { headers }),
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/events_public?select=id,neighborhood&or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))&neighborhood=not.is.null&order=id.asc`, headers).catch(() => ({ rows: [] })),
     ]);
     if(!neighResp.ok) throw new Error('neighborhoods fetch failed');
     const neighRows = await neighResp.json();
-    const eventRows = eventsResp.ok ? await eventsResp.json() : [];
-
-    const countByName = new Map();
-    (Array.isArray(eventRows) ? eventRows : []).forEach(e=>{
-      if(!e.neighborhood) return;
-      countByName.set(e.neighborhood, (countByName.get(e.neighborhood) || 0) + 1);
-    });
+    const countByName = neighborhoodCounts(eventsResult.rows);
 
     ALL_NEIGHBORHOODS = (Array.isArray(neighRows) ? neighRows : []).map(row => ({
       id: row.id,

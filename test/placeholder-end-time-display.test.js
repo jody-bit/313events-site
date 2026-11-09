@@ -62,3 +62,17 @@ assert.strictEqual(late.startTime, "223000");
 assert.strictEqual(late.endTime, "003000", "10:30 PM start: default end rolls past midnight");
 assert.strictEqual(late.endDate, "20261018");
 console.log("PASS: Add to Calendar uses the 2-hour default once the placeholder end is dropped");
+
+// 2026-11-05 (P1 audit, 204 live rows keep the filler after #250/#258): the render guard also covers the 24-hour and dotted spellings,
+// and the venue page, which printed time_display raw, now goes through the same rule.
+{
+  const dd = EventDates.displayTime;
+  assert.strictEqual(dd("5:00 PM – 11:59 P.M."), "5:00 PM");
+  assert.strictEqual(dd("5:00 PM – 23:59"), "5:00 PM");
+  assert.strictEqual(dd("23:59"), "23:59", "a bare 23:59 is not an end");
+  assert.strictEqual(dd("10:00 PM – 11:58 PM"), "10:00 PM – 11:58 PM");
+  const venue = fs.readFileSync(`${REPO_DIR}/venue-template.html`, "utf8");
+  assert.ok(/<script src="\/event-dates\.js"><\/script>/.test(venue), "venue page loads event-dates.js");
+  assert.ok(!/escapeHtml\(e\.time_display\)/.test(venue) && /EventDates\.displayTime\(e\.time_display/.test(venue), "venue page renders time through displayTime");
+  console.log("PASS: filler end also hidden for 24-hour/dotted spellings and on the venue page");
+}
