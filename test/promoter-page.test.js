@@ -24,11 +24,11 @@ assert.deepStrictEqual(PP.mapOrganizer({ name: "X", instagram: "not a handle!" }
 
 // Contacts: public AND verified only; private, unverified and malformed never render.
 const contacts = PP.publicContacts([
-  { kind: "email", value: "hi@fleatroit.example", visibility: "public", verified_at: "2026-11-01" },
-  { kind: "email", value: "private@x.example", visibility: "private", verified_at: "2026-11-01" },
-  { kind: "phone", value: "313-555-0100", visibility: "public", verified_at: null },
-  { kind: "email", value: "not an email", visibility: "public", verified_at: "2026-11-01" },
-  { kind: "website", value: "https://fleatroit.example/", visibility: "public", verified_at: "2026-11-01" }
+  { kind: "email", value: "hi@fleatroit.example", verified_at: "2026-11-01" },
+  { kind: "email", value: "private@x.example", verified_at: null },
+  { kind: "phone", value: "313-555-0100", verified_at: null },
+  { kind: "email", value: "not an email", verified_at: "2026-11-01" },
+  { kind: "website", value: "https://fleatroit.example/", verified_at: "2026-11-01" }
 ]);
 assert.deepStrictEqual(contacts.map((c) => c.value), ["hi@fleatroit.example", "fleatroit.example"]);
 
@@ -59,7 +59,7 @@ const media = PP.publicMedia([{ image_url: "https://x.example/a.jpg", credit: "P
 const ld = PP.jsonLd({ ...p, heroImage: "https://x.example/bare-hero.jpg" }, contacts, "https://313.events/promoters/fleatroit", media);
 assert.strictEqual(ld.image, "https://x.example/a.jpg", "JSON-LD image comes from the credited, alt-texted media only");
 assert.strictEqual(PP.jsonLd({ ...p, heroImage: "https://x.example/bare-hero.jpg" }, contacts, "u", []).image, undefined, "a bare hero_image_url never reaches JSON-LD");
-assert.strictEqual(PP.publicContacts([{ kind: "email", value: "a@b.example?cc=x@y.example", visibility: "public", verified_at: "2026-11-01" }]).length, 0, "no query string in an email");
+assert.strictEqual(PP.publicContacts([{ kind: "email", value: "a@b.example?cc=x@y.example", verified_at: "2026-11-01" }]).length, 0, "no query string in an email");
 assert.deepStrictEqual(PP.chunk([1,2,3,4,5], 2), [[1,2],[3,4],[5]]);
 assert.strictEqual(PP.COLUMNS.media.view, "organizer_media_public");
 assert.strictEqual(ld["@type"], "Organization"); assert.strictEqual(ld.email, "hi@fleatroit.example");

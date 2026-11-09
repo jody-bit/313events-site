@@ -16,7 +16,7 @@
     },
     contact: {
       view: "organizer_contacts_public",
-      organizerId: "organizer_id", kind: "kind", value: "value", verifiedAt: "verified_at", visibility: "visibility"
+      organizerId: "organizer_id", kind: "kind", value: "value", verifiedAt: "verified_at"
     },
     media: {
       view: "organizer_media_public",
@@ -66,11 +66,11 @@
     };
   }
 
-  // Contacts: public AND verified only. Anything else (private, unverified, unknown kind) never renders.
+  // Contacts: the view exposes public, verified rows only (visibility is filtered inside it); verified_at is still required here. Anything else (private, unverified, unknown kind) never renders.
   function publicContacts(rows) {
     var c = COLUMNS.contact, out = [];
     (rows || []).forEach(function (r) {
-      if (!r || r[c.visibility] !== "public" || !r[c.verifiedAt]) return;
+      if (!r || !r[c.verifiedAt]) return; // the view already lists public rows only; verified_at stays a fail-closed check here
       var kind = str(r[c.kind]), value = str(r[c.value]);
       if (!value) return;
       if (kind === "email" && /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)) out.push({ kind: kind, value: value, href: "mailto:" + value });
