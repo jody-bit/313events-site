@@ -975,6 +975,7 @@ function renderEvent(e){
   };
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
   if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
+  if(e.free === true) ld.isAccessibleForFree = true; // same source-confirmed is_free the Free badge uses
   if(ldState !== 'unverified'){
     const ldScript = document.createElement('script');
     ldScript.type = 'application/ld+json';
