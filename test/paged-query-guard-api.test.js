@@ -86,8 +86,6 @@ const KNOWN = [
   "api/_lib/event-upsert.js:events:unbounded",
   "api/_lib/status-lookup.js:events:unbounded",
   "api/_lib/venue-lookup.js:events:unbounded",
-  "api/_lib/venue-lookup.js:venues:limit=1000",
-  "api/admin-venues.js:venues:limit=1000",
   "api/cron-antonartcenter.js:events:limit=1000",
   "api/cron-motorcitywine.js:events:limit=1000",
   "api/cron-post-to-facebook.js:events:unbounded",
