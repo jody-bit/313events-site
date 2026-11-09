@@ -26,7 +26,8 @@
 const { milesFromDetroitBorder } = require("./detroit-boundary");
 const { ORBIT_MILES } = require("./localist-rows");
 const { PHASE2_CITIES } = require("../../city-table-phase2");
-const { _defaultConfig } = require("../../discovery");
+// The one shared place list (issue #16); discovery.js reads the same module, so this is the same table the homepage uses.
+const { PLACES } = require("../../place-list");
 
 const CLASSES = Object.freeze({
   STORED_COORDINATES: "stored_venue_coordinates",
@@ -66,7 +67,7 @@ const CITY_INDEX = (() => {
     index.get(key).push({ region, lat, lng, table });
   };
   for (const c of PHASE2_CITIES) add(c.name, c.region, c.lat, c.lng, "city-table-phase2 (Census TIGERweb)");
-  for (const p of _defaultConfig.places || []) {
+  for (const p of PLACES) {
     if (Array.isArray(p) && p[1] === "city") add(p[0], p[2], p[3], p[4], "discovery places");
   }
   return index;

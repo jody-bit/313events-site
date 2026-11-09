@@ -43,13 +43,13 @@
     "featured": true
    },
    "long-family-orchard-and-farm": {
-    "summary": "Commerce Township orchard and farm market with fresh-pressed cider through Thanksgiving Eve, November 25, 2026. The Fun Farm and corn maze ended November 1.",
+    "summary": "Commerce Township orchard and farm market with fresh-pressed cider through Thanksgiving Eve. The Fun Farm and corn maze ended November 1.",
     "featured": false,
     "lastDay": "2026-11-25",
     "removeAt": "2026-11-26T00:00:00-05:00"
    },
    "plymouth-orchards-and-cider-mill": {
-    "summary": "Plymouth orchard with award-winning cider and donuts. The Red Shed, at a separate address, stays open through November 25.",
+    "summary": "Plymouth orchard with award-winning cider and donuts. The cider mill's last day is November 8. The separate Red Shed Market, at another address, stays open through November 25.",
     "featured": false,
     "lastDay": "2026-11-08",
     "removeAt": "2026-11-09T00:00:00-05:00"
@@ -327,6 +327,7 @@
    {
     "id": "pewabic-holiday-showcase",
     "name": "Pewabic Holiday Showcase",
+    "eventId": "d37e3f8e-1859-4377-a04c-56de5a26e715",
     "city": "Detroit",
     "region": "MI",
     "categories": [
@@ -338,13 +339,33 @@
     "summary": "Find a gift with a making story at Pewabic’s Holiday Showcase, and add a museum visit or a separately booked workshop to the trip. Showcase begins November 5, 2026; closing date being confirmed.",
     "website": "https://www.pewabic.org/pages/holiday-showcase",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
-     "illustrative": false
+    "src": "/assets/seasonal/pewabic-holiday-showcase-card.webp",
+    "illustrative": false,
+    "alt": "Three turquoise ceramic snowflake ornaments hanging from lavender ribbons, framed by evergreen and sage greenery on a dark background.",
+    "acquired": {
+     "file": "/assets/seasonal/pewabic-holiday-showcase-card.webp",
+     "bytes": 268618,
+     "sha256": "ae737d1f36d6a6884cb81e5c47a1157a9d7f76d16f36c869ee2741437f1b1843",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-11-06"
+    },
+    "ownerClearance": {
+     "statement": "Jody, 313.events project timeline 2026-11-06 01:28Z: \"Jody supplies attached pewabic_snowflakes_2022-1.png.webp and requests using this promotional image for Pewabic Holiday Showcase.\" Owner-supplied promotional artwork, not owner-photographed. Photographer, source URL and licence are NOT recorded and none is asserted. The 2022 in the file name is not an event year and the image is not claimed to depict 2026.",
+     "recordedBy": "Claude Code (Editorial)",
+     "recordedAt": "2026-11-06",
+     "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb26FraywzmHT3i3uKiktRrD",
+     "original": {
+      "file": "/assets/guides/source/pewabic-holiday-showcase-snowflake-ornaments-original.webp",
+      "sha256": "84ff281931c327f00c645d792d2df29a36115de804a0445ac1fb3091ca1d038f",
+      "note": "Owner-supplied upload (pewabic_snowflakes_2022-1.png.webp, 1600x1600, 677798 bytes), kept unmodified; card is a 1600x1067 crop (y 260 to 1327, all three ornaments intact) resized to 1280x853, no upscaling."
+     }
     }
+   }
    },
    {
     "id": "post-make-the-gift-workshops",
-    "name": "POST: make-the-gift workshops",
+    "name": "POST workshops",
     "city": "Detroit (Jefferson-Chalmers)",
     "region": "MI",
     "categories": [
@@ -358,7 +379,7 @@
      "src": "/assets/placeholders/event-800.webp",
      "illustrative": false
     },
-    "checkUrl": "https://www.mutualadoration.com/"
+    "checkUrl": "https://www.mutualadoration.com/collections/workshops-at-post"
    },
    {
     "id": "detroit-urban-craft-fair",
@@ -424,6 +445,7 @@
    {
     "id": "walkerville-brewery-holiday-market",
     "name": "Walkerville Brewery Holiday Market",
+    "eventId": "3c070389-19a4-4719-bfd1-4196b1bebec7",
     "city": "Windsor",
     "region": "ON",
     "categories": [
@@ -435,7 +457,8 @@
     "summary": "Browse local makers inside Walkerville Brewery, with Saturday devoted to pottery from Windsor-area makers. Give the trip a Walkerville story rather than treating Windsor as an afterthought. Friday November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m.",
     "website": "https://www.walkervillebrewery.com/events/holidaymarket-2026",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
+     "src": "/assets/seasonal/off-the-beaten-orbit-walkerville-holiday-market-card.webp",
+     "alt": "Gold script reading Walkerville Brewery Holiday Market, framed by evergreen boughs, holly, red ornaments, a gingerbread house, iced cookies and a cranberry cocktail.",
      "illustrative": false
     },
     "lastDay": "2026-11-21",
@@ -474,8 +497,27 @@
     "summary": "Go beyond a conventional car display at Stahls, where motor history shares the space with a remarkable music collection. The November evening opening gives the trip a timely reason. Night at the Museum: November 19, 5 to 8 p.m.",
     "website": "https://www.stahlsauto.com/visit/",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
-     "illustrative": false
+     "src": "/assets/seasonal/stahls-motors-and-music-card-1280.webp",
+     "alt": "Stahls Night at the Museum, motors, music, after dark: a chrome-grilled classic car in the Stahls Motors & Music Experience showroom, Chesterfield, Michigan, under the title Night at the Museum.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/stahls-motors-and-music-card-1280.webp",
+      "bytes": 93146,
+      "sha256": "6c31555a1be91b0f12668eaa943489938cde0cb3e1960304264b86c7197fc596",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-07"
+     },
+     "ownerClearance": {
+      "statement": "Jody, 313.events project timeline 2026-11-06 02:56Z, supplying the Stahls Night at the Museum artwork: \"use these images for these events\". Owner-supplied promotional artwork; creator, source URL and licence are NOT recorded and none is asserted; not owner-photographed. The artwork prints no date: dates and hours on this card come only from the official source. Recorded here for the collection card as a draft use that the owner's words (which named the events) do not explicitly cover; release words are Jody's.",
+      "recordedBy": "Claude Code (Editorial)",
+      "recordedAt": "2026-11-07",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb4SR24q4uKTwtEVyyfUqd8W",
+      "original": {
+       "sha256": "eb5d02568a9c25f0acba1615b4f892edf277919572e5956143cf4245aaffcc4e",
+       "note": "1500x1000 PNG, 1,224,014 bytes, identical to the upload; preserved at project files editorial/stahls-card-2026-11-07/image/original/. The card is the same 3:2 frame resized to 1280x853, no crop, no upscaling."
+      }
+     }
     }
    },
    {
@@ -491,11 +533,122 @@
     "summary": "Make Rochester’s open-air Kris Kringle Market the reason for the evening trip: browse handcrafted gifts, greenery and specialty foods, then explore the downtown around it. Friday December 4, 4 to 10 p.m.; Saturday December 5, noon to 10 p.m.; West Fourth Street and Walnut Boulevard.",
     "website": "https://www.downtownrochestermi.com/kris-kringle-market/",
     "image": {
-     "src": "/assets/placeholders/event-800.webp",
-     "illustrative": false
+     "src": "/assets/seasonal/rochester-kris-kringle-market-card-1280.webp",
+     "alt": "Illustration of an evening Christmas market on a Rochester, Michigan street: white vendor tents and small wooden huts strung with lights, a Kris Kringle Market banner overhead, shoppers in winter coats and Santa hats at a gift stall, and the words Kris Kringle Market, Rochester, Michigan across the sky.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/rochester-kris-kringle-market-card-1280.webp",
+      "bytes": 263746,
+      "sha256": "5760d33949e9bb778f4e690320dd2280a17b6f9f677a14afa743ab23f89cd686",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-06"
+     },
+     "ownerClearance": {
+      "statement": "Jody, 313.events project timeline 2026-11-06 02:42Z: \"for the Kris Kringle market\" (attached KrisKringleMarket.png); 2026-11-06 13:53Z: \"YES — DROP THE ‘ILLUSTRATIVE IMAGE’ BADGE (#347)… I approve removing the ‘Illustrative image’ badge from the Kris Kringle event card.\" Owner-supplied promotional artwork: a rendered illustration, not an event photograph, not owner-photographed. It does not show the actual market. Dates and times on this card come only from the official source, never from the artwork.",
+      "recordedBy": "Claude Code (Editorial)",
+      "recordedAt": "2026-11-06",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb9hJCWt1S5banpM7BrC9qcC",
+      "note": "Creator, generation tool, source URL and licence are NOT recorded and none is asserted. Original preserved unmodified in project files (editorial/kris-kringle-2026-11-06/image/original/kris-kringle-market-owner-supplied-original.png, 1536x1024 PNG, 2819941 bytes, sha256 e8bcc4618d0c9b25cc08d5e6f114d933fb271160ac947985a791c3084bb10391); the card is that image resized to 1280x853 (same 3:2 frame, no crop, no upscaling)."
+     }
     },
     "lastDay": "2026-12-05",
     "removeAt": "2026-12-06T00:00:00-05:00"
+   },
+   {
+    "id": "krampus-night-canterbury-village",
+    "name": "Krampus Night at Canterbury Castle",
+    "city": "Lake Orion",
+    "region": "MI",
+    "categories": [
+     "markets"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "A 21-and-over Krampus Night at Canterbury Castle: buffet dinner, cash bar, live music from Mystic Pouch, games, comedy and an appearance by Krampus and his elves. Sunday November 22; doors 5 p.m., dinner and show 6 to 8 p.m. $59.95 per person as the operator lists; confirm fees.",
+    "website": "https://www.canterburyvillage.com/event/krampus-night/",
+    "checkUrl": "https://www.canterburyvillage.com/event/krampus-night/",
+    "image": {
+     "src": "/assets/seasonal/off-the-beaten-orbit-krampus-night-card.webp",
+     "alt": "Four horned, masked Krampus characters and a smiling woman in a red and black costume pose outside a distillery tasting room decorated with holiday lights at night.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-krampus-night-card.webp",
+      "bytes": 100534,
+      "sha256": "1d80f01acb7f0eb883a94d709aa08f8c6645e16cc6ac373681ecfb77d55f4bdd",
+      "width": 600,
+      "height": 600,
+      "acquiredAt": "2026-11-06"
+     },
+     "ownerClearance": {
+      "statement": "Image supplied by Jody in the 313.events project thread 2026-11-06 with a request to add it to the Krampus Night listing and collection entry. Photographer, source URL and licence are NOT recorded.",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMbQJTmoLa3TkWPk8rZE8SBX3",
+      "original": {
+       "sha256": "0969c9d3050c3cc0cce7a1fcfa5831685784376f7fb1ebc05c6ee8c19f6b7f7f",
+       "note": "600x600 PNG, preserved at project files editorial/krampus-night-2026-11-06/image/original/"
+      }
+     }
+    },
+    "lastDay": "2026-11-22",
+    "removeAt": "2026-11-23T00:00:00-05:00",
+    "lastDayKind": "event",
+    "evidence": [
+     {
+      "level": "official",
+      "websiteChecked": false,
+      "url": "https://www.canterburyvillage.com/event/krampus-night/",
+      "checkedAt": "2026-11-06",
+      "note": "Details from the production event row (R&Q read-only export 2026-11-06, source checked 2026-11-05); organizer page not re-read from this environment. Category 'markets' is the closest existing fit (Canterbury Village is a shopping village); flagged for owner."
+     }
+    ]
+   },
+   {
+    "id": "fleatroit-carousel-noel-night-satellite-popup",
+    "name": "Fleatroit \u00d7 Carousel: Noel Night Satellite Pop-Up",
+    "eventPageId": "c66d10e1-960b-4d8c-a4dd-d5650a346c8b",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "markets"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fleatroit and Carousel set up a satellite pop-up in the garage at 441 W. Canfield St. in the Cass Corridor, between Robyn and Shinola: vintage clothing, housewares, gifts and crafts. Saturday December 5, 4 to 10 p.m.",
+    "image": {
+     "src": "/assets/seasonal/off-the-beaten-orbit-fleatroit-noel-night-card.webp",
+     "alt": "Hand-lettered poster on red and pink stripes reading Fleatroit x Carousel, Satellite Pop-Up, Vintage Clothing, Housewares, Gifts, Crafts, Noel Night.",
+     "illustrative": false,
+     "acquired": {
+      "file": "/assets/seasonal/off-the-beaten-orbit-fleatroit-noel-night-card.webp",
+      "bytes": 60506,
+      "sha256": "61b12eb514f7f9f4647e5bb24af14a3f01521067f3fd5129a90a8e03bf98bc2b",
+      "width": 1280,
+      "height": 853,
+      "acquiredAt": "2026-11-08"
+     },
+     "ownerClearance": {
+      "statement": "Owner-supplied promotional flyer (IMG_2766.jpeg) supplied by Jody in the 313.events project thread 2026-11-08 with the request to publish the event and add it to Off the Beaten Orbit. Creator, source URL and licence are NOT recorded and none is asserted; no visible credit is shown.",
+      "recordedBy": "Claude Code (Event Intelligence thread)",
+      "recordedAt": "2026-11-08",
+      "messageRef": "cmsg_0139NVW4pFWSu54bJXVBHDMb2SuJ5v396sp1Zsyg97kEwC",
+      "original": {
+       "sha256": "ab85c23f821a51bb64f4d674105eab7e610de0d1a8393cd72cf4fbab925c45ef",
+       "note": "1320x1755 JPEG (315,960 bytes), preserved unmodified at assets/events/source/fleatroit-noel-night-2026-12-05-owner-supplied-original.jpeg. The card is the top 1320x880 band (3:2) resized to 1280x853, so the Instagram interface icons at the bottom of the screenshot are not shown."
+      }
+     }
+    },
+    "lastDay": "2026-12-05",
+    "removeAt": "2026-12-06T00:00:00-05:00",
+    "lastDayKind": "event",
+    "evidence": [
+     {
+      "level": "owner-supplied-flyer",
+      "websiteChecked": false,
+      "checkedAt": "2026-11-08",
+      "checkedBy": "Claude Code (Event Intelligence thread)",
+      "note": "No official Fleatroit or Carousel website is known; details are read from the owner-supplied flyer only. The flyer prints '441 Canfield St.'; 'W.' and ZIP 48201 are confirmed from Shinola's own site (441 West Canfield Street, the first-ever Shinola store) and Midtown Detroit Inc.'s Noel Night schedule (441 W. Canfield, Third Man Records Cass Corridor and others), with the flyer's own Cass Corridor and Shinola cues (checked 2026-11-08; Robyn's own address and any Fleatroit/Carousel page were not found; no parcel or USPS lookup possible from the cloud). 'Between Robyn and Shinola' is wayfinding only, not proof the event is inside either business. No admission, vendor or ticket information is stated and none is shown."
+     }
+    ]
    }
   ],
   "lead": [
