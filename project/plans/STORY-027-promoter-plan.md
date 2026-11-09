@@ -21,7 +21,7 @@ Routing: primary `workstream:platform`, supporting `experience` and `event-intel
 - `organizer_aliases(id, organizer_id, alias, kind: former_name|alias|rename, created_at)` with a unique index on `lower(alias)`; the old slug is kept in `organizer_slug_history` so renames redirect (stable URLs).
 - `event_organizers(event_id, organizer_id, role, provenance, confidence, evidence jsonb, locked boolean default false, created_at)`; primary key `(event_id, organizer_id)`. Roles: `presenter|co_promoter|host|sponsor` (source, venue and series are separate and never roles: `DEC-005`).
 - `organizer_contacts` (private): `organizer_id, kind, value, visibility (public|private), verified_by, verified_at, source_note`. RLS on, no anon policy; a public view `organizer_contacts_public` returns only `visibility='public'` rows with `verified_at` set.
-- `organizer_media`: gallery images with `credit`, `alt_text`, `license/provenance`; public view only for rows with credit and alt filled.
+- `organizer_media` (private): `id, organizer_id, image_url, credit, alt_text, provenance, sort_order, status, created_at`; public view `organizer_media_public` (contract below) only for approved rows with credit and alt filled.
 - `organizer_corrections`: moderated public correction requests (queue; nothing publishes without admin approval).
 - Views: `organizers_public` (status `active`, safe columns, plus `upcoming_count` and `next_event_date` derived from `events_public`) and `event_organizers_public` (approved events only). RLS: new tables enabled, no anon policy; anon reads only through the views (SZ-01 pattern).
 
@@ -32,6 +32,14 @@ Routing: primary `workstream:platform`, supporting `experience` and `event-intel
 **Phase 4 — Directory.** A-Z index with category, geography, type, activity and free filters, next date and upcoming count, inactive archive. Upcoming/past categories are derived from linked published events; promoter type is editorial.
 
 **Phase 5 — Retroactive linking (section 5) then future-import hook (section 6).** Held until its own GO.
+
+### Public view contracts (PROPOSED column lists; no migration is approved)
+
+Anon reads only these views; the base tables have RLS on and no anon policy except the existing `organizers` policy.
+- `organizers_public`: `id uuid, name text, slug text, description text, bio text, website text, instagram text, social_links jsonb, type text, image_url text, hero_image_url text, upcoming_count integer, next_event_date date`. Active organizers only; `description` is the short bio, `bio` the long one, `image_url` the logo.
+- `event_organizers_public`: `event_id uuid, organizer_id uuid, role text`. Approved events only. Provenance, confidence, evidence and lock state are never exposed.
+- `organizer_contacts_public`: `organizer_id uuid, kind text, value text, verified_at timestamptz`. The view filters on `visibility = 'public'` and `verified_at is not null` internally, so every row it returns is public and verified. It does **not** expose `visibility`, `verified_by` or `source_note`: `visibility` would always be `'public'`, and the rest are moderation fields. `verified_at` is exposed so the page can show "verified" without a second query.
+- `organizer_media_public`: `id uuid, organizer_id uuid, image_url text, credit text, alt_text text, sort_order integer`. The private `organizer_media` table also holds the provenance and license note, `created_at` and any review state, none of which are exposed. The view returns a row only when `credit` and `alt_text` are non-empty and the image is approved, so an uncredited or alt-less image never reaches the page.
 
 ## 3. Touchpoints
 
