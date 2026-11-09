@@ -27,6 +27,11 @@ async function fetchAllPagedRows(url, headers, options) {
   if (!/[?&]order=[^&]*\bid\.asc\b/.test(url)) throw new Error("fetchAllPagedRows: the url needs a deterministic order ending in id.asc");
   const fetchFn = (options && options.fetch) || fetch;
   const maxRequests = (options && options.maxRequests) || MAX_PAGE_REQUESTS;
+  // Opt-in (default off, so every existing caller is unchanged): a page whose rows are ALL ids already read means the server is not
+  // advancing, so stop with what was read. For small, slow-growing tables (venues) whose callers are also exercised against fixtures
+  // that answer every offset with the same rows; a real server answers an offset past the end with an empty page.
+  const stopWhenNoNewRows = !!(options && options.stopWhenNoNewRows);
+  const seenIds = new Set();
   const rows = [];
   let pages = 0;
   for (let request = 0; request < maxRequests; request++) {
@@ -41,8 +46,11 @@ async function fetchAllPagedRows(url, headers, options) {
     if (!resp.ok) return { ok: false, rows, pages, error: `HTTP ${resp.status}` };
     if (!Array.isArray(body)) return { ok: false, rows, pages, error: "Unexpected response shape" };
     if (body.length === 0) return { ok: true, rows: dedupe(rows), pages };
+    let fresh = 0;
+    for (const r of body) { if (!r || r.id == null || !seenIds.has(r.id)) fresh++; if (r && r.id != null) seenIds.add(r.id); }
     rows.push(...body);
     pages++;
+    if (stopWhenNoNewRows && fresh === 0) return { ok: true, rows: dedupe(rows), pages };
   }
   return { ok: false, rows: dedupe(rows), pages, error: `Still reading after ${maxRequests} requests (${rows.length} rows)` };
 }
