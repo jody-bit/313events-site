@@ -12,12 +12,20 @@ const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,
 // A negation that FOLLOWS the phrase within a few plain words ("is not available", "will not be offered", "won't be
 // offered", "does not / doesn't apply", "cannot / can't be offered", "no longer"). A comma or other punctuation ends the window.
 const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|no longer|\w+n't)\b/i;
+// The same negation set off by punctuation ("Free admission, not available." / ": not available" / "(not available)" /
+// ". Not available.") only when the negator is followed by an availability word, so "Free admission, not to be missed!"
+// stays FREE; and end-of-offer wording ("has been discontinued", "has ended", "is over", "is suspended", "replaced by",
+// "was offered last year but not this year"). Over-rejecting is the safe direction.
+const FREE_PUNCT = "[\\s,:;.()\\-–—]*";
+const FREE_NEGATED_ACROSS = new RegExp("^" + FREE_PUNCT + "(?:not|no longer|never|\\w+n't)\\s+(?:\\w+\\s+){0,2}?(?:available|offered|provided|included|applicable|possible|valid|this year|anymore)\\b", "i");
+const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
 function statesFreeAdmission(text) {
   const s = String(text || "");
   for (const m of s.matchAll(FREE_ADMISSION)) {
     const before = s.slice(Math.max(0, m.index - 30), m.index);
     const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
-    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after) || FREE_NEGATED_AFTER.test(after)) continue;
+    const afterLong = s.slice(m.index + m[0].length, m.index + m[0].length + 70);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after) || FREE_NEGATED_AFTER.test(after) || FREE_NEGATED_ACROSS.test(afterLong) || FREE_OFFER_ENDED.test(afterLong)) continue;
     return true;
   }
   return false;
