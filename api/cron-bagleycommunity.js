@@ -292,6 +292,9 @@ const TIER2_TITLE_PATTERN = new RegExp(
   "i"
 );
 
+// Explicit admission wording only ("free admission", "free to attend", "admission is free", "free of charge"...).
+const TIER2_EXPLICIT_FREE = /\b(free (admission|entry|event|to attend|and open to the public)|admission (is )?free|free of charge)\b/i;
+
 function parseTier2Post(post) {
   const titleRaw = decodeEntities(stripHtml(post.title && post.title.rendered) || "");
   if (!titleRaw) return null;
@@ -352,7 +355,7 @@ function parseTier2Post(post) {
     end_date: null,
     time_display: time ? formatTime(time.hour, time.minute) : null,
     is_all_day: !time,
-    is_free: true, // no price signal observed on any Tier 2 event to date — never guessed otherwise
+    ...(TIER2_EXPLICIT_FREE.test(`${titleRaw} ${plainContent || ""}`) ? { is_free: true } : {}), // FREE only when the post says so; no price signal is "not stated", key omitted so a stored value stands
     price_from: null,
     ticket_url: post.link || null,
     image_url: null,
