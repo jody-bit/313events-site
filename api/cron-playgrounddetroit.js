@@ -19,7 +19,7 @@ const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|
 // "was offered last year but not this year"). Over-rejecting is the safe direction.
 const FREE_PUNCT = "[\\s,:;.()\\-–—]*";
 const FREE_NEGATED_ACROSS = new RegExp("^" + FREE_PUNCT + "(?:not|cannot|no longer|never|\\w+n't)\\s+(?:\\w+\\s+){0,2}?(?:available|offered|provided|included|applicable|possible|valid|this year|anymore)\\b", "i");
-const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
+const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:discontinued\\b|(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
 function statesFreeAdmission(text) {
   const s = String(text || "");
   for (const m of s.matchAll(FREE_ADMISSION)) {
