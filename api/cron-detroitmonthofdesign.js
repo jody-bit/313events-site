@@ -9,8 +9,9 @@ const { upsertEventRows } = require("./_lib/event-upsert");
 const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
 const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
 const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
-// "Free admission is not available": the negation FOLLOWS the phrase.
-const FREE_NEGATED_AFTER = /^\s*(?:(?:is|are|was|will be)\s+)?(?:not|no longer)\b|^\s*(?:isn't|aren't|wasn't)\b/i;
+// A negation that FOLLOWS the phrase within a few plain words ("is not available", "will not be offered", "won't be
+// offered", "does not / doesn't apply", "cannot / can't be offered", "no longer"). A comma or other punctuation ends the window.
+const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|no longer|\w+n't)\b/i;
 function statesFreeAdmission(text) {
   const s = String(text || "");
   for (const m of s.matchAll(FREE_ADMISSION)) {

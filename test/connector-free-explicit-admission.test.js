@@ -16,8 +16,11 @@ const NOT_FREE = [
   "Free workshop for ticket holders", "Free opening reception, $20 tickets for the concert", "Not free to attend",
   "Free admission on the first Friday of each month", "Gallery talk. Free parking behind the building.", "Free with museum admission.",
   "This event is not free of charge", "Admission isn't free", "Free admission is not available", "Free admission is no longer offered", "Free admission isn't available",
+  "Free admission will not be offered", "Free admission won't be offered this year", "Free admission does not apply", "Free admission doesn't apply to this show", "Free admission cannot be offered", "Free admission can't be offered",
+  "Join us for the fall show opening. Free admission will not be offered this year.", "Free admission with RSVP", "Free admission for members only",
 ];
-const FREE = ["Free admission for everyone.", "Free admission, all welcome.", "Admission is free.", "Free and open to the public.", "Free of charge. Doors at 6.", "A free exhibition. Free entry."];
+const FREE = ["Free admission for everyone.", "Free admission, all welcome.", "Admission is free.", "Free and open to the public.", "Free of charge. Doors at 6.", "A free exhibition. Free entry.",
+  "Join us Friday for live music and local food. Free admission, all ages welcome.", "Free admission — donations welcome.", "Free admission and open to everyone, not just locals."];
 (async () => {
   {
     const base = "https://www.detroitmonthofdesign.org/event-details/";
