@@ -135,6 +135,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/event-dates.js"></script>
 </head>
@@ -168,7 +169,7 @@
 
     <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -212,6 +213,29 @@ function truncateText(str, maxLen){
   const lastSpace = cut.lastIndexOf(' ');
   return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
 }
+// ---- venue events: which rows a venue page lists (regression: test/venue-ongoing-events.test.js) ----
+function detroitTodayISO(now){
+  const p = {};
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Detroit', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(now || new Date()).forEach(x => { p[x.type] = x.value; });
+  return p.year + '-' + p.month + '-' + p.day;
+}
+function venueEventsUrl(base, venueId, todayISO){
+  return `${base}/rest/v1/events_public?venue_id=eq.${encodeURIComponent(venueId)}&or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates&order=start_date.asc,id.asc&limit=100`;
+}
+// The query already narrows earlier-starting rows to continuous + not ended, so unverified past ranges cannot
+// crowd out the 100-row limit; the filter below stays as the eligibility rule.
+// Starts today or later: listed as before. Started earlier: listed only when its schedule is verified as
+// continuous (an exhibition) and it has not ended. Unverified multi-day ranges that began in the past are not
+// listed as attendable (owner rule 2026-10-16).
+function venueUpcomingEvents(rows, todayISO){
+  return rows.filter(e => {
+    if (!e || !e.start_date) return false;
+    if (e.start_date >= todayISO) return true;
+    return EventDates.scheduleState(e) === 'ongoing' && !!e.end_date && e.end_date >= todayISO;
+  }).map(e => (e.start_date < todayISO ? Object.assign({}, e, { ongoing: true }) : e));
+}
+
 function shortDateLabel(dateStr){
   return new Date(dateStr+"T12:00:00").toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
 }
@@ -315,9 +339,9 @@ function renderVenue(v, events){
       return `
         <div class="venue-event-row">
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
+            <span class="venue-event-date">${e.ongoing ? 'Through ' + escapeHtml(shortDateLabel(e.end_date)) : escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
-            ${EventDates.displayTime(e.time_display || '') ? `<span class="venue-event-time">${escapeHtml(EventDates.displayTime(e.time_display || ''))}</span>` : ''}
+            ${(!e.ongoing && EventDates.displayTime(e.time_display || '')) ? `<span class="venue-event-time">${escapeHtml(EventDates.displayTime(e.time_display || ''))}</span>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -374,12 +398,15 @@ async function init(){
 
     const venue = mapVenueRow(row, neighborhoodName);
 
-    const todayISO = new Date().toISOString().slice(0,10);
-    const eventsUrl = `${SUPABASE_URL}/rest/v1/events?venue_id=eq.${encodeURIComponent(id)}&status=eq.approved&start_date=gte.${todayISO}&select=id,title,category,start_date,time_display&order=start_date.asc&limit=100`;
+    // Detroit "today" (not the UTC date: after 7 PM EST toISOString() is already tomorrow), and events that
+    // started earlier but are still running (classified continuous, end_date >= today) are included.
+    // events_public is the approved-only public view (same source as the homepage).
+    const todayISO = detroitTodayISO();
+    const eventsUrl = venueEventsUrl(SUPABASE_URL, id, todayISO);
     const eventsResp = await fetch(eventsUrl, { headers });
     const events = eventsResp.ok ? await eventsResp.json() : [];
 
-    renderVenue(venue, Array.isArray(events) ? events : []);
+    renderVenue(venue, venueUpcomingEvents(Array.isArray(events) ? events : [], todayISO));
   } catch (err) {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('notFoundState').style.display = 'block';

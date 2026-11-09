@@ -12,7 +12,7 @@ const ROOT = process.env.REPO_DIR || process.cwd();
 const { PlaceEligibility: PE } = require(path.join(ROOT, "place-eligibility.js"));
 const { CityResolution: CR } = require(path.join(ROOT, "city-resolution.js"));
 const { PHASE2_CITIES: P2 } = require(path.join(ROOT, "city-table-phase2.js"));
-const { _build, _defaultConfig } = require(path.join(ROOT, "discovery.js"));
+const { _build, _defaultConfig } = require(path.join(ROOT, "test/fixtures/load-discovery.js"));
 const { DETROIT_BOUNDARY } = require(path.join(ROOT, "api/_lib/detroit-boundary.js"));
 
 // ---- 1. one boundary ring everywhere ----
@@ -23,14 +23,11 @@ console.log("PASS: one Detroit boundary ring and one 75-mile Orbit in all three 
 
 // ---- 2. the three surfaces share one base city table ----
 function pageCities(file) {
+  // issue #16: calendar and map no longer carry a list; they build theirs from the one shared /place-list.js.
   const html = fs.readFileSync(path.join(ROOT, file), "utf8");
-  const m = /const LOCATIONS = \[([\s\S]*?)\n\];/.exec(html);
-  assert.ok(m, file + ": LOCATIONS anchor moved");
-  const out = [];
-  const re = /\{name:"([^"]+)",\s*type:"city",\s*region:"([^"]+)",\s*lat:([-\d.]+),\s*lng:([-\d.]+)/g;
-  let x;
-  while ((x = re.exec(m[1]))) out.push({ name: x[1], type: "city", region: x[2], lat: +x[3], lng: +x[4] });
-  return out;
+  assert.ok(/const KNOWN_PLACES = PlaceList\.locations\(\);/.test(html), file + ": must build its places from PlaceList.locations()");
+  assert.ok(html.indexOf('<script src="/place-list.js"></script>') !== -1, file + ": must load /place-list.js");
+  return require(path.join(ROOT, "place-list.js")).locations().filter((l) => l.type === "city");
 }
 const homeCities = _defaultConfig.places.filter((p) => p[1] === "city").map((p) => ({ name: p[0], type: "city", region: p[2], lat: p[3], lng: p[4] }));
 const calCities = pageCities("calendar.html");
