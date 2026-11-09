@@ -679,7 +679,7 @@ function parseRaListingDate(dateStr, now = new Date()) {
 function isListingOnlyCandidateNeedingDetail(row) {
   if (!row || row.status !== "pending_review" || row.source !== "Resident Advisor") return false;
   const note = String(row.internal_note || "");
-  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || note.includes("OWNER-CORRECTION")) return false;
+  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || isOwnerSuppliedRow(row)) return false;
   const blank = (v) => v === null || v === undefined || v === "";
   return blank(row.time_display) || blank(row.venue_address_raw);
 }
@@ -728,7 +728,7 @@ async function startRaSyncSession(opts) {
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
   // Listing-only candidates (ra-candidate-promotion rows) already have an events row, so the diff above calls
   // them "known" and their detail page was never fetched: time/address stayed blank forever. Re-queue those, and
-  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected rows are skipped.
+  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected and editorial-hold rows (shared isOwnerSuppliedRow) are skipped, so they never use a retry slot.
   // Eligible ids are sorted, then rotated by day, so a row whose detail page never loads (removed, blocked) cannot
   // hold the 10 retry slots forever and starve the rest of the backlog.
   const eligible = parsed.filter((id) => isListingOnlyCandidateNeedingDetail(existingRows.get(id))).sort();

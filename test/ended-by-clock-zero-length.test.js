@@ -9,7 +9,7 @@
 const assert = require("assert");
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 global.EventDates = require(`${REPO_DIR}/event-dates.js`);
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const ev = (id, time, o = {}) => Object.assign({ id, title: "E" + id, venue: "V", cat: "community", date: "2026-11-07", endDate: "2026-11-07", time }, o);
 const at = (iso) => ({ now: new Date(iso) }); // 2026-11-07 EST = UTC-5
 const today = D.change(D.defaults(), { when: "today" });

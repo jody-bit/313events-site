@@ -308,7 +308,7 @@
     </main>
 <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -946,16 +946,27 @@ function renderEvent(e){
   // ---- JSON-LD Event schema (helps this page get picked up as a rich
   // result / event listing in search — one of the concrete organic-traffic
   // levers discussed earlier: individual shareable, structured event URLs). ----
+  // Structured-data dates follow the same schedule rule as the page (EventDates): a continuous run keeps its
+  // start/end range; a recurring series states its next evidenced occurrence, not the whole span; a
+  // schedule-unverified range is a promotional period, so no Event block is emitted (it would claim a run
+  // the page itself says is not confirmed).
+  const ldState = (typeof EventDates !== 'undefined') ? EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
+    time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) : 'confirmed';
+  const ldRecurring = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'recurring' && ldState === 'confirmed';
+  let ldStart = e.date, ldEnd = e.endDate;
+  if(ldRecurring){
+    const occ = EventDates.expand(e);
+    ldStart = EventDates.nextDate(e) || occ[occ.length - 1] || e.date;
+    ldEnd = null;
+  }
   const ld = {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": e.title,
-    "startDate": e.date,
+    "startDate": ldStart,
     // endDate (2026-09-02 audit fix): only set when genuinely later than
-    // startDate — schema.org treats a present-but-equal endDate as fine
-    // either way, but omitting it for the common single-day case keeps this
-    // block matching what it always emitted before for those events.
-    ...(e.endDate && e.endDate > e.date ? { "endDate": e.endDate } : {}),
+    // startDate; omitted for single-day events.
+    ...(ldEnd && ldEnd > ldStart ? { "endDate": ldEnd } : {}),
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     "location": { "@type": "Place", "name": e.venue, "address": e.city || "Detroit, MI" },
@@ -964,10 +975,12 @@ function renderEvent(e){
   };
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
   if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
-  const ldScript = document.createElement('script');
-  ldScript.type = 'application/ld+json';
-  ldScript.textContent = JSON.stringify(ld);
-  document.head.appendChild(ldScript);
+  if(ldState !== 'unverified'){
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify(ld);
+    document.head.appendChild(ldScript);
+  }
 }
 
 // "As seen in" — same source of truth as index.html's editorialByEvent,

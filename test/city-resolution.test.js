@@ -13,15 +13,15 @@ const { CityResolution: CR } = require(path.join(ROOT, "city-resolution.js"));
 const html = fs.readFileSync(path.join(ROOT, "map.html"), "utf8");
 
 // The real city table and resolver from map.html, evaluated in a sandbox.
-const a = html.indexOf("const LOCATIONS = [");
+const a = html.indexOf("const KNOWN_PLACES = PlaceList.locations();");
 const b = html.indexOf("function haversineMiles");
 const c = html.indexOf("const VENUE_LATLNG_MAP");
 const d = html.indexOf("// Rebuilt on every render()");
 assert.ok(a > 0 && b > a && c > b && d > c, "map.html anchors moved");
-const ctx = { CityResolution: CR, PHASE2_CITIES: require(path.join(ROOT, "city-table-phase2.js")).PHASE2_CITIES };
+const ctx = { PlaceList: require(path.join(ROOT, "place-list.js")), CityResolution: CR, PHASE2_CITIES: require(path.join(ROOT, "city-table-phase2.js")).PHASE2_CITIES };
 vm.createContext(ctx);
 vm.runInContext(
-  html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=LOCATIONS;this.CITY_LOOKUP=CITY_LOOKUP;this.resolvePlace=resolvePlace;",
+  html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=KNOWN_PLACES;this.CITY_LOOKUP=CITY_LOOKUP;this.resolvePlace=resolvePlace;",
   ctx
 );
 const place = (city) => ctx.resolvePlace({ venue: "v", city });
@@ -97,7 +97,7 @@ console.log("PASS: named cases; malformed records, Ottawa and Phase 2 cities sta
 {
   const run = (cities) => {
     const c2 = { resolvePlace: ctx.resolvePlace, CityResolution: CR, CITY_LOOKUP: ctx.CITY_LOOKUP, escapeHtml: (x) => String(x),
-      matchesFilters: () => true, timeSortMinutes: () => 0, EVENTS: cities.map((city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" })) };
+      matchesFilters: () => true, showUnplaced: false, originLocation: null, radiusMiles: null, timeSortMinutes: () => 0, EVENTS: cities.map((city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" })) };
     vm.createContext(c2);
     vm.runInContext(html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap")) +
       html.slice(html.indexOf("function sharedPointMunicipality"), html.indexOf("function placePopupHtml")) +

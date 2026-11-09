@@ -88,6 +88,10 @@ const ALLOWED = [
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   // Decision 7: rotating link check (dry by default).
   "api/_lib/link-check-run.js", "api/cron-link-check.js",
+  // Server-side paging (draft 2026-11-09, held): sitemap and link-check read every row past the 1,000-row server cap.
+  "api/_lib/paged-rows.js", "api/sitemap.js",
+  // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
+  "api/admin-venues.js", "api/_lib/venue-lookup.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
