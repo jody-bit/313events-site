@@ -89,3 +89,13 @@ Phase 1 many-to-many co-promoters is owner-approved (Jody, 2026-11-09); it is no
 - **Roles (`event_organizers.role`):** `presenter` (default, at most one primary), `co_promoter`, `host`, `sponsor`. Venue, source and series are never roles (`DEC-005`).
 - **Promoter type (`organizers.type`, editorial, one value):** `promoter`, `collective`, `venue_operator`, `festival`, `nonprofit`, `label_or_station`, `other`. Type is never derived from event categories.
 - **Tombstones:** an admin unlink is kept as a locked row, shown in admin under a "removed links" filter, hidden by default.
+
+### Open item for the owner: provenance of legacy `organizers.website` and `.instagram`
+
+`organizers_public` is proposed to expose these two legacy columns as public links, but this plan also says nothing scraped goes into a public field. Read-only repo evidence on where the values come from:
+- No application code writes `organizers`. Nothing under `api/` or `scripts/` inserts or updates it, so no cron, connector or scraper populates `website` or `instagram`.
+- The table is created by `supabase/migration_002_neighborhoods_and_organizers.sql` as "schema only, deliberately NOT populated" with a "public read organizers" `using (true)` policy. `DEC-005` says organizers are hand-curated only (effectively Paxahau alone as of 2026-09-21).
+- No repo SQL seeds an `organizers` row, so any current values were entered by hand outside the repo (SQL editor or dashboard). The repo cannot show who entered them or from what source.
+- Conclusion: most likely owner-curated, but **unverified**. Platform cannot read production here, so it has not checked the live row count or values.
+
+Proposal (not approved, no migration): until the owner confirms these values are owner-supplied, `organizers_public` does not expose the legacy `website` or `instagram`. It exposes `social_links` and `website` only from values carrying provenance (owner-supplied or claimed by the promoter, with a source note). Owner decision needed: (1) confirm the existing rows are owner-supplied, or (2) approve the stricter rule above. A production read of the `organizers` rows (name, website, instagram) would settle it.
