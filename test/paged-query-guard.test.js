@@ -19,12 +19,8 @@ const TABLES = /rest\/v1\/(events_public|events|venues)\b/;
 // Public-page consumers only: root-level html/js; not tests, api, scripts, supabase, node_modules, or the pager itself.
 const FILES = fs.readdirSync(ROOT).filter((f) => /\.(html|js)$/.test(f) && f !== "paged-fetch.js");
 
-// "file:table:reason", reason = why it is capped. #374 (neighborhood counts) and the calendar/map venue coordinates are in flight (Experience).
-const KNOWN = [
-  "neighborhoods.html:events_public:limit=3000",
-  "calendar.html:venues:limit=1000",
-  "map.html:venues:limit=1000",
-];
+// "file:table:reason", reason = why it is capped. Empty: #374 (neighborhood counts) and #377 (calendar/map venue coordinates) fixed the former offenders.
+const KNOWN = [];
 
 function classify(lines, i) {
   const win = lines.slice(i, i + 13).join("\n");
@@ -63,4 +59,4 @@ assert.strictEqual(t("fetch(`${U}/rest/v1/events?venue_id=eq.5&limit=100`)"), "b
 assert.strictEqual(t("const url = `${U}/rest/v1/events?select=id`;\nfetchAllRows(url, h)"), "paged");
 assert.strictEqual(t("const url = `${U}/rest/v1/events?select=id`;\nfetch(url, {headers:{Prefer:'count=exact'}})"), "count");
 assert.strictEqual(t("fetch(`${U}/rest/v1/events?select=id`)"), "unbounded");
-console.log("paged-query-guard: ok (" + KNOWN.length + " known offenders pending Experience's #374 and venue-coordinate fixes)");
+console.log("paged-query-guard: ok (" + KNOWN.length + " known offenders)");
