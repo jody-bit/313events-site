@@ -107,10 +107,11 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
   const grab = (re) => { const m = re.exec(cal); assert.ok(m, String(re)); return m[0]; };
   const code = [
     grab(/function resolveVenueDisplay\(row\) \{[\s\S]*?\n\}\n/),
+    grab(/function absWebUrl\(u\)\{[\s\S]*?\n\}\n/),
     grab(/function mapSupabaseRow\(row\) \{[\s\S]*?\n\}\n/),
     grab(/function streetLineHtml\(e\)\{[\s\S]*?\n\}\n/),
   ].join("\n");
-  const ctx = { CalendarLocation: CL, decodeEntities: (x) => x, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), CATS: {}, console };
+  const ctx = { CalendarLocation: CL, EventDates: require(`${REPO_DIR}/event-dates.js`), decodeEntities: (x) => x, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), CATS: {}, URL, console };
   vm.createContext(ctx);
   vm.runInContext(code + "\nthis.map = mapSupabaseRow; this.html = streetLineHtml;", ctx);
   const row = (o) => Object.assign({ id: "1", start_date: "2026-10-20", title: "T", category: "music" }, o);
@@ -157,8 +158,8 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
   assert.ok(!/function\s+(?:formatAddress|streetLine|buildStreetLine)\b/.test(map), "map.html defines its own address formatter");
   assert.ok(!/geocod|nominatim/i.test(map.replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, "")), "map.html must not geocode");
   const grab = (re) => { const m = re.exec(map); assert.ok(m, String(re)); return m[0]; };
-  const code = [grab(/function eventWhereHtml\(e\)\{[\s\S]*?\n\}\n/), grab(/function placeStreetHtml\(place\)\{[\s\S]*?\n\}\n/), grab(/function placePopupHtml\(place\)\{[\s\S]*?\n\}\n/)].join("\n");
-  const ctx = { CalendarLocation: CL, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), eventUrl: () => "", console };
+  const code = [grab(/function sharedPointMunicipality\(e\)\{[\s\S]*?\n\}\n/), grab(/function municipalityHtml\(e\)\{[\s\S]*?\n\}\n/), grab(/function eventWhereHtml\(e\)\{[\s\S]*?\n\}\n/), grab(/function placeStreetHtml\(place\)\{[\s\S]*?\n\}\n/), grab(/function placePopupHtml\(place\)\{[\s\S]*?\n\}\n/)].join("\n");
+  const ctx = { CalendarLocation: CL, EventDates: require(`${REPO_DIR}/event-dates.js`), CityResolution: { resolve: () => null }, CITY_LOOKUP: new Map(), escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), eventUrl: () => "", console };
   vm.createContext(ctx);
   vm.runInContext(code + "\nthis.popup = placePopupHtml;", ctx);
   const ev = (o) => Object.assign({ title: "T", date: "2026-10-20", time: "7 PM", venue: "Sound Board", locVenueAddress: "2901 Grand River", locVenueCity: "Detroit", locVenueZip: "48201" }, o);

@@ -1,0 +1,1387 @@
+{
+"_meta": "Derived from EI orbit/v3 evidence CSV (sha256 3c57e69b401d8569adc1089a631a3736481f8f958f27fe1a82aabca9f9dcedc2): best tier per (zip, normalized accepted_name).",
+"48001": {
+"clay township": "strong",
+"pearl beach": "strong",
+"pearl beach cdp": "strong",
+"algonac": "strong",
+"algonac city": "strong"
+},
+"48002": {
+"berlin township": "strong"
+},
+"48003": {
+"almont township": "strong",
+"almont": "strong",
+"almont village": "strong",
+"dryden township": "census_supported",
+"imlay township": "census_supported"
+},
+"48005": {
+"armada township": "strong",
+"armada": "strong",
+"armada village": "strong"
+},
+"48006": {
+"greenwood township": "strong",
+"kenockee township": "strong"
+},
+"48009": {
+"birmingham": "strong",
+"birmingham city": "strong",
+"bloomfield township": "census_supported",
+"bloomfield charter township": "census_supported"
+},
+"48014": {
+"mussey township": "strong",
+"capac": "strong",
+"capac village": "strong",
+"imlay township": "census_supported",
+"almont township": "census_supported"
+},
+"48015": {
+"center line": "strong",
+"center line city": "strong"
+},
+"48017": {
+"clawson": "strong",
+"clawson city": "strong"
+},
+"48021": {
+"eastpointe": "strong",
+"eastpointe city": "strong",
+"st clair shores": "census_supported",
+"st clair shores city": "census_supported"
+},
+"48022": {
+"emmett township": "strong",
+"emmett": "strong",
+"emmett village": "strong"
+},
+"48023": {
+"ira township": "strong"
+},
+"48025": {
+"southfield township": "strong",
+"beverly hills": "strong",
+"beverly hills village": "strong",
+"franklin": "strong",
+"franklin village": "strong",
+"bingham farms": "strong",
+"bingham farms village": "strong",
+"farmington hills": "census_supported",
+"farmington hills city": "census_supported"
+},
+"48026": {
+"fraser": "strong",
+"fraser city": "strong"
+},
+"48027": {
+"wales township": "strong"
+},
+"48028": {
+"clay township": "strong"
+},
+"48030": {
+"hazel park": "strong",
+"hazel park city": "strong"
+},
+"48032": {
+"grant township": "strong",
+"worth township": "census_supported",
+"fremont township": "census_supported"
+},
+"48033": {
+"southfield": "strong",
+"southfield city": "strong"
+},
+"48034": {
+"southfield": "strong",
+"southfield city": "strong",
+"bingham farms": "census_supported",
+"bingham farms village": "census_supported",
+"southfield township": "census_supported"
+},
+"48035": {
+"clinton township": "strong",
+"clinton charter township": "strong",
+"st clair shores": "census_supported",
+"st clair shores city": "census_supported"
+},
+"48036": {
+"clinton township": "strong",
+"clinton charter township": "strong",
+"mount clemens": "census_supported",
+"mount clemens city": "census_supported"
+},
+"48038": {
+"clinton township": "strong",
+"clinton charter township": "strong"
+},
+"48039": {
+"cottrellville township": "strong",
+"marine city": "strong",
+"marine city city": "strong"
+},
+"48040": {
+"marysville": "strong",
+"marysville city": "strong"
+},
+"48041": {
+"riley township": "strong",
+"memphis": "strong",
+"memphis city": "strong",
+"richmond township": "census_supported"
+},
+"48042": {
+"macomb township": "strong"
+},
+"48043": {
+"mount clemens": "strong",
+"mount clemens city": "strong",
+"clinton township": "census_supported",
+"clinton charter township": "census_supported"
+},
+"48044": {
+"macomb township": "strong"
+},
+"48045": {
+"harrison township": "strong",
+"harrison charter township": "strong",
+"st clair shores": "census_supported",
+"st clair shores city": "census_supported"
+},
+"48047": {
+"chesterfield township": "strong",
+"new baltimore": "strong",
+"new baltimore city": "strong"
+},
+"48048": {
+"lenox township": "strong",
+"new haven": "strong",
+"new haven village": "strong"
+},
+"48049": {
+"clyde township": "strong",
+"ruby": "strong",
+"ruby cdp": "strong"
+},
+"48050": {
+"lenox township": "strong"
+},
+"48051": {
+"chesterfield township": "strong"
+},
+"48054": {
+"china township": "strong",
+"east china township": "strong"
+},
+"48059": {
+"fort gratiot township": "strong",
+"fort gratiot charter township": "strong",
+"burtchville township": "strong",
+"lakeport": "strong",
+"lakeport cdp": "strong",
+"port huron": "census_supported",
+"port huron city": "census_supported"
+},
+"48060": {
+"port huron township": "strong",
+"port huron charter township": "strong",
+"port huron": "strong",
+"port huron city": "strong"
+},
+"48062": {
+"richmond township": "strong",
+"richmond": "strong",
+"richmond city": "strong",
+"lenox township": "census_supported"
+},
+"48063": {
+"columbus township": "strong",
+"richmond": "census_supported",
+"richmond city": "census_supported"
+},
+"48064": {
+"casco township": "strong",
+"richmond": "strong",
+"richmond city": "strong"
+},
+"48065": {
+"bruce township": "strong",
+"romeo": "strong",
+"romeo village": "strong",
+"washington township": "census_supported",
+"washington charter township": "census_supported"
+},
+"48066": {
+"roseville": "strong",
+"roseville city": "strong",
+"eastpointe": "census_supported",
+"eastpointe city": "census_supported"
+},
+"48067": {
+"royal oak": "strong",
+"royal oak city": "strong"
+},
+"48069": {
+"pleasant ridge": "strong",
+"pleasant ridge city": "strong"
+},
+"48070": {
+"huntington woods": "strong",
+"huntington woods city": "strong"
+},
+"48071": {
+"madison heights": "strong",
+"madison heights city": "strong",
+"royal oak": "census_supported",
+"royal oak city": "census_supported"
+},
+"48072": {
+"berkley": "strong",
+"berkley city": "strong"
+},
+"48073": {
+"royal oak": "strong",
+"royal oak city": "strong",
+"berkley": "census_supported",
+"berkley city": "census_supported",
+"clawson": "census_supported",
+"clawson city": "census_supported"
+},
+"48074": {
+"kimball township": "strong",
+"marysville": "census_supported",
+"marysville city": "census_supported"
+},
+"48075": {
+"southfield": "strong",
+"southfield city": "strong"
+},
+"48076": {
+"southfield": "strong",
+"southfield city": "strong",
+"lathrup village": "strong",
+"lathrup village city": "strong"
+},
+"48079": {
+"st clair township": "strong",
+"st clair": "strong",
+"st clair city": "strong",
+"marysville": "census_supported",
+"marysville city": "census_supported",
+"east china township": "census_supported",
+"kimball township": "census_supported"
+},
+"48080": {
+"st clair shores": "strong",
+"st clair shores city": "strong"
+},
+"48081": {
+"st clair shores": "strong",
+"st clair shores city": "strong"
+},
+"48082": {
+"st clair shores": "strong",
+"st clair shores city": "strong"
+},
+"48083": {
+"troy": "strong",
+"troy city": "strong"
+},
+"48084": {
+"troy": "strong",
+"troy city": "strong",
+"royal oak": "census_supported",
+"royal oak city": "census_supported"
+},
+"48085": {
+"troy": "strong",
+"troy city": "strong"
+},
+"48088": {
+"warren": "strong",
+"warren city": "strong"
+},
+"48089": {
+"warren": "strong",
+"warren city": "strong"
+},
+"48091": {
+"warren": "strong",
+"warren city": "strong"
+},
+"48092": {
+"warren": "strong",
+"warren city": "strong"
+},
+"48093": {
+"warren": "strong",
+"warren city": "strong"
+},
+"48094": {
+"washington township": "strong",
+"washington charter township": "strong"
+},
+"48095": {
+"washington township": "strong",
+"washington charter township": "strong"
+},
+"48096": {
+"ray township": "strong"
+},
+"48097": {
+"brockway township": "strong",
+"lynn township": "strong",
+"fremont township": "census_supported",
+"speaker township": "census_supported",
+"yale": "strong",
+"yale city": "strong"
+},
+"48098": {
+"troy": "strong",
+"troy city": "strong"
+},
+"48101": {
+"allen park": "strong",
+"allen park city": "strong",
+"dearborn": "census_supported",
+"dearborn city": "census_supported",
+"melvindale": "census_supported",
+"melvindale city": "census_supported"
+},
+"48103": {
+"scio township": "strong",
+"lodi township": "strong",
+"freedom township": "census_supported",
+"ann arbor": "census_supported",
+"ann arbor city": "census_supported",
+"lima township": "census_supported",
+"pittsfield township": "census_supported",
+"pittsfield charter township": "census_supported",
+"webster township": "census_supported",
+"ann arbor township": "census_supported",
+"ann arbor charter township": "census_supported"
+},
+"48104": {
+"ann arbor": "strong",
+"ann arbor city": "strong",
+"ann arbor township": "census_supported",
+"ann arbor charter township": "census_supported",
+"pittsfield township": "census_supported",
+"pittsfield charter township": "census_supported"
+},
+"48105": {
+"ann arbor township": "strong",
+"ann arbor charter township": "strong",
+"northfield township": "census_supported",
+"superior township": "census_supported",
+"superior charter township": "census_supported",
+"ann arbor": "census_supported",
+"ann arbor city": "census_supported",
+"webster township": "census_supported",
+"salem township": "census_supported",
+"scio township": "census_supported",
+"barton hills": "strong",
+"barton hills village": "strong",
+"pittsfield township": "census_supported",
+"pittsfield charter township": "census_supported"
+},
+"48108": {
+"pittsfield township": "strong",
+"pittsfield charter township": "strong",
+"ann arbor": "census_supported",
+"ann arbor city": "census_supported",
+"lodi township": "census_supported"
+},
+"48109": {
+"ann arbor": "strong",
+"ann arbor city": "strong",
+"ann arbor township": "census_supported",
+"ann arbor charter township": "census_supported"
+},
+"48111": {
+"van buren township": "strong",
+"van buren charter township": "strong",
+"sumpter township": "strong",
+"belleville": "strong",
+"belleville city": "strong",
+"huron township": "census_supported",
+"huron charter township": "census_supported",
+"augusta township": "census_supported",
+"augusta charter township": "census_supported",
+"ypsilanti township": "census_supported",
+"ypsilanti charter township": "census_supported",
+"exeter township": "census_supported"
+},
+"48114": {
+"brighton township": "strong",
+"genoa township": "census_supported",
+"hartland township": "census_supported",
+"brighton": "census_supported",
+"brighton city": "census_supported"
+},
+"48116": {
+"green oak township": "census_supported",
+"hamburg township": "census_supported",
+"genoa township": "census_supported",
+"brighton": "strong",
+"brighton city": "strong",
+"brighton township": "census_supported"
+},
+"48117": {
+"ash township": "strong",
+"exeter township": "strong",
+"frenchtown township": "census_supported",
+"carleton": "strong",
+"carleton village": "strong",
+"sumpter township": "census_supported",
+"raisinville township": "census_supported",
+"huron township": "census_supported",
+"huron charter township": "census_supported"
+},
+"48118": {
+"sylvan township": "strong",
+"lyndon township": "strong",
+"lima township": "strong",
+"freedom township": "census_supported",
+"dexter township": "census_supported",
+"chelsea": "strong",
+"chelsea city": "strong",
+"sharon township": "census_supported"
+},
+"48120": {
+"dearborn": "strong",
+"dearborn city": "strong",
+"melvindale": "census_supported",
+"melvindale city": "census_supported"
+},
+"48122": {
+"melvindale": "strong",
+"melvindale city": "strong"
+},
+"48124": {
+"dearborn": "strong",
+"dearborn city": "strong"
+},
+"48125": {
+"dearborn heights": "strong",
+"dearborn heights city": "strong"
+},
+"48126": {
+"dearborn": "strong",
+"dearborn city": "strong",
+"detroit": "census_supported",
+"detroit city": "census_supported"
+},
+"48127": {
+"dearborn heights": "strong",
+"dearborn heights city": "strong"
+},
+"48128": {
+"dearborn": "strong",
+"dearborn city": "strong"
+},
+"48130": {
+"webster township": "strong",
+"dexter township": "strong",
+"lima township": "census_supported",
+"scio township": "census_supported",
+"dexter": "strong",
+"dexter city": "strong"
+},
+"48131": {
+"dundee township": "strong",
+"dundee": "strong",
+"dundee village": "strong",
+"milan township": "census_supported",
+"summerfield township": "census_supported",
+"raisinville township": "census_supported",
+"london township": "census_supported"
+},
+"48133": {
+"erie township": "strong",
+"la salle township": "census_supported",
+"bedford township": "census_supported",
+"luna pier": "census_supported",
+"luna pier city": "census_supported"
+},
+"48134": {
+"flat rock": "strong",
+"flat rock city": "strong",
+"huron township": "census_supported",
+"huron charter township": "census_supported",
+"brownstown township": "census_supported",
+"brownstown charter township": "census_supported",
+"ash township": "census_supported",
+"berlin township": "census_supported",
+"berlin charter township": "census_supported",
+"woodhaven": "census_supported",
+"woodhaven city": "census_supported"
+},
+"48135": {
+"garden city": "strong",
+"garden city city": "strong"
+},
+"48137": {
+"unadilla township": "strong",
+"iosco township": "census_supported",
+"lyndon township": "census_supported",
+"dexter township": "census_supported"
+},
+"48138": {
+"grosse ile township": "strong"
+},
+"48139": {
+"hamburg township": "strong"
+},
+"48140": {
+"ida township": "strong",
+"raisinville township": "census_supported",
+"ida": "strong",
+"ida cdp": "strong",
+"dundee township": "census_supported",
+"la salle township": "census_supported"
+},
+"48141": {
+"inkster": "strong",
+"inkster city": "strong"
+},
+"48143": {
+"hamburg township": "strong"
+},
+"48144": {
+"bedford township": "strong",
+"lambertville": "strong",
+"lambertville cdp": "strong",
+"whiteford township": "census_supported"
+},
+"48145": {
+"la salle township": "strong",
+"monroe township": "census_supported",
+"monroe charter township": "census_supported"
+},
+"48146": {
+"lincoln park": "strong",
+"lincoln park city": "strong"
+},
+"48150": {
+"livonia": "strong",
+"livonia city": "strong",
+"plymouth township": "census_supported",
+"plymouth charter township": "census_supported"
+},
+"48152": {
+"livonia": "strong",
+"livonia city": "strong"
+},
+"48154": {
+"livonia": "strong",
+"livonia city": "strong"
+},
+"48157": {
+"luna pier": "strong",
+"luna pier city": "strong"
+},
+"48158": {
+"manchester township": "strong",
+"sharon township": "strong",
+"bridgewater township": "census_supported",
+"freedom township": "census_supported",
+"manchester": "strong",
+"manchester village": "strong",
+"norvell township": "census_supported"
+},
+"48159": {
+"london township": "strong",
+"exeter township": "census_supported",
+"milan township": "census_supported",
+"maybee": "strong",
+"maybee village": "strong"
+},
+"48160": {
+"york township": "strong",
+"york charter township": "strong",
+"milan township": "strong",
+"london township": "census_supported",
+"augusta township": "census_supported",
+"augusta charter township": "census_supported",
+"milan": "strong",
+"milan city": "strong"
+},
+"48161": {
+"raisinville township": "census_supported",
+"monroe township": "strong",
+"monroe charter township": "strong",
+"la salle township": "census_supported",
+"monroe": "census_supported",
+"monroe city": "census_supported",
+"south monroe": "strong",
+"south monroe cdp": "strong",
+"west monroe": "strong",
+"west monroe cdp": "strong",
+"ida township": "census_supported",
+"frenchtown township": "census_supported"
+},
+"48162": {
+"frenchtown township": "strong",
+"raisinville township": "strong",
+"monroe": "strong",
+"monroe city": "strong",
+"exeter township": "census_supported",
+"london township": "census_supported",
+"detroit beach": "strong",
+"detroit beach cdp": "strong",
+"woodland beach": "strong",
+"woodland beach cdp": "strong",
+"maybee": "census_supported",
+"maybee village": "census_supported"
+},
+"48164": {
+"huron township": "strong",
+"huron charter township": "strong",
+"sumpter township": "census_supported",
+"ash township": "census_supported",
+"exeter township": "census_supported"
+},
+"48165": {
+"lyon township": "strong",
+"lyon charter township": "strong"
+},
+"48166": {
+"frenchtown township": "census_supported",
+"berlin township": "census_supported",
+"berlin charter township": "census_supported",
+"stony point": "strong",
+"stony point cdp": "strong",
+"estral beach": "strong",
+"estral beach village": "strong",
+"ash township": "census_supported"
+},
+"48167": {
+"northville township": "census_supported",
+"salem township": "census_supported",
+"lyon township": "census_supported",
+"lyon charter township": "census_supported",
+"novi": "census_supported",
+"novi city": "census_supported",
+"northville": "strong",
+"northville city": "strong",
+"farmington hills": "census_supported",
+"farmington hills city": "census_supported",
+"novi township": "strong"
+},
+"48168": {
+"northville township": "strong",
+"salem township": "census_supported",
+"northville": "census_supported",
+"northville city": "census_supported"
+},
+"48169": {
+"putnam township": "strong",
+"hamburg township": "census_supported",
+"unadilla township": "census_supported",
+"dexter township": "census_supported",
+"pinckney": "strong",
+"pinckney village": "strong",
+"marion township": "census_supported",
+"webster township": "census_supported",
+"lyndon township": "census_supported"
+},
+"48170": {
+"plymouth township": "strong",
+"plymouth charter township": "strong",
+"salem township": "census_supported",
+"superior township": "census_supported",
+"superior charter township": "census_supported",
+"plymouth": "strong",
+"plymouth city": "strong",
+"northville township": "census_supported"
+},
+"48173": {
+"brownstown township": "census_supported",
+"brownstown charter township": "census_supported",
+"gibraltar": "strong",
+"gibraltar city": "strong",
+"rockwood": "strong",
+"rockwood city": "strong",
+"flat rock": "census_supported",
+"flat rock city": "census_supported"
+},
+"48174": {
+"romulus": "strong",
+"romulus city": "strong",
+"huron township": "census_supported",
+"huron charter township": "census_supported",
+"brownstown township": "census_supported",
+"brownstown charter township": "census_supported",
+"van buren township": "census_supported",
+"van buren charter township": "census_supported"
+},
+"48176": {
+"saline township": "strong",
+"lodi township": "census_supported",
+"york township": "census_supported",
+"york charter township": "census_supported",
+"pittsfield township": "census_supported",
+"pittsfield charter township": "census_supported",
+"bridgewater township": "census_supported",
+"saline": "strong",
+"saline city": "strong",
+"freedom township": "census_supported",
+"macon township": "census_supported"
+},
+"48177": {
+"bedford township": "strong"
+},
+"48178": {
+"green oak township": "census_supported",
+"lyon township": "census_supported",
+"lyon charter township": "census_supported",
+"northfield township": "census_supported",
+"salem township": "census_supported",
+"south lyon": "strong",
+"south lyon city": "strong",
+"whitmore lake": "census_supported",
+"whitmore lake cdp": "census_supported"
+},
+"48179": {
+"berlin township": "strong",
+"berlin charter township": "strong",
+"south rockwood": "strong",
+"south rockwood village": "strong",
+"ash township": "census_supported"
+},
+"48180": {
+"taylor": "strong",
+"taylor city": "strong"
+},
+"48182": {
+"bedford township": "strong",
+"ida township": "census_supported",
+"temperance": "strong",
+"temperance cdp": "strong",
+"erie township": "census_supported",
+"whiteford township": "census_supported",
+"lambertville": "census_supported",
+"lambertville cdp": "census_supported",
+"la salle township": "census_supported"
+},
+"48183": {
+"trenton": "strong",
+"trenton city": "strong",
+"woodhaven": "strong",
+"woodhaven city": "strong",
+"brownstown township": "census_supported",
+"brownstown charter township": "census_supported",
+"gibraltar": "census_supported",
+"gibraltar city": "census_supported"
+},
+"48184": {
+"wayne": "strong",
+"wayne city": "strong",
+"van buren township": "census_supported",
+"van buren charter township": "census_supported",
+"canton township": "census_supported",
+"canton charter township": "census_supported",
+"romulus": "census_supported",
+"romulus city": "census_supported"
+},
+"48185": {
+"westland": "strong",
+"westland city": "strong"
+},
+"48186": {
+"westland": "strong",
+"westland city": "strong"
+},
+"48187": {
+"canton township": "strong",
+"canton charter township": "strong"
+},
+"48188": {
+"canton township": "strong",
+"canton charter township": "strong"
+},
+"48189": {
+"northfield township": "census_supported",
+"webster township": "census_supported",
+"hamburg township": "census_supported",
+"green oak township": "census_supported",
+"whitmore lake": "strong",
+"whitmore lake cdp": "strong"
+},
+"48190": {
+"augusta township": "strong",
+"augusta charter township": "strong"
+},
+"48191": {
+"augusta township": "strong",
+"augusta charter township": "strong",
+"london township": "census_supported",
+"ypsilanti township": "census_supported",
+"ypsilanti charter township": "census_supported"
+},
+"48192": {
+"wyandotte": "strong",
+"wyandotte city": "strong"
+},
+"48193": {
+"riverview": "strong",
+"riverview city": "strong",
+"brownstown township": "census_supported",
+"brownstown charter township": "census_supported"
+},
+"48195": {
+"southgate": "strong",
+"southgate city": "strong"
+},
+"48197": {
+"ypsilanti township": "strong",
+"ypsilanti charter township": "strong",
+"augusta township": "census_supported",
+"augusta charter township": "census_supported",
+"pittsfield township": "census_supported",
+"pittsfield charter township": "census_supported",
+"ypsilanti": "strong",
+"ypsilanti city": "strong",
+"superior township": "census_supported",
+"superior charter township": "census_supported",
+"york township": "census_supported",
+"york charter township": "census_supported",
+"ann arbor township": "census_supported",
+"ann arbor charter township": "census_supported"
+},
+"48198": {
+"superior township": "strong",
+"superior charter township": "strong",
+"ypsilanti township": "census_supported",
+"ypsilanti charter township": "census_supported",
+"ypsilanti": "census_supported",
+"ypsilanti city": "census_supported"
+},
+"48201": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48202": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48203": {
+"detroit": "strong",
+"detroit city": "strong",
+"highland park": "strong",
+"highland park city": "strong"
+},
+"48204": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48205": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48206": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48207": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48208": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48209": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48210": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48211": {
+"detroit": "strong",
+"detroit city": "strong",
+"hamtramck": "census_supported",
+"hamtramck city": "census_supported"
+},
+"48212": {
+"detroit": "strong",
+"detroit city": "strong",
+"hamtramck": "strong",
+"hamtramck city": "strong"
+},
+"48213": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48214": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48215": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48216": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48217": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48218": {
+"river rouge": "strong",
+"river rouge city": "strong",
+"ecorse": "census_supported",
+"ecorse city": "census_supported"
+},
+"48219": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48220": {
+"ferndale": "strong",
+"ferndale city": "strong",
+"royal oak township": "strong",
+"royal oak charter township": "strong"
+},
+"48221": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48223": {
+"detroit": "strong",
+"detroit city": "strong",
+"redford township": "census_supported",
+"redford charter township": "census_supported"
+},
+"48224": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48225": {
+"harper woods": "strong",
+"harper woods city": "strong",
+"detroit": "census_supported",
+"detroit city": "census_supported"
+},
+"48226": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48227": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48228": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48229": {
+"ecorse": "strong",
+"ecorse city": "strong"
+},
+"48230": {
+"grosse pointe park": "strong",
+"grosse pointe park city": "strong",
+"grosse pointe": "strong",
+"grosse pointe city": "strong",
+"grosse pointe farms": "census_supported",
+"grosse pointe farms city": "census_supported"
+},
+"48233": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48234": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48235": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48236": {
+"grosse pointe woods": "strong",
+"grosse pointe woods city": "strong",
+"grosse pointe farms": "strong",
+"grosse pointe farms city": "strong",
+"grosse pointe shores": "strong",
+"village of grosse pointe shores city": "strong",
+"detroit": "census_supported",
+"detroit city": "census_supported",
+"st clair shores": "census_supported",
+"st clair shores city": "census_supported",
+"harper woods": "census_supported",
+"harper woods city": "census_supported"
+},
+"48237": {
+"oak park": "strong",
+"oak park city": "strong"
+},
+"48238": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48239": {
+"redford township": "strong",
+"redford charter township": "strong",
+"detroit": "census_supported",
+"detroit city": "census_supported"
+},
+"48240": {
+"redford township": "strong",
+"redford charter township": "strong",
+"detroit": "census_supported",
+"detroit city": "census_supported"
+},
+"48242": {
+"romulus": "strong",
+"romulus city": "strong"
+},
+"48243": {
+"detroit": "strong",
+"detroit city": "strong"
+},
+"48301": {
+"bloomfield township": "strong",
+"bloomfield charter township": "strong",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported"
+},
+"48302": {
+"bloomfield township": "strong",
+"bloomfield charter township": "strong",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported",
+"pontiac": "census_supported",
+"pontiac city": "census_supported"
+},
+"48304": {
+"bloomfield township": "strong",
+"bloomfield charter township": "strong",
+"bloomfield hills": "strong",
+"bloomfield hills city": "strong",
+"birmingham": "census_supported",
+"birmingham city": "census_supported"
+},
+"48306": {
+"oakland township": "strong",
+"oakland charter township": "strong",
+"rochester hills": "census_supported",
+"rochester hills city": "census_supported",
+"washington township": "census_supported",
+"washington charter township": "census_supported",
+"rochester": "census_supported",
+"rochester city": "census_supported"
+},
+"48307": {
+"rochester hills": "strong",
+"rochester hills city": "strong",
+"rochester": "strong",
+"rochester city": "strong"
+},
+"48309": {
+"rochester hills": "strong",
+"rochester hills city": "strong",
+"auburn hills": "census_supported",
+"auburn hills city": "census_supported"
+},
+"48310": {
+"sterling heights": "strong",
+"sterling heights city": "strong"
+},
+"48312": {
+"sterling heights": "strong",
+"sterling heights city": "strong"
+},
+"48313": {
+"sterling heights": "strong",
+"sterling heights city": "strong"
+},
+"48314": {
+"sterling heights": "strong",
+"sterling heights city": "strong"
+},
+"48315": {
+"shelby township": "strong",
+"shelby charter township": "strong",
+"utica": "census_supported",
+"utica city": "census_supported"
+},
+"48316": {
+"shelby township": "strong",
+"shelby charter township": "strong"
+},
+"48317": {
+"shelby township": "strong",
+"shelby charter township": "strong",
+"utica": "strong",
+"utica city": "strong"
+},
+"48320": {
+"keego harbor": "strong",
+"keego harbor city": "strong",
+"sylvan lake": "strong",
+"sylvan lake city": "strong",
+"orchard lake village": "census_supported",
+"orchard lake village city": "census_supported",
+"bloomfield township": "census_supported",
+"bloomfield charter township": "census_supported",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported"
+},
+"48322": {
+"west bloomfield township": "strong",
+"west bloomfield charter township": "strong",
+"farmington hills": "census_supported",
+"farmington hills city": "census_supported"
+},
+"48323": {
+"west bloomfield township": "strong",
+"west bloomfield charter township": "strong",
+"orchard lake village": "census_supported",
+"orchard lake village city": "census_supported",
+"bloomfield township": "census_supported",
+"bloomfield charter township": "census_supported"
+},
+"48324": {
+"west bloomfield township": "strong",
+"west bloomfield charter township": "strong",
+"orchard lake village": "strong",
+"orchard lake village city": "strong",
+"waterford township": "census_supported",
+"waterford charter township": "census_supported",
+"sylvan lake": "census_supported",
+"sylvan lake city": "census_supported",
+"bloomfield township": "census_supported",
+"bloomfield charter township": "census_supported",
+"commerce township": "census_supported",
+"commerce charter township": "census_supported"
+},
+"48326": {
+"auburn hills": "strong",
+"auburn hills city": "strong",
+"lake angelus": "strong",
+"lake angelus city": "strong",
+"pontiac": "census_supported",
+"pontiac city": "census_supported",
+"waterford township": "census_supported",
+"waterford charter township": "census_supported"
+},
+"48327": {
+"waterford township": "strong",
+"waterford charter township": "strong"
+},
+"48328": {
+"waterford township": "strong",
+"waterford charter township": "strong",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported"
+},
+"48329": {
+"waterford township": "strong",
+"waterford charter township": "strong",
+"independence township": "census_supported",
+"independence charter township": "census_supported",
+"lake angelus": "census_supported",
+"lake angelus city": "census_supported"
+},
+"48331": {
+"farmington hills": "strong",
+"farmington hills city": "strong",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported"
+},
+"48334": {
+"farmington hills": "strong",
+"farmington hills city": "strong",
+"southfield": "census_supported",
+"southfield city": "census_supported"
+},
+"48335": {
+"farmington hills": "strong",
+"farmington hills city": "strong",
+"farmington": "census_supported",
+"farmington city": "census_supported"
+},
+"48336": {
+"farmington hills": "strong",
+"farmington hills city": "strong",
+"farmington": "strong",
+"farmington city": "strong"
+},
+"48340": {
+"pontiac": "strong",
+"pontiac city": "strong"
+},
+"48341": {
+"pontiac": "strong",
+"pontiac city": "strong",
+"sylvan lake": "census_supported",
+"sylvan lake city": "census_supported",
+"waterford township": "census_supported",
+"waterford charter township": "census_supported"
+},
+"48342": {
+"pontiac": "strong",
+"pontiac city": "strong"
+},
+"48346": {
+"independence township": "strong",
+"independence charter township": "strong",
+"springfield township": "census_supported",
+"springfield charter township": "census_supported",
+"clarkston": "strong",
+"village of clarkston city": "strong",
+"waterford township": "census_supported",
+"waterford charter township": "census_supported"
+},
+"48348": {
+"independence township": "strong",
+"independence charter township": "strong",
+"springfield township": "census_supported",
+"springfield charter township": "census_supported",
+"brandon township": "census_supported",
+"brandon charter township": "census_supported",
+"orion township": "census_supported",
+"orion charter township": "census_supported",
+"groveland township": "census_supported"
+},
+"48350": {
+"springfield township": "strong",
+"springfield charter township": "strong",
+"rose township": "census_supported"
+},
+"48353": {
+"hartland township": "strong",
+"hartland": "strong",
+"hartland cdp": "strong"
+},
+"48356": {
+"highland township": "strong",
+"highland charter township": "strong"
+},
+"48357": {
+"highland township": "strong",
+"highland charter township": "strong"
+},
+"48359": {
+"orion township": "strong",
+"orion charter township": "strong",
+"auburn hills": "census_supported",
+"auburn hills city": "census_supported",
+"independence township": "census_supported",
+"independence charter township": "census_supported"
+},
+"48360": {
+"orion township": "strong",
+"orion charter township": "strong"
+},
+"48362": {
+"orion township": "strong",
+"orion charter township": "strong",
+"lake orion": "strong",
+"lake orion village": "strong",
+"oxford township": "census_supported",
+"oxford charter township": "census_supported"
+},
+"48363": {
+"oakland township": "strong",
+"oakland charter township": "strong"
+},
+"48367": {
+"addison township": "strong",
+"leonard": "strong",
+"leonard village": "strong"
+},
+"48370": {
+"addison township": "strong",
+"oakland township": "census_supported",
+"oakland charter township": "census_supported"
+},
+"48371": {
+"oxford township": "strong",
+"oxford charter township": "strong",
+"brandon township": "census_supported",
+"brandon charter township": "census_supported",
+"metamora township": "census_supported",
+"hadley township": "census_supported",
+"dryden township": "census_supported",
+"oxford": "strong",
+"oxford village": "strong",
+"addison township": "census_supported"
+},
+"48374": {
+"novi": "strong",
+"novi city": "strong"
+},
+"48375": {
+"novi": "strong",
+"novi city": "strong"
+},
+"48377": {
+"novi": "strong",
+"novi city": "strong"
+},
+"48380": {
+"milford township": "census_supported",
+"milford charter township": "census_supported",
+"brighton township": "census_supported",
+"highland township": "census_supported",
+"highland charter township": "census_supported",
+"hartland township": "census_supported"
+},
+"48381": {
+"milford township": "strong",
+"milford charter township": "strong",
+"milford": "strong",
+"milford village": "strong",
+"lyon township": "census_supported",
+"lyon charter township": "census_supported"
+},
+"48382": {
+"commerce township": "strong",
+"commerce charter township": "strong",
+"west bloomfield township": "census_supported",
+"west bloomfield charter township": "census_supported"
+},
+"48383": {
+"white lake township": "strong",
+"white lake charter township": "strong"
+},
+"48386": {
+"white lake township": "strong",
+"white lake charter township": "strong",
+"springfield township": "census_supported",
+"springfield charter township": "census_supported",
+"commerce township": "census_supported",
+"commerce charter township": "census_supported"
+},
+"48390": {
+"commerce township": "strong",
+"commerce charter township": "strong",
+"walled lake": "strong",
+"walled lake city": "strong",
+"wolverine lake": "strong",
+"wolverine lake village": "strong"
+},
+"48393": {
+"wixom": "strong",
+"wixom city": "strong",
+"lyon township": "census_supported",
+"lyon charter township": "census_supported",
+"commerce township": "census_supported",
+"commerce charter township": "census_supported",
+"milford township": "census_supported",
+"milford charter township": "census_supported",
+"novi": "census_supported",
+"novi city": "census_supported"
+}
+}

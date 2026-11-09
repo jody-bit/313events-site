@@ -1,0 +1,47 @@
+raw_city_string,events,group,resolves_to,evidence,coordinates
+"Bowling Green",246,B2_valid_city_not_in_map_table,"Bowling Green, OH","SERVICE_AREA.md lists it in scope at 65.7 mi; orbit-cities.js OHIO list; sources BGSU + Ticketmaster; addresses e.g. 1001 E Wooster St",needs_sourced_coordinates
+"Warren, MI 48092",91,A_normalize_to_existing_city,"Warren","single venue GottaGacha, 29200 Dequindre Rd Suite 2B; city field carries state+ZIP (integrity.js place.city_state_zip)",exists_in_map_table
+"Clinton Township",62,B1_valid_city_coordinates_exist_elsewhere,"Clinton Township","discovery.js places has Clinton Township 42.5869,-82.92; missing from map.html LOCATIONS",exists_in_discovery.js
+"Richmond",47,B2_valid_city_not_in_map_table,"Richmond, MI","source Richmond Recreation Calendar; orbit-cities.js MICHIGAN; addresses on Park Street",needs_sourced_coordinates
+"Redford",26,B2_valid_city_not_in_map_table,"Redford","Redford Township Community Events + Facebook export; Redford Community Center 12121 Hemingway",needs_sourced_coordinates
+"Canton",20,B2_valid_city_not_in_map_table,"Canton (Township), MI","Canton Township events + VisitDetroit; Cherry Hill Rd / Canton Center addresses (MI, not Canton OH)",needs_sourced_coordinates
+"Plymouth",14,B2_valid_city_not_in_map_table,"Plymouth, MI","USA Hockey Arena, Plymouth Arts and Recreation Center 650 Church St, Saint John's Resort 44045 Five Mile Rd",needs_sourced_coordinates
+"Leamington",7,B2_valid_city_not_in_map_table,"Leamington, ON","Tourism Windsor Essex Pelee Island + WSO",needs_sourced_coordinates
+"Belleville",6,B2_valid_city_not_in_map_table,"Belleville, MI","Diamondback Music Hall 49345 S I-94 Service Dr (venue_id linked)",needs_sourced_coordinates
+"Macomb",5,B2_valid_city_not_in_map_table,"Macomb Township, MI","Macomb Township Events; 19449 25 Mile Rd",needs_sourced_coordinates
+"Garden City",4,B2_valid_city_not_in_map_table,"Garden City, MI","Garden City Community Events; Civic Ice Arena 200 Log Cabin Rd",needs_sourced_coordinates
+"2810 Russell St.",3,A_normalize_to_existing_city,"Detroit","street address sits in the city field; venue is Eastern Market (Eastern Market Partnership)",exists_in_map_table
+"LaSalle",3,B2_valid_city_not_in_map_table,"LaSalle, ON","Essex County Library LaSalle Branch, 5950 Malden Rd",needs_sourced_coordinates
+"Melvindale",3,B2_valid_city_not_in_map_table,"Melvindale, MI","17993 Allen Road",needs_sourced_coordinates
+"Lakeshore",3,B2_valid_city_not_in_map_table,"Lakeshore, ON","2722 County Rd 42",needs_sourced_coordinates
+"Ecorse",2,B2_valid_city_not_in_map_table,"Ecorse, MI","Ecorse Senior Center 4072 W. Jefferson",needs_sourced_coordinates
+"Northville",2,B2_valid_city_not_in_map_table,"Northville, MI","City of Northville Events",needs_sourced_coordinates
+"Essex",2,B2_valid_city_not_in_map_table,"Essex, ON","Essex County Library Essex Branch, 21 King St E",needs_sourced_coordinates
+"Ontario",2,B2_valid_city_not_in_map_table,"Kingsville, ON (from venue Town of Kingsville)","province in the city field; venue name and address both say Kingsville",needs_sourced_coordinates
+"Ottawa",2,D_ambiguous,"unknown","Ticketmaster Laugh Lounge, no address, no state stored; not in orbit-cities.js",none
+"River Rouge",2,B2_valid_city_not_in_map_table,"River Rouge, MI","550 Eaton St",needs_sourced_coordinates
+"Romulus",2,B2_valid_city_not_in_map_table,"Romulus, MI","11100 Wayne Rd",needs_sourced_coordinates
+"Grosse Pointe Farms",2,A_normalize_to_existing_city,"Grosse Pointe (parent)","separate municipality; map table only has Grosse Pointe",exists_in_map_table
+"Tecumseh",2,B2_valid_city_not_in_map_table,"Tecumseh, ON (Lakewood Park, Tecumseh Rd E; WSO source)","Windsor-Essex sources; Tecumseh MI is a different city, so state must come from the source",needs_sourced_coordinates
+"Wayne",2,B2_valid_city_not_in_map_table,"Wayne, MI","3019 S. Wayne Rd, Wayne MI 48184",needs_sourced_coordinates
+"Huron",2,B2_valid_city_not_in_map_table,"Huron, OH","BGSU Firelands; orbit-cities.js OHIO list",needs_sourced_coordinates
+"Inkster",2,B2_valid_city_not_in_map_table,"Inkster, MI","2700 Hamlin Blvd",needs_sourced_coordinates
+"Detroit, MI 48216",2,A_normalize_to_existing_city,"Detroit","Resident Advisor; state+ZIP in city field",exists_in_map_table
+"East Lansing",2,B1_valid_city_coordinates_exist_elsewhere,"East Lansing","discovery.js places has East Lansing; in scope per SERVICE_AREA.md; missing from map.html LOCATIONS",exists_in_discovery.js
+"West Bloomfield",1,B2_valid_city_not_in_map_table,"West Bloomfield, MI","Berman Center for Performing Arts, 6600 W Maple Rd",needs_sourced_coordinates
+"Amherstburg",1,B2_valid_city_not_in_map_table,"Amherstburg, ON","Vivace Estate Winery",needs_sourced_coordinates
+"Charter Township Of Clinton",1,B1_valid_city_coordinates_exist_elsewhere,"Clinton Township","Macomb Center for the Performing Arts, 44575 Garfield Rd",exists_in_discovery.js
+"Clinton Twp",1,B1_valid_city_coordinates_exist_elsewhere,"Clinton Township","abbreviation; orbit-cities.js already reads Twp as Township",exists_in_discovery.js
+"Detroit, MI",1,A_normalize_to_existing_city,"Detroit","Resident Advisor; state in city field",exists_in_map_table
+"Detroit, MI 48207",1,A_normalize_to_existing_city,"Detroit","Resident Advisor; state+ZIP in city field",exists_in_map_table
+"Grosse Pointe Shores",1,A_normalize_to_existing_city,"Grosse Pointe (parent)","Ford House, 1100 Lake Shore Rd; separate municipality",exists_in_map_table
+"Harrow",1,B2_valid_city_not_in_map_table,"Harrow, ON","Paglione Estate Winery",needs_sourced_coordinates
+"Hazel Park",1,B2_valid_city_not_in_map_table,"Hazel Park, MI","420 W. 9 Mile Rd",needs_sourced_coordinates
+"Highland Park, MI 48203",1,A_normalize_to_existing_city,"Highland Park","Resident Advisor; state+ZIP in city field",exists_in_map_table
+"Lake Orion",1,B2_valid_city_not_in_map_table,"Lake Orion, MI","20 Front Street",needs_sourced_coordinates
+"Lathrup Village",1,B2_valid_city_not_in_map_table,"Lathrup Village, MI","27400 Southfield Rd",needs_sourced_coordinates
+"Maidstone",1,B2_valid_city_not_in_map_table,"Maidstone, ON","Denver's Homestead",needs_sourced_coordinates
+"Onsted",1,B2_valid_city_not_in_map_table,"Onsted, MI","12000 Pentecost Highway, Onsted 49265",needs_sourced_coordinates
+"Oxford",1,B2_valid_city_not_in_map_table,"Oxford, MI","81 Lake George Rd, Oxford 48370",needs_sourced_coordinates
+"Tech   Mount Clemens",1,A_normalize_to_existing_city,"Mount Clemens","source is Mount Clemens Public Library; venue 'Tech Lab' leaked into the city field",exists_in_map_table
+"West",1,A_normalize_to_existing_city,"Windsor (evidence: Chrysler Theatre, 201 Riverside Drive; source Windsor Symphony Orchestra)","city string looks truncated; confirm against the source feed before trusting",exists_in_map_table

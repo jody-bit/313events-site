@@ -1,0 +1,66 @@
+// test/preview-link-validate.test.js — Preview qualification: primary event links are really opened (owner direction 2026-10-23).
+"use strict";
+const assert = require("assert");
+const { validateRows, isHomepageLanding, dataParity, previewStamp } = require("../scripts/preview-link-validate");
+
+const answers = {
+  "https://visitdetroit.com/events/gone/": { status: 404 },
+  "https://visitdetroit.com/events/fine/": { status: 200 },
+  "https://ra.co/events/1": { status: 403 },
+  "https://venue.example/events/moved": { status: 200, url: "https://venue.example/" },
+  "https://tix.example/e/410": { status: 410 },
+};
+const fetchFn = async (u) => {
+  const a = answers[u];
+  if (!a) throw new Error("unexpected fetch " + u);
+  return { status: a.status, url: a.url || u };
+};
+
+(async () => {
+  assert.strictEqual(isHomepageLanding("https://venue.example/"), true);
+  assert.strictEqual(isHomepageLanding("https://venue.example/a"), false);
+  const rows = [
+    { title: "dead", source: "VisitDetroit", ticket_url: "https://visitdetroit.com/events/gone/" },
+    { title: "fine", source: "VisitDetroit", ticket_url: "https://visitdetroit.com/events/fine/" },
+    { title: "blocked", source: "RA", event_url: "https://ra.co/events/1" },
+    { title: "redirects home", source: "Manual", event_url: "https://venue.example/events/moved" },
+    { title: "gone for good", source: "Manual", ticket_url: "https://tix.example/e/410" },
+    { title: "homepage only", source: "Manual", ticket_url: "https://tangentgallery.com" }, // never fetched: no event-specific link
+    { title: "nothing", source: "Manual" },
+  ];
+  const { results, counts, blocking } = await validateRows(rows, { fetchFn, perSource: 10 });
+  const v = Object.fromEntries(results.map((r) => [r.title, r.verdict]));
+  assert.deepStrictEqual(v, { dead: "BLOCKING", fine: "PASS", blocked: "NEEDS-VERIFICATION", "redirects home": "NEEDS-VERIFICATION", "gone for good": "BLOCKING", "homepage only": "NO-PRIMARY", nothing: "NO-PRIMARY" });
+  assert.deepStrictEqual(counts, { BLOCKING: 2, PASS: 1, "NEEDS-VERIFICATION": 2, "NO-PRIMARY": 2 });
+  assert.strictEqual(blocking.length, 2);
+  // per-source cap
+  const many = Array.from({ length: 8 }, () => ({ title: "x", source: "VisitDetroit", ticket_url: "https://visitdetroit.com/events/fine/" }));
+  assert.strictEqual((await validateRows(many, { fetchFn, perSource: 3 })).results.length, 3);
+  // data parity: old-form VisitDetroit links and the data date
+  const day = 86400000, now = Date.parse("2026-10-24T12:00:00Z");
+  const stale = dataParity([
+    { ticket_url: "https://visitdetroit.com/some-event/", created_at: "2026-10-18T21:09:09Z", updated_at: "2026-10-18T21:09:09Z" },
+    { ticket_url: "https://visitdetroit.com/events/other/", created_at: "2026-10-10T10:00:00Z", updated_at: "2026-10-18T10:00:00Z" },
+  ], { now });
+  assert.strictEqual(stale.staleShapeCount, 1);
+  assert.strictEqual(stale.newestUpdate, "2026-10-18T21:09:09.000Z");
+  assert.strictEqual(stale.staleData, true);
+  const fresh = dataParity([{ ticket_url: "https://visitdetroit.com/events/a/", created_at: new Date(now - day).toISOString(), updated_at: new Date(now - day).toISOString() }], { now });
+  assert.deepStrictEqual([fresh.staleShapeCount, fresh.staleData], [0, false]);
+  const st = previewStamp({ commit: "abc1234", supabaseUrl: "https://efxjdlogohcggpuftivm.supabase.co", parity: stale, counts: { PASS: 3, BLOCKING: 1 }, checkedAt: "2026-10-24T01:00:00Z" });
+  assert.deepStrictEqual([st.application_commit, st.data_environment, st.data_refreshed_at, st.data_stale, st.link_check.sampled], ["abc1234", "staging", "2026-10-18T21:09:09.000Z", true, 4]);
+  assert.strictEqual(previewStamp({ supabaseUrl: "https://afvyfjfqukptnfmgshzn.supabase.co", parity: fresh, counts: {}, checkedAt: "x" }).data_environment, "production");
+  // a links-only repair bumps updated_at on every row; that must not make old data look fresh (R&Q, 2026-10-24)
+  const repaired = dataParity([{ ticket_url: "https://visitdetroit.com/events/a/", created_at: "2026-10-18T21:09:09Z", updated_at: new Date(now - 60000).toISOString() }], { now });
+  assert.strictEqual(repaired.staleData, true);
+  assert.strictEqual(repaired.newestUpdate, "2026-10-18T21:09:09.000Z");
+  assert.strictEqual(repaired.lastRowEdit, new Date(now - 60000).toISOString());
+  // a recent successful ingestion run is what makes the data fresh
+  const ingested = dataParity([{ ticket_url: "https://visitdetroit.com/events/a/", created_at: "2026-10-18T21:09:09Z" }], { now, lastIngestAt: new Date(now - day).toISOString() });
+  assert.deepStrictEqual([ingested.staleData, ingested.source], [false, "source_runs"]);
+  // the held staging-only rows stay flagged after the repair; they are never PASS
+  const held = dataParity([{ ticket_url: "https://visitdetroit.com/held-event/", created_at: new Date(now).toISOString() }], { now });
+  assert.strictEqual(held.staleShapeCount, 1);
+  assert.strictEqual(previewStamp({ supabaseUrl: "https://efxjdlogohcggpuftivm.supabase.co", parity: held, counts: {}, checkedAt: "x" }).data_stale, true);
+  console.log("ok: preview link validation");
+})().catch((e) => { console.error(e); process.exit(1); });

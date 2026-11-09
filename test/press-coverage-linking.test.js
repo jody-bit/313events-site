@@ -1330,6 +1330,45 @@ async function runProductionPathRegressionTests() {
     assert.ok(writeAttempts.every((a) => a.contentType === "application/json"));
   }
   console.log("PASS: [RESOLVE EMBEDDED FUTURE EVENTS] the real 'Photos sought...' article now auto-creates 'Backyard and Beyond' end to end -- correct future date, real venue, no fabricated end date/time/price, and the trailing boilerplate teaser block never leaks in");
+
+  // --- DQ-004: verified-only associations -------------------------------------------------------
+  {
+    const lib = freshLib();
+    const candidates = [{ id: "ev-oxford", title: "Harvest Festival", start_date: "2026-10-03", venue_name_raw: "Upland Hills Farm", venue_city_raw: "Oxford" }];
+    const text = "Harvest Festival returns to Rosie's Park. Madison Heights residents are invited.";
+    // The shared generic title matches, but the association is NOT verified (the Rosie's Park case).
+    const hit = lib.deepMatchArticleToEvent(text, "2026-10-02", candidates, { titleCounts: new Map(), articleTitle: "Harvest Festival returns to Rosie's Park" });
+    assert.strictEqual(hit.event.id, "ev-oxford");
+    assert.notStrictEqual(hit.verification.status, "verified", "a shared generic title alone never verifies");
+    // A rejected pair is never offered again.
+    assert.strictEqual(lib.deepMatchArticleToEvent(text, "2026-10-02", candidates, { excluded: new Set(["ev-oxford"]) }), null);
+    // An event created from the article is verified by construction; matched links go in as the matcher's verdict.
+    const calls = [];
+    const counts = await lib.linkPressCoverageQueue({
+      SUPABASE_URL: "https://x.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "k", logger: silentLogger,
+      fetchQueue: async () => [{ id: "art-1", source: "C&G Newspapers", title: "Harvest Festival returns to Rosie's Park", excerpt: "Madison Heights", url: "https://cg.example/1", published_at: "2026-10-02T20:00:00Z" }],
+      fetchCandidateEvents: async () => candidates,
+      fetchRejectedPairsFn: async () => new Map(),
+      fetchArticleTextFn: async () => "Harvest Festival returns to Rosie's Park in Madison Heights.",
+      applyLinkFn: async (url, h, articleId, eventId, matchType, verdict) => { calls.push({ articleId, eventId, matchType, verdict }); return true; },
+      buildVenueIdMap: async () => new Map(),
+    });
+    assert.strictEqual(calls.length, 1);
+    assert.notStrictEqual(calls[0].verdict.status, "verified", "the automatic link is written hidden");
+    // Same article, pair now rejected: the run no longer links it to that event.
+    const calls2 = [];
+    await lib.linkPressCoverageQueue({
+      SUPABASE_URL: "https://x.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "k", logger: silentLogger,
+      fetchQueue: async () => [{ id: "art-1", source: "C&G Newspapers", title: "Harvest Festival returns to Rosie's Park", excerpt: "Madison Heights", url: "https://cg.example/1", published_at: "2026-10-02T20:00:00Z" }],
+      fetchCandidateEvents: async () => candidates,
+      fetchRejectedPairsFn: async () => new Map([["art-1", new Set(["ev-oxford"])]]),
+      fetchArticleTextFn: async () => "Harvest Festival returns to Rosie's Park in Madison Heights.",
+      applyLinkFn: async (url, h, articleId, eventId) => { calls2.push({ articleId, eventId }); return true; },
+      buildVenueIdMap: async () => new Map(),
+    });
+    assert.ok(!calls2.some((c) => c.eventId === "ev-oxford"), "a rejected association is not re-created by the press-coverage pass");
+    console.log("PASS: [DQ-004] generic-title matches are written hidden, and a rejected pair is never re-created by the press-coverage pass");
+  }
 }
 
 run().catch((err) => {

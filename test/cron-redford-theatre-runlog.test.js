@@ -342,11 +342,15 @@ async function run() {
     assert.strictEqual(res._status, 200);
     assert.strictEqual(res._body.upserted, 1, "a detail-page fetch failure must not block the base row from writing");
     const upsertCall = calls.find((c) => c.url.includes("/rest/v1/events") && c.opts.method === "POST");
-    assert.strictEqual(upsertCall.body[0].description, null);
-    assert.strictEqual(upsertCall.body[0].ticket_url, null);
+    // Reliability change (#256 pattern): a page that could not be read says
+    // nothing about the event, so the keys are OMITTED (stored values kept)
+    // rather than written as null over a possibly verified description.
+    assert.ok(!("description" in upsertCall.body[0]), "unread detail page must not write description");
+    assert.ok(!("ticket_url" in upsertCall.body[0]), "unread detail page must not write ticket_url");
     assert.strictEqual(upsertCall.body[0].event_url, href, "event_url (recovered from the archive page, not the detail page) is unaffected by a detail-page fetch failure");
+    assert.strictEqual(res._body.partial, true, "and the run says it was partial");
   }
-  console.log("PASS: a detail-page fetch failure fails soft -- base row still writes, description/ticket_url stay null");
+  console.log("PASS: a detail-page fetch failure fails soft -- base row still writes, description/ticket_url omitted (stored values kept), run reported partial");
 
   // --- WP 0.17 (2026-09-22): a failed status lookup must abort the run
   // entirely -- ZERO event writes, HTTP 502 -- never fall through to an

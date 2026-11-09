@@ -72,12 +72,12 @@
  },
  "held": {
   "fall": {
-   "goodison-cider-mill": "official page looks stale; 2026 operation to be confirmed",
    "almar-orchards": "official page looks stale; 2026 operation to be confirmed",
    "blakes-lyon-township": "official page looks stale; 2026 operation to be confirmed",
-   "damouni-orchards": "official page looks stale; 2026 operation to be confirmed",
    "montrose-orchards": "official page looks stale; 2026 operation to be confirmed",
-   "wing-farms": "official page looks stale; 2026 operation to be confirmed"
+   "wing-farms": "official page looks stale; 2026 operation to be confirmed",
+   "goodison-cider-mill": "official page looks stale; 2026 operation to be confirmed",
+   "damouni-orchards": "official page looks stale; 2026 operation to be confirmed"
   },
   "fall-color": {
    "kensington-metropark": "official page looks stale; 2026 operation to be confirmed"

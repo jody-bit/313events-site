@@ -450,11 +450,13 @@ function run() {
     };
     function readOnPage(surface, url) {
       const page = PAGES[surface];
-      const sb = { URLSearchParams, document: dummyDocument(), console };
+      const ED = require(`${REPO_DIR}/event-dates.js`);
+      // Calendar/Map take "today" from EventDates.detroitClock (PR-4); pin it to this test's fixed now.
+      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), EventDates: Object.assign({}, ED, { detroitClock: (n) => ED.detroitClock(n || new Date(NOW)) }) };
       vm.createContext(sb);
       vm.runInContext(FAKE_DATE(NOW), sb);
       vm.runInContext([
-        block(page.html, "CATS", "\\};"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
+        block(page.html, "CATS", "\\}\\);"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
         oneLineFn(page.html, "toISO"), fn(page.html, "getTodayISO"), fn(page.html, "getWeekendDates"),
         `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
              originLocation = null, radiusMiles = null, cachedWeekendDates = [];
@@ -526,7 +528,9 @@ function run() {
     // What the approved plan said would and would not travel before Calendar and Map adopt the shared file.
     for (const surface of ["calendar", "map"]) {
       for (const must of ["place+radius", "when:tonight", "when:weekend", "when:today", "feature:tickets"]) assert.ok(carried[surface].has(must), `${surface} should carry ${must}`);
-      for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "place:Lansing", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
+      // "place:Lansing" used to be a gap on both pages; geographic parity (2026-10-24) put Lansing
+      // in their city tables, so a Lansing link now carries (asserted by place-eligibility.test.js).
+      for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
     }
     for (const must of ["opens the day:today", "opens the day:tonight", "opens the day:tomorrow", "opens the day:dates"]) assert.ok(carried.calendar.has(must), `calendar ${must}`);
     console.log(`PASS: ${states.length} states sent through Discovery.href() into Calendar's and Map's real readStateFromURL() — categories, free, search, known features, place + radius, tonight / weekend / today carry to Calendar and Map now; Calendar opens the right day for single-day states`);
@@ -538,16 +542,17 @@ function run() {
   // =====================================================================
   {
     const canonical = D.categories.map((c) => [c.key, c.label]);
-    const evalIn = (src, expr) => { const sb = {}; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
+    // The pages build CATS from /categories.js, which they load in <head>; give the sandbox the same global.
+    const evalIn = (src, expr) => { const sb = { Categories: require(`${REPO_DIR}/categories.js`) }; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
     // Five pages still keep their own CATS object, submit.html a list. (The
     // homepage no longer has a copy: it builds CATS from Discovery.categories.)
     ["calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
-      const cats = evalIn(block(read(f), "CATS", "\\};"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
+      const cats = evalIn(block(read(f), "CATS", "\\}\\);"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
       assert.deepStrictEqual(plain(cats), canonical, `${f}: CATS keys, labels and order match discovery.js`);
     });
-    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\];"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
+    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\}\\)\\);"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
     // The homepage keeps only a COLOUR per category (presentation): exactly one for each canonical key, no extras.
-    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\};"), "Object.keys(CAT_COLORS)");
+    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\}\\);"), "Object.keys(CAT_COLORS)");
     assert.deepStrictEqual(plain(homeColours), canonical.map(([k]) => k), "index.html: a colour for every category, in the canonical order, and for nothing else");
     // admin.html's editorial form lists [key, label] pairs. Same keys, same
     // order. ONE label already differs there today — 'fest' reads

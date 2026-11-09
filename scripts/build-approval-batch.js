@@ -122,7 +122,7 @@ function build() {
   L.push("");
   L.push("| Destination | State now | Still needed |");
   L.push("|---|---|---|");
-  BATCH.forEach((id) => { const e = ents[id], rv = ED.review(e); L.push("| " + e.name + " | " + rv.state + " | " + rv.outstanding.map((o) => /^Gate (\d)/.exec(o)[1]).join(", ") + " |"); });
+  BATCH.forEach((id) => { const e = ents[id], rv = ED.review(e); L.push("| " + e.name + " | " + rv.state + " | " + (rv.outstanding.map((o) => { const m = /^Gate (\d)/.exec(o); return m ? m[1] : null; }).filter(Boolean).join(", ") || (e.disposition ? "none (" + e.disposition.type + ")" : "none")) + " |"); });
   L.push("");
   L.push("Gate items: 1 official verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.");
   BATCH.forEach((id, i) => {

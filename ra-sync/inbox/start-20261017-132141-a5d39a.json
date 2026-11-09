@@ -1,0 +1,862 @@
+{
+  "runToken": "20261017-132141-a5d39a",
+  "action": "start",
+  "candidateIds": [
+    "ra-2502088",
+    "ra-2547576",
+    "ra-2537170",
+    "ra-2560102",
+    "ra-2557074",
+    "ra-2559128",
+    "ra-2546144",
+    "ra-2562678",
+    "ra-2553661",
+    "ra-2496077",
+    "ra-2549395",
+    "ra-2552675",
+    "ra-2560845",
+    "ra-2534373",
+    "ra-2563406",
+    "ra-2559460",
+    "ra-2533802",
+    "ra-2560411",
+    "ra-2563407",
+    "ra-2563412",
+    "ra-2561790",
+    "ra-2561785",
+    "ra-2558815",
+    "ra-2562910",
+    "ra-2550247",
+    "ra-2533635",
+    "ra-2542617",
+    "ra-2546161",
+    "ra-2561970",
+    "ra-2552987",
+    "ra-2470800",
+    "ra-2547602",
+    "ra-2545250",
+    "ra-2556203",
+    "ra-2547939",
+    "ra-2562503",
+    "ra-2518239",
+    "ra-2549324",
+    "ra-2555802",
+    "ra-2523637",
+    "ra-2562940",
+    "ra-2407740",
+    "ra-2560131",
+    "ra-2563371",
+    "ra-2561787",
+    "ra-2487990",
+    "ra-2543572",
+    "ra-2555025",
+    "ra-2474825",
+    "ra-2474832",
+    "ra-2525497",
+    "ra-2547930",
+    "ra-2517939",
+    "ra-2555211",
+    "ra-2550086",
+    "ra-2562829",
+    "ra-2537661",
+    "ra-2526580",
+    "ra-2462567",
+    "ra-2461128",
+    "ra-2474836",
+    "ra-2555944",
+    "ra-2512641",
+    "ra-2559327",
+    "ra-2525714",
+    "ra-2554549",
+    "ra-2547937",
+    "ra-2552039",
+    "ra-2557322",
+    "ra-2554995",
+    "ra-2562023",
+    "ra-2562044",
+    "ra-2544390",
+    "ra-2536039",
+    "ra-2561793",
+    "ra-2500295",
+    "ra-2520031",
+    "ra-2558364",
+    "ra-2559396",
+    "ra-2540047",
+    "ra-2532432",
+    "ra-2554535",
+    "ra-2528913",
+    "ra-2562939",
+    "ra-2542519",
+    "ra-2525360",
+    "ra-2555144",
+    "ra-2562771",
+    "ra-2523760",
+    "ra-2559455",
+    "ra-2563281",
+    "ra-2500122",
+    "ra-2541676",
+    "ra-2560389",
+    "ra-2532152",
+    "ra-2518092",
+    "ra-2562615",
+    "ra-2503651",
+    "ra-2561822",
+    "ra-2558090",
+    "ra-2479791",
+    "ra-2545591",
+    "ra-2524562",
+    "ra-2561698",
+    "ra-2550062",
+    "ra-2551935",
+    "ra-2528932",
+    "ra-2561782",
+    "ra-2551189",
+    "ra-2562938",
+    "ra-2561584",
+    "ra-2461133",
+    "ra-2527755",
+    "ra-2533807",
+    "ra-2516198",
+    "ra-2534490",
+    "ra-2559416",
+    "ra-2563254",
+    "ra-2464396",
+    "ra-2466618",
+    "ra-2466647",
+    "ra-2541658"
+  ],
+  "listingMetadata": {
+    "ra-2407740": {
+      "date": "SAT, 24 OCT",
+      "title": "WONKYWEEN",
+      "url": "https://ra.co/events/2407740",
+      "venueName": "Elektricity"
+    },
+    "ra-2461128": {
+      "date": "FRI, 30 OCT",
+      "title": "CHOPTOBER: DEVILS NIGHT EDITION",
+      "url": "https://ra.co/events/2461128",
+      "venueName": "Elektricity"
+    },
+    "ra-2461133": {
+      "date": "SAT, 12 DEC",
+      "title": "RIOT: THE MACHINE WORLD TOUR",
+      "url": "https://ra.co/events/2461133",
+      "venueName": "Elektricity"
+    },
+    "ra-2462567": {
+      "date": "FRI, 30 OCT",
+      "title": "Lucky Rabbit",
+      "url": "https://ra.co/events/2462567",
+      "venueName": "TBA - Secret Loft space (Revealed strictly to ticket holders via email before the event)."
+    },
+    "ra-2464396": {
+      "date": "FRI, 9 APR",
+      "title": "DETROITS INFERNO IV",
+      "url": "https://ra.co/events/2464396",
+      "venueName": "Elektricity"
+    },
+    "ra-2466618": {
+      "date": "SAT, 10 APR",
+      "title": "DETROITS INFERNO IV",
+      "url": "https://ra.co/events/2466618",
+      "venueName": "Elektricity"
+    },
+    "ra-2466647": {
+      "date": "FRI, 28 MAY",
+      "title": "100% LIVE Techno – ALL HARDWARE SETS / Movement Opening Party",
+      "url": "https://ra.co/events/2466647",
+      "venueName": "TBA"
+    },
+    "ra-2470800": {
+      "date": "FRI, 23 OCT",
+      "title": "Anime Rave: Halloween Edition",
+      "url": "https://ra.co/events/2470800",
+      "venueName": "Elektricity"
+    },
+    "ra-2474825": {
+      "date": "FRI, 30 OCT",
+      "title": "SAMHAIN XXVI WEEKEND",
+      "url": "https://ra.co/events/2474825",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2474832": {
+      "date": "FRI, 30 OCT",
+      "title": "I.T. presents Beyond",
+      "url": "https://ra.co/events/2474832",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2474836": {
+      "date": "SAT, 31 OCT",
+      "title": "SAMHAIN XXVI",
+      "url": "https://ra.co/events/2474836",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2479791": {
+      "date": "SAT, 21 NOV",
+      "title": "WHALES: DANGEROUS WATERS TOUR",
+      "url": "https://ra.co/events/2479791",
+      "venueName": "Elektricity"
+    },
+    "ra-2487990": {
+      "date": "THU, 29 OCT",
+      "title": "The Occasional Thursday Party with DJ Craze + Friends",
+      "url": "https://ra.co/events/2487990",
+      "venueName": "Marble Bar"
+    },
+    "ra-2496077": {
+      "date": "Sat, 17 Oct",
+      "title": "Walker & Royce",
+      "url": "https://ra.co/events/2496077",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2500122": {
+      "date": "SAT, 14 NOV",
+      "title": "Steller",
+      "url": "https://ra.co/events/2500122",
+      "venueName": "Elektricity"
+    },
+    "ra-2500295": {
+      "date": "FRI, 6 NOV",
+      "title": "Steve Aoki: Dim Mak 30 Tour",
+      "url": "https://ra.co/events/2500295",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2502088": {
+      "date": "Sat, 17 Oct",
+      "title": "CARTOONS & STEREO VOL. 2: A SKATEBOARDING + MUSIC FESTIVAL",
+      "url": "https://ra.co/events/2502088",
+      "venueName": "Big Pink"
+    },
+    "ra-2503651": {
+      "date": "SAT, 21 NOV",
+      "title": "Fadi Mohem by Urban Pulse",
+      "url": "https://ra.co/events/2503651",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2512641": {
+      "date": "SAT, 31 OCT",
+      "title": "Grave Rave",
+      "url": "https://ra.co/events/2512641",
+      "venueName": "Detroit Shipping Company"
+    },
+    "ra-2516198": {
+      "date": "FRI, 8 JAN",
+      "title": "Sera J & ANNĒ",
+      "url": "https://ra.co/events/2516198",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2517939": {
+      "date": "FRI, 30 OCT",
+      "title": "Techno City - Devil's Night Edition",
+      "url": "https://ra.co/events/2517939",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2518092": {
+      "date": "FRI, 20 NOV",
+      "title": "SODOWN: SCENES OF CONSCIOUSNESS",
+      "url": "https://ra.co/events/2518092",
+      "venueName": "Elektricity"
+    },
+    "ra-2518239": {
+      "date": "SAT, 24 OCT",
+      "title": "Fangs On Film",
+      "url": "https://ra.co/events/2518239",
+      "venueName": "The High Dive"
+    },
+    "ra-2520031": {
+      "date": "FRI, 6 NOV",
+      "title": "TXTR : Pariah & Verraco",
+      "url": "https://ra.co/events/2520031",
+      "venueName": "Marble Bar"
+    },
+    "ra-2523637": {
+      "date": "SAT, 24 OCT",
+      "title": "Hamdi",
+      "url": "https://ra.co/events/2523637",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2523760": {
+      "date": "SAT, 14 NOV",
+      "title": "Layton Giordani presents MADMINDS",
+      "url": "https://ra.co/events/2523760",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2524562": {
+      "date": "WED, 25 NOV",
+      "title": "Amplify Grand Opening",
+      "url": "https://ra.co/events/2524562",
+      "venueName": "Amplify"
+    },
+    "ra-2525360": {
+      "date": "SAT, 14 NOV",
+      "title": "Dasha Rush - Luke Hess - Lincoln Factory",
+      "url": "https://ra.co/events/2525360",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2525497": {
+      "date": "FRI, 30 OCT",
+      "title": "Pre- HALLOWEEN TURN UP",
+      "url": "https://ra.co/events/2525497",
+      "venueName": "TV Lounge"
+    },
+    "ra-2525714": {
+      "date": "SAT, 31 OCT",
+      "title": "FUNHAUS",
+      "url": "https://ra.co/events/2525714",
+      "venueName": "Olympus Theater"
+    },
+    "ra-2526580": {
+      "date": "FRI, 30 OCT",
+      "title": "HalloQueen 2026",
+      "url": "https://ra.co/events/2526580",
+      "venueName": "Donovan's Pub"
+    },
+    "ra-2527755": {
+      "date": "SAT, 26 DEC",
+      "title": "☆KRAMPUS NIGHT III☆",
+      "url": "https://ra.co/events/2527755",
+      "venueName": "Olympus Theater"
+    },
+    "ra-2528913": {
+      "date": "SAT, 7 NOV",
+      "title": "Mary Droppinz with Casey Club - 360° DJ EXPERIENCE",
+      "url": "https://ra.co/events/2528913",
+      "venueName": "Elektricity"
+    },
+    "ra-2528932": {
+      "date": "FRI, 4 DEC",
+      "title": "LAYZ with KOZMOZ",
+      "url": "https://ra.co/events/2528932",
+      "venueName": "Elektricity"
+    },
+    "ra-2532152": {
+      "date": "FRI, 20 NOV",
+      "title": "it's murph - Fade Into Nothing Tour",
+      "url": "https://ra.co/events/2532152",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2532432": {
+      "date": "SAT, 7 NOV",
+      "title": "Skream - Open to Close Tour",
+      "url": "https://ra.co/events/2532432",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2533635": {
+      "date": "FRI, 23 OCT",
+      "title": "Dolls Night - Paranormal (Year 2)",
+      "url": "https://ra.co/events/2533635",
+      "venueName": "Paris Bar"
+    },
+    "ra-2533802": {
+      "date": "SAT, 17 OCT",
+      "title": "WEIRD & ODD FT. WODD",
+      "url": "https://ra.co/events/2533802",
+      "venueName": "Elektricity"
+    },
+    "ra-2533807": {
+      "date": "THU, 31 DEC",
+      "title": "ZERO HOUR: NEW YEARS EVE 2027",
+      "url": "https://ra.co/events/2533807",
+      "venueName": "Elektricity"
+    },
+    "ra-2534373": {
+      "date": "SAT, 17 OCT",
+      "title": "Black Whiskey Flask presents Disco's Get Down in the D w Santonio Echols",
+      "url": "https://ra.co/events/2534373",
+      "venueName": "Corktown Tavern"
+    },
+    "ra-2534490": {
+      "date": "SAT, 16 JAN",
+      "title": "KREWELLA",
+      "url": "https://ra.co/events/2534490",
+      "venueName": "Elektricity"
+    },
+    "ra-2536039": {
+      "date": "SUN, 1 NOV",
+      "title": "Industrial Detroit - Mvtant, Pink Stiletto, Mechanatura, C.M. Samuels, Kenjiro",
+      "url": "https://ra.co/events/2536039",
+      "venueName": "Paris Bar"
+    },
+    "ra-2537170": {
+      "date": "Sat, 17 Oct",
+      "title": "Hear Here • sillygirlcarmen, Disc Jockey George, & KRW",
+      "url": "https://ra.co/events/2537170",
+      "venueName": "TV Lounge"
+    },
+    "ra-2537661": {
+      "date": "FRI, 30 OCT",
+      "title": "Beats, Robots, Monsters: Dawn of The Dead",
+      "url": "https://ra.co/events/2537661",
+      "venueName": "TBA - Lagerhaus#5"
+    },
+    "ra-2540047": {
+      "date": "SAT, 7 NOV",
+      "title": "TV • Further • Charivari Detroit • UMA",
+      "url": "https://ra.co/events/2540047",
+      "venueName": "TV Lounge"
+    },
+    "ra-2541658": {
+      "date": "FRI, 25 JUN",
+      "title": "TEC-TROIT ELECTRONIC MUSIC FESTIVAL",
+      "url": "https://ra.co/events/2541658",
+      "venueName": "TBA - Detroit MI USA"
+    },
+    "ra-2541676": {
+      "date": "SAT, 14 NOV",
+      "title": "V.V. Lightbody with John Krautner & Rachele Eve",
+      "url": "https://ra.co/events/2541676",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2542519": {
+      "date": "SAT, 7 NOV",
+      "title": "ART 8 HOUSE",
+      "url": "https://ra.co/events/2542519",
+      "venueName": "Andy Arts"
+    },
+    "ra-2542617": {
+      "date": "FRI, 23 OCT",
+      "title": "Dilemmas B Day Bash",
+      "url": "https://ra.co/events/2542617",
+      "venueName": "TV Lounge"
+    },
+    "ra-2543572": {
+      "date": "THU, 29 OCT",
+      "title": "ANӘMӘ'LISTIK",
+      "url": "https://ra.co/events/2543572",
+      "venueName": "Spkrbox"
+    },
+    "ra-2544390": {
+      "date": "SAT, 31 OCT",
+      "title": "NURKO: MICHIGAN HORROR STORY - CARNIVAL OF CHAOS",
+      "url": "https://ra.co/events/2544390",
+      "venueName": "Elektricity"
+    },
+    "ra-2545250": {
+      "date": "SAT, 24 OCT",
+      "title": "HOUSE IS HOME: STACEY PULLEN | MISTER JOSHOOA | DRU ALLAN | VINYL ALL NIGHT",
+      "url": "https://ra.co/events/2545250",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2545591": {
+      "date": "WED, 25 NOV",
+      "title": "City Of Machines",
+      "url": "https://ra.co/events/2545591",
+      "venueName": "HALO DETROIT"
+    },
+    "ra-2546144": {
+      "date": "Sat, 17 Oct",
+      "title": "NIGHT MARKET",
+      "url": "https://ra.co/events/2546144",
+      "venueName": "TBA - The Vault 313 (16940 Hamilton)"
+    },
+    "ra-2546161": {
+      "date": "FRI, 23 OCT",
+      "title": "CORRUPTION: Persephone's Masquerade",
+      "url": "https://ra.co/events/2546161",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2547576": {
+      "date": "Sat, 17 Oct",
+      "title": "HIPHOP NIGHT: DJ MO BEATZ & DJ KDIRTY (OPEN FORMAT CLUB BANGERS)",
+      "url": "https://ra.co/events/2547576",
+      "venueName": "Big Pink"
+    },
+    "ra-2547602": {
+      "date": "SAT, 24 OCT",
+      "title": "LATIN NIGHT: DJ IZA & SWDEJAY (BAD BUNNY VIBES)",
+      "url": "https://ra.co/events/2547602",
+      "venueName": "Big Pink"
+    },
+    "ra-2547930": {
+      "date": "FRI, 30 OCT",
+      "title": "Devil's Nite: Audion (live), Scott Zacharias, NO NO BOYS ft Josh Dunn (live),",
+      "url": "https://ra.co/events/2547930",
+      "venueName": "Marble Bar"
+    },
+    "ra-2547937": {
+      "date": "SAT, 31 OCT",
+      "title": "Fiesta House with Rosa Pistola",
+      "url": "https://ra.co/events/2547937",
+      "venueName": "Marble Bar"
+    },
+    "ra-2547939": {
+      "date": "SAT, 24 OCT",
+      "title": "12 Hour Party",
+      "url": "https://ra.co/events/2547939",
+      "venueName": "Marble Bar"
+    },
+    "ra-2549324": {
+      "date": "SAT, 24 OCT",
+      "title": "DOGHAUS XOXR xx Not Ur Amigo",
+      "url": "https://ra.co/events/2549324",
+      "venueName": "The Strays"
+    },
+    "ra-2549395": {
+      "date": "SAT, 17 OCT",
+      "title": "Body Worx wsg CONFLICT BUREAU (Chicago)",
+      "url": "https://ra.co/events/2549395",
+      "venueName": "Temple Bar"
+    },
+    "ra-2550062": {
+      "date": "SAT, 28 NOV",
+      "title": "Detroit Love - Carl Craig b2b Seth Troxler",
+      "url": "https://ra.co/events/2550062",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2550086": {
+      "date": "FRI, 30 OCT",
+      "title": "Bad Gyaloween",
+      "url": "https://ra.co/events/2550086",
+      "venueName": "Miss Eva's Speakeasy"
+    },
+    "ra-2550247": {
+      "date": "FRI, 23 OCT",
+      "title": "OCTOBER'S VERY OWN: DRAKE NIGHT (WITH BLAKITO)",
+      "url": "https://ra.co/events/2550247",
+      "venueName": "Big Pink"
+    },
+    "ra-2551189": {
+      "date": "SAT, 5 DEC",
+      "title": "Mija - USA Fall Tour",
+      "url": "https://ra.co/events/2551189",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2551935": {
+      "date": "FRI, 4 DEC",
+      "title": "SIDEPIECE‍",
+      "url": "https://ra.co/events/2551935",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2552039": {
+      "date": "SAT, 31 OCT",
+      "title": "Nightmare on Holden Street 2",
+      "url": "https://ra.co/events/2552039",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2552675": {
+      "date": "SAT, 17 OCT",
+      "title": "LAÍRE COMMUNITY 2",
+      "url": "https://ra.co/events/2552675",
+      "venueName": "TBA - Johnny Noodle King"
+    },
+    "ra-2552987": {
+      "date": "FRI, 23 OCT",
+      "title": "Infolines The Leland Release Party",
+      "url": "https://ra.co/events/2552987",
+      "venueName": "Spkrbox"
+    },
+    "ra-2553661": {
+      "date": "Sat, 17 Oct",
+      "title": "UNION",
+      "url": "https://ra.co/events/2553661",
+      "venueName": "Spkrbox"
+    },
+    "ra-2554535": {
+      "date": "SAT, 7 NOV",
+      "title": "Dance Against Fascism",
+      "url": "https://ra.co/events/2554535",
+      "venueName": "The High Dive"
+    },
+    "ra-2554549": {
+      "date": "SAT, 31 OCT",
+      "title": "Haute to Death 19 Year Anniversary -wsg- Charles Trees, DJ Etta, dream beach, and Peter Croce",
+      "url": "https://ra.co/events/2554549",
+      "venueName": "Paris Bar"
+    },
+    "ra-2554995": {
+      "date": "SAT, 31 OCT",
+      "title": "HalloWeeb",
+      "url": "https://ra.co/events/2554995",
+      "venueName": "Gotta Gacha"
+    },
+    "ra-2555025": {
+      "date": "FRI, 30 OCT",
+      "title": "FREAKY FRIDAY: PROBLEMATICBLACKHOTTIE & DJ KILLA SQUID (OPEN FORMAT BANGERS)",
+      "url": "https://ra.co/events/2555025",
+      "venueName": "Big Pink"
+    },
+    "ra-2555144": {
+      "date": "SAT, 14 NOV",
+      "title": "Paradise Lost: An Industrial Apocalypse",
+      "url": "https://ra.co/events/2555144",
+      "venueName": "TBA - Secret Location"
+    },
+    "ra-2555211": {
+      "date": "FRI, 30 OCT",
+      "title": "Haunted House An Underground Halloween Experience",
+      "url": "https://ra.co/events/2555211",
+      "venueName": "Per Ankh Detroit Entheogenic Church"
+    },
+    "ra-2555802": {
+      "date": "SAT, 24 OCT",
+      "title": "BAILA HABIBI X FIESTA HOUSE: HALLOWEEN PARTY",
+      "url": "https://ra.co/events/2555802",
+      "venueName": "The Norwood Theatre"
+    },
+    "ra-2555944": {
+      "date": "SAT, 31 OCT",
+      "title": "DETROIT IS SPOOKY: MUNCH (HALLOWEEN PARTY) - OPEN FORMAT BANGERS",
+      "url": "https://ra.co/events/2555944",
+      "venueName": "Big Pink"
+    },
+    "ra-2556203": {
+      "date": "SAT, 24 OCT",
+      "title": "VINDICATE 007 - Hard Techno, Schranz & Groove",
+      "url": "https://ra.co/events/2556203",
+      "venueName": "The Vault 313"
+    },
+    "ra-2557074": {
+      "date": "Sat, 17 Oct",
+      "title": "TOP2BTTM",
+      "url": "https://ra.co/events/2557074",
+      "venueName": "The Eagle of Detroit"
+    },
+    "ra-2557322": {
+      "date": "SAT, 31 OCT",
+      "title": "Clown-o-Ween",
+      "url": "https://ra.co/events/2557322",
+      "venueName": "The High Dive"
+    },
+    "ra-2558090": {
+      "date": "SAT, 21 NOV",
+      "title": "Eli Escobar - Extended Set",
+      "url": "https://ra.co/events/2558090",
+      "venueName": "TV Lounge"
+    },
+    "ra-2558364": {
+      "date": "FRI, 6 NOV",
+      "title": "DIE SYSTEMS SHOWCASE (DEEP GLENS, OTO DOJO, SEAN AND DIEGO)",
+      "url": "https://ra.co/events/2558364",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2558815": {
+      "date": "THU, 22 OCT",
+      "title": "TECHNO THURSDAY: DBU Edition",
+      "url": "https://ra.co/events/2558815",
+      "venueName": "Marble Bar"
+    },
+    "ra-2559128": {
+      "date": "Sat, 17 Oct",
+      "title": "FIESTA RAVE",
+      "url": "https://ra.co/events/2559128",
+      "venueName": "TBA - TULUM DETROIT  3400 Bagley St"
+    },
+    "ra-2559327": {
+      "date": "SAT, 31 OCT",
+      "title": "Halloween at TV",
+      "url": "https://ra.co/events/2559327",
+      "venueName": "TV Lounge"
+    },
+    "ra-2559396": {
+      "date": "FRI, 6 NOV",
+      "title": "OPEN THE PIT",
+      "url": "https://ra.co/events/2559396",
+      "venueName": "Elektricity"
+    },
+    "ra-2559416": {
+      "date": "FRI, 22 JAN",
+      "title": "AYYBO",
+      "url": "https://ra.co/events/2559416",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2559455": {
+      "date": "SAT, 14 NOV",
+      "title": "MEMCO presents: IMPULSE 2100",
+      "url": "https://ra.co/events/2559455",
+      "venueName": "TBA - (313) 395 8288"
+    },
+    "ra-2559460": {
+      "date": "SAT, 17 OCT",
+      "title": "The Outpost: Eddie Logix",
+      "url": "https://ra.co/events/2559460",
+      "venueName": "Traverse City Whiskey Co. Outpost"
+    },
+    "ra-2560102": {
+      "date": "Sun, 18 Oct",
+      "title": "NO SKIPS: HIPHOP & R&B (SUNDAY NIGHT) - BLAKITO",
+      "url": "https://ra.co/events/2560102",
+      "venueName": "Big Pink"
+    },
+    "ra-2560131": {
+      "date": "SUN, 25 OCT",
+      "title": "T Hill Detroit Radio presents Gospel House 313",
+      "url": "https://ra.co/events/2560131",
+      "venueName": "TV Lounge"
+    },
+    "ra-2560389": {
+      "date": "FRI, 20 NOV",
+      "title": "Industrial Detroit - The Treasury, Hexx Head, Mission to the Sun, Deadlines",
+      "url": "https://ra.co/events/2560389",
+      "venueName": "Outer Limits Lounge"
+    },
+    "ra-2560411": {
+      "date": "SUN, 18 OCT",
+      "title": "Serve",
+      "url": "https://ra.co/events/2560411",
+      "venueName": "Spkrbox"
+    },
+    "ra-2560845": {
+      "date": "SAT, 17 OCT",
+      "title": "Shigeto",
+      "url": "https://ra.co/events/2560845",
+      "venueName": "Tigris"
+    },
+    "ra-2561584": {
+      "date": "SAT, 5 DEC",
+      "title": "CODD DUBZ X HE$H: THRASHED TOUR",
+      "url": "https://ra.co/events/2561584",
+      "venueName": "Elektricity"
+    },
+    "ra-2561698": {
+      "date": "FRI, 27 NOV",
+      "title": "DEEP DARK BASS",
+      "url": "https://ra.co/events/2561698",
+      "venueName": "Elektricity"
+    },
+    "ra-2561782": {
+      "date": "SAT, 5 DEC",
+      "title": "VØRA: Saytek*LIVE with minimal detroit",
+      "url": "https://ra.co/events/2561782",
+      "venueName": "TBA - 310 W 7 MILE"
+    },
+    "ra-2561785": {
+      "date": "WED, 21 OCT",
+      "title": "Open Decks",
+      "url": "https://ra.co/events/2561785",
+      "venueName": "Paramita Sound"
+    },
+    "ra-2561787": {
+      "date": "WED, 28 OCT",
+      "title": "Open Decks",
+      "url": "https://ra.co/events/2561787",
+      "venueName": "Paramita Sound"
+    },
+    "ra-2561790": {
+      "date": "TUE, 20 OCT",
+      "title": "Open Decks",
+      "url": "https://ra.co/events/2561790",
+      "venueName": "Garden Bowl"
+    },
+    "ra-2561793": {
+      "date": "TUE, 3 NOV",
+      "title": "Open Decks",
+      "url": "https://ra.co/events/2561793",
+      "venueName": "Garden Bowl"
+    },
+    "ra-2561822": {
+      "date": "SAT, 21 NOV",
+      "title": "S T R Ʌ T Ø S",
+      "url": "https://ra.co/events/2561822",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2561970": {
+      "date": "FRI, 23 OCT",
+      "title": "Whodat, Peter Croce + Blair French",
+      "url": "https://ra.co/events/2561970",
+      "venueName": "Marble Bar"
+    },
+    "ra-2562023": {
+      "date": "SAT, 31 OCT",
+      "title": "SHADOWPLAY",
+      "url": "https://ra.co/events/2562023",
+      "venueName": "TBA"
+    },
+    "ra-2562044": {
+      "date": "SAT, 31 OCT",
+      "title": "BMR: HONEYMOON HALLOWEEN",
+      "url": "https://ra.co/events/2562044",
+      "venueName": "Temple Bar"
+    },
+    "ra-2562503": {
+      "date": "SAT, 24 OCT",
+      "title": "The Portal",
+      "url": "https://ra.co/events/2562503",
+      "venueName": "MAD Arts"
+    },
+    "ra-2562615": {
+      "date": "FRI, 20 NOV",
+      "title": "Hairitage",
+      "url": "https://ra.co/events/2562615",
+      "venueName": "Amplify"
+    },
+    "ra-2562678": {
+      "date": "Sat, 17 Oct",
+      "title": "Dr. Poppers, Julian Spradlin, Sav G",
+      "url": "https://ra.co/events/2562678",
+      "venueName": "Marble Bar"
+    },
+    "ra-2562771": {
+      "date": "SAT, 14 NOV",
+      "title": "Alternative School presents: Musicology with Glenn Underground, Ameera & Turtle Bugg",
+      "url": "https://ra.co/events/2562771",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2562829": {
+      "date": "FRI, 30 OCT",
+      "title": "RAT CITY DEVILS NIGHT",
+      "url": "https://ra.co/events/2562829",
+      "venueName": "The Strays"
+    },
+    "ra-2562910": {
+      "date": "THU, 22 OCT",
+      "title": "THIRST TRAP // HAPPY HOUR",
+      "url": "https://ra.co/events/2562910",
+      "venueName": "SOS"
+    },
+    "ra-2562938": {
+      "date": "SAT, 5 DEC",
+      "title": "DETROIT, BROOKLYN, AND EVERYWHERE THE GROOVE TAKES YOU",
+      "url": "https://ra.co/events/2562938",
+      "venueName": "TV Lounge"
+    },
+    "ra-2562939": {
+      "date": "SAT, 7 NOV",
+      "title": "RADIANT",
+      "url": "https://ra.co/events/2562939",
+      "venueName": "HALO DETROIT"
+    },
+    "ra-2562940": {
+      "date": "SAT, 24 OCT",
+      "title": "DFEST • FALL EDITION",
+      "url": "https://ra.co/events/2562940",
+      "venueName": "TV Lounge"
+    },
+    "ra-2563254": {
+      "date": "FRI, 26 FEB",
+      "title": "Swimming Paul - NORTH AMERICAN TOUR",
+      "url": "https://ra.co/events/2563254",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2563281": {
+      "date": "SAT, 14 NOV",
+      "title": "Decliner: CUT RATE RELEASE SHOW",
+      "url": "https://ra.co/events/2563281",
+      "venueName": "The Strays"
+    },
+    "ra-2563371": {
+      "date": "MON, 26 OCT",
+      "title": "Slow Jams 18 Year Anniversery",
+      "url": "https://ra.co/events/2563371",
+      "venueName": "Woodbridge Pub"
+    },
+    "ra-2563406": {
+      "date": "SAT, 17 OCT",
+      "title": "Music Observation Station",
+      "url": "https://ra.co/events/2563406",
+      "venueName": "Spkrbox"
+    },
+    "ra-2563407": {
+      "date": "SUN, 18 OCT",
+      "title": "Domingo",
+      "url": "https://ra.co/events/2563407",
+      "venueName": "Spkrbox"
+    },
+    "ra-2563412": {
+      "date": "SUN, 18 OCT",
+      "title": "Sassy Soul Sunday",
+      "url": "https://ra.co/events/2563412",
+      "venueName": "Spkrbox"
+    }
+  }
+}

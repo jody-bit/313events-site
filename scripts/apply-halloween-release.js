@@ -91,7 +91,8 @@ function apply(e, d) {
   if (d.disposition) {
     // Owner's final editorial decision: the 52-record inventory is approved, the duplicate/closed records are excluded from public
     // display, and their records and history are preserved. They carry a disposition and NO publication approval.
-    o.disposition = Object.assign({}, d.disposition, { recordedBy: OWNER + " (owner), Halloween final editorial decision; applied by editor", recordedAt: READ_AT });
+    // A later owner decision supplies its own recordedBy/recordedAt (and the approval it retires); the 2026-10-12 decision is the default.
+    o.disposition = Object.assign({ recordedBy: OWNER + " (owner), Halloween final editorial decision; applied by editor", recordedAt: READ_AT }, d.disposition);
     delete o.editorialAccepted; delete o.approval;
   } else {
     o.editorialAccepted = { by: OWNER + " (owner)", at: APPROVED_AT, scope: SCOPE };

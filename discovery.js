@@ -67,9 +67,13 @@
 //   WHERE   Distance is between CITY CENTRES and must be labelled that way
 //           — no venue has coordinates. 'orbit' = within 75 miles of
 //           Detroit's BORDER (DEC-003). A numeric radius is measured from
-//           the chosen place and stays inside the Orbit. An event whose
-//           city is not in `places` cannot be placed: it is excluded by
-//           any radius filter and reported by facets(…, 'placement').
+//           the chosen place and stays inside the Orbit. A city is looked
+//           up by exact name in `places`, then (when city-resolution.js and
+//           city-table-phase2.js are loaded, as on every page) through
+//           CityResolution -- state/ZIP, Twp, Mt = Mount, Grosse Pointe
+//           aliases, source-gated Phase 2 cities. An event whose city still
+//           cannot be placed is excluded by any radius filter, never
+//           guessed, and reported by facets(…, 'placement').
 //   SEARCH  One haystack: title, venue, city, category label,
 //           neighborhood, source, note.
 //   BLOCKED A small always-on suppression list, applied inside matches()
@@ -117,6 +121,8 @@
 //   (`city` is undefined for Detroit, as the pages already store it.)
 (function () {
   "use strict";
+
+  var GLOBAL = globalThis;
 
   // ===================================================================
   // Definitions
@@ -402,7 +408,11 @@
   function endedByClock(timeStr, minutes) {
     var range = parseTimeRange(timeStr);
     if (!range || !range.end || range.end.h < range.start.h) return false;
-    return range.end.h * 60 + range.end.m < minutes;
+    var endMin = range.end.h * 60 + range.end.m;
+    // An end that is not after the start ("12:00 AM - 12:00 AM", "8:00 PM - 8:00 PM") is a zero-length
+    // placeholder, not a known end: the event is not over (P1 discovery T3).
+    if (endMin <= range.start.h * 60 + range.start.m) return false;
+    return endMin < minutes;
   }
 
   function haversineMiles(lat1, lng1, lat2, lng2) {
@@ -833,7 +843,24 @@
       return e.cat;
     }
 
-    function cityOf(e) { return CITY_BY_NAME.get(String(e.city || "Detroit").toLowerCase()) || null; }
+    // Where is this event's city? An exact name in `places` wins, so nothing that placed before
+    // changes. Otherwise, when the page loaded city-resolution.js (and city-table-phase2.js),
+    // the same rules the map uses apply: "Warren, MI 48092", "Clinton Twp", "Mt. Clemens", the
+    // Grosse Pointe municipalities, and the sourced Phase 2 cities whose bare name is accepted
+    // only for a feed that is jurisdiction evidence. Anything else stays unplaced (never guessed).
+    var CITY_RESOLVER = config.cityResolution !== undefined ? config.cityResolution : (GLOBAL.CityResolution || null);
+    var EXTRA_CITIES = config.extraCities !== undefined ? config.extraCities : (GLOBAL.PHASE2_CITIES || []);
+    var RESOLVE_LOOKUP = new Map(CITY_BY_NAME);
+    EXTRA_CITIES.forEach(function (c) {
+      var k = String(c.name).toLowerCase();
+      if (!RESOLVE_LOOKUP.has(k)) RESOLVE_LOOKUP.set(k, { name: c.name, type: "city", region: c.region, lat: c.lat, lng: c.lng, sources: c.sources });
+    });
+    function cityOf(e) {
+      var exact = CITY_BY_NAME.get(String(e.city || "Detroit").toLowerCase());
+      if (exact || !e.city || !CITY_RESOLVER) return exact || null;
+      var hit = CITY_RESOLVER.resolve(e.city, RESOLVE_LOOKUP, { source: e.source, venue: e.venue });
+      return hit ? hit.loc : null;
+    }
 
     function matchWhat(e, what, c, skip) {
       if (skip !== "category" && what.paths.length) {
@@ -884,6 +911,19 @@
       // below applies unchanged.
       var ED = (typeof EventDates !== "undefined") ? EventDates : null;
       var b = ED ? ED.bounds(e) : null;
+      if (b && b.dates && !b.dates.length) {
+        // Schedule-unverified multiday range (owner decision 2026-10-16): it is
+        // not attendable on any specific date, so no date-specific window
+        // matches it. It stays in general browsing (open-ended 'all' window,
+        // no upper bound) while the range has not ended, and in search.
+        if (w.mode !== "all") return false;
+        if (w.forward) {
+          if (end < c.today) return false;
+          if (end === c.today && endedByClock(e.time, c.minutes)) return false;
+        }
+        if (w.from !== null && end < w.from) return false;
+        return !w.evening;
+      }
       if (b && b.dates) {
         var hit = b.dates.some(function (d) {
           if (w.forward && (d < c.today || (d === c.today && endedByClock(e.time, c.minutes)))) return false;
@@ -909,6 +949,25 @@
     }
 
     function matches(event, state, ctx) { return test(event, normalize(state), resolveCtx(ctx)); }
+
+    // Schedule-unverified multiday ranges (no date_semantics) are not attendable on any specific
+    // date, so matches() never returns them for a date window. A visitor on Today / Tomorrow still
+    // cannot be left blind to them (P1 discovery incident, 2026-11-07: Planet 9 Film Fest, The World of
+    // Anna Sui). unconfirmedOn() says whether such an event's STORED range covers the one day Today or
+    // Tomorrow is showing, and passes the same what / where / search filters. It is a separate list:
+    // callers show it as "Dates not confirmed", never count it with matches()/count(), never offer a
+    // calendar export. Other windows (tonight, weekend, picked dates) return false: nothing is inferred.
+    function unconfirmedOn(event, state, ctx) {
+      var s = normalize(state), c = resolveCtx(ctx);
+      if (!event || isBlocked(event)) return false;
+      var w = windowOf(s, c);
+      if (w.mode !== "today" && w.mode !== "tomorrow") return false;
+      var ED = (typeof EventDates !== "undefined") ? EventDates : null;
+      if (!ED || ED.availabilityOn(event, w.from) !== "unverified") return false;
+      var end = (typeof event.endDate === "string" && event.endDate > event.date) ? event.endDate : event.date;
+      if (w.mode === "today" && end === c.today && endedByClock(event.time, c.minutes)) return false;
+      return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined);
+    }
 
     // Distinct events — never event-days. An id seen twice (a surface
     // passing the same event once per day of its run) is counted once.
@@ -1049,6 +1108,7 @@
       href: href,
       // semantics
       matches: matches,
+      unconfirmedOn: unconfirmedOn,
       window: windowFor,
       count: count,
       facets: facets,

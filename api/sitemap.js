@@ -19,9 +19,10 @@
 // Scope: only approved events from roughly the last week onward — a
 // sitemap entry for an event that already happened months ago has no SEO
 // value and just dilutes the crawl budget search engines spend on this
-// site. 5,000-row cap is far under the sitemap protocol's own 50,000-URL
-// limit; revisit with real pagination (a sitemap index file referencing
-// several child sitemaps) only if approved-event volume ever gets close.
+// site. Event and venue rows are read with real paging (2026-11-09: the old
+// limit=5000 was silently capped at 1,000 rows by the server). The file stays
+// under the sitemap protocol's own 50,000-URL limit (MAX_URLS below); revisit
+// with a sitemap index file only if approved-event volume ever gets close.
 
 // 2026-09-13 smoke test finding: sitemap.js is the only server-side file in
 // this codebase that ever referenced SUPABASE_ANON_KEY — every other
@@ -38,12 +39,17 @@
 // RLS") fixes this without depending on a Vercel dashboard change; an
 // explicitly-configured env var (if one's ever added later) still wins.
 const { publicConfig, siteUrl } = require("./_lib/environment");
+const { fetchAllPagedRows } = require("./_lib/paged-rows");
+const EventDates = require("../event-dates.js");
 // Non-production has NO production fallback (api/_lib/environment.js).
 const _cfg = publicConfig();
 const SUPABASE_URL = _cfg.ok ? _cfg.supabaseUrl : "";
 const SUPABASE_ANON_KEY = _cfg.ok ? _cfg.supabaseAnonKey : "";
 const SITE_URL = siteUrl();
-const MAX_EVENTS = 5000;
+// The sitemap protocol allows 50,000 URLs and 50 MB per file. Events are paged in full (api/_lib/paged-rows.js: the server
+// caps every request at 1,000 rows whatever limit= asks for); if the total ever exceeds this ceiling, event URLs are cut
+// (soonest first) rather than emitting an invalid file, and the cut is logged. Past that, build a sitemap index.
+const MAX_URLS = 50000;
 
 function xmlEscape(str) {
   return String(str || "").replace(/[<>&'"]/g, (c) => ({
@@ -81,14 +87,15 @@ module.exports = async (req, res) => {
   let eventRows = [];
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
-      const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${floorISO(7)}&select=id,updated_at&order=start_date.asc&limit=${MAX_EVENTS}`;
-      const resp = await fetch(url, {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      });
-      if (resp.ok) {
-        const rows = await resp.json();
-        if (Array.isArray(rows)) eventRows = rows;
-      }
+      // Upcoming = starts from a week ago on, OR still running / has a later occurrence (end_date >= Detroit today); the shared
+      // EventDates rule then decides which of the fetched rows are listed (ongoing exhibitions and recurring series were skipped before).
+      const grace = floorISO(7);
+      const today = EventDates.detroitClock().iso;
+      const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${grace},end_date.gte.${today})&select=id,updated_at,start_date,end_date,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+      const result = await fetchAllPagedRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` });
+      // A partial read is still listed (fail-soft, as before) but is never silent.
+      if (!result.ok) console.warn(`[sitemap] events read incomplete (${result.rows.length} rows): ${result.error}`);
+      eventRows = result.rows.filter((r) => (r.start_date && r.start_date >= grace) || EventDates.isUpcoming(r, today));
     } catch (err) {
       // Fall through with whatever we have (just the static pages) rather
       // than fail the whole sitemap over one bad Supabase request — a
@@ -117,14 +124,10 @@ module.exports = async (req, res) => {
   let venueRows = [];
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
-      const url = `${SUPABASE_URL}/rest/v1/venues?select=id&order=name.asc&limit=5000`;
-      const resp = await fetch(url, {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      });
-      if (resp.ok) {
-        const rows = await resp.json();
-        if (Array.isArray(rows)) venueRows = rows;
-      }
+      const url = `${SUPABASE_URL}/rest/v1/venues?select=id&order=name.asc,id.asc`;
+      const result = await fetchAllPagedRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` });
+      if (!result.ok) console.warn(`[sitemap] venues read incomplete (${result.rows.length} rows): ${result.error}`);
+      venueRows = result.rows;
     } catch (err) {
       // Same fail-soft behavior as the event fetch above — a sitemap
       // missing venue rows this run is far better than a 500.
@@ -139,7 +142,11 @@ module.exports = async (req, res) => {
       priority: "0.6",
     }));
 
-  const allUrls = [...staticUrls, ...eventUrls, ...venueUrls];
+  const eventRoom = Math.max(0, MAX_URLS - staticUrls.length - venueUrls.length);
+  if (eventUrls.length > eventRoom) {
+    console.warn(`[sitemap] ${eventUrls.length} event URLs exceed the ${MAX_URLS}-URL file limit; keeping the soonest ${eventRoom}`);
+  }
+  const allUrls = [...staticUrls, ...eventUrls.slice(0, eventRoom), ...venueUrls];
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

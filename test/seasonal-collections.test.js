@@ -20,7 +20,7 @@ const PRIVATE = ED.allCollections(); // every record, published or not (private 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 assert.deepStrictEqual(DATA.ORDER, ["fall", "halloween", "fall-color"]);
-assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED"]);
+assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED", "ENDED"]);
 const routes = { fall: "/fall", halloween: "/halloween", "fall-color": "/fall-color" };
 
 // A complete record, built from a real file on disk, for gate tests only.
@@ -208,13 +208,13 @@ for (const slug of DATA.ORDER) {
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
-assert.strictEqual(allEntries, 252, "71 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
+assert.strictEqual(allEntries, 251, "70 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
 // Release state: only the 76 destinations the owner authorized carry the explicit approval, so only they are public.
 {
   const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
   set.forEach((k) => { n[k.split("/")[0]]++; });
   for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, n[slug], slug + ": public destinations = the authorized batch");
-  assert.deepStrictEqual(n, { fall: 36, halloween: 29, "fall-color": 40 });
+  assert.deepStrictEqual(n, { fall: 38, halloween: 7, "fall-color": 41 });
 }
 
 // ---- 3. renderer behaviour, exercised on complete synthetic records
@@ -295,7 +295,8 @@ for (const slug of DATA.ORDER) {
   for (const e of PRIVATE[slug].entries.filter((x) => !DATA.isPublic(x))) assert.ok(!html.includes(e.name), slug + ": unpublished record leaked into the page: " + e.name);
   assert.ok(html.includes("Illustrative image") && html.includes('class="sc-hero"'), "the approved hero (labelled illustrative) is unchanged");
   assert.ok(html.includes("not only this collection") && html.includes("Open events map") && !/View on map/.test(html));
-  for (const other of DATA.ORDER.filter((s) => s !== slug)) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.ORDER.filter((s) => s !== slug && !DATA.PAUSED.includes(s))) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.PAUSED) assert.ok(!html.includes('href="' + routes[other] + '"'), "paused collection " + other + " is not cross-linked");
   const built = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(!/fixture/i.test(built), slug + ".html must never contain test fixtures");
 }
@@ -324,8 +325,8 @@ for (const slug of DATA.ORDER) {
 
 // ---- 6. candidate registry (private): all 252 rows preserved, ledger = five-state vocabulary, none public
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
-const counts = { fall: 71, halloween: 52, "fall-color": 129 };
-assert.strictEqual(reg.length, 252);
+const counts = { fall: 70, halloween: 52, "fall-color": 129 };
+assert.strictEqual(reg.length, 251);
 for (const slug of DATA.ORDER) {
   const rows = reg.filter((c) => c.collection === slug), col = PRIVATE[slug];
   assert.strictEqual(rows.length, counts[slug], slug + " inventory rows tracked");
@@ -335,16 +336,16 @@ for (const slug of DATA.ORDER) {
   for (const c of withEntry) assert.strictEqual(c.status, DATA.readiness(col.entries.find((e) => e.id === c.entry_id)).state, c.entry_id + " registry status equals derived state");
   assert.deepStrictEqual(rows.filter((c) => c.status === "PUBLISHED").map((c) => c.entry_id).sort(), DATA.published(col).map((e) => e.id).sort());
 }
-assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 105, "the ledger shows exactly the 76 Fall records and the 29 Halloween records that pass the gate as PUBLISHED");
+assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 86, "the ledger shows exactly the 79 Fall records (76 + 3) and the 7 Halloween records that pass the gate as PUBLISHED");
 
 // ---- 7. built pages in sync, routed, homepage cards link to them
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "utf8")).placements;
-assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/halloween", "/fall-color"]);
+assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
   const rule = vercel.rewrites.find((r) => r.source === route);
-  assert.ok(rule && rule.destination === "/" + slug + ".html", "rewrite for " + route);
+  assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
   const page = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(page.includes('rel="canonical" href="https://313.events' + route + '"'));
   assert.ok(page.includes('data-collection="' + slug + '"'));
@@ -352,9 +353,19 @@ for (const [slug, route] of Object.entries(routes)) {
 
 // ---- 8. scope guard (B4): deterministic base (origin/main), explicit allow-list, loud on missing evidence
 // Unit tests for the guard itself are in test/scope-guard.test.js. Here the real branch is checked.
+// On a checkout whose HEAD is exactly origin/main (main itself, or a fresh branch with no commits yet) there is no
+// change to guard, so the guard's deliberate "empty diff" failure is not evidence of a problem. That case is decided
+// by comparing commit ids, never by catching the error: a missing base, unrelated history or an empty diff on any
+// other HEAD still fails loudly.
 {
-  const r = GUARD.check({ cwd: root }); // throws (fails this test) if origin/main is unavailable or the diff is empty
-  assert.deepStrictEqual(r.violations, [], "protected files changed outside the allow-list: " + r.violations.join(", "));
-  assert.ok(r.changed.length > 0);
+  const sha = (ref) => { try { return execFileSync("git", ["rev-parse", "--verify", "--quiet", ref + "^{commit}"], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim(); } catch (e) { return ""; } };
+  const baseSha = sha(process.env.SCOPE_GUARD_BASE || GUARD.DEFAULT_BASE);
+  if (baseSha && baseSha === sha("HEAD")) {
+    console.log("seasonal-collections: HEAD is the scope-guard base; nothing to guard");
+  } else {
+    const r = GUARD.check({ cwd: root }); // throws (fails this test) if origin/main is unavailable or the diff is empty
+    assert.deepStrictEqual(r.violations, [], "protected files changed outside the allow-list: " + r.violations.join(", "));
+    assert.ok(r.changed.length > 0);
+  }
 }
 console.log("seasonal-collections: ok");

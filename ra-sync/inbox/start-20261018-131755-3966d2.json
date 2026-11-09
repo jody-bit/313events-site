@@ -1,0 +1,955 @@
+{
+  "runToken": "20261018-131755-3966d2",
+  "action": "start",
+  "candidateIds": [
+    "ra-2407740",
+    "ra-2461128",
+    "ra-2461133",
+    "ra-2462567",
+    "ra-2464396",
+    "ra-2466618",
+    "ra-2466647",
+    "ra-2470800",
+    "ra-2474825",
+    "ra-2474832",
+    "ra-2474836",
+    "ra-2479791",
+    "ra-2487990",
+    "ra-2500122",
+    "ra-2500295",
+    "ra-2503651",
+    "ra-2512641",
+    "ra-2516198",
+    "ra-2517939",
+    "ra-2518092",
+    "ra-2518239",
+    "ra-2520031",
+    "ra-2523637",
+    "ra-2523760",
+    "ra-2524562",
+    "ra-2525360",
+    "ra-2525497",
+    "ra-2525714",
+    "ra-2526580",
+    "ra-2527755",
+    "ra-2528913",
+    "ra-2528932",
+    "ra-2532152",
+    "ra-2532432",
+    "ra-2533635",
+    "ra-2533807",
+    "ra-2534490",
+    "ra-2536039",
+    "ra-2537661",
+    "ra-2540047",
+    "ra-2541658",
+    "ra-2541676",
+    "ra-2542519",
+    "ra-2542617",
+    "ra-2543572",
+    "ra-2544390",
+    "ra-2545250",
+    "ra-2545591",
+    "ra-2546161",
+    "ra-2547602",
+    "ra-2547930",
+    "ra-2547937",
+    "ra-2547939",
+    "ra-2549324",
+    "ra-2550062",
+    "ra-2550086",
+    "ra-2550247",
+    "ra-2551189",
+    "ra-2551935",
+    "ra-2552039",
+    "ra-2552987",
+    "ra-2554535",
+    "ra-2554549",
+    "ra-2554995",
+    "ra-2555025",
+    "ra-2555144",
+    "ra-2555211",
+    "ra-2555802",
+    "ra-2555944",
+    "ra-2556203",
+    "ra-2557322",
+    "ra-2558090",
+    "ra-2558364",
+    "ra-2558815",
+    "ra-2559327",
+    "ra-2559396",
+    "ra-2559416",
+    "ra-2559455",
+    "ra-2560102",
+    "ra-2560131",
+    "ra-2560389",
+    "ra-2560411",
+    "ra-2561584",
+    "ra-2561698",
+    "ra-2561782",
+    "ra-2561785",
+    "ra-2561787",
+    "ra-2561790",
+    "ra-2561793",
+    "ra-2561822",
+    "ra-2561970",
+    "ra-2562023",
+    "ra-2562044",
+    "ra-2562503",
+    "ra-2562615",
+    "ra-2562771",
+    "ra-2562829",
+    "ra-2562910",
+    "ra-2562938",
+    "ra-2562939",
+    "ra-2562940",
+    "ra-2563254",
+    "ra-2563281",
+    "ra-2563371",
+    "ra-2563407",
+    "ra-2563412"
+  ],
+  "listingMetadata": {
+    "ra-2407740": {
+      "title": "WONKYWEEN",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2407740",
+      "image": "https://images.ra.co/7788d55be8d2aa55a737ab110f2fda463e278cb2.png"
+    },
+    "ra-2461128": {
+      "title": "CHOPTOBER: DEVILS NIGHT EDITION",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2461128",
+      "image": "https://images.ra.co/79a0f8e24b855aa0a580993e42a3672edb8655ca.jpg"
+    },
+    "ra-2461133": {
+      "title": "RIOT: THE MACHINE WORLD TOUR",
+      "date": "2026-12-12T00:00:00.000",
+      "displayedTime": "2026-12-12T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2461133",
+      "image": "https://images.ra.co/4dc17dd530ddabe44b827c729b0bac137d06890f.png"
+    },
+    "ra-2462567": {
+      "title": "Lucky Rabbit",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "TBA - Secret Loft space (Revealed strictly to ticket holders via email before the event).",
+      "url": "https://ra.co/events/2462567",
+      "image": "https://images.ra.co/badf0ef8cbe238db2d22f92b383d3faa38bb84a1.jpg"
+    },
+    "ra-2464396": {
+      "title": "DETROITS INFERNO IV",
+      "date": "2027-04-09T00:00:00.000",
+      "displayedTime": "2027-04-09T19:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2464396",
+      "image": "https://images.ra.co/812b1eba183485f23219623797be67ef2ec29777.jpg"
+    },
+    "ra-2466618": {
+      "title": "DETROITS INFERNO IV",
+      "date": "2027-04-10T00:00:00.000",
+      "displayedTime": "2027-04-10T19:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2466618",
+      "image": "https://images.ra.co/b12ad43e78ff27f814bce31e838b3d60d9d098c9.jpg"
+    },
+    "ra-2466647": {
+      "title": "100% LIVE Techno – ALL HARDWARE SETS / Movement Opening Party",
+      "date": "2027-05-28T00:00:00.000",
+      "displayedTime": "2027-05-28T21:00:00.000",
+      "venueName": "TBA",
+      "url": "https://ra.co/events/2466647",
+      "image": "https://images.ra.co/7a40b29fedd962c58ebc86bf5363c7db440aebf0.jpg"
+    },
+    "ra-2470800": {
+      "title": "Anime Rave: Halloween Edition",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2470800",
+      "image": "https://images.ra.co/edd27f3cb30fdbeeb4797101ecbc7d4ac921c7d6.png"
+    },
+    "ra-2474825": {
+      "title": "SAMHAIN XXVI WEEKEND",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2474825",
+      "image": "https://images.ra.co/e96941f0757ea363de57c543fbc9cb2868f32be4.jpg"
+    },
+    "ra-2474832": {
+      "title": "I.T. presents Beyond",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2474832",
+      "image": "https://images.ra.co/69af521575059b2ab93cc80d2a9f7c54f71ce2ff.jpg"
+    },
+    "ra-2474836": {
+      "title": "SAMHAIN XXVI",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2474836",
+      "image": "https://images.ra.co/f282e85c6fbd2c9ed7faa9a9f75a1a6be3572a7a.jpg"
+    },
+    "ra-2479791": {
+      "title": "WHALES: DANGEROUS WATERS TOUR",
+      "date": "2026-11-21T00:00:00.000",
+      "displayedTime": "2026-11-21T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2479791",
+      "image": "https://images.ra.co/1131e36e0ae008d473fb0d3c3362ccc98a9d68f9.png"
+    },
+    "ra-2487990": {
+      "title": "The Occasional Thursday Party with DJ Craze + Friends",
+      "date": "2026-10-29T00:00:00.000",
+      "displayedTime": "2026-10-29T21:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2487990",
+      "image": "https://images.ra.co/464f438c2e7bcc1da2af9b7fef63f96a7b6234c8.jpg"
+    },
+    "ra-2500122": {
+      "title": "Steller",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2500122",
+      "image": "https://images.ra.co/f4c612307b9381aa373888bd8c487e95dd7531df.png"
+    },
+    "ra-2500295": {
+      "title": "Steve Aoki: Dim Mak 30 Tour",
+      "date": "2026-11-06T00:00:00.000",
+      "displayedTime": "2026-11-06T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2500295",
+      "image": "https://images.ra.co/821692a88e4734edbe630564c2238149ebcc0916.jpg"
+    },
+    "ra-2503651": {
+      "title": "Fadi Mohem by Urban Pulse",
+      "date": "2026-11-21T00:00:00.000",
+      "displayedTime": "2026-11-21T21:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2503651",
+      "image": "https://images.ra.co/10966afb6aa672af132ec3688f9e083429908789.jpg"
+    },
+    "ra-2512641": {
+      "title": "Grave Rave",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T22:00:00.000",
+      "venueName": "Detroit Shipping Company",
+      "url": "https://ra.co/events/2512641",
+      "image": "https://images.ra.co/099878c483d62eb3fa325b5ceb6f42d39ddf0311.jpg"
+    },
+    "ra-2516198": {
+      "title": "Sera J & ANNĒ",
+      "date": "2027-01-08T00:00:00.000",
+      "displayedTime": "2027-01-08T21:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2516198",
+      "image": "https://images.ra.co/7a645c6d15109040dbe1fac88d4a1d08bc739e9b.jpg"
+    },
+    "ra-2517939": {
+      "title": "Techno City - Devil's Night Edition",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T19:30:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2517939",
+      "image": "https://images.ra.co/d571ab707bdb1571c4d158a2bf57a56a400f2641.jpg"
+    },
+    "ra-2518092": {
+      "title": "SODOWN: SCENES OF CONSCIOUSNESS",
+      "date": "2026-11-20T00:00:00.000",
+      "displayedTime": "2026-11-20T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2518092",
+      "image": "https://images.ra.co/6d092837e5cb4e00de9b35f7df6ad9f487996fcf.png"
+    },
+    "ra-2518239": {
+      "title": "Fangs On Film",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "The High Dive",
+      "url": "https://ra.co/events/2518239",
+      "image": "https://images.ra.co/c01c55976aa722c22eddef2ab565c01f133c1877.jpg"
+    },
+    "ra-2520031": {
+      "title": "TXTR : Pariah & Verraco",
+      "date": "2026-11-06T00:00:00.000",
+      "displayedTime": "2026-11-06T22:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2520031",
+      "image": "https://images.ra.co/63cd38fb8321c7087b3b33c04bd18f83cde45e2a.jpg"
+    },
+    "ra-2523637": {
+      "title": "Hamdi",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2523637",
+      "image": "https://images.ra.co/acfd205deeb2203fa8c8b0177732edf1fb922791.png"
+    },
+    "ra-2523760": {
+      "title": "Layton Giordani presents MADMINDS",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2523760",
+      "image": "https://images.ra.co/0de44726dcd3b67637a970311124b12446b1fee4.jpg"
+    },
+    "ra-2524562": {
+      "title": "Amplify Grand Opening",
+      "date": "2026-11-25T00:00:00.000",
+      "displayedTime": "2026-11-25T19:00:00.000",
+      "venueName": "Amplify",
+      "url": "https://ra.co/events/2524562",
+      "image": "https://images.ra.co/66e837d315fb7649e307375e921fbfd8b870bcf9.png"
+    },
+    "ra-2525360": {
+      "title": "Dasha Rush - Luke Hess - Lincoln Factory",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T22:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2525360",
+      "image": "https://images.ra.co/308b71f376e7f86854b823523c150669e0bd3634.png"
+    },
+    "ra-2525497": {
+      "title": "Pre- HALLOWEEN TURN UP",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2525497",
+      "image": "https://images.ra.co/943707bbd4fd718b5523ba9b920bc0cdf3c93b6e.jpg"
+    },
+    "ra-2525714": {
+      "title": "FUNHAUS",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Olympus Theater",
+      "url": "https://ra.co/events/2525714",
+      "image": "https://images.ra.co/d3e0ee71332863d482df4d790f33b961e2d98bfa.png"
+    },
+    "ra-2526580": {
+      "title": "HalloQueen 2026",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T21:00:00.000",
+      "venueName": "Donovan's Pub",
+      "url": "https://ra.co/events/2526580",
+      "image": "https://images.ra.co/cc717bdbf5a59431fd44923c31e7d48cfa6630df.png"
+    },
+    "ra-2527755": {
+      "title": "☆KRAMPUS NIGHT III☆",
+      "date": "2026-12-26T00:00:00.000",
+      "displayedTime": "2026-12-26T22:00:00.000",
+      "venueName": "Olympus Theater",
+      "url": "https://ra.co/events/2527755",
+      "image": "https://images.ra.co/0102f7270a40c80de0fc02872fac3a3030bb81b3.jpg"
+    },
+    "ra-2528913": {
+      "title": "Mary Droppinz with Casey Club - 360° DJ EXPERIENCE",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2528913",
+      "image": "https://images.ra.co/6597e3323497252971dccaaa5e542e70a97de5d3.png"
+    },
+    "ra-2528932": {
+      "title": "LAYZ with KOZMOZ",
+      "date": "2026-12-04T00:00:00.000",
+      "displayedTime": "2026-12-04T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2528932",
+      "image": "https://images.ra.co/d4a471f36e21ae64acd87de3af2e8712e100944b.png"
+    },
+    "ra-2532152": {
+      "title": "it's murph - Fade Into Nothing Tour",
+      "date": "2026-11-20T00:00:00.000",
+      "displayedTime": "2026-11-20T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2532152",
+      "image": "https://images.ra.co/990c7bec3abecbb524feb95105e56728eb6e8e9d.jpg"
+    },
+    "ra-2532432": {
+      "title": "Skream - Open to Close Tour",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T21:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2532432",
+      "image": "https://images.ra.co/b0c45f802c265121061bac7b130d5dd72099e163.jpg"
+    },
+    "ra-2533635": {
+      "title": "Dolls Night - Paranormal (Year 2)",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T21:00:00.000",
+      "venueName": "Paris Bar",
+      "url": "https://ra.co/events/2533635",
+      "image": "https://images.ra.co/215001a88d54610b958e41e723ea029477556ea9.png"
+    },
+    "ra-2533807": {
+      "title": "ZERO HOUR: NEW YEARS EVE 2027",
+      "date": "2026-12-31T00:00:00.000",
+      "displayedTime": "2026-12-31T20:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2533807",
+      "image": "https://images.ra.co/6f19781101a58a9bec17788ce31c0f36c8d3a8ee.jpg"
+    },
+    "ra-2534490": {
+      "title": "KREWELLA",
+      "date": "2027-01-16T00:00:00.000",
+      "displayedTime": "2027-01-16T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2534490",
+      "image": "https://images.ra.co/94f3835d98b5b0a1067094f9c81e741bfd6ef0c7.png"
+    },
+    "ra-2536039": {
+      "title": "Industrial Detroit - Mvtant, Pink Stiletto, Mechanatura, C.M. Samuels, Kenjiro",
+      "date": "2026-11-01T00:00:00.000",
+      "displayedTime": "2026-11-01T19:00:00.000",
+      "venueName": "Paris Bar",
+      "url": "https://ra.co/events/2536039",
+      "image": "https://images.ra.co/a07d3f02d82c5928898aa883ac6b1d54d99ef8b7.jpg"
+    },
+    "ra-2537661": {
+      "title": "Beats, Robots, Monsters: Dawn of The Dead",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T15:00:00.000",
+      "venueName": "TBA - Lagerhaus#5",
+      "url": "https://ra.co/events/2537661",
+      "image": "https://images.ra.co/fc279df573a86b8df23ace454924e57d142721e3.png"
+    },
+    "ra-2540047": {
+      "title": "TV • Further • Charivari Detroit • UMA",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2540047",
+      "image": "https://images.ra.co/4baa12bb424d917bb66d463c97bcc4bdab19119e.jpg"
+    },
+    "ra-2541658": {
+      "title": "TEC-TROIT ELECTRONIC MUSIC FESTIVAL",
+      "date": "2027-06-25T00:00:00.000",
+      "displayedTime": "2027-06-25T13:00:00.000",
+      "venueName": "TBA - Detroit MI USA",
+      "url": "https://ra.co/events/2541658",
+      "image": "https://images.ra.co/be4ee07016ea6affd73e4e5e4b1aa75e7fdb5d7b.jpg"
+    },
+    "ra-2541676": {
+      "title": "V.V. Lightbody with John Krautner & Rachele Eve",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T19:00:00.000",
+      "venueName": "Moondog Cafe",
+      "url": "https://ra.co/events/2541676",
+      "image": "https://images.ra.co/6f06c6f08d990ef80d99c86d0c08effd749a2053.png"
+    },
+    "ra-2542519": {
+      "title": "ART 8 HOUSE",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T15:00:00.000",
+      "venueName": "Andy Arts",
+      "url": "https://ra.co/events/2542519",
+      "image": "https://images.ra.co/4885872fa79afdb140ab418ff03557fb84374ae8.jpg"
+    },
+    "ra-2542617": {
+      "title": "Dilemmas B Day Bash",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2542617",
+      "image": "https://images.ra.co/c7a4eddc73478613a56d3483aa2ca5d891cd4e07.jpg"
+    },
+    "ra-2543572": {
+      "title": "ANӘMӘ'LISTIK",
+      "date": "2026-10-29T00:00:00.000",
+      "displayedTime": "2026-10-29T22:00:00.000",
+      "venueName": "Spkrbox",
+      "url": "https://ra.co/events/2543572",
+      "image": "https://images.ra.co/743f114fb3955a271543304214b68d8bbdfb5469.jpg"
+    },
+    "ra-2544390": {
+      "title": "NURKO: MICHIGAN HORROR STORY - CARNIVAL OF CHAOS",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2544390",
+      "image": "https://images.ra.co/7ed92712fef1fe9ea5830f31d972c6abcfc66a99.png"
+    },
+    "ra-2545250": {
+      "title": "HOUSE IS HOME: STACEY PULLEN | MISTER JOSHOOA | DRU ALLAN | VINYL ALL NIGHT",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "Northern Lights Lounge",
+      "url": "https://ra.co/events/2545250",
+      "image": "https://images.ra.co/cca1495f95fd7dc5da2ec6b27c171397b2cc3c5c.jpg"
+    },
+    "ra-2545591": {
+      "title": "City Of Machines",
+      "date": "2026-11-25T00:00:00.000",
+      "displayedTime": "2026-11-25T21:00:00.000",
+      "venueName": "HALO DETROIT",
+      "url": "https://ra.co/events/2545591",
+      "image": "https://images.ra.co/915883df5f82b2a68a0915fbe5684901a0714154.png"
+    },
+    "ra-2546161": {
+      "title": "CORRUPTION: Persephone's Masquerade",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T20:00:00.000",
+      "venueName": "Tangent Gallery",
+      "url": "https://ra.co/events/2546161",
+      "image": "https://images.ra.co/1492ad5384db2db367cb3f92c4502a1749d70361.jpg"
+    },
+    "ra-2547602": {
+      "title": "LATIN NIGHT: DJ IZA & SWDEJAY (BAD BUNNY VIBES)",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T22:00:00.000",
+      "venueName": "Big Pink",
+      "url": "https://ra.co/events/2547602",
+      "image": "https://images.ra.co/f1064617c4ddf9751c3e93b110fd975548d9193b.jpg"
+    },
+    "ra-2547930": {
+      "title": "Devil's Nite: Audion (live), Scott Zacharias, NO NO BOYS ft Josh Dunn (live), ",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T22:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2547930",
+      "image": "https://images.ra.co/98d44a9105a5cc746b3f0ec13b645cffab1d2951.jpg"
+    },
+    "ra-2547937": {
+      "title": "Fiesta House with Rosa Pistola",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T22:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2547937",
+      "image": "https://images.ra.co/82fc618e0f19140c60b4859fcc2051c83e50a5a1.jpg"
+    },
+    "ra-2547939": {
+      "title": "12 Hour Party",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T22:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2547939",
+      "image": "https://images.ra.co/f69b8045fd097db5895645fd055913f04f4cf905.jpg"
+    },
+    "ra-2549324": {
+      "title": "DOGHAUS XOXR xx Not Ur Amigo",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "The Strays",
+      "url": "https://ra.co/events/2549324",
+      "image": "https://images.ra.co/938f5d6443b3bd5c51bc135e3bf8b23d4db71b14.jpg"
+    },
+    "ra-2550062": {
+      "title": "Detroit Love - Carl Craig b2b Seth Troxler",
+      "date": "2026-11-28T00:00:00.000",
+      "displayedTime": "2026-11-28T21:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2550062",
+      "image": "https://images.ra.co/9336a751fa5c24dda9bd10bb49badd0a3193b187.png"
+    },
+    "ra-2550086": {
+      "title": "Bad Gyaloween",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T10:00:00.000",
+      "venueName": "Miss Eva's Speakeasy",
+      "url": "https://ra.co/events/2550086",
+      "image": "https://images.ra.co/d2c850b4f7b9e93abbb30f5c55444d39e40d2200.png"
+    },
+    "ra-2550247": {
+      "title": "OCTOBER'S VERY OWN: DRAKE NIGHT (WITH BLAKITO)",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T22:00:00.000",
+      "venueName": "Big Pink",
+      "url": "https://ra.co/events/2550247",
+      "image": "https://images.ra.co/833f134105985b88041edbb70e975cb70521e6a1.jpg"
+    },
+    "ra-2551189": {
+      "title": "Mija - USA Fall Tour",
+      "date": "2026-12-05T00:00:00.000",
+      "displayedTime": "2026-12-05T21:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2551189",
+      "image": "https://images.ra.co/029be8b4fa224152bb3c93cb8150ed232e836b7a.jpg"
+    },
+    "ra-2551935": {
+      "title": "SIDEPIECE‍",
+      "date": "2026-12-04T00:00:00.000",
+      "displayedTime": "2026-12-04T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2551935",
+      "image": "https://images.ra.co/d26515e79874d91e4f92d28674c5ffb2155ad9ec.png"
+    },
+    "ra-2552039": {
+      "title": "Nightmare on Holden Street 2",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Lincoln Factory",
+      "url": "https://ra.co/events/2552039",
+      "image": "https://images.ra.co/3ab0008c59d7df614cca2f010dc04eae6ea9fbcf.jpg"
+    },
+    "ra-2552987": {
+      "title": "Infolines The Leland Release Party",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T22:00:00.000",
+      "venueName": "Spkrbox",
+      "url": "https://ra.co/events/2552987",
+      "image": "https://images.ra.co/30cff72acfe3f15c98cba29b81e65afcd814b6fa.png"
+    },
+    "ra-2554535": {
+      "title": "Dance Against Fascism",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T21:30:00.000",
+      "venueName": "The High Dive",
+      "url": "https://ra.co/events/2554535"
+    },
+    "ra-2554549": {
+      "title": "Haute to Death 19 Year Anniversary -wsg- Charles Trees, DJ Etta, dream beach, and Peter Croce",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Paris Bar",
+      "url": "https://ra.co/events/2554549",
+      "image": "https://images.ra.co/acb486d699ea93e61dc56648cb9cdc116cfc04fc.jpg"
+    },
+    "ra-2554995": {
+      "title": "HalloWeeb",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T20:00:00.000",
+      "venueName": "Gotta Gacha",
+      "url": "https://ra.co/events/2554995",
+      "image": "https://images.ra.co/324d4937a285b2433981afe707b525746c78e46c.jpg"
+    },
+    "ra-2555025": {
+      "title": "FREAKY FRIDAY: PROBLEMATICBLACKHOTTIE & DJ KILLA SQUID (OPEN FORMAT BANGERS)",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T22:00:00.000",
+      "venueName": "Big Pink",
+      "url": "https://ra.co/events/2555025",
+      "image": "https://images.ra.co/cb991c64d8b76ef3df5d3d8751f53ecdb6b965ff.jpg"
+    },
+    "ra-2555144": {
+      "title": "Paradise Lost: An Industrial Apocalypse",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T21:00:00.000",
+      "venueName": "TBA - Secret Location",
+      "url": "https://ra.co/events/2555144",
+      "image": "https://images.ra.co/6ec22a713f0ff8d7d325f93a2d193e518b9f70e3.png"
+    },
+    "ra-2555211": {
+      "title": "Haunted House An Underground Halloween Experience",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T08:00:00.000",
+      "venueName": "Per Ankh Detroit Entheogenic Church",
+      "url": "https://ra.co/events/2555211",
+      "image": "https://images.ra.co/001a023f4b76189807b2642751c3503b3c155cd0.png"
+    },
+    "ra-2555802": {
+      "title": "BAILA HABIBI X FIESTA HOUSE: HALLOWEEN PARTY",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "The Norwood Theatre",
+      "url": "https://ra.co/events/2555802",
+      "image": "https://images.ra.co/36c4e682f3b08576c746267adcd05abcab18b0aa.jpg"
+    },
+    "ra-2555944": {
+      "title": "DETROIT IS SPOOKY: MUNCH (HALLOWEEN PARTY) - OPEN FORMAT BANGERS",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T22:00:00.000",
+      "venueName": "Big Pink",
+      "url": "https://ra.co/events/2555944",
+      "image": "https://images.ra.co/589c08deb414c96b44e68982350e1549702e2576.jpg"
+    },
+    "ra-2556203": {
+      "title": "VINDICATE 007 - Hard Techno, Schranz & Groove",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T22:00:00.000",
+      "venueName": "The Vault 313",
+      "url": "https://ra.co/events/2556203",
+      "image": "https://images.ra.co/cd8bd7da7da78914279c430ab1c92ea200454b08.jpg"
+    },
+    "ra-2557322": {
+      "title": "Clown-o-Ween",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T20:00:00.000",
+      "venueName": "The High Dive",
+      "url": "https://ra.co/events/2557322",
+      "image": "https://images.ra.co/21f6ff0cabe87663cba5c739d4c4d4d74f8c1ba9.jpg"
+    },
+    "ra-2558090": {
+      "title": "Eli Escobar - Extended Set",
+      "date": "2026-11-21T00:00:00.000",
+      "displayedTime": "2026-11-21T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2558090",
+      "image": "https://images.ra.co/2be70307de85d09d0753e7abf44d920a1b5fb7cf.png"
+    },
+    "ra-2558364": {
+      "title": "DIE SYSTEMS SHOWCASE (DEEP GLENS, OTO DOJO, SEAN AND DIEGO)",
+      "date": "2026-11-06T00:00:00.000",
+      "displayedTime": "2026-11-06T19:00:00.000",
+      "venueName": "Moondog Cafe",
+      "url": "https://ra.co/events/2558364",
+      "image": "https://images.ra.co/721c3863810148b4eac034ab35f8ef384df28623.png"
+    },
+    "ra-2558815": {
+      "title": "TECHNO THURSDAY: DBU Edition",
+      "date": "2026-10-22T00:00:00.000",
+      "displayedTime": "2026-10-22T21:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2558815",
+      "image": "https://images.ra.co/6a3512402390147ba98b5cce8431cf0293239c82.jpg"
+    },
+    "ra-2559327": {
+      "title": "Halloween at TV",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T20:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2559327",
+      "image": "https://images.ra.co/a3c4d8893886068534825f4b4687954694bb746d.jpg"
+    },
+    "ra-2559396": {
+      "title": "OPEN THE PIT",
+      "date": "2026-11-06T00:00:00.000",
+      "displayedTime": "2026-11-06T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2559396",
+      "image": "https://images.ra.co/d58979ffa233fb5ce6079ba8ef28701fbaa595ae.png"
+    },
+    "ra-2559416": {
+      "title": "AYYBO",
+      "date": "2027-01-22T00:00:00.000",
+      "displayedTime": "2027-01-22T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2559416",
+      "image": "https://images.ra.co/06aee278ca8e13a71971ca9e37604d426439a8b5.jpg"
+    },
+    "ra-2559455": {
+      "title": "MEMCO presents: IMPULSE 2100",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T22:00:00.000",
+      "venueName": "TBA - (313) 395 8288",
+      "url": "https://ra.co/events/2559455",
+      "image": "https://images.ra.co/6149e3a769f804093bb8932a34855a5e25f5d681.png"
+    },
+    "ra-2560102": {
+      "title": "NO SKIPS: HIPHOP & R&B (SUNDAY NIGHT) - BLAKITO",
+      "date": "2026-10-18T00:00:00.000",
+      "venueName": "Big Pink",
+      "url": "https://ra.co/events/2560102",
+      "image": "https://images.ra.co/30419a11f476c78e240132457c255ac0a562b86c.jpg"
+    },
+    "ra-2560131": {
+      "title": "T Hill Detroit Radio presents Gospel House 313",
+      "date": "2026-10-25T00:00:00.000",
+      "displayedTime": "2026-10-25T10:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2560131",
+      "image": "https://images.ra.co/fe089e0834eac5632f23acb6fb33865131907b43.jpg"
+    },
+    "ra-2560389": {
+      "title": "Industrial Detroit - The Treasury, Hexx Head, Mission to the Sun, Deadlines",
+      "date": "2026-11-20T00:00:00.000",
+      "displayedTime": "2026-11-20T22:00:00.000",
+      "venueName": "Outer Limits Lounge",
+      "url": "https://ra.co/events/2560389",
+      "image": "https://images.ra.co/65c1e52e41a57183557184fb55d1408b26d5e2da.jpg"
+    },
+    "ra-2560411": {
+      "title": "Serve",
+      "date": "2026-10-18T00:00:00.000",
+      "venueName": "Spkrbox",
+      "url": "https://ra.co/events/2560411",
+      "image": "https://images.ra.co/ff968859cbd91f346e216cb95d503dc4337542b0.jpg"
+    },
+    "ra-2561584": {
+      "title": "CODD DUBZ X HE$H: THRASHED TOUR",
+      "date": "2026-12-05T00:00:00.000",
+      "displayedTime": "2026-12-05T20:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2561584",
+      "image": "https://images.ra.co/bfecbd5202396f0a27273162d359eb8b11007e74.png"
+    },
+    "ra-2561698": {
+      "title": "DEEP DARK BASS",
+      "date": "2026-11-27T00:00:00.000",
+      "displayedTime": "2026-11-27T21:00:00.000",
+      "venueName": "Elektricity",
+      "url": "https://ra.co/events/2561698",
+      "image": "https://images.ra.co/eede0df2e809c2e094faac257e9b3edffc4b72f6.png"
+    },
+    "ra-2561782": {
+      "title": "VØRA: Saytek*LIVE with minimal detroit",
+      "date": "2026-12-05T00:00:00.000",
+      "displayedTime": "2026-12-05T22:00:00.000",
+      "venueName": "TBA - 310 W 7 MILE",
+      "url": "https://ra.co/events/2561782",
+      "image": "https://images.ra.co/e7913e7d78a52333c5cdf90436f6b9b9cef5c009.png"
+    },
+    "ra-2561785": {
+      "title": "Open Decks",
+      "date": "2026-10-21T00:00:00.000",
+      "displayedTime": "2026-10-21T17:00:00.000",
+      "venueName": "Paramita Sound",
+      "url": "https://ra.co/events/2561785",
+      "image": "https://images.ra.co/a317d9044bff222652be3ededbf6f0c41ad6acc7.jpg"
+    },
+    "ra-2561787": {
+      "title": "Open Decks",
+      "date": "2026-10-28T00:00:00.000",
+      "displayedTime": "2026-10-28T17:00:00.000",
+      "venueName": "Paramita Sound",
+      "url": "https://ra.co/events/2561787",
+      "image": "https://images.ra.co/a317d9044bff222652be3ededbf6f0c41ad6acc7.jpg"
+    },
+    "ra-2561790": {
+      "title": "Open Decks",
+      "date": "2026-10-20T00:00:00.000",
+      "displayedTime": "2026-10-20T19:00:00.000",
+      "venueName": "Garden Bowl",
+      "url": "https://ra.co/events/2561790",
+      "image": "https://images.ra.co/78edf2d1360dbf0b01c192995b018d25fca6b229.png"
+    },
+    "ra-2561793": {
+      "title": "Open Decks",
+      "date": "2026-11-03T00:00:00.000",
+      "displayedTime": "2026-11-03T17:00:00.000",
+      "venueName": "Garden Bowl",
+      "url": "https://ra.co/events/2561793",
+      "image": "https://images.ra.co/3d7259bdeaa8a848af1883e3e3a48d0907f1d06c.png"
+    },
+    "ra-2561822": {
+      "title": "S T R Ʌ T Ø S",
+      "date": "2026-11-21T00:00:00.000",
+      "displayedTime": "2026-11-21T19:00:00.000",
+      "venueName": "Moondog Cafe",
+      "url": "https://ra.co/events/2561822",
+      "image": "https://images.ra.co/07199091315b1fed9902eee7c2744da2fc38278f.jpg"
+    },
+    "ra-2561970": {
+      "title": "Whodat, Peter Croce + Blair French",
+      "date": "2026-10-23T00:00:00.000",
+      "displayedTime": "2026-10-23T22:00:00.000",
+      "venueName": "Marble Bar",
+      "url": "https://ra.co/events/2561970"
+    },
+    "ra-2562023": {
+      "title": "SHADOWPLAY",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T23:00:00.000",
+      "venueName": "TBA",
+      "url": "https://ra.co/events/2562023",
+      "image": "https://images.ra.co/1808dd676935047e06b7619e921ede2f409e5798.jpg"
+    },
+    "ra-2562044": {
+      "title": "BMR: HONEYMOON HALLOWEEN",
+      "date": "2026-10-31T00:00:00.000",
+      "displayedTime": "2026-10-31T21:00:00.000",
+      "venueName": "Temple Bar",
+      "url": "https://ra.co/events/2562044",
+      "image": "https://images.ra.co/6e8f0db71130281cde7be9cdcbe50eb91080a6a6.png"
+    },
+    "ra-2562503": {
+      "title": "The Portal",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T19:00:00.000",
+      "venueName": "MAD Arts",
+      "url": "https://ra.co/events/2562503",
+      "image": "https://images.ra.co/2f9e705015e6bf3e837de96b594d85d633e799fd.jpg"
+    },
+    "ra-2562615": {
+      "title": "Hairitage",
+      "date": "2026-11-20T00:00:00.000",
+      "displayedTime": "2026-11-20T20:30:00.000",
+      "venueName": "Amplify",
+      "url": "https://ra.co/events/2562615",
+      "image": "https://images.ra.co/7db96efffeab2b591b2810c7d6cdd2390d20507d.jpg"
+    },
+    "ra-2562771": {
+      "title": "Alternative School presents: Musicology with Glenn Underground, Ameera & Turtle Bugg",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T21:00:00.000",
+      "venueName": "Northern Lights Lounge",
+      "url": "https://ra.co/events/2562771",
+      "image": "https://images.ra.co/5b1b36edd1baacc3f01c14dc05eae287c372c81a.jpg"
+    },
+    "ra-2562829": {
+      "title": "RAT CITY DEVILS NIGHT",
+      "date": "2026-10-30T00:00:00.000",
+      "displayedTime": "2026-10-30T20:00:00.000",
+      "venueName": "The Strays",
+      "url": "https://ra.co/events/2562829",
+      "image": "https://images.ra.co/f7a8b7b3ffd897b7ef3ff204b34d51b64bf89b4f.png"
+    },
+    "ra-2562910": {
+      "title": "THIRST TRAP // HAPPY HOUR",
+      "date": "2026-10-22T00:00:00.000",
+      "displayedTime": "2026-10-22T19:00:00.000",
+      "venueName": "SOS",
+      "url": "https://ra.co/events/2562910",
+      "image": "https://images.ra.co/f19b9a8583a79cdd92aebcab5ca3349ea8d1b593.jpg"
+    },
+    "ra-2562938": {
+      "title": "DETROIT, BROOKLYN, AND EVERYWHERE THE GROOVE TAKES YOU",
+      "date": "2026-12-05T00:00:00.000",
+      "displayedTime": "2026-12-05T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2562938",
+      "image": "https://images.ra.co/ac9e023c469111b76ecb96cb4a05428d5c17c2fc.jpg"
+    },
+    "ra-2562939": {
+      "title": "RADIANT",
+      "date": "2026-11-07T00:00:00.000",
+      "displayedTime": "2026-11-07T21:00:00.000",
+      "venueName": "HALO DETROIT",
+      "url": "https://ra.co/events/2562939",
+      "image": "https://images.ra.co/bf11f91b185682aed9916898f2a471e7372e2a75.png"
+    },
+    "ra-2562940": {
+      "title": "DFEST • FALL EDITION",
+      "date": "2026-10-24T00:00:00.000",
+      "displayedTime": "2026-10-24T21:00:00.000",
+      "venueName": "TV Lounge",
+      "url": "https://ra.co/events/2562940",
+      "image": "https://images.ra.co/ac225e531e37b6b0bb9018d3db12d8105a0a7e4e.jpg"
+    },
+    "ra-2563254": {
+      "title": "Swimming Paul - NORTH AMERICAN TOUR",
+      "date": "2027-02-26T00:00:00.000",
+      "displayedTime": "2027-02-26T21:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "url": "https://ra.co/events/2563254",
+      "image": "https://images.ra.co/cd80743edb4e5f8ee7f657d7fdb9f6da4f69dfd9.png"
+    },
+    "ra-2563281": {
+      "title": "Decliner: CUT RATE RELEASE SHOW",
+      "date": "2026-11-14T00:00:00.000",
+      "displayedTime": "2026-11-14T20:00:00.000",
+      "venueName": "The Strays",
+      "url": "https://ra.co/events/2563281"
+    },
+    "ra-2563371": {
+      "title": "Slow Jams 18 Year Anniversery",
+      "date": "2026-10-26T00:00:00.000",
+      "displayedTime": "2026-10-26T22:00:00.000",
+      "venueName": "Woodbridge Pub",
+      "url": "https://ra.co/events/2563371",
+      "image": "https://images.ra.co/7d056473b4f6c1f8b3fd4fa7f1cf3b6db440357c.jpg"
+    },
+    "ra-2563407": {
+      "title": "Domingo",
+      "date": "2026-10-18T00:00:00.000",
+      "venueName": "Spkrbox",
+      "url": "https://ra.co/events/2563407",
+      "image": "https://images.ra.co/cc786b0c87f037dd7b44b2cfe7c6eb50fb442ce0.jpg"
+    },
+    "ra-2563412": {
+      "title": "Sassy Soul Sunday",
+      "date": "2026-10-18T00:00:00.000",
+      "venueName": "Spkrbox",
+      "url": "https://ra.co/events/2563412",
+      "image": "https://images.ra.co/98491ade4b40fb46671f3ad00dfe15c3242f608d.jpg"
+    }
+  }
+}

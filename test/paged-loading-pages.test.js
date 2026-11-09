@@ -63,7 +63,12 @@ function extract(html, pattern, label) {
 // it left in EVENTS.
 async function runPageLoader(file, floorDaysBack, extraRows) {
   const html = read(file);
-  const loader = extract(html, /async function loadSupabaseEvents\(\) \{[\s\S]*?\n\}\n/, `${file} loadSupabaseEvents`);
+  let loader = extract(html, /async function loadSupabaseEvents\(\) \{[\s\S]*?\n\}\n/, `${file} loadSupabaseEvents`);
+  if (file === "map.html") {
+    // map.html's loader is split into attempt/retry/error helpers (P0 2026-10-15): load them with it.
+    loader += extract(html, /function failLoad\(err\) \{[\s\S]*?\n\}\n/, "map.html failLoad");
+    loader += extract(html, /async function fetchLiveEvents\(\) \{[\s\S]*?\n\}\n/, "map.html fetchLiveEvents");
+  }
   const data = tables();
   if (extraRows) {
     data.events = data.events.concat(extraRows);
@@ -85,6 +90,8 @@ async function runPageLoader(file, floorDaysBack, extraRows) {
     var SUPABASE_URL = "https://example.supabase.co";
     var SUPABASE_ANON_KEY = "anon";
     var EVENTS = [{ id: "fallback", date: "2000-01-01" }];
+    var loadState = "loading";
+    var loadDiag = {};
     var byDate = {};
     function getTodayISO(){ return TODAY; }
     function loadFloorISO(){ return FLOOR; }

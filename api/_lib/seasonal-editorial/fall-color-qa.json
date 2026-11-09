@@ -3729,32 +3729,26 @@
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/kensington-metropark/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "page has stale-season text",
-     "I-96 construction delay notice on page",
-     "Toboggan disc golf course closed to public Aug 3-Sep 4, 2026",
-     "pumpkin patch/Farm Center fall activity"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/kensington-metropark/), two independent reads. Relevance (recorded): Forested lake park with documented scenic loop and nature trails, plus a system-level Metroparks page recommending trails and paddling for fall color. No Kensington-specific official fall-color statement was read. Season and hours are not shown on the card.",
+    "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
-     "approval": false
+     "image": true,
+     "rights": true,
+     "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [],
     "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {

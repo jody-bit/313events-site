@@ -48,7 +48,7 @@ function row(id, title, start, extra) {
 }
 const ROWS = [
   // An exhibition that opened three days ago and runs another month.
-  row("a00", "Long Run", day(-3), { end_date: day(30), category: "museum", neighborhood: "Midtown" }),
+  row("a00", "Long Run", day(-3), { end_date: day(30), category: "museum", neighborhood: "Midtown", date_semantics: "continuous" }), // 2026-10-16: classified continuous so these stream tests stay about stream mechanics; unclassified ranges are covered in homepage-discovery-adoption.test.js
   // 30 tonight, 25 tomorrow, 15 on Monday.
   ...Array.from({ length: 30 }, (_, i) => row("t" + pad(i + 1), "Tonight " + pad(i + 1), day(0), i === 0 ? { neighborhood: "Corktown" } : null)),
   ...Array.from({ length: 25 }, (_, i) => row("u" + pad(i + 1), "Sunday " + pad(i + 1), day(1), { category: "theatre" })),
@@ -77,8 +77,8 @@ async function open(url, opts) {
   const api = makeMockPostgrest(opts.tables || TABLES, { cap: 1000, failure: opts.failure });
   const page = loadPage({
     url: url || "/", now: NOW, seed: SEED, fetch: api.fetch,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;
@@ -177,7 +177,7 @@ async function run() {
     // Neighborhoods. The exhibition is in progress, so it is listed under
     // today — once — and says how long it runs.
     assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)]);
-    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "31 events"]], "today's heading is marked Today and counts the whole day, not just the rows shown");
+    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "12 events"]], "today's heading is marked Today and counts the rows listed under it (12 of the day's 31), not the whole day");
     assert.ok(/Long Run[\s\S]*?<span class="evt-run">Through Nov 2<\/span>/.test(s.html));
     assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 1);
 
@@ -200,6 +200,9 @@ async function run() {
     assert.strictEqual(s.titles.length, 42);
     assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)], "the first block does not move");
     assert.deepStrictEqual(s.more.map((g) => [g.day, g.continued]), [[day(0), true], [day(1), false]], "today is continued, not repeated");
+    // Each heading counts the events displayed in its own section: a day split across the two reads 12 and 19, not 31 twice.
+    assert.deepStrictEqual(s.more.map((g) => g.count), ["19 events", "11 events"], "continuation headings count their own rows (19 of today's remaining, 11 of tomorrow shown so far)");
+    assert.ok(s.first.concat(s.more).every((g) => g.count === `${g.titles.length} event${g.titles.length === 1 ? "" : "s"}`), "every heading equals the number of rows listed under it");
     assert.strictEqual(s.note, "42 of 151 shown");
     assert.strictEqual(s.button, "Show 30 more");
     assert.deepStrictEqual([plain(page.get("state")), page.url()], before, "asking for more changes neither the filters nor the address");
@@ -207,6 +210,7 @@ async function run() {
     s = stream(page);
     assert.strictEqual(s.titles.length, 151);
     assert.strictEqual(new Set(s.titles).size, 151, "every event exactly once");
+    assert.ok(s.first.concat(s.more).every((g) => g.count === `${g.titles.length} event${g.titles.length === 1 ? "" : "s"}`), "with everything shown, every heading still equals the rows under it");
     assert.strictEqual(s.button, null, "nothing left to ask for");
     assert.strictEqual(s.note, null);
     assert.deepStrictEqual(s.titles.slice(-2), ["Later 79", "Later 80"], "date order to the end");
@@ -321,11 +325,11 @@ async function run() {
     const seeded = JSON.parse(read("data/dont-miss.json"));
     // Shipped today: the three seasonal guides as static editorial cards (no
     // canonical event is selected), each with its optimized artwork on disk.
-    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Halloween in the Orbit", "Fall Colors"]);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Off the Beaten Orbit", "Fall Colors"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Explore winter", "Chase color"]);
     assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
-    for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
+    for (const p of seeded.placements) for (const f of [p.image, p.image2x].filter(Boolean)) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
     assert.ok(seeded.placements.every((p) => !p.url), "no other link field");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");

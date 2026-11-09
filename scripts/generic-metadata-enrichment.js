@@ -78,6 +78,7 @@
 // Optionally reads TAVILY_API_KEY for external discovery (see above).
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   buildVenueDetailsMap,
   resolveVenueNameFromAddressRepair,
@@ -156,6 +157,40 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Candidate ordering and the fetch cap (owner GO 2026-10-20). Both candidate
+// queries are capped at CANDIDATE_LIMIT rows. Without an ORDER BY, PostgREST
+// returns an arbitrary CANDIDATE_LIMIT of a larger pool, so rows outside it
+// were never reached and nothing said so. Ordering by start_date then id puts
+// the soonest events (the ones visitors see first) in the window, and is the
+// same on every run. Candidates beyond the cap are not touched, not marked and
+// not dropped: they stay in the pool and come into the window as earlier
+// events pass or are fixed. A cap hit is reported, with the exact deferred
+// count when the database returns a total.
+const CANDIDATE_LIMIT = 1000;
+const CANDIDATE_ORDER = "start_date.asc,id.asc";
+
+// totalFromContentRange("0-999/2953") -> 2953; null when absent or "*".
+function totalFromContentRange(resp) {
+  const h = resp && resp.headers && typeof resp.headers.get === "function" ? resp.headers.get("content-range") : null;
+  const m = /\/(\d+)$/.exec(String(h || ""));
+  return m ? Number(m[1]) : null;
+}
+
+// The poor-description candidate query. Source names are percent-encoded: they are real `events.source`
+// values and some contain "&" ("St. Clair Shores - Events & Programs"), which unencoded ends the `source`
+// parameter mid-name and makes PostgREST answer HTTP 400. That failed every enrichment run after Stage 1
+// (#136) widened REPAIR_SOURCES, so the poor-description repair never ran (2026-10-17 12:30Z run: partial,
+// "Failed to fetch poor-description candidates: HTTP 400").
+function poorDescriptionCandidatesUrl(SUPABASE_URL, sources = REPAIR_SOURCES_LIST) {
+  const names = [...sources].map((x) => `"${encodeURIComponent(x)}"`).join(",");
+  return `${SUPABASE_URL}/rest/v1/events` +
+    `?start_date=gte.${todayIso()}&status=neq.rejected&followup_dismissed=is.false` +
+    `&description=not.is.null&source=in.(${names})` +
+    `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
+    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
+    `venues(name,address,city,website,facebook_url)&order=${CANDIDATE_ORDER}&limit=${CANDIDATE_LIMIT}`;
+}
+
 async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders) {
   const url =
     `${SUPABASE_URL}/rest/v1/events` +
@@ -166,22 +201,20 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
     `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,external_id,source,internal_note,` +
     `venues(name,address,city,website,facebook_url)` +
-    `&limit=1000`;
-  const resp = await fetch(url, { headers: sbHeaders });
+    `&order=${CANDIDATE_ORDER}&limit=${CANDIDATE_LIMIT}`;
+  // Prefer: count=exact makes the same request also return the true total
+  // (Content-Range), so a cap hit can say exactly how many were deferred.
+  const resp = await fetch(url, { headers: { ...sbHeaders, Prefer: "count=exact" } });
   if (!resp.ok) throw new Error(`Failed to fetch enrichment candidates: HTTP ${resp.status}`);
   const rows = await resp.json();
   if (!Array.isArray(rows)) throw new Error("Unexpected response shape fetching enrichment candidates");
+  const blankReturned = rows.length;
+  const blankTotal = totalFromContentRange(resp);
   // Non-blank but poor descriptions (PostgREST cannot express the quality
   // check, so it is applied here). Only staged-rollout sources, upcoming and
   // not rejected. Deduplicated against the blank-field candidates above.
   const seen = new Set(rows.map((r) => r.id));
-  const poorUrl =
-    `${SUPABASE_URL}/rest/v1/events` +
-    `?start_date=gte.${todayIso()}&status=neq.rejected&followup_dismissed=is.false` +
-    `&description=not.is.null&source=in.(${[...REPAIR_SOURCES_LIST].map((x) => `"${x}"`).join(",")})` +
-    `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
-    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
-    `venues(name,address,city,website,facebook_url)&limit=1000`;
+  const poorUrl = poorDescriptionCandidatesUrl(SUPABASE_URL);
   const poorResp = await fetch(poorUrl, { headers: sbHeaders });
   if (!poorResp.ok) throw new Error(`Failed to fetch poor-description candidates: HTTP ${poorResp.status}`);
   const poorRows = await poorResp.json();
@@ -189,6 +222,18 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
   for (const r of poorRows) {
     if (!seen.has(r.id) && repairVerdict(r).repairable) { rows.push(r); seen.add(r.id); }
   }
+  // Cap report (read by repairGenericMetadata; an extra property on the array
+  // so the return shape every caller and test relies on is unchanged).
+  rows.cap = {
+    limit: CANDIDATE_LIMIT,
+    order: CANDIDATE_ORDER,
+    blankReturned,
+    blankCapReached: blankReturned >= CANDIDATE_LIMIT,
+    blankTotal,
+    blankDeferred: blankTotal !== null ? Math.max(0, blankTotal - blankReturned) : null,
+    poorReturned: poorRows.length,
+    poorCapReached: poorRows.length >= CANDIDATE_LIMIT,
+  };
   return rows;
 }
 
@@ -242,6 +287,7 @@ async function repairGenericMetadata({
     descriptionsGenerated: 0,
     poorDescriptionsRepaired: 0,
     poorDescriptionsSkippedNoFacts: 0,
+    poorDescriptionsSkippedCancelled: 0,
     poorDescriptionUrlsPreserved: 0,
     venueNamesResolvedFromAddress: 0,
     digitalHomeLinksRecovered: 0,
@@ -285,6 +331,16 @@ async function repairGenericMetadata({
   const canonicalMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
   counts.totalConsidered = candidates.length;
+  if (candidates.cap) {
+    const c = candidates.cap;
+    counts.candidateCap = c;
+    counts.capReached = !!(c.blankCapReached || c.poorCapReached);
+    if (counts.capReached) {
+      const where = [c.blankCapReached ? `blank-field query (${c.blankDeferred === null ? "deferred count unknown" : c.blankDeferred + " deferred"})` : null, c.poorCapReached ? "poor-description query" : null].filter(Boolean).join(" and ");
+      counts.capWarning = `Candidate cap of ${c.limit} reached on the ${where}; candidates beyond the cap were not examined this run and stay in the pool (ordered ${c.order})`;
+      (logger.warn || logger.log).call(logger, `[enrichment] ${counts.capWarning}`);
+    }
+  }
 
   const MAX_OUTCOME_SAMPLES = 200;
   function recordDescriptionOutcome(event, outcome, reason) {
@@ -302,6 +358,9 @@ async function repairGenericMetadata({
   let raExternalSearchesToday = 0;
 
   for (const event of candidates) {
+    // Rows carrying OWNER-CORRECTION or EDITORIAL-HOLD are never changed by automation, even to fill a blank.
+    // (Manual-source rows are NOT excluded here: see scripts/owner-supplied-row.js.)
+    if (isOwnerSuppliedRow(event, { includeManualSource: false })) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
     let touchedThisEvent = false;
     let descOutcome = null;     // [outcome, reason] for this record's description, recorded once below
     let descNote = null;        // why an external lookup was not used (explains a later skip)
@@ -586,8 +645,16 @@ async function repairGenericMetadata({
         descOutcome = ["skipped", "repair_cap"];
       }
       if (verdict.repairable && counts.poorDescriptionsRepaired < MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN) {
-        const generated = buildFactualDescription(event);
-        if (!generated || !descriptionQuality(generated, event.title).ok) {
+        // "X takes place ..." is false for a cancelled or postponed listing: leave that row for a person.
+        // A venue field that holds a sentence (some feeds put the event blurb in LOCATION) is not named in the
+        // generated copy; the date and time facts are still stated.
+        const cancelled = /\b(?:cancell?ed|postponed)\b/i.test(event.title || "");
+        const venueIsProse = !(event.venues && event.venues.name) && typeof event.venue_name_raw === "string" && (event.venue_name_raw.length > 80 || /[!?]|\.\s/.test(event.venue_name_raw));
+        const generated = cancelled ? null : buildFactualDescription(venueIsProse ? { ...event, venue_name_raw: null } : event);
+        if (cancelled) {
+          counts.poorDescriptionsSkippedCancelled++;
+          descOutcome = ["skipped", "cancelled_or_postponed"];
+        } else if (!generated || !descriptionQuality(generated, event.title).ok) {
           counts.poorDescriptionsSkippedNoFacts++;
           descOutcome = ["skipped", "no_facts"];
         } else {
@@ -598,7 +665,11 @@ async function repairGenericMetadata({
             internal_note: ((event.internal_note ? event.internal_note + "\n" : "") +
               `[description-repair ${todayIso()}] replaced ${verdict.quality} description: ${JSON.stringify(prior.slice(0, 300))}`).slice(0, 4000),
           };
-          const urlToKeep = verdict.quality === "bare_url" && isBlank(event.event_url) && isBlank(event.ticket_url) ? prior.trim() : null;
+          // A ticket_url that is not an absolute link (CivicPlus feeds store the calendar's own relative export path,
+          // "/common/modules/iCalendar/iCalendar.aspx?...") is no link to an event, so it does not stop the bare URL
+          // from becoming the event's link. The relative value itself is left exactly as it is.
+          const hasUsableLink = (v) => !isBlank(v) && /^https?:\/\//i.test(String(v).trim());
+          const urlToKeep = verdict.quality === "bare_url" && isBlank(event.event_url) && !hasUsableLink(event.ticket_url) && /^https?:\/\//i.test(prior.trim()) ? prior.trim() : null;
           if (urlToKeep) patch.event_url = urlToKeep;
           if (dryRun) {
             logger.log(`[dry-run] would replace ${verdict.quality} description for event ${event.id}: ${JSON.stringify(prior)} -> "${generated}"${urlToKeep ? " (url kept as event_url)" : ""}`);
@@ -666,6 +737,10 @@ async function repairGenericMetadata({
 module.exports = {
   repairGenericMetadata,
   fetchEnrichmentCandidates,
+  poorDescriptionCandidatesUrl,
+  CANDIDATE_LIMIT,
+  CANDIDATE_ORDER,
+  totalFromContentRange,
   applyPatch,
   MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN,
   MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN,

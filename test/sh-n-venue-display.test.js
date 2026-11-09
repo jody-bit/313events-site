@@ -150,7 +150,7 @@ async function run() {
   // consuming page's mapping function.
   for (const f of HTML_FILES) {
     const html = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
-    assert.ok(/decodeEntities\((?:vd\.name|resolveVenueDisplay\(r\.events\)\.name)\) \|\| ['"]Venue TBA['"]/.test(html),
+    assert.ok(/decodeEntities\((?:vd\.name|resolveVenueDisplay\(r\.events\)\.name|resolveVenueDisplay\(r\._v\.event\)\.name)\) \|\| ['"]Venue TBA['"]/.test(html),
       `${f} lost its "Venue TBA" fallback for a null resolved name`);
   }
   console.log("PASS: 7. TBA/unknown venue fallback ('Venue TBA') is preserved in every consuming page");
@@ -185,7 +185,7 @@ async function run() {
 
   const radarHtml = fs.readFileSync(`${REPO_DIR}/radar.html`, "utf8");
   assert.ok(/venue_id,venue_name_raw,venue_city_raw,venues\(name,city\)/.test(radarHtml), "radar.html's nested embed is missing venue_id/venues(...)");
-  assert.ok(/resolveVenueDisplay\(r\.events\)/.test(radarHtml), "radar.html's article mapping doesn't call resolveVenueDisplay");
+  assert.ok(/resolveVenueDisplay\(r\.(?:events|_v\.event)\)/.test(radarHtml), "radar.html's article mapping doesn't call resolveVenueDisplay");
   console.log("PASS: radar.html (additional public surface found during the audit) embeds canonical venue data and resolves it through resolveVenueDisplay()");
 
   const eventMetaJs = fs.readFileSync(`${REPO_DIR}/api/event-meta.js`, "utf8");
@@ -222,7 +222,7 @@ async function run() {
   // --- Criterion 13: unrelated event metadata fields still present in each
   // mapping function (a light smoke check that surrounding code wasn't
   // clobbered by the surgical edits above) ---
-  assert.ok(/ticketUrl: row\.ticket_url \|\| undefined/.test(calendarHtml), "calendar.html lost an unrelated field (ticketUrl)");
+  assert.ok(/ticketUrl: absWebUrl\(row\.ticket_url\)/.test(calendarHtml), "calendar.html lost an unrelated field (ticketUrl)");
   assert.ok(/priceFrom: row\.price_from/.test(calendarHtml), "calendar.html lost an unrelated field (priceFrom)");
   assert.ok(/ticketStatus: row\.ticket_status \|\| undefined/.test(eventTemplateHtml), "event-template.html lost an unrelated field (ticketStatus)");
   assert.ok(/clothingOptional: !!row\.is_clothing_optional/.test(eventTemplateHtml), "event-template.html lost an unrelated field (clothingOptional)");

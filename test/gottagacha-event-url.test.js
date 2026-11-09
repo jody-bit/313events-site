@@ -140,6 +140,7 @@ async function run() {
       if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
       if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
       if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return { ok: true, status: 204, json: async () => ({}) };
+      if (url.includes("/rest/v1/events") && url.includes("internal_note=like.") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] }; // #185 owner-correction read
       if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) {
         assert.ok(url.includes("select=external_id,status,event_url"), "the existing event_url is read before writing");
         return { ok: true, status: 200, json: async () => [

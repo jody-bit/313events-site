@@ -45,16 +45,10 @@
   :root{
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
-    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
-    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
-    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
-    --c-vendor:#39FF14; /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -74,6 +68,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   .page-head{margin-bottom:24px;}
   h1.page-title{
@@ -121,13 +117,14 @@
     background:var(--bg);color:var(--ink-soft);padding:3px 8px;border:1px solid var(--line);
   }
   .rc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1;}
-  .rc-outlet{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);}
+  .rc-outlet{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);}
   .rc-event-title-link{text-decoration:none;color:inherit;display:block;}
   .rc-event-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:1.22;
     text-transform:uppercase;margin:0;
   }
   .rc-event-title-link:hover .rc-event-title{color:var(--accent);}
+  .rc-cat{margin:2px 0 4px;}
   .rc-meta{font-size:12.5px;color:var(--ink-soft);}
   .rc-article-title{
     font-size:12.5px;color:var(--ink-dim);font-style:italic;line-height:1.35;margin-top:4px;
@@ -160,6 +157,8 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
+<script src="/event-dates.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -191,7 +190,7 @@
 
     <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -202,23 +201,11 @@
 const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
 const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -320,7 +307,7 @@ async function loadArticles(){
     // making this page's fetch fail and show "Couldn't load press coverage
     // right now." The explicit !constraint-name hint pins this embed to the
     // original single-match FK, same relationship this page always used.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events!editorial_articles_matched_event_id_fkey(id,title,start_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status)&order=published_at.desc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,end_date,date_semantics,occurrence_dates,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -328,26 +315,42 @@ async function loadArticles(){
     const rows = await resp.json();
     if(!Array.isArray(rows)) throw new Error('unexpected shape');
 
+    // DQ-004: an article is tied to an event only through a VERIFIED editorial_article_events pair
+    // (the database already returns nothing else to the public key; the filter above is belt and braces).
+    // Unverified, rejected and merely-candidate matches are invisible here, so the article simply shows
+    // in its existing "not yet linked to a listed event" form. The one event shown is the verified,
+    // approved one (the article's primary match when it is among them, else the earliest).
+    function verifiedEventFor(r){
+      const links = Array.isArray(r.editorial_article_events) ? r.editorial_article_events : [];
+      const live = links.filter(l => l && l.verification_status === 'verified' && l.events && l.events.status === 'approved');
+      if(!live.length) return { hadLinks: links.length > 0, event: null };
+      const primary = live.find(l => l.event_id === r.matched_event_id);
+      const chosen = primary || live.slice().sort((a, b) => String(a.events.start_date).localeCompare(String(b.events.start_date)))[0];
+      return { hadLinks: true, event: chosen.events };
+    }
+
     ALL_ITEMS = rows
-      // Keep a row if: it has a usable URL, AND either it was never matched
-      // to an event at all, OR it was matched and that event is still a
-      // live, approved, publicly-visible one (an article matched to an
-      // event that's since been hidden/rejected comes back as events:null
-      // per the RLS note above — drop those rather than show a dead link).
-      .filter(r => safeUrl(r.url) && (!r.matched_event_id || (r.events && r.events.status === 'approved')))
+      .map(r => Object.assign({}, r, { _v: verifiedEventFor(r) }))
+      // Keep a row if it has a usable URL and either has no verified link at all, or has a verified link
+      // to an event that is still live (an event since hidden/rejected comes back as events:null per the
+      // RLS note above — drop those rather than show a dead link).
+      .filter(r => safeUrl(r.url) && (!r._v.hadLinks || r._v.event))
       .map(r => ({
         articleTitle: decodeEntities(r.title),
         articleUrl: safeUrl(r.url),
         source: r.source || 'Local press',
         thumbnailUrl: r.thumbnail_url || null,
         publishedAt: r.published_at || null,
-        event: (r.matched_event_id && r.events) ? {
-          id: r.events.id,
-          title: decodeEntities(r.events.title),
-          date: r.events.start_date,
-          venue: decodeEntities(resolveVenueDisplay(r.events).name) || 'Venue TBA',
-          city: (function(){ const vc = resolveVenueDisplay(r.events).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
-          cat: r.events.category,
+        event: r._v.event ? {
+          id: r._v.event.id,
+          title: decodeEntities(r._v.event.title),
+          date: r._v.event.start_date,
+          endDate: r._v.event.end_date || null,
+          dateSemantics: r._v.event.date_semantics || null,
+          occurrenceDates: r._v.event.occurrence_dates || null,
+          venue: decodeEntities(resolveVenueDisplay(r._v.event).name) || 'Venue TBA',
+          city: (function(){ const vc = resolveVenueDisplay(r._v.event).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
+          cat: r._v.event.category,
         } : null,
       }));
 
@@ -360,13 +363,21 @@ async function loadArticles(){
   }
 }
 
+// Chip counts come from the same items the grid can show (verified-only data, with the "upcoming only"
+// filter applied), so a chip's number is the number of cards its click reveals (DQ-004).
+function outletPool(){
+  const todayIso = getTodayISO();
+  return upcomingOnly ? ALL_ITEMS.filter(i => i.event && eventUpcoming(i.event, todayIso)) : ALL_ITEMS;
+}
+
 function buildOutletChips(){
   const counts = new Map();
-  ALL_ITEMS.forEach(item => counts.set(item.source, (counts.get(item.source)||0) + 1));
+  outletPool().forEach(item => counts.set(item.source, (counts.get(item.source)||0) + 1));
   const outlets = [...counts.keys()].sort((a,b) => counts.get(b) - counts.get(a));
+  [...selectedOutlets].forEach(name => { if(!counts.has(name)) selectedOutlets.delete(name); });
   const chips = document.getElementById('outletChips');
   chips.innerHTML = outlets.map(name => `
-    <button type="button" class="outlet-chip" data-outlet="${escapeHtml(name)}">${escapeHtml(name)} <span style="opacity:.65;">(${counts.get(name)})</span></button>
+    <button type="button" class="outlet-chip${selectedOutlets.has(name) ? ' active' : ''}" data-outlet="${escapeHtml(name)}">${escapeHtml(name)} <span style="opacity:.65;">(${counts.get(name)})</span></button>
   `).join('');
   chips.querySelectorAll('.outlet-chip').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -380,12 +391,22 @@ function buildOutletChips(){
 
 document.getElementById('upcomingOnlyToggle').addEventListener('change', (e) => {
   upcomingOnly = e.target.checked;
+  buildOutletChips();
   render();
 });
 
+// "Today" is the America/Detroit date, as on the homepage, calendar and map (not the device clock).
 function getTodayISO(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return EventDates.detroitClock().iso;
+}
+// Upcoming = not over yet: a running exhibition or a recurring series with a future date is still upcoming
+// (EventDates.isUpcoming), not "Past event" just because it started earlier.
+function eventUpcoming(ev, todayIso){
+  return EventDates.isUpcoming(ev, todayIso);
+}
+// Soonest-first key: the next attendable date when there is one, else the stored start date.
+function eventSortDate(ev, todayIso){
+  return EventDates.nextDate(ev, todayIso) || ev.date;
 }
 
 // Two card layouts, branching on item.event:
@@ -406,7 +427,7 @@ function radarCardHtml(item){
 
   if(item.event){
     const todayIso = getTodayISO();
-    const isPast = item.event.date < todayIso;
+    const isPast = !eventUpcoming(item.event, todayIso);
     const dateLabel = new Date(item.event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
     const metaBits = [dateLabel, item.event.venue].filter(Boolean).join(' · ');
     const eventHref = `event.html?id=${encodeURIComponent(item.event.id)}`;
@@ -417,10 +438,11 @@ function radarCardHtml(item){
           ${isPast ? '<div class="rc-past-badge">Past event</div>' : ''}
         </a>
         <div class="rc-body">
-          <div class="rc-outlet" style="${cat ? `color:${cat.color};` : ''}">${escapeHtml(item.source)}</div>
+          <div class="rc-outlet">${escapeHtml(item.source)}</div>
           <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
             <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
           </a>
+          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat)}</div>` : ''}
           <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
           <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
           <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
@@ -457,7 +479,7 @@ function render(){
   // Unmatched articles have no event date to evaluate, so "upcoming only"
   // excludes them along with past-event matches rather than crashing on
   // i.event being null.
-  if(upcomingOnly) items = items.filter(i => i.event && i.event.date >= todayIso);
+  if(upcomingOnly) items = items.filter(i => i.event && eventUpcoming(i.event, todayIso));
 
   // 2026-09-16 (Jody: "default order should be articles about events
   // happening that day so from now until the future") — this page used to
@@ -472,9 +494,9 @@ function render(){
   // and keep the old newest-published-first order among themselves, tucked
   // in after every upcoming-dated item rather than interleaved with them.
   items = items.slice().sort((a, b) => {
-    const aUpcoming = a.event && a.event.date >= todayIso;
-    const bUpcoming = b.event && b.event.date >= todayIso;
-    if(aUpcoming && bUpcoming) return a.event.date.localeCompare(b.event.date);
+    const aUpcoming = a.event && eventUpcoming(a.event, todayIso);
+    const bUpcoming = b.event && eventUpcoming(b.event, todayIso);
+    if(aUpcoming && bUpcoming) return eventSortDate(a.event, todayIso).localeCompare(eventSortDate(b.event, todayIso));
     if(aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
     return (b.publishedAt || '').localeCompare(a.publishedAt || '');
   });
@@ -497,5 +519,6 @@ function render(){
 
 loadArticles();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

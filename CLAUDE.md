@@ -9,6 +9,16 @@ GitHub (issues, PRs, labels) is the authoritative record of development
 status. This file documents durable structure and procedure; it is not a
 backlog and should not accumulate task-specific state.
 
+## Related coordination notes (reference only)
+
+Cross-workstream coordination notes (record keeping, status vocabulary, owner
+approval conventions) are kept outside this repository, in the 313.events
+Project shared folder as `mission-control/MASTER-PROMPT.md` (v1.0). That file
+is not part of this repository and may not be available to every contributor.
+It is a reference only: nothing in it adds to, changes or relaxes the rules in
+this file, and this file does not depend on it. If the two differ, this file
+governs work in this repository.
+
 ## The five workstreams
 
 Every PR and issue should carry one `workstream:*` label for its primary
@@ -79,3 +89,7 @@ next session will reconstruct context: what's done, what's uncommitted,
 what's blocked, and what needs the owner's decision. Verify claims against
 a fresh `git fetch` and the GitHub PR/issue list before trusting them —
 handoffs can go stale between being written and being read.
+
+## Definition of Done
+
+Every work package must meet `project/DEFINITION_OF_DONE.md` (automated tests, CI, deployed-environment smoke tests, read-only production smoke, release evidence, R&Q acceptance). R&Q enforces it.
