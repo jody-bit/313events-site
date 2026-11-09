@@ -49,7 +49,7 @@ grant select on public.events_public, public.venues to anon, authenticated;
 grant all on all tables in schema public to service_role;
 SQL
 # Same trap as a new Supabase project: default privileges hand anon/authenticated everything on new public tables.
-psql -X -q -d dst -c "alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;"
+psql -X -q -d dst -c "create schema rehearsal_marker; create table rehearsal_marker.identity(ref text); insert into rehearsal_marker.identity values ('ysevatiihdticidmnmeh'); alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;"
 mkdir -p "$tmp/srcfiles/event-flyers/u/abc123" "$tmp/srcfiles/event-flyers/u/def/deep" "$tmp/dstfiles"
 printf 'PNGDATA1' > "$tmp/srcfiles/event-flyers/top.png"; printf 'PNGDATA-two' > "$tmp/srcfiles/event-flyers/u/abc123/nested one.png"; printf 'PNGD-3' > "$tmp/srcfiles/event-flyers/u/def/deep/x.png"
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC1=$!
@@ -94,7 +94,7 @@ fs="$(psql -X -At -d src -c "$fq")"; fd="$(psql -X -At -d dst -c "$fq")"
 grep -q 'function privileges after restore' "$tmp/r.log" || { echo "FAIL: restore did not print function privileges"; exit 1; }
 echo "PASS 3b: function privileges match the source (f_locked not executable by anon)"
 # 3c. a corrupted archive stops the restore before anything is written (hash check is fatal)
-psql -X -q -c "create database dst2"
+psql -X -q -c "create database dst2"; psql -X -q -d dst2 -c "create schema rehearsal_marker; create table rehearsal_marker.identity(ref text); insert into rehearsal_marker.identity values ('ysevatiihdticidmnmeh'); "
 mkdir "$tmp/cx"; age -d -i "$tmp/id" "$a" | tar -x -C "$tmp/cx"; echo corrupt >> "$tmp/cx"/313events-*/db.dump
 tar -C "$tmp/cx" -cf - $(ls "$tmp/cx") | age -r "$rec" -o "$tmp/corrupt.tar.age"
 if ( PGDATABASE=dst2 AGE_IDENTITY="$tmp/id" ARCHIVE="$tmp/corrupt.tar.age" RESTORE_SUPABASE_URL=http://127.0.0.1:54331 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r3.log" 2>&1; then echo "FAIL: corrupted archive was restored"; exit 1; fi
@@ -108,6 +108,14 @@ for ref in afvyfjfqukptnfmgshzn efxjdlogohcggpuftivm; do
   if ( PGHOST="db.$ref.supabase.co" PGDATABASE=dst AGE_IDENTITY="$tmp/id" ARCHIVE="$a" RESTORE_SUPABASE_URL=http://127.0.0.1:54331 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >/dev/null 2>&1; then echo "FAIL: accepted $ref"; exit 1; fi
 done
 echo "PASS 4-5: non-empty target and production/staging targets refused"
+# 5b. a database without the rehearsal marker is refused (positive identification), and a remote host with a wrong user/URL is refused
+psql -X -q -c "create database dst4"
+if ( PGDATABASE=dst4 AGE_IDENTITY="$tmp/id" ARCHIVE="$a" RESTORE_SUPABASE_URL=http://127.0.0.1:54331 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r5b.log" 2>&1; then echo "FAIL: restored into an unmarked database"; exit 1; fi
+grep -q 'rehearsal marker' "$tmp/r5b.log" || { cat "$tmp/r5b.log"; echo "FAIL: wrong refusal for unmarked database"; exit 1; }
+[ "$(psql -X -At -d dst4 -c "select count(*) from pg_tables where schemaname='public'")" = 0 ] || { echo "FAIL: unmarked database was written"; exit 1; }
+if ( PGHOST=aws-0-us-east-1.pooler.supabase.com PGUSER=postgres.zzzzzzzzzzzzzzzzzzzz PGDATABASE=dst AGE_IDENTITY="$tmp/id" ARCHIVE="$a" RESTORE_SUPABASE_URL=https://zzzzzzzzzzzzzzzzzzzz.supabase.co RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r5c.log" 2>&1; then echo "FAIL: accepted a foreign pooler host"; exit 1; fi
+grep -q 'PGUSER is not' "$tmp/r5c.log" || { cat "$tmp/r5c.log"; echo "FAIL: wrong refusal for foreign pooler"; exit 1; }
+echo "PASS 5b: unmarked database and foreign pooler target refused"
 # 6. the fingerprint really detects the trap: re-open one table to anon and the grants hash must change
 f1="$(psql -X -q -At -F, -d dst -f "$here/fingerprint.sql" | grep '^table_grants')"
 psql -X -q -d dst -c "grant select on public.source_runs to anon"
@@ -277,8 +285,14 @@ psql -X -q -d src -c "drop role backup_reader" >/dev/null 2>&1 && { echo "FAIL: 
 echo "PASS 10d-1: DROP ROLE alone is refused while grants exist (nothing can be dropped by accident)"
 psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_mid.txt"
 [ "$(psql -X -At -d src -c "select count(*) from pg_roles where rolname='backup_reader'")" = 1 ] || { echo "FAIL: role missing"; exit 1; }
+# 10d-2. an owned object makes the removal STOP before any change (step 1 is a RAISE)
+psql -X -q -d src -c "create table public.zz_owned(a int); alter table public.zz_owned owner to backup_reader"
+if psql -X -q -At -d src -v ON_ERROR_STOP=1 -f "$here/backup_reader_remove.sql" >"$tmp/rm0.log" 2>&1; then echo "FAIL: removal ran although the role owns an object"; exit 1; fi
+grep -q 'STOP: backup_reader owns 1' "$tmp/rm0.log" || { cat "$tmp/rm0.log"; echo "FAIL: wrong stop reason"; exit 1; }
+[ "$(psql -X -At -d src -c "select count(*) from pg_roles where rolname='backup_reader'")" = 1 ] || { echo "FAIL: role dropped despite owned object"; exit 1; }
+psql -X -q -d src -c "drop table public.zz_owned"
+echo "PASS 10d-2: removal stops with nothing changed while the role owns an object"
 psql -X -q -At -d src -v ON_ERROR_STOP=1 -f "$here/backup_reader_remove.sql" > "$tmp/rm.log" 2>&1 || { cat "$tmp/rm.log"; cp "$tmp/rm.log" /tmp/rm.log; echo "FAIL: removal script"; exit 1; }
-[ "$(head -1 "$tmp/rm.log")" = 0 ] || { cat "$tmp/rm.log"; echo "FAIL: role owns objects"; exit 1; }
 [ "$(psql -X -At -d src -c "select count(*) from pg_roles where rolname='backup_reader'")" = 0 ] || { echo "FAIL: role not dropped"; exit 1; }
 psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_after.txt"
 cmp -s "$tmp/acl_before.txt" "$tmp/acl_after.txt" || { cat "$tmp/acl_before.txt" "$tmp/acl_after.txt"; echo "FAIL: ACL state differs after removal"; exit 1; }
@@ -287,7 +301,7 @@ cmp -s "$tmp/acl_before.txt" "$tmp/acl_mid.txt" || { echo "FAIL: acl_state.sql s
 echo "PASS 10d: scripted removal (revokes + plain DROP ROLE) leaves the ACL state hash identical to before creation; anon access unchanged"
 # 10e. after the role is gone (as on the rehearsal project) the dedicated-role archive restores end to end, including the access-boundary fingerprint gate
 psql -X -q -c "create database dst3"
-psql -X -q -d dst3 -c "alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role; create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());"
+psql -X -q -d dst3 -c "create schema rehearsal_marker; create table rehearsal_marker.identity(ref text); insert into rehearsal_marker.identity values ('ysevatiihdticidmnmeh'); alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role; create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());"
 mkdir -p "$tmp/dstfiles3"; python3 "$here/test/mock_storage.py" 54332 "$tmp/dstfiles3" "$KEY" "" dst3 & DST3=$!; sleep 1
 a10="$(ls "$tmp"/out/*.tar.age | tail -1)"
 ( PGDATABASE=dst3 AGE_IDENTITY="$tmp/id" ARCHIVE="$a10" RESTORE_SUPABASE_URL=http://127.0.0.1:54332 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r10.log" 2>&1 || { cat "$tmp/r10.log"; echo "FAIL: restore of backup_reader archive"; exit 1; }
