@@ -2030,17 +2030,34 @@ async function subEditSave(id, approve) {
   }
 }
 
-async function review(id, action) {
+async function review(id, action, acknowledgeMissingLocation) {
   const card = document.getElementById('card-' + id);
   card.style.opacity = '0.5';
   try {
     const resp = await fetch('/api/admin-events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
-      body: JSON.stringify({ id, action }),
+      body: JSON.stringify(acknowledgeMissingLocation ? { id, action, acknowledgeMissingLocation: true } : { id, action }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
+    if (!resp.ok) {
+      // A Venue Submission with no venue link and no city (api/_lib/venue-location-gate.js): say why on the card and
+      // let the moderator approve it on purpose with a second click. Nothing was written by the refused first try.
+      if (action === 'approve' && !acknowledgeMissingLocation && data && data.error === 'MISSING_VENUE_LOCATION') {
+        card.style.opacity = '1';
+        const btn = card.querySelector('.btn-approve');
+        if (btn) { btn.textContent = 'Approve without a venue or city'; btn.onclick = () => review(id, 'approve', true); }
+        if (!card.querySelector('.sub-locwarn')) {
+          const note = document.createElement('div');
+          note.className = 'sub sub-locwarn';
+          note.textContent = data.message || 'This submission has no venue and no city.';
+          const actions = card.querySelector('.actions');
+          if (actions && actions.parentNode) actions.parentNode.insertBefore(note, actions); else card.appendChild(note);
+        }
+        return;
+      }
+      throw new Error(errText(data, 'Action failed'));
+    }
     card.remove();
     delete SUB_EDIT[id];
     SUB_ROWS = SUB_ROWS.filter(r => r.id !== id);
