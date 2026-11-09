@@ -281,17 +281,19 @@ async function run() {
     assert.strictEqual(page.el("search").value, "");
     assert.strictEqual(stream(page).head, "Showing 31 events today");
     assert.strictEqual(page.url(), "/?when=today");
+    page.run("viewFree()");
+    assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { free: true })), "the hero Free entry applies only the existing free-only filter");
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything('next7')");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "next7" })));
     assert.deepStrictEqual(plain(D.window(page.get("state"), { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "today and the six days after it, in Detroit");
     assert.strictEqual(stream(page).head, "Showing 79 events in the next 7 days");
     assert.strictEqual(page.url(), "/?when=next7");
-    assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Active neighborhoods"], "the hero's three supporting figures (This Week is gone)");
+    assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Free", "Active neighborhoods"], "the hero's supporting figures (This Week is gone; Free opens the existing free-only filter)");
     assert.ok(!/viewThisWeek/.test(SCRIPT));
     // Each figure's own button opens the view it counts.
-    const heroButtons = [...SCRIPT.matchAll(/class="hero-proof-stat" onclick="([^"]*)"><span class="hps-num" id="([^"]*)"/g)].map((m) => [m[2], m[1]]);
-    assert.deepStrictEqual(heroButtons, [["heroStatToday", "viewEverything('today')"], ["heroStatNext7", "viewEverything('next7')"], ["heroStatNeighborhoods", "viewNeighborhoodsRail()"]]);
+    const heroButtons = [...SCRIPT.matchAll(/class="hero-proof-stat(?: hero-proof-free)?" onclick="([^"]*)"(?: title="[^"]*")?><span class="hps-num" id="([^"]*)"/g)].map((m) => [m[2], m[1]]);
+    assert.deepStrictEqual(heroButtons, [["heroStatToday", "viewEverything('today')"], ["heroStatNext7", "viewEverything('next7')"], ["heroStatFree", "viewFree()"], ["heroStatNeighborhoods", "viewNeighborhoodsRail()"]]);
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything()");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.defaults()), "the total leads to the whole stream");
