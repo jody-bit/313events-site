@@ -1,26 +1,12 @@
-// Guard: no public page may send a PostgREST query that sits on or above Supabase's 1,000-row response cap, and the venue
-// lat/lng loaders in calendar.html and map.html must page (a >1,000-venue fixture proves it).
+// calendar.html and map.html venue lat/lng loaders must page past Supabase's 1,000-row response cap (they used limit=1000, exactly
+// on the cap). The repo-wide "no new capped queries" guard is Discovery's separate test file (test/paged-query-guard.test.js).
 "use strict";
 const assert = require("assert"), fs = require("fs"), vm = require("vm");
 const dir = process.env.REPO_DIR || process.cwd();
 const { makeMockPostgrest } = require(`${dir}/test/fixtures/mock-postgrest.js`);
 const { fetchAllRows } = require(`${dir}/paged-fetch.js`);
 
-// Known, reviewed exception: radar.html reads editorial_articles (a small press-coverage table, nowhere near 1,000 rows) with limit=2000.
-// Paging it needs `order=...,id.asc`, and whether anon may order by editorial_articles.id is not verified here, so it is left as is
-// and flagged to Platform. The entry must keep matching, so it cannot go stale or be widened.
-const ALLOWED = { "radar.html": /editorial_articles\?[^`]*limit=2000/ };
-// 1. No new capped queries: any rest/v1 URL with limit=N where N >= 1000 (limit above the cap never lifts it).
-for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
-  const src = fs.readFileSync(`${dir}/${f}`, "utf8");
-  if (ALLOWED[f]) assert.ok(ALLOWED[f].test(src), `${f}: allow-list entry is stale, remove it`);
-  for (const m of src.matchAll(/rest\/v1\/[^`"'\s]*[?&]limit=(\d+)/g)) {
-    if (ALLOWED[f] && ALLOWED[f].test(m[0])) continue;
-    assert.ok(Number(m[1]) < 1000, `${f}: query with limit=${m[1]} sits on/above the 1,000-row cap; use fetchAllRows (${m[0].slice(0, 80)})`);
-  }
-}
-
-// 2. The venue lat/lng loaders page, and handle > 1,000 venues.
+// The venue lat/lng loaders page and handle > 1,000 venues (deterministic 1,300-venue fixture, mock cap 1,000).
 (async () => {
   const venues = [];
   for (let i = 1; i <= 1300; i++) venues.push({ id: i, name: "Venue " + i, lat: 42 + i / 10000, lng: -83 - i / 10000 });
@@ -42,5 +28,5 @@ for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".html"))) {
     assert.ok(sb.VENUE_LATLNG_MAP.has("venue 1300") && !sb.VENUE_LATLNG_MAP.has("no coords"), `${f}: last venue mapped, venue without coords skipped`);
     assert.ok(api.log.length > 2, `${f}: more than one page requested`);
   }
-  console.log("no-capped-queries ok");
+  console.log("venue-latlng-paged ok");
 })().catch((e) => { console.error(e); process.exit(1); });
