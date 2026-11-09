@@ -4,10 +4,22 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { createBudget, fetchText, isTimeout, rotate } = require("./_lib/run-budget"); // bounded fetching, see that file
-// FREE only when the source states free ADMISSION/ENTRY. A bare "free" in a description ("free parking", "free with admission",
-// "free drinks") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// FREE only when the source states unconditional free ADMISSION/ENTRY. A bare "free" ("free parking", "free tour with
+// admission"), a conditional one ("for members", "before 5 pm", "$15 after") or a negated one ("not free to attend") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
 // column default.
-const EXPLICIT_FREE = /\bfree (admission|entry|event|to attend|to the public|and open to the public|of charge|opening|reception|screening|concert|show|exhibition|exhibit|workshop|class|talk|tour)\b|\badmission (is )?free\b|\bfree of charge\b/i;
+const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
+const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
+const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
+function statesFreeAdmission(text) {
+  const s = String(text || "");
+  for (const m of s.matchAll(FREE_ADMISSION)) {
+    const before = s.slice(Math.max(0, m.index - 30), m.index);
+    const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after)) continue;
+    return true;
+  }
+  return false;
+}
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -344,7 +356,7 @@ async function fetchEventDetail(ev, categoryNames, cfg, budget) {
     start_date: start.date,
     end_date: end && end.date !== start.date ? end.date : undefined,
     time_display: timeDisplay || undefined,
-    is_free: description && EXPLICIT_FREE.test(description) ? true : undefined,
+    is_free: description && statesFreeAdmission(description) ? true : undefined,
     source: "PLAYGROUND DETROIT",
     image_url: imageUrl,
     ticket_url: ev.link,

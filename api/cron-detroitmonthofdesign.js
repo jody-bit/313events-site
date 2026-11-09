@@ -3,10 +3,22 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
-// FREE only when the source states free ADMISSION/ENTRY. A bare "free" in a description ("free parking", "free with admission",
-// "free drinks") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// FREE only when the source states unconditional free ADMISSION/ENTRY. A bare "free" ("free parking", "free tour with
+// admission"), a conditional one ("for members", "before 5 pm", "$15 after") or a negated one ("not free to attend") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
 // column default.
-const EXPLICIT_FREE = /\bfree (admission|entry|event|to attend|to the public|and open to the public|of charge|opening|reception|screening|concert|show|exhibition|exhibit|workshop|class|talk|tour)\b|\badmission (is )?free\b|\bfree of charge\b/i;
+const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
+const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
+const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
+function statesFreeAdmission(text) {
+  const s = String(text || "");
+  for (const m of s.matchAll(FREE_ADMISSION)) {
+    const before = s.slice(Math.max(0, m.index - 30), m.index);
+    const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after)) continue;
+    return true;
+  }
+  return false;
+}
 // Vercel Cron job — pulls the full Detroit Month of Design festival program
 // (September 2026) from detroitmonthofdesign.org. Added 2026-09-02 at
 // Jody's request ("let's add this calendar feed to the database").
@@ -242,7 +254,7 @@ async function fetchEventFromDetailPage(url, stats) {
     start_date: startDatePortion,
     end_date: endDatePortion !== startDatePortion ? endDatePortion : undefined,
     time_display: timeDisplay || undefined,
-    is_free: ld.isAccessibleForFree === true || (ld.description && EXPLICIT_FREE.test(ld.description)) ? true : undefined,
+    is_free: ld.isAccessibleForFree === true || (ld.description && statesFreeAdmission(ld.description)) ? true : undefined,
     source: "Detroit Month of Design",
     image_url: ld.image && ld.image.url ? ld.image.url : undefined,
     ticket_url: url,
