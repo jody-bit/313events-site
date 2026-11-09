@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { fetchAllPagedRows } = require("./_lib/paged-rows"); // read EVERY matching row: Supabase caps one request at 1,000 rows with a 200
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingRows } = require("./_lib/status-lookup");
@@ -388,17 +389,15 @@ const visitDetroitHandler = async (req, res) => {
     const dates = mappedRows.map((r) => r.start_date).sort();
     const minDate = dates[0];
     const maxDate = dates[dates.length - 1];
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?select=title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
-        `&start_date=gte.${minDate}&start_date=lte.${maxDate}`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    // Paged in full: a plain read stops at 1,000 rows, and a partial key set would let cross-source duplicates through. Fail-open as
+    // before (a failed page keeps the keys already read and the run proceeds), but never silent.
+    const lookup = await fetchAllPagedRows(
+      `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
+        `&start_date=gte.${minDate}&start_date=lte.${maxDate}&order=start_date.asc,id.asc`,
+      { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
     );
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingKeys = new Set(existingRows.map((r) => dedupeKey(r.title, r.start_date)));
-      }
-    }
+    if (!lookup.ok) console.warn(`[cron-visitdetroit] cross-source duplicate lookup incomplete (${lookup.rows.length} rows): ${lookup.error}`);
+    existingKeys = new Set(lookup.rows.map((r) => dedupeKey(r.title, r.start_date)));
   } catch {
     // Lookup failed — proceed with an empty exclusion set rather than fail
     // the whole run; worst case this pass over-inserts a few rows that a
