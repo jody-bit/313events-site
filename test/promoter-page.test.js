@@ -35,6 +35,8 @@ assert.deepStrictEqual(contacts.map((c) => c.value), ["hi@fleatroit.example", "f
 // Media: credit AND alt text AND a usable url.
 assert.strictEqual(PP.publicMedia([{ image_url: "https://x.example/a.jpg", credit: "Photo: A", alt_text: "Crowd" }, { image_url: "https://x.example/b.jpg", credit: "", alt_text: "No credit" }, { image_url: "https://x.example/c.jpg", credit: "C", alt_text: "" }]).length, 1);
 
+assert.deepStrictEqual(PP.publicMedia([{ image_url: "https://x.example/2.jpg", credit: "B", alt_text: "Two", sort_order: 2 }, { image_url: "https://x.example/1.jpg", credit: "A", alt_text: "One", sort_order: 1 }]).map((m) => m.alt), ["One", "Two"], "sort_order decides the hero");
+
 // Roles: only known roles, only this promoter's links.
 const roles = PP.rolesByEvent([{ event_id: "e1", organizer_id: "o1", role: "presenter" }, { event_id: "e2", organizer_id: "o1", role: "venue" }, { event_id: "e3", organizer_id: "o2", role: "presenter" }, { event_id: "e4", organizer_id: "o1", role: "co_promoter" }], "o1");
 assert.deepStrictEqual(roles, { e1: "presenter", e4: "co_promoter" });

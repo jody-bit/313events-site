@@ -20,7 +20,7 @@
     },
     media: {
       view: "organizer_media_public",
-      organizerId: "organizer_id", url: "image_url", credit: "credit", alt: "alt_text"
+      organizerId: "organizer_id", url: "image_url", credit: "credit", alt: "alt_text", sortOrder: "sort_order"
     },
     link: {
       view: "event_organizers_public",
@@ -86,9 +86,11 @@
     (rows || []).forEach(function (r) {
       if (!r) return;
       var url = safeUrl(r[c.url]), credit = str(r[c.credit]), alt = str(r[c.alt]);
-      if (url && credit && alt) out.push({ url: url, credit: credit, alt: alt });
+      if (url && credit && alt) out.push({ url: url, credit: credit, alt: alt, order: typeof r[c.sortOrder] === "number" ? r[c.sortOrder] : 1e9, pos: out.length });
     });
-    return out;
+    // View order: sort_order, then arrival order. The first image is the hero.
+    out.sort(function (a, b) { return a.order - b.order || a.pos - b.pos; });
+    return out.map(function (m) { return { url: m.url, credit: m.credit, alt: m.alt }; });
   }
 
   // Links -> role per event id. A promoter with no link rows simply has no events (nothing is guessed).
