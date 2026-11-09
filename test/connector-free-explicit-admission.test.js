@@ -18,7 +18,7 @@ const NOT_FREE = [
   "This event is not free of charge", "Admission isn't free", "Free admission is not available", "Free admission is no longer offered", "Free admission isn't available",
   "Free admission will not be offered", "Free admission won't be offered this year", "Free admission does not apply", "Free admission doesn't apply to this show", "Free admission cannot be offered", "Free admission can't be offered",
   "Join us for the fall show opening. Free admission will not be offered this year.",
-  "Free admission, not available.", "Free admission: not available.", "Free admission (not available).", "Free admission. Not available.",
+  "Free admission, not available.", "Free admission, cannot be offered.", "Free admission: not available.", "Free admission (not available).", "Free admission. Not available.",
   "Free admission has been discontinued", "Free admission has been cancelled", "Free admission has ended", "Free admission is over",
   "Free admission is suspended", "Free admission has been replaced by ticketed entry", "Free admission was offered last year but not this year", "Free admission with RSVP", "Free admission for members only",
 ];
