@@ -86,6 +86,8 @@ function todayDetroit(now) {
 
 // Blank-only back-fill for the sources the written `rows` belong to. One PATCH per source. Returns { patched, bySource }
 // where patched is the number of rows the database actually changed and bySource maps the source label to that number.
+const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.like.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*))";
+
 async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, fetchImpl, now) {
   const doFetch = fetchImpl || fetch;
   const today = todayDetroit(now);
@@ -97,8 +99,10 @@ async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, f
   const bySource = {};
   let patched = 0;
   for (const t of targets.values()) {
+    // A row an owner corrected (OWNER-CORRECTION) or holds (EDITORIAL-HOLD; `_` in ilike matches the dash, space or underscore) is never touched by
+    // automation, even to fill a blank. internal_note NULL must pass, so the not.like terms sit behind an is.null alternative.
     // Approved rows only; non-past = starts today or later, or has an end date of today or later (a multi-day run in progress).
-    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}))`;
+    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}),${OWNER_LOCK_FILTER})`;
     try {
       const resp = await doFetch(
         `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}&select=id`,
