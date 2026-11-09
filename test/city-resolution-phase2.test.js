@@ -13,13 +13,13 @@ const { PHASE2_CITIES: P2 } = require(path.join(ROOT, "city-table-phase2.js"));
 const ei = JSON.parse(fs.readFileSync(path.join(ROOT, "test/fixtures/phase2-city-coordinates.json"), "utf8"));
 const html = fs.readFileSync(path.join(ROOT, "map.html"), "utf8");
 
-const a = html.indexOf("const LOCATIONS = [");
+const a = html.indexOf("const KNOWN_PLACES = PlaceList.locations();");
 const b = html.indexOf("function haversineMiles");
 const c = html.indexOf("const VENUE_LATLNG_MAP");
 const d = html.indexOf("// Rebuilt on every render()");
-const ctx = { CityResolution: CR, PHASE2_CITIES: P2 };
+const ctx = { PlaceList: require(path.join(ROOT, "place-list.js")), CityResolution: CR, PHASE2_CITIES: P2 };
 vm.createContext(ctx);
-vm.runInContext(html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=LOCATIONS;this.CITY_LOOKUP=CITY_LOOKUP;this.resolvePlace=resolvePlace;", ctx);
+vm.runInContext(html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=KNOWN_PLACES;this.CITY_LOOKUP=CITY_LOOKUP;this.resolvePlace=resolvePlace;", ctx);
 const place = (city, source, venue) => ctx.resolvePlace({ venue: venue || "v", city, source });
 
 // 1. The table is exactly EI's 30 sourced cities, coordinates identical, each with provenance.

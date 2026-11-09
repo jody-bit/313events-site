@@ -9,7 +9,17 @@
       "evidenceNote": "Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25.",
       "datesNote": "Opens Sept 25, 2026 (official). Closing date is not stated on the official page. Weekly hours listed: Fri 7-11 PM, Sat 7 PM-12 AM, Sun 7-10:30 PM. WXYZ roundup (secondary) says weekends through Nov 1.",
       "inventoryOrder": 2,
-      "website": "https://eloiseasylum.com/"
+      "website": "https://eloiseasylum.com/",
+      "disposition": {
+        "type": "ended",
+        "reason": "Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), Eloise removal from The Dark Is On 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "halloween-greenfield-village": {
       "tier": "publish",
@@ -82,7 +92,17 @@
       "officialUrl": "https://hushhauntedattractions.com/",
       "evidenceNote": "Official home page shows a 2026 season running September 25 through November 7, 2026, with online ticketing for the current season. Read 2026-10-12 at https://hushhauntedattractions.com/",
       "datesNote": "September 25 through November 7, 2026 (page also lists a kids' daytime event on October 25, 2-5 PM with no actors, and Glow Stick Fright Nights on November 6 and 7). Evening sessions typically start 6 or 7 PM and end 10 PM or midnight per the page; exact per-night schedule not captured.",
-      "inventoryOrder": 7
+      "inventoryOrder": 7,
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "azra-chamber-of-horrors": {
       "tier": "publish",
@@ -225,6 +245,16 @@
           "/assets/seasonal/halloween-card-5.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "slaughterhouse-adventure": {
@@ -243,6 +273,16 @@
           "/assets/seasonal/halloween-card-7.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "full-moon-manor-at-bonadeo-farms": {
@@ -263,6 +303,16 @@
           "/assets/seasonal/halloween-card-1.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+        "recordedAt": "2026-11-04",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "nightmare-fields-at-the-pumpkin-factory": {

@@ -6,10 +6,12 @@ const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { decideSourceDescription, REPAIR_SOURCES } = require("./_lib/description-strength");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { fillBlankSourceCalendarLinks } = require("./_lib/source-calendar-links");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
 const { partitionExpired } = require("./_lib/ingest-eligibility");
+const { backfillPatch } = require("./_lib/dearborn-enrichment");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -281,6 +283,26 @@ function formatIcsTime(hour, minute) {
 // there is genuinely no per-event location signal to fall back on.
 const VENUE_TBA = "Venue TBA";
 
+// A LOCATION that names no place at all, though it has text: a bare country
+// ("Canada", "USA") or a generic placeholder ("Various Locations", "TBD", "See description"). P1 audit
+// EXPORT-2 found Tourism Windsor Essex rows published with the venue "ON" and
+// "Various Locations". A bare state or province ("ON", "MI") is already
+// handled upstream (parseIcsLocation region_only), so it is not repeated here. Such text is not a venue: the row takes the project's
+// existing "Venue TBA" and, having no city, stays with the people who review
+// location gaps. Nothing is invented and no city is guessed. A LOCATION that
+// is any other text, readable or not ("Online", "Caesars Windsor, Windsor ON"),
+// is still kept whole as before.
+const NON_PLACE_LOCATION = new Set([
+  "canada", "usa", "us", "united states",
+  "various", "various locations", "various location", "multiple locations", "multiple location", "multiple venues",
+  "location varies", "locations vary", "varies", "tbd", "tba", "to be determined", "to be announced",
+  "n/a", "na", "none", "see description", "see details", "see event description",
+]);
+function isNonPlaceLocation(text) {
+  const t = String(text || "").toLowerCase().replace(/[.!]/g, "").replace(/\s+/g, " ").trim();
+  return NON_PLACE_LOCATION.has(t);
+}
+
 // Resolves ONE VEVENT's own venue fields for a feed_source flagged
 // location_per_event (migration_043) — added 2026-09-29 for the Phase 6
 // per-event venue-resolution shared infrastructure (see
@@ -318,6 +340,12 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
   }
 
+  if (parsed.status === "region_only") {
+    // Only a region was stated ("ON"): no venue, no address, no city is invented, and it is not a "says nothing" location, so
+    // the feed's default city is never attached (rowsWithNoStatedLocation takes "blank" only). Shown as the existing "Venue TBA".
+    return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+  }
+
   if (parsed.status === "unparseable") {
     // BUG-012 (2026-10-04): the text is still kept whole as the honest raw
     // location; no venue name, no street address and no venue link is
@@ -325,6 +353,9 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     // <ST> <ZIP>" the city is kept (api/_lib/ics-location.js,
     // findTrailingCity). Before this, the city was discarded with the rest
     // and the event could not be placed.
+    if (isNonPlaceLocation(parsed.rawText)) {
+      return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+    }
     return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: parsed.trailingCity || null };
   }
 
@@ -622,6 +653,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // Times, which lands pending_review because IT is an unvetted general
       // calendar, not a single approved venue.
       feed_source_id: feedSource.id,
+      // Internal marker (stripped before the write, upsertParsedRows): the feed's approved website, used only as the blank-only
+      // fallback link when the source supplies no per-event link (api/_lib/source-calendar-links.js).
+      _calendarUrl: feedSource.website || null,
     };
 
     // SH.1 (Metadata Self-Healing, 2026-09-21) — this connector has always
@@ -812,6 +846,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       image_url: null,
       source: feedSource.venue_name,
       feed_source_id: feedSource.id,
+      _calendarUrl: feedSource.website || null, // internal marker, stripped before the write (see the ICS builder above)
       // Visible, honest flag distinguishing the two ways this row's date
       // was produced — never silently indistinguishable from a real ICS
       // DTSTART. explicit._confidence is read by the caller below to pick
@@ -850,7 +885,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
       rows.map((r) => r.external_id),
-      { select: "external_id,status,title,description,description_source" }
+      { select: "external_id,status,source,title,description,description_source,event_url,note,internal_note" }
     );
     existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {
@@ -867,7 +902,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const rowsWithStatus = keep.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, _publication, _enrichment, _recurring, ...cleanRow } = row;
+    const { _dateConfidence, _publication, _enrichment, _recurring, _calendarUrl, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
     // Description strength rule (api/_lib/description-strength.js), for the sources the repair is rolled out to: a
@@ -888,6 +923,13 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     if (!existingStatus && _enrichment) {
       if (_enrichment.event_url && !out.event_url) out.event_url = _enrichment.event_url;
       if (_enrichment.category) out.note = `${out.note ? out.note + " " : ""}Source page category: ${_enrichment.category}.`;
+    } else if (existingStatus === "pending_review" && _enrichment && stored) {
+      // Stage 5 (owner decision 2026-10-16): a row nobody has reviewed yet still gets the safe-match link and category
+      // hint, but ONLY into an empty link and only once. A stored link, a reviewer's edit, any other status, and the
+      // title/date/description/category/status are never touched. A second run finds both in place and writes nothing.
+      const patch = backfillPatch(stored, _enrichment);
+      if (patch.event_url) out.event_url = patch.event_url;
+      if (patch.note) out.note = patch.note;
     }
     return out;
   });
@@ -900,7 +942,10 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     // partial write from being read as a clean one by the caller.
     return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, skippedPast, upserted: upsertResp.written, failed: true };
   }
-  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}`, upserted: keep.length, skippedPast };
+  // Blank-only source calendar-page fallback for events this source gave no link at all (api/_lib/source-calendar-links.js).
+  const fallback = await fillBlankSourceCalendarLinks(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, keep);
+  const fallbackNote = fallback.patched ? `; ${fallback.patched} given the source calendar page as a fallback link` : "";
+  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}${fallbackNote}`, upserted: keep.length, skippedPast };
 }
 
 async function patchFeedSource(id, patch, sbHeaders) {
@@ -1103,7 +1148,7 @@ const handleRequest = async (req, res) => {
         }
       }
     } catch (err) {
-      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
+      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message + health.describeFetchError(err);
     }
 
     results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult), ms: Date.now() - feedStartedAt });
@@ -1118,3 +1163,5 @@ const handleRequest = async (req, res) => {
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
 module.exports.feedSourceFailures = feedSourceFailures;
 module.exports.feedLimits = feedLimits;
+module.exports.resolveIcsEventVenue = resolveIcsEventVenue; // test seam (region-only LOCATION)
+module.exports.icsEventsToRows = icsEventsToRows; // test seam (region-only LOCATION never takes the feed's default city)

@@ -30,7 +30,7 @@ function run(extra) {
   const sb = Object.assign({ EventDates, EVENTS, query: "cider", mode: "month", el,
     document: { getElementById: () => el }, getTodayISO: () => "2026-10-16",
     matchesFilters: (e) => e.title.toLowerCase().includes("cider"), CATS: { fest: { color: "#000", label: "Fest" } }, Categories: require("../categories.js"),
-    escapeHtml: (x) => String(x == null ? "" : x), eventUrl: (e) => "event.html?id=" + e.id }, extra || {});
+    unmappedTagHtml: () => "", escapeHtml: (x) => String(x == null ? "" : x), eventUrl: (e) => "event.html?id=" + e.id }, extra || {});
   vm.createContext(sb);
   vm.runInContext(`${hitsFn[0]}\n${m[0]}\nrenderUnconfirmedResults();`, sb);
   return el.innerHTML;

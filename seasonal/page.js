@@ -11,6 +11,23 @@
   var FB = window.SeasonalImageFallback;
   if (FB) { R.setFailedLookup(FB.isFailed); FB.attach(document); }
 
+  // Entries that carry eventId show that event's image first; their own cover stays the fallback. Progressive: nothing happens
+  // unless an entry links an event, and any failure leaves the page as rendered. The lookup lives in /event-image.js.
+  function hydrateEventImages(redraw) {
+    var ents = col && col.entries || [];
+    var withImage = ents.some(function (e) { return e && e.eventId; });
+    var withPage = ents.some(function (e) { return e && !e.website && e.eventPageId; });   // gated until its public event row is readable
+    if (!withImage && !withPage) return;
+    var sc = document.createElement("script"); sc.src = "/event-image.js";
+    sc.onload = function () {
+      if (!window.EventImage) return;
+      var f = function (u, o) { return fetch(u, o); };
+      if (withImage) window.EventImage.hydrate(col.entries, f, function () { redraw(false); });
+      if (withPage) window.EventImage.checkPages(col, f, function () { redraw(false); });
+    };
+    document.head.appendChild(sc);
+  }
+
   function initPublic() {
     var p = new URLSearchParams(location.search);
     var state = { category: p.get("cat") || "all", query: p.get("q") || "", view: ({ list: 1, map: 1 })[p.get("view")] ? p.get("view") : "grid", origin: null };
@@ -98,6 +115,7 @@
     document.addEventListener("input", function (e) { if (e.target && e.target.id === "scCity") fillSuggestions(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target && e.target.id === "scCity") { e.preventDefault(); cityLookup(); } });
     sync(false);
+    hydrateEventImages(sync);
     describeCities();
     loadMapScript();
     // shared title fit: again once the webfonts have loaded, and when the viewport changes
