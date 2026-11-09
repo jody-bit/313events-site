@@ -17,6 +17,10 @@ const bios = read("assets/media/313-events-bios.txt");
 const shortBio = bios.split("SHORT BIO\n")[1].split("\n\nLONG BIO")[0].trim();
 assert.ok(html.includes(shortBio), "short bio matches the approved text");
 
+const longBio = bios.split("LONG BIO\n")[1].trim().split("\n\n").slice(0, -1);
+longBio.forEach((para) => assert.ok(html.includes(para.replace(/&/g, "&amp;")), "long bio paragraph matches bios.txt: " + para.slice(0, 40)));
+assert.ok(/id="screenshots"/.test(html) && html.includes("313-events-calendar-desktop.png") && html.includes("313-events-calendar-mobile-375.png"), "screenshots present");
+
 // 2. Every local download/image exists and is non-empty; ZIP and PDF are the real formats.
 const refs = [...html.matchAll(/(?:href|src)="(\/assets\/media\/[^"]+)"/g)].map((m) => m[1]);
 assert.ok(refs.length >= 10, "download and preview references present");
