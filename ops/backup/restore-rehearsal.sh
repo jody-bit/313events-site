@@ -6,6 +6,8 @@
 #   RESTORE_SUPABASE_URL, RESTORE_SERVICE_KEY   the rehearsal project's API URL and service-role key (Storage upload and verify)
 # Exit codes: 0 all checks passed; 2 refused target; 3 target not empty; 4 access boundary differs (DO NOT EXPOSE);
 #             5 counts differ; 6 restore errors; 7 storage verification failed.
+# NEVER RUN TWO RESTORES AT ONCE (this script, restore-mac.sh, in two terminals or against two targets): the stale-folder sweep below deletes every
+#   313events-restore.* working folder, including the live one of a concurrent run. Wait for one run to finish or be stopped before starting another.
 # Prints elapsed seconds per phase so recovery time can be recorded. Recovery point = the archive's created_utc.
 set -Eeuo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"; . "$here/lib.sh"

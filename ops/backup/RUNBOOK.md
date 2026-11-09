@@ -57,3 +57,6 @@ Create a new project, run the same restore steps, then repoint the app: update S
 
 ## Tests
 `test/dry-run.sh` (flow, nested Storage object, manifest, ciphertext only, no plaintext left), `test/no-secret-leak.sh` (sentinel secrets never appear in output, files or any process argument; no `set -x`), and `test/e2e-local.sh` (real local PostgreSQL plus a mock Storage API: backup with nested objects, fail-closed on a missing object, restore through every gate despite the default-privilege trap, anonymous access checks, refusal of non-empty/production/staging targets, fingerprint sensitivity). Full git history (1,073 commits) was scanned for key-shaped strings on 2026-10-24: only fake test fixtures matched.
+
+## Restore safety
+Never run two restores at once. The temp sweep in restore-rehearsal.sh removes all 313events-restore.* folders, including a concurrent run's working folder. One restore at a time.
