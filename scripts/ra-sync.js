@@ -84,6 +84,7 @@ const { SLUGS } = require("../api/_lib/source-slugs");
 const { deriveRaEventUrl, deriveRaTicketUrl, decideLinkMerge } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
+const { cityFromAddress } = require("../api/_lib/address-city");
 const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const {
   RA_ID_PATTERN,
@@ -164,7 +165,13 @@ function parseAddressText(addressText) {
   if (typeof addressText !== "string" || !addressText.trim()) return { street: null, city: null };
   const trimmed = addressText.trim();
   const m = /^(.*?),\s*([A-Za-z][A-Za-z .'-]*?),\s*MI\b/.exec(trimmed);
-  if (!m) return { street: trimmed, city: null };
+  if (!m) {
+    // RA also writes "14900 Beck Road Plymouth MI 48170" (no commas). The
+    // city is taken only when it is a known Michigan/Ohio city stated in the
+    // text; "950 West McNichols" (no city at all) stays null.
+    const stated = cityFromAddress(trimmed);
+    return stated ? { street: stated.street, city: stated.city } : { street: trimmed, city: null };
+  }
   return { street: m[1].trim(), city: m[2].trim() };
 }
 
