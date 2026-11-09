@@ -313,6 +313,9 @@
     places: DEFAULT_PLACES,
     boundary: DEFAULT_BOUNDARY,
     orbitMiles: 75,
+    // T4 (HELD: BUILD HOLD, flag-off does NOT lift it; no activation): true = the "Evening" placeholder counts as an evening start for Tonight (today's documented
+    // behaviour). false = only a parseable start at 5pm or later counts. Do NOT flip without the time-confidence contract.
+    eveningPlaceholderCounts: true,
     timeZone: "America/Detroit",
     surfaces: { home: "/", calendar: "/calendar.html", map: "/map.html" }
   };
@@ -456,6 +459,13 @@
     var radii = deepFreeze(RADII.slice());
     var boundary = config.boundary;
     var ORBIT_MILES = config.orbitMiles;
+    var EVENING_PLACEHOLDER_COUNTS = config.eveningPlaceholderCounts !== false;
+    // Tonight's start test. With the T4 flag off-by-default (true) this is exactly isEvening().
+    function startsInEvening(timeStr) {
+      if (EVENING_PLACEHOLDER_COUNTS) return isEvening(timeStr);
+      var range = timeStr ? parseTimeRange(timeStr) : null;
+      return !!(range && range.start.h >= 17);
+    }
 
     // ---- taxonomy index: path -> {label, order, top} ----
     var NODES = new Map();
@@ -931,7 +941,7 @@
           if (w.to !== null && d > w.to) return false;
           return true;
         });
-        return hit && !(w.evening && !isEvening(e.time));
+        return hit && !(w.evening && !startsInEvening(e.time));
       }
       if (w.forward) {
         if (end < c.today) return false;                                         // its last day has passed
@@ -939,7 +949,7 @@
       }
       if (w.from !== null && end < w.from) return false;
       if (w.to !== null && start > w.to) return false;
-      if (w.evening && !isEvening(e.time)) return false;
+      if (w.evening && !startsInEvening(e.time)) return false;
       return true;
     }
 
