@@ -2144,7 +2144,7 @@ function resolvePlace(e){
 
 function buildPlaces(){
   const places = new Map();
-  EVENTS.filter(matchesFilters).forEach(e=>{
+  EVENTS.filter(e=>matchesFilters(e)).forEach(e=>{
     const place = resolvePlace(e);
     if(!place) return;
     if(!places.has(place.key)) places.set(place.key, {...place, events:[]});

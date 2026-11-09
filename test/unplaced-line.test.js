@@ -69,3 +69,29 @@ const ids = (c) => events.filter((e) => Discovery.matches(e, orbit, c)).map((e) 
   }
   console.log("PASS: count, reveal and tags use the current-and-upcoming window on calendar and map");
 }
+
+// 6. buildPlaces must call matchesFilters with ONE argument. Array.filter(matchesFilters) would pass the index as
+//    skipPlace, so every event after the first would skip the place/radius test (P1 finding on #300).
+{
+  const vm = require("vm");
+  for (const f of ["map.html", "calendar.html"]) {
+    const html = read(f);
+    assert.ok(!/\.filter\(\s*matchesFilters\s*\)/.test(html), f + ": no bare .filter(matchesFilters)");
+  }
+  const html = read("map.html");
+  const sb = {
+    showUnplaced: false, CITY_LOOKUP: {}, isUnmappedNow: () => false, timeSortMinutes: () => 0,
+    resolvePlace: (e) => ({ key: "c:" + e.city.toLowerCase(), label: e.city }),
+    // stand-in for the real filter: an event outside the chosen radius is excluded unless skipPlace is truthy
+    matchesFilters: (e, skipPlace) => skipPlace ? true : !e.outOfRadius,
+    EVENTS: [
+      { id: 1, city: "Detroit", date: "2026-11-15", time: "7 PM" },
+      { id: 2, city: "Far Away", outOfRadius: true, date: "2026-11-15", time: "7 PM" },
+      { id: 3, city: "Warren", date: "2026-11-15", time: "7 PM" },
+    ],
+  };
+  vm.createContext(sb);
+  vm.runInContext(html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap")) + "\nthis.keys=[...buildPlaces().keys()].sort();", sb);
+  assert.strictEqual(JSON.stringify(sb.keys), JSON.stringify(["c:detroit", "c:warren"]), "an out-of-radius placed city stays excluded from the map places");
+  console.log("PASS: buildPlaces still honours the place/radius filter (matchesFilters called with one argument)");
+}

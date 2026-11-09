@@ -1328,7 +1328,7 @@ function resolvePlace(e){
 // calendar.html's own matchesFilters() calls.
 function buildPlaces(){
   const places = new Map();
-  EVENTS.filter(matchesFilters).forEach(e=>{
+  EVENTS.filter(e=>matchesFilters(e)).forEach(e=>{
     // "Show them": events whose city is not mapped are listed in their own group and get no pin,
     // never placed inside the chosen area (even when some other field could draw a point).
     if(showUnplaced && isUnmappedNow(e, CITY_LOOKUP)){
