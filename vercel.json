@@ -204,6 +204,10 @@
       "destination": "/about.html"
     },
     {
+      "source": "/media",
+      "destination": "/media.html"
+    },
+    {
       "source": "/terms",
       "destination": "/terms.html"
     },
