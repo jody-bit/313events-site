@@ -81,7 +81,7 @@ const {
 } = require("../api/_lib/status-lookup");
 const { startRun, finishRun } = require("../api/_lib/run-log");
 const { SLUGS } = require("../api/_lib/source-slugs");
-const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
+const { deriveRaEventUrl, deriveRaTicketUrl, decideLinkMerge } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
 const { isOwnerSuppliedRow } = require("./owner-supplied-row");
@@ -869,6 +869,7 @@ async function completeRaSyncSession(opts) {
   }
 
   let writeError = null;
+  const linkConflicts = [];
   if (rowsToUpsert.length) {
     try {
       // Same fail-closed status-preserving lookup every other connector
@@ -944,18 +945,37 @@ async function completeRaSyncSession(opts) {
       if (!writeError && toMerge.length) {
         for (const { id, row, existing } of toMerge) {
           const patch = {};
+          const replacedGeneric = {};
           for (const field of MERGE_BLANK_FIELDS) {
             const existingVal = existing[field];
             const existingBlank = existingVal === null || existingVal === undefined || existingVal === "";
             const newVal = row[field];
             const newHasValue = newVal !== null && newVal !== undefined && newVal !== "";
+            if (field === "ticket_url") {
+              // A stored bare homepage is not a real ticket destination: a
+              // specific incoming one may replace it. The reverse never
+              // happens, and two different specific URLs are flagged, not
+              // overwritten (api/_lib/ra-links.js decideLinkMerge).
+              const decision = decideLinkMerge(existingVal, newVal);
+              if (decision.action === "fill") patch[field] = newVal;
+              else if (decision.action === "replace_generic") {
+                patch[field] = newVal;
+                replacedGeneric[field] = existingVal;
+              } else if (decision.action === "flag") {
+                linkConflicts.push({ id, field, stored: existingVal, incoming: newVal });
+              }
+              continue;
+            }
             if (existingBlank && newHasValue) patch[field] = newVal;
           }
           patch.status = existing.status || "approved";
 
           const blankFieldFilters = MERGE_BLANK_FIELDS
             .filter((f) => Object.prototype.hasOwnProperty.call(patch, f))
-            .map((f) => `${f}.is.null`);
+            .map((f) => (Object.prototype.hasOwnProperty.call(replacedGeneric, f)
+              // still the same generic value right now (race-safe)
+              ? `${f}.eq.${encodeURIComponent('"' + String(replacedGeneric[f]).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"')}`
+              : `${f}.is.null`));
           const whereExtra = blankFieldFilters.length ? `&and=(${blankFieldFilters.join(",")})` : "";
 
           try {
@@ -1025,6 +1045,7 @@ async function completeRaSyncSession(opts) {
     duplicateDetail: duplicates.slice(0, 20),
     importedIds: imported.map((x) => x.id),
     ...(detailReport ? { detailReport } : {}),
+    linkConflicts: linkConflicts.slice(0, 20),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, run.id, finalSessionData, fetchFn);
 
@@ -1046,6 +1067,7 @@ async function completeRaSyncSession(opts) {
     duplicateDetail: duplicates,
     importedIds: imported.map((x) => x.id),
     submitted: events.length,
+    linkConflicts,
   };
 }
 
