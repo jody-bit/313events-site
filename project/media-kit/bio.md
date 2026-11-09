@@ -10,8 +10,6 @@ The product combines automated event aggregation with original editorial curatio
 
 On the Radar is the editorial component: a curated collection of local press coverage of Detroit-area events, drawn from outlets the site tracks, including Metro Times, WDET and BridgeDetroit. Choosing which coverage to surface and linking it to the right event is an editorial decision, separate from the automated aggregation elsewhere on the site.
 
-313.events does not currently run paid placements, sponsored listings or paid editorial coverage. If that changes, paid material will be labeled near the content itself.
-
 The site aims to be usable by as many people as possible, including people using assistive technology, and publishes an accessibility statement that describes what is built in and what is still limited. It makes no claim of full or certified compliance.
 
 313.events is a product of Sentient Productions LLC, based in Detroit, Michigan.

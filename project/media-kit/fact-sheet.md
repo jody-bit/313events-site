@@ -7,7 +7,6 @@
 | Coverage | Detroit and the surrounding region, called the Detroit Orbit |
 | Product parts | Event calendar and map; individual event pages; venues; On the Radar (curated local press coverage of Detroit-area events) |
 | How events are added | Aggregated from organizers, venues and public event sources; submitted by organizers and the public through Submit an Event |
-| Editorial policy | Aggregation is not endorsement; no paid placements, sponsored listings or paid editorial coverage at present |
 | Corrections | Organizers and venues can request a correction to a listing |
 | Publisher | Sentient Productions LLC, Detroit, Michigan |
 | Social | Instagram @313.thecityison |

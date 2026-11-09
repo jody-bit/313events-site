@@ -10,7 +10,7 @@ Owner of copy and assets: Editorial. `/media` page: Experience, after the #405 f
 | Claim | Source |
 |---|---|
 | Independent Detroit-area event discovery and editorial platform; Detroit Orbit; product of Sentient Productions LLC, Detroit, Michigan | about.html |
-| Aggregated from organizers, venues, public sources, submissions; inclusion is not endorsement; On the Radar is curated press coverage (Metro Times, WDET, BridgeDetroit); no paid placements at present; corrections | editorial-policy.html |
+| Aggregated from organizers, venues, public sources, submissions; inclusion is not endorsement; On the Radar is curated press coverage (Metro Times, WDET, BridgeDetroit); corrections (the "no paid placements" line was removed from the bios and fact sheet on Jody's direction, not freshly verified as a future-proof statement) | editorial-policy.html |
 | Accessibility effort, no certification claim | accessibility.html |
 | Instagram @313.thecityison; contact email | footer / about.html |
 
@@ -21,7 +21,7 @@ Launch date, traffic or audience numbers, partnerships, founder quotes, event co
 `313-events-wordmark-on-dark.svg` is a byte copy of `assets/wordmark.svg`; `...-on-light.svg` is a byte copy of `assets/wordmark-reversed.svg`; `313-events-signal-mark.svg` is a copy of `assets/313-events-signal.svg`. PNGs are rendered from those SVGs with a transparent background. No redraw, recolor or edit.
 
 ## Still open before publication
-- Product screenshots: capture from the live public site (Codex browser; the preparing session cannot reach 313.events). Product screens only, with remote event images hidden or placeholder so no third-party flyers or photos appear. Then add to the PDF and ZIP.
+- Product screenshots: mobile 375 calendar (public site, captured Nov 9, supplied by Jody) is in the PDF and ZIP, captioned "as of Nov 9, 2026; illustrative UI, counts are not a marketing claim"; the upload is kept unchanged in `originals/` (it is a JPEG, converted to PNG for use). Desktop calendar shot to follow from Codex: add and re-render.
 - Jody's read of the long bio (`bio.md`).
 - Experience: `/media` page, About and footer links, after #405.
 - Publication GO.
