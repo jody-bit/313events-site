@@ -850,15 +850,15 @@
     // Anna Sui). unconfirmedOn() says whether such an event's STORED range covers the one day Today or
     // Tomorrow is showing, and passes the same what / where / search filters. It is a separate list:
     // callers show it as "Dates not confirmed", never count it with matches()/count(), never offer a
-    // calendar export.  a picked date or range is covered; weekend, week and next-7 return false.
+    // calendar export.  every day-naming window is covered; only tonight and the open-ended view return false.
     function unconfirmedOn(event, state, ctx) {
       var s = normalize(state), c = resolveCtx(ctx);
       if (!event || isBlocked(event)) return false;
       var w = windowOf(s, c);
-      // P0 2026-11-09: a picked date or range (not just Today / Tomorrow) also offers an unclassified range whose
-      // STORED range overlaps it. Tonight, weekend, week and next-7 stay excluded (their headline counts and the
-      // evening rule are confirmed-only). Still a separate, never-counted, never-exported list.
-      if (w.mode !== "today" && w.mode !== "tomorrow" && w.mode !== "dates") return false;
+      // P0 2026-11-09: every window that names calendar days (Today, Tomorrow, a picked date or range, weekend, week,
+      // next 7 days) offers an unclassified range whose STORED range overlaps it. Tonight stays excluded (it needs a
+      // verified evening). Still a separate, never-counted, never-exported list; callers subtract it from headlines.
+      if (w.mode === "tonight" || w.mode === "all") return false;
       if (w.from === null || w.to === null) return false;
       var ED = (typeof EventDates !== "undefined") ? EventDates : null;
       if (!ED || ED.scheduleState(event) !== "unverified") return false;
@@ -866,7 +866,7 @@
       var end = (typeof event.endDate === "string" && event.endDate > start) ? event.endDate : start;
       if (typeof start !== "string" || start > w.to || end < w.from) return false;
       if (w.forward && end === c.today && endedByClock(event.time, c.minutes)) return false;
-      return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined);
+      return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined, c);
     }
 
     // Distinct events — never event-days. An id seen twice (a surface
