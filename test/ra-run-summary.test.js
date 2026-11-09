@@ -154,3 +154,22 @@ console.log("PASS: cap-deferred id listed and carried over; failed promotion => 
   }
   console.log("PASS: handler persists summary + promotion result into source_runs.session_data; records_* untouched");
 })().catch((e) => { console.error(e); process.exitCode = 1; });
+
+{
+  // P1 run 03803aef: 10 new + 1 retry must not read as 11 newly public.
+  const newOnly = Array.from({ length: 10 }, (_, i) => `ra-${100 + i}`);
+  const retry = "ra-2578535";
+  const r = buildRaRunSummary({
+    sessionData: { candidateCount: 40, knownCount: 29, newIds: [...newOnly, retry], retryIds: [retry] },
+    complete: { imported: 11, importedIds: [...newOnly, retry], submitted: 11 },
+  });
+  assert.strictEqual(r.counts.listing.new, 10);
+  assert.strictEqual(r.counts.listing.retry, 1);
+  assert.strictEqual(r.counts.publications.public, 10);
+  assert.deepStrictEqual(r.counts.retry, { selected: 1, filled: 1, filledIds: [retry] });
+  assert.strictEqual(r.perCandidate.find((c) => c.id === retry).status, "retry_filled_pending_review");
+  assert.ok(/10 new to us, plus 1 retried/.test(r.text));
+  assert.ok(/Public site: 10 events published/.test(r.text));
+  assert.ok(/stay pending_review/.test(r.text));
+  console.log("PASS: retry counted separately, never newly public");
+}
