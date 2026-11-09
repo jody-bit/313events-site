@@ -13,7 +13,9 @@ const EMPTY_RSS = `<?xml version="1.0"?><rss version="2.0"><channel><title>t</ti
 const all = Array.from({ length: 1700 }, (_, i) => ({ id: "evt-" + String(i).padStart(5, "0"), title: "E" + i, start_date: "2099-01-01" }));
 const makeRes = () => ({ _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } });
 
-async function run(cap, failOnCall) {
+async function run(cap, failOnCall, opts) {
+  const unmatched = (opts && opts.unmatched) || [];
+  const onlyRetry = !!(opts && opts.onlyRetry); // count/fail only the retry pass read (status=in.(approved,pending_review))
   const eventReads = [];
   const writes = [];
   global.fetch = async (url, opts = {}) => {
@@ -21,7 +23,9 @@ async function run(cap, failOnCall) {
     const method = opts.method || "GET";
     if (url.startsWith("https://example.supabase.co/")) {
       if (method !== "GET") { writes.push({ url, method }); return { ok: true, status: 201, json: async () => [], text: async () => "[]" }; }
+      if (/\/rest\/v1\/editorial_articles\?matched_event_id=is\.null/.test(url)) return { ok: true, status: 200, json: async () => unmatched, text: async () => JSON.stringify(unmatched) };
       if (/\/rest\/v1\/events\?/.test(url)) {
+        if (onlyRetry && !(/status=in\.\(approved,pending_review\)/.test(url) && /order=start_date\.asc,id\.asc/.test(url))) return { ok: true, status: 200, json: async () => [], text: async () => "[]" };
         eventReads.push(url);
         if (failOnCall && eventReads.length === failOnCall) return { ok: false, status: 500, json: async () => ({}), text: async () => "boom" };
         const off = Number((url.match(/[?&]offset=(\d+)/) || [])[1] || 0);
@@ -61,4 +65,22 @@ async function run(cap, failOnCall) {
     assert.strictEqual(res._body.upserted, 0);
   }
   console.log("PASS: a failed later page is reported as an error, not a smaller list");
+  // 3. RETRY PASS (retryUnmatchedArticles): one unmatched article, 1,700 candidate events, server cap 500. The feeds are empty, so only this pass
+  // reads the wide pool (status=in.(approved,pending_review)). It must page to the end, and a failed later page must be an error with NO write
+  // (no article match, no join row, no stale dismissal).
+  {
+    const article = { id: "art-1", title: "Totally unrelated headline", excerpt: "", url: "https://news.example/a1", published_at: "2020-01-01T00:00:00Z" };
+    const ok = await run(500, 0, { unmatched: [article], onlyRetry: true });
+    assert.ok(ok.eventReads.length >= 4, "retry pass pages the wide pool at a cap of 500, got " + ok.eventReads.length);
+    assert.deepStrictEqual(ok.eventReads.map((u) => Number(u.match(/[?&]offset=(\d+)/)[1])).slice(0, 4), [0, 500, 1000, 1500]);
+    assert.ok(ok.eventReads.every((u) => /order=start_date\.asc,id\.asc/.test(u)), "stable start_date,id order on every page");
+
+    const bad = await run(500, 3, { unmatched: [article], onlyRetry: true });
+    const rr = bad.res._body && bad.res._body.retroactiveRematch;
+    assert.ok(rr && /Failed to load candidate events: candidate events read incomplete/.test(rr.error || ""), "retry pass reports the incomplete read: " + JSON.stringify(rr));
+    assert.strictEqual(rr.checked, 1);
+    assert.strictEqual(rr.matched, 0);
+    assert.ok(!bad.writes.some((w) => /editorial_articles|editorial_article_events/.test(w.url)), "no article/join write after an incomplete read: " + JSON.stringify(bad.writes));
+  }
+  console.log("PASS: the retry pass pages >1,000 candidates and fails closed (no write) on a later-page failure");
 })().catch((e) => { console.error(e); process.exit(1); });
