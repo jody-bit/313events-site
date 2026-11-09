@@ -10,8 +10,8 @@
   var COLUMNS = Object.freeze({
     organizer: {
       view: "organizers_public",
-      id: "id", slug: "slug", name: "name", type: "type", bio: "bio", status: "status",
-      heroImage: "hero_image_url", socialLinks: "social_links",
+      id: "id", slug: "slug", name: "name", type: "type", bio: "bio", description: "description",
+      website: "website", instagram: "instagram", heroImage: "hero_image_url", socialLinks: "social_links",
       upcomingCount: "upcoming_count", nextEventDate: "next_event_date"
     },
     contact: {
@@ -51,9 +51,16 @@
         if (url && label) links.push({ label: label, url: url });
       });
     }
+    // The view lists ACTIVE organizers only (status is filtered inside it, not a column), so a returned row is active.
+    // Optional website and Instagram (existing organizers columns) join the labelled links; a bare handle is turned into
+    // a profile URL only when it is a plain handle, nothing else is guessed.
+    var web = safeUrl(row[c.website]);
+    if (web) links.push({ label: "Website", url: web });
+    var ig = str(row[c.instagram]), igUrl = /^https?:\/\//i.test(ig) ? safeUrl(ig) : (/^@?[A-Za-z0-9._]{1,30}$/.test(ig) ? "https://www.instagram.com/" + ig.replace(/^@/, "") + "/" : "");
+    if (igUrl) links.push({ label: "Instagram", url: igUrl });
     return {
-      id: row[c.id], slug: str(row[c.slug]), name: str(row[c.name]), type: str(row[c.type]), bio: str(row[c.bio]),
-      status: str(row[c.status]), heroImage: safeUrl(row[c.heroImage]), socialLinks: links,
+      id: row[c.id], slug: str(row[c.slug]), name: str(row[c.name]), type: str(row[c.type]), bio: str(row[c.bio]) || str(row[c.description]),
+      status: "active", heroImage: safeUrl(row[c.heroImage]), socialLinks: links,
       upcomingCount: typeof row[c.upcomingCount] === "number" ? row[c.upcomingCount] : null,
       nextEventDate: str(row[c.nextEventDate]) || null
     };

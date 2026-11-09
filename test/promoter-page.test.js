@@ -16,9 +16,11 @@ assert.ok(!/organizers_public|organizer_contacts_public|organizer_media|event_or
 assert.ok(!/(upcoming_count|hero_image_url|social_links|organizer_id|verified_at)/.test(html), "template carries no column name of its own (" + colValues.length + " chars live in the mapping)");
 
 // Organizer mapping: unknown fields stay empty; unsafe or unlabeled social links are dropped.
-const p = PP.mapOrganizer({ id: "o1", slug: "fleatroit", name: " Fleatroit ", type: "collective", bio: "", status: "active", hero_image_url: "javascript:alert(1)", social_links: [{ label: "Instagram", url: "https://instagram.com/x" }, { label: "Bad", url: "javascript:alert(1)" }, { url: "https://nolabel.example" }], upcoming_count: 2, next_event_date: "2026-12-05" });
-assert.strictEqual(p.name, "Fleatroit"); assert.strictEqual(p.heroImage, ""); assert.strictEqual(p.bio, "");
-assert.deepStrictEqual(p.socialLinks, [{ label: "Instagram", url: "https://instagram.com/x" }]);
+const p = PP.mapOrganizer({ id: "o1", slug: "fleatroit", name: " Fleatroit ", type: "collective", bio: "", description: "Short bio.", website: "https://fleatroit.example", instagram: "@fleatroit", hero_image_url: "javascript:alert(1)", social_links: [{ label: "Instagram", url: "https://instagram.com/x" }, { label: "Bad", url: "javascript:alert(1)" }, { url: "https://nolabel.example" }], upcoming_count: 2, next_event_date: "2026-12-05" });
+assert.strictEqual(p.name, "Fleatroit"); assert.strictEqual(p.heroImage, ""); assert.strictEqual(p.bio, "Short bio.", "description is the fallback when there is no long bio");
+assert.deepStrictEqual(p.socialLinks, [{ label: "Instagram", url: "https://instagram.com/x" }, { label: "Website", url: "https://fleatroit.example/" }, { label: "Instagram", url: "https://www.instagram.com/fleatroit/" }]);
+assert.strictEqual(p.status, "active", "the view lists active organizers only");
+assert.deepStrictEqual(PP.mapOrganizer({ name: "X", instagram: "not a handle!" }).socialLinks, []);
 
 // Contacts: public AND verified only; private, unverified and malformed never render.
 const contacts = PP.publicContacts([
@@ -50,7 +52,7 @@ assert.deepStrictEqual(PP.groupByMonth(s.upcoming).map((m) => [m.month, m.days.l
 assert.deepStrictEqual(PP.groupByVenue(s.upcoming).map((g) => g.venue), ["Venue to be announced", "441 W. Canfield"]);
 
 // Indexing: only active, named, slugged, with at least one linked public event.
-assert.ok(PP.shouldIndex(p, 1)); assert.ok(!PP.shouldIndex(p, 0)); assert.ok(!PP.shouldIndex({ ...p, status: "draft" }, 3)); assert.ok(!PP.shouldIndex(null, 3));
+assert.ok(PP.shouldIndex(p, 1)); assert.ok(!PP.shouldIndex(p, 0)); assert.ok(!PP.shouldIndex({ ...p, slug: "" }, 3)); assert.ok(!PP.shouldIndex(null, 3));
 
 // JSON-LD: Organization, only verified public data.
 const ld = PP.jsonLd(p, contacts, "https://313.events/promoters/fleatroit");
