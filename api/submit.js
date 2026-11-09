@@ -234,7 +234,10 @@ module.exports = async (req, res) => {
   if (!isValidEmail(contactEmail)) errors.push("a valid contactEmail is required");
   if (!isSafeHttpUrl(ticketUrl)) errors.push("ticketUrl must be a valid http(s) link");
   if (!isSafeHttpUrl(eventUrl)) errors.push("eventUrl must be a valid http(s) link");
-  if (!checkImageUrl(imageUrl).ok) errors.push("imageUrl must be a public https link to an image");
+  const imageCheck = checkImageUrl(imageUrl);
+  if (!imageCheck.ok) errors.push("imageUrl must be a public https link to an image");
+  // Store the parsed, normalized URL that was validated, never the raw submitted string.
+  const imageUrlSafe = imageCheck.ok && !imageCheck.empty ? imageCheck.url : null;
 
   if (errors.length) {
     res.status(400).json({ error: "Invalid submission: " + errors.join("; ") });
@@ -280,9 +283,9 @@ module.exports = async (req, res) => {
     // A known organizer's own page (api/_lib/organizer-links.js) fills a blank
     // event_url only; it never replaces a link and never touches ticket_url.
     event_url: withOrganizerEventUrl({ title, submitter_org_name: orgName, event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null }),
-    image_url: imageUrl || null,
+    image_url: imageUrlSafe,
     // Provenance for the reviewer: a pasted link is hotlinked, not hosted by this site.
-    ...(imageSourceNote(imageUrl, SUPABASE_URL) ? { internal_note: imageSourceNote(imageUrl, SUPABASE_URL) } : {}),
+    ...(imageSourceNote(imageUrlSafe, SUPABASE_URL) ? { internal_note: imageSourceNote(imageUrlSafe, SUPABASE_URL) } : {}),
     source: "Venue Submission",
     status: "pending_review",
     submitter_org_name: orgName.trim(),

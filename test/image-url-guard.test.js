@@ -24,8 +24,17 @@ bad("https://2130706433/a.jpg", "ip-literal");
 bad("https://printer.local/a.jpg", "private-host");
 bad("https://db.internal/a.jpg", "private-host");
 bad("https://example.com/" + "a".repeat(2100), "too-long");
-bad("not a url", "unparseable");
+bad("not a url", "unsafe-char");
+bad("notaurl", "unparseable");
 bad(12345, "not-a-string");
+bad("https://example.com\\@evil/x", "unsafe-char");
+bad("https://example.com\\evil.test/x", "unsafe-char");
+bad("https://example.com/a b.jpg", "unsafe-char");
+bad("https://example.com/a\u0000.jpg", "unsafe-char");
+bad("https://example.com/a\n.jpg", "unsafe-char");
+ok("  https://cdn.example.com/a.jpg  ");
+assert.strictEqual(checkImageUrl("  https://CDN.Example.com/a.jpg ").url, "https://cdn.example.com/a.jpg", "stores the normalized href");
+assert.strictEqual(checkImageUrl("").url, undefined);
 
 assert.strictEqual(imageSourceNote("https://stub.supabase.co/storage/v1/object/public/event-flyers/u/x/1.jpg", "https://stub.supabase.co"), null, "own bucket needs no note");
 assert.strictEqual(imageSourceNote("https://CDN.Example.com/a.jpg", "https://stub.supabase.co"), "IMAGE_SOURCE | submitter-link | host=cdn.example.com | not self-hosted");
