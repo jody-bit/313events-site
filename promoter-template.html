@@ -65,39 +65,8 @@
   #notFoundState a:hover{text-decoration:underline;}
 
   #promoterContent{display:none;}
-  .venue-tag{
-    display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
-    padding:5px 12px;background:var(--panel);color:var(--ink-soft);margin-bottom:12px;
-  }
-  h1.venue-title{
-    font-family:var(--font-display);font-stretch:62%;font-weight:900;
-    font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
-    text-transform:uppercase;margin:0 0 14px;
-  }
   .venue-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
-  .venue-address{display:block;font-size:13px;color:var(--accent);text-decoration:none;margin:10px 0;}
-  .venue-address:hover{text-decoration:underline;}
-  .venue-links{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line);}
-  .venue-website{display:block;font-size:13.5px;color:var(--ink);text-decoration:none;margin-bottom:8px;}
-  .venue-website:hover{color:var(--accent);}
-  .venue-socials{display:flex;flex-wrap:wrap;gap:14px;}
-  .venue-social-link{font-size:13.5px;color:var(--ink);text-decoration:none;}
-  .venue-social-link:hover{color:var(--accent);}
 
-  .venue-upcoming-heading{
-    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:14px;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:28px 0 12px;
-  }
-  .venue-empty{font-size:14px;color:var(--ink-dim);padding:12px 0;}
-  .venue-event-row{
-    display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);
-  }
-  .venue-event-row:last-child{border-bottom:none;}
-  .venue-event-body{min-width:0;flex:1;}
-  .venue-event-date{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;}
-  .venue-event-title{display:block;font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;margin-top:2px;}
-  .venue-event-title:hover{color:var(--accent);}
-  .venue-event-time{font-size:13px;color:var(--ink-dim);}
 
   h1.promoter-title{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 14px;overflow-wrap:anywhere;}
   .promoter-hero{display:block;width:100%;height:auto;max-height:340px;object-fit:cover;margin:0 0 14px;border:1px solid var(--line);}
@@ -230,7 +199,7 @@ function renderProfile(p, contacts, media, groups, linked){
   if (PP.shouldIndex(p, linked)) { /* indexing is switched on at release, not here: the static noindex stays until then */ }
   const ld = document.createElement('script');
   ld.type = 'application/ld+json';
-  ld.textContent = JSON.stringify(PP.jsonLd(p, contacts, window.location.href));
+  ld.textContent = JSON.stringify(PP.jsonLd(p, contacts, window.location.href, media));
   document.head.appendChild(ld);
   STATE.groups = groups;
   wireTabs();
@@ -256,8 +225,10 @@ async function init(){
     ]);
     const roles = PP.rolesByEvent(linkRows, p.id);
     const ids = Object.keys(roles);
-    let events = [];
-    if (ids.length) events = await get(`events_public?id=in.(${ids.map(encodeURIComponent).join(',')})&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates,venue_name&order=start_date.asc,id.asc&limit=500`);
+    const events = [];
+    for (const group of PP.chunk(ids, 40)) {
+      events.push(...await get(`events_public?id=in.(${group.map(encodeURIComponent).join(',')})&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates,venue_name&order=start_date.asc,id.asc`));
+    }
     STATE.roles = roles;
     renderProfile(p, PP.publicContacts(contactRows), PP.publicMedia(mediaRows), PP.splitEvents(events, detroitTodayISO(), EventDates), ids.length);
   } catch (err) { notFound(); }

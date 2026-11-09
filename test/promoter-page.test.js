@@ -55,7 +55,13 @@ assert.deepStrictEqual(PP.groupByVenue(s.upcoming).map((g) => g.venue), ["Venue 
 assert.ok(PP.shouldIndex(p, 1)); assert.ok(!PP.shouldIndex(p, 0)); assert.ok(!PP.shouldIndex({ ...p, slug: "" }, 3)); assert.ok(!PP.shouldIndex(null, 3));
 
 // JSON-LD: Organization, only verified public data.
-const ld = PP.jsonLd(p, contacts, "https://313.events/promoters/fleatroit");
+const media = PP.publicMedia([{ image_url: "https://x.example/a.jpg", credit: "Photo: A", alt_text: "Crowd" }]);
+const ld = PP.jsonLd({ ...p, heroImage: "https://x.example/bare-hero.jpg" }, contacts, "https://313.events/promoters/fleatroit", media);
+assert.strictEqual(ld.image, "https://x.example/a.jpg", "JSON-LD image comes from the credited, alt-texted media only");
+assert.strictEqual(PP.jsonLd({ ...p, heroImage: "https://x.example/bare-hero.jpg" }, contacts, "u", []).image, undefined, "a bare hero_image_url never reaches JSON-LD");
+assert.strictEqual(PP.publicContacts([{ kind: "email", value: "a@b.example?cc=x@y.example", visibility: "public", verified_at: "2026-11-01" }]).length, 0, "no query string in an email");
+assert.deepStrictEqual(PP.chunk([1,2,3,4,5], 2), [[1,2],[3,4],[5]]);
+assert.strictEqual(PP.COLUMNS.media.view, "organizer_media_public");
 assert.strictEqual(ld["@type"], "Organization"); assert.strictEqual(ld.email, "hi@fleatroit.example");
 assert.ok(!JSON.stringify(ld).includes("private@x.example"));
 

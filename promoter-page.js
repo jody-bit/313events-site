@@ -19,7 +19,7 @@
       organizerId: "organizer_id", kind: "kind", value: "value", verifiedAt: "verified_at", visibility: "visibility"
     },
     media: {
-      view: "organizer_media",
+      view: "organizer_media_public",
       organizerId: "organizer_id", url: "image_url", credit: "credit", alt: "alt_text"
     },
     link: {
@@ -73,7 +73,7 @@
       if (!r || r[c.visibility] !== "public" || !r[c.verifiedAt]) return;
       var kind = str(r[c.kind]), value = str(r[c.value]);
       if (!value) return;
-      if (kind === "email" && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value)) out.push({ kind: kind, value: value, href: "mailto:" + value });
+      if (kind === "email" && /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)) out.push({ kind: kind, value: value, href: "mailto:" + value });
       else if (kind === "phone" && /^[+\d][\d\s().-]{6,}$/.test(value)) out.push({ kind: kind, value: value, href: "tel:" + value.replace(/[^\d+]/g, "") });
       else if (kind === "website" && safeUrl(value)) out.push({ kind: kind, value: value.replace(/^https?:\/\//, "").replace(/\/$/, ""), href: safeUrl(value) });
     });
@@ -139,15 +139,23 @@
     return order;
   }
 
+  // Short query strings: ids in groups of n.
+  function chunk(list, n) {
+    var out = [];
+    for (var i = 0; i < list.length; i += n) out.push(list.slice(i, i + n));
+    return out;
+  }
+
   // Indexable only when the profile is active, named, slugged and has at least one linked public event.
   function shouldIndex(profile, linkedEventCount) {
     return !!(profile && profile.status === "active" && profile.name && profile.slug && linkedEventCount > 0);
   }
 
-  function jsonLd(profile, contacts, pageUrl) {
+  function jsonLd(profile, contacts, pageUrl, media) {
     var ld = { "@context": "https://schema.org", "@type": "Organization", "name": profile.name, "url": pageUrl };
     if (profile.bio) ld.description = profile.bio;
-    if (profile.heroImage) ld.image = profile.heroImage;
+    // Image only from the credit + alt gated media list, never from a bare hero_image_url.
+    if (media && media[0]) ld.image = media[0].url;
     var same = profile.socialLinks.map(function (s) { return s.url; });
     contacts.forEach(function (c) { if (c.kind === "website") same.push(c.href); });
     if (same.length) ld.sameAs = same;
@@ -159,7 +167,7 @@
   var api = Object.freeze({
     COLUMNS: COLUMNS, ROLES: ROLES, safeUrl: safeUrl, mapOrganizer: mapOrganizer, publicContacts: publicContacts,
     publicMedia: publicMedia, rolesByEvent: rolesByEvent, splitEvents: splitEvents, groupByMonth: groupByMonth,
-    groupByVenue: groupByVenue, shouldIndex: shouldIndex, jsonLd: jsonLd
+    groupByVenue: groupByVenue, chunk: chunk, shouldIndex: shouldIndex, jsonLd: jsonLd
   });
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
