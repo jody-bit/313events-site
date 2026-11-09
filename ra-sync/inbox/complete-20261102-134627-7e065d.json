@@ -1,0 +1,31 @@
+{
+  "runToken": "20261102-134627-7e065d",
+  "action": "complete",
+  "runId": "f402fe54-d6ed-4e50-8b21-c11e31ba799d",
+  "events": [
+    {
+      "id": "ra-2574314",
+      "title": "Clippers at Warriors: Complete Fan Guide & Lineups",
+      "description": null,
+      "startDate": "2026-11-07T23:00:00.000",
+      "endDate": "2026-11-08T06:00:00.000",
+      "venueName": "USA Hockey Arena",
+      "address": "14900 Beck Road Plymouth, MI 48170",
+      "image": "https://images.ra.co/e12711e827f4c0c6d1c263521f0868bf12999251.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2574397",
+      "title": "Liqud Dancehall presents Joe Nice and Antithesis",
+      "description": "Liquid Dancehall is proud to announce\n\nJoe Nice\n\nAntithesis\n\nwsg\n\n58DUST\n\nFeaturing \n\nThe Liquid Dancehall Sound System\n\nAs always, a special menu from Cain You Taste It.\n\nRoom transformation by Andrew Dall'Olmo\n\n21+\n\n$25",
+      "startDate": "2026-11-21T20:00:00.000",
+      "endDate": "2026-11-22T02:00:00.000",
+      "venueName": "TBA - 215 West",
+      "address": null,
+      "image": "https://images.ra.co/4736ed5315f9718ec6cee7012b2a24ad1bd195a8.jpg",
+      "offersPrice": 16.8,
+      "url": null
+    }
+  ]
+}

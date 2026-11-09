@@ -74,9 +74,8 @@
 //           aliases, source-gated Phase 2 cities. An event whose city still
 //           cannot be placed is excluded by any radius filter, never
 //           guessed, and reported by facets(…, 'placement').
-//   SEARCH  The shared matcher (search-match.js): title, venue, city and
-//           verified aliases, category label, neighborhood, source;
-//           word by word, punctuation and &/and normalised.
+//   SEARCH  One haystack: title, venue, city, category label,
+//           neighborhood, source, note.
 //   BLOCKED A small always-on suppression list, applied inside matches()
 //           so no surface can forget it.
 //
@@ -122,12 +121,6 @@
 //   (`city` is undefined for Detroit, as the pages already store it.)
 (function () {
   "use strict";
-  // The shared search matcher: the page loads <script src="/search-match.js"> before this file (a Node test requires it first).
-  function sharedSearch() {
-    var m = globalThis.SearchMatch;
-    if (!m) throw new Error("discovery.js needs search-match.js loaded first");
-    return m;
-  }
 
   var GLOBAL = globalThis;
 
@@ -415,7 +408,11 @@
   function endedByClock(timeStr, minutes) {
     var range = parseTimeRange(timeStr);
     if (!range || !range.end || range.end.h < range.start.h) return false;
-    return range.end.h * 60 + range.end.m < minutes;
+    var endMin = range.end.h * 60 + range.end.m;
+    // An end that is not after the start ("12:00 AM - 12:00 AM", "8:00 PM - 8:00 PM") is a zero-length
+    // placeholder, not a known end: the event is not over (P1 discovery T3).
+    if (endMin <= range.start.h * 60 + range.start.m) return false;
+    return endMin < minutes;
   }
 
   function haversineMiles(lat1, lng1, lat2, lng2) {
@@ -883,11 +880,12 @@
       return true;
     }
 
-    // Search is the shared matcher (search-match.js): one implementation for homepage, calendar and map.
     function matchSearch(e, q) {
       if (!q) return true;
       var node = NODES.get(e.cat);
-      return sharedSearch().matches(e, q, { categoryLabel: node ? node.label : "" });
+      var hay = [e.title, e.venue, e.city, node ? node.label : "", e.neighborhood, e.source]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.indexOf(q.toLowerCase()) !== -1;
     }
 
     function matchWhere(e, where, skip, c) {
@@ -952,6 +950,25 @@
     }
 
     function matches(event, state, ctx) { return test(event, normalize(state), resolveCtx(ctx)); }
+
+    // Schedule-unverified multiday ranges (no date_semantics) are not attendable on any specific
+    // date, so matches() never returns them for a date window. A visitor on Today / Tomorrow still
+    // cannot be left blind to them (P1 discovery incident, 2026-11-07: Planet 9 Film Fest, The World of
+    // Anna Sui). unconfirmedOn() says whether such an event's STORED range covers the one day Today or
+    // Tomorrow is showing, and passes the same what / where / search filters. It is a separate list:
+    // callers show it as "Dates not confirmed", never count it with matches()/count(), never offer a
+    // calendar export. Other windows (tonight, weekend, picked dates) return false: nothing is inferred.
+    function unconfirmedOn(event, state, ctx) {
+      var s = normalize(state), c = resolveCtx(ctx);
+      if (!event || isBlocked(event)) return false;
+      var w = windowOf(s, c);
+      if (w.mode !== "today" && w.mode !== "tomorrow") return false;
+      var ED = (typeof EventDates !== "undefined") ? EventDates : null;
+      if (!ED || ED.availabilityOn(event, w.from) !== "unverified") return false;
+      var end = (typeof event.endDate === "string" && event.endDate > event.date) ? event.endDate : event.date;
+      if (w.mode === "today" && end === c.today && endedByClock(event.time, c.minutes)) return false;
+      return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined);
+    }
 
     // Distinct events — never event-days. An id seen twice (a surface
     // passing the same event once per day of its run) is counted once.
@@ -1092,6 +1109,7 @@
       href: href,
       // semantics
       matches: matches,
+      unconfirmedOn: unconfirmedOn,
       window: windowFor,
       count: count,
       facets: facets,

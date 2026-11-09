@@ -6,7 +6,6 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const read = (p) => fs.readFileSync(path.join(__dirname, "..", p), "utf8");
-require("../search-match.js");
 const { Discovery } = require("../discovery.js");
 
 const ev = (id, city) => ({ id, title: "T" + id, venue: "V", city, cat: "music", date: "2026-11-15" });
