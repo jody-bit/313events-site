@@ -490,7 +490,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 ### TASK-009 — Engineering foundation: minimum sufficient
 
 - **Type:** TASK (foundation) · **Status:** REVIEW (Product Owner acceptance pending) · **Priority:** Critical
-- **Related:** `ENGINEERING_READINESS_REVIEW.md`; TASK-007, TASK-008
+- **Related:** `ENGINEERING_READINESS_REVIEW.md` (now a public summary; its section and debt-register identifiers refer to the private, owner-held review); TASK-007, TASK-008
 - **Delivered:** environment/release foundation (TASK-007); SZ-01 access boundary (TASK-008); BUG-008 category contract; internal-note containment; clock-independent CI (#9, `97f5734`, plus a +120-day CI pass); safe `events.status` default `pending_review` (#10, `5030bc3`, applied to production 2026-10-08); publication gate first slice (#11, `75f56fb`: Dossin, new rows only; 24 connectors remain on the ratchet list in `test/publication-gate-adoption.test.js`); duplicate durability (#12, `593b674`): RA identity match needs compatible title + same date + same stated venue, and Eventbrite/GottaGacha no longer overwrite an existing row's `internal_note` (where `DUP_MERGED_INTO`/`DUP_DISTINCT` live).
 - **Verified (2026-10-08 21:00 UTC Dossin run):** `success`, `publication_gate` summary recorded, the 8 existing Dossin rows byte-identical to the pre-merge fingerprint, all connector runs since the deploy succeeded, no `GATE v` notes outside Dossin, 32 merged duplicates still `rejected` with their 36 source identities intact.
 - **Preserved CAN-WAIT backlog (not foundation blockers):**
@@ -608,7 +608,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### BUG-007 — Five connectors' database writes rejected in full on every run (rows of differing shape)
 
-- **Type:** BUG · **Status:** REVIEW (fix built and tested 2026-10-03 on branch `wp07-uniform-batches`; independently audited 2026-10-04 — approved with one required change, the Ticketmaster description safeguard below, now added; not merged, not deployed; no production ingestion run; awaiting Product Owner final approval) · **Priority:** Critical
+- **Type:** BUG · **Status:** REVIEW (fix built and tested 2026-10-03 on branch `wp07-uniform-batches`; independently audited 2026-10-04 — approved with one required change, the Ticketmaster description safeguard below, now added; deployed as `7bdce19` at 01:24 UTC on 2026-10-04, see the schedule-hold and recovery notes below; awaiting Product Owner final approval) · **Priority:** Critical
 - **Epic:** EPIC-001 (WP 0.7, safe-batching half; WP 0.11) · **Recommended Model:** Opus 5
 - **Dependencies:** None to merge. `BUG-008` and `BUG-009` are separate failures this does not fix.
 - **Discovered:** 2026-10-03, tracing why SoundHenge 2026 (Popps Packing, that afternoon) was not on the site.
@@ -876,7 +876,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 ### DEBT-012 — Supabase advisor findings (production, 2026-10-06)
 
 - **Type:** DEBT (security and performance) · **Status:** BACKLOG (recorded 2026-10-06 by Product Owner request; **no fix drafted or applied**; SZ-01 itself is already delivered, see `TASK-008`) · **Priority:** see each item
-- **Epic:** EPIC-001 (Sprint Zero, `ENGINEERING_READINESS_REVIEW.md` §18; debt register TD-38 to TD-40)
+- **Epic:** EPIC-001 (Sprint Zero, `ENGINEERING_READINESS_REVIEW.md` §18; debt register TD-38 to TD-40; both refer to the private, owner-held review, the public file being a summary)
 - **Source:** Supabase security and performance advisors run read-only against production on 2026-10-06. Already-recorded items are referenced, not duplicated: owner-rights views and RLS bypass (G-6, §18 SZ-01), redundant `events` indexes and the missing `end_date` index (§14.2, TD-31).
 - **Findings and disposition:**
   1. **`events_public` is SECURITY DEFINER** (ERROR), a **follow-up security-hardening finding**. The SZ-01 public/private access boundary is already deployed and production verified (`TASK-008`). Any change must preserve that established contract and be evaluated together with the current grants, RLS behavior, field exposure, submission permissions and anonymous-access boundary. Do not change the view property in isolation merely to clear the advisor. Timing note: this advisor run (2026-10-06 17:53 UTC) predates the SZ-01 migration (applied ~20:32 UTC), and `TASK-008` records `events_public` as `security_invoker` after it, so this finding may already be superseded. It stays **open** until a fresh advisor run on production confirms that.
