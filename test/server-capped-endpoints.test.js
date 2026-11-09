@@ -47,7 +47,12 @@ async function main() {
   assert.strictEqual(venLocs.length, 900);
   const sitemapReads = db.seen.filter((c) => /\/rest\/v1\/(events|venues)\?/.test(c.url));
   assert.ok(sitemapReads.length >= 6, "events (4 pages) and venues (2 pages) were paged at cap 500, got " + sitemapReads.length);
-  console.log("PASS: sitemap reads 1,700 events and 900 venues at a server cap of 500");
+  for (const c of sitemapReads.filter((x) => x.method === "GET")) {
+    assert.ok(/order=[^&]*id\.asc/.test(c.url), "sitemap page read lacks id tiebreak: " + c.url);
+    const lim = c.url.match(/[?&]limit=(\d+)/);
+    assert.ok(lim && /[?&]offset=\d+/.test(c.url) && Number(lim[1]) <= 1000, "sitemap page read must be limit<=1000 with an offset: " + c.url);
+  }
+  console.log("PASS: sitemap reads 1,700 events and 900 venues at a server cap of 500, each page with the id tiebreak and limit<=1000 + offset");
 
   db = install({ events: events.slice() }, { cap: 500 });
   res = makeRes();
