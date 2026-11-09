@@ -3572,6 +3572,7 @@
     font-family:var(--font-data);font-weight:700;font-size:13px;line-height:1;
     color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
+  .hero-proof-free .hps-num{color:#3fbf6a;}
   .hps-label{
     font-family:var(--font-data);font-size:12px;line-height:1.3;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);
@@ -3599,11 +3600,17 @@
   /* Narrow phones: the three figures sit in three columns, number over
      label, instead of a dotted line that wraps and strands a separator. */
   @media (max-width:460px){
-    .hero-proof-stats{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.45fr);gap:0 12px;}
+    .hero-proof-stats{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,.95fr) minmax(0,.6fr) minmax(0,1.3fr);gap:0 8px;}
     .hero-proof-stat{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0;}
     .hero-proof-stat + .hero-proof-stat::before{content:none;}
     .hps-num{font-size:15px;}
     .hps-label{font-size:12px;letter-spacing:.05em;}
+  }
+  /* 320px phones: four figures no longer fit one row (ACTIVE NEIGHBORHOODS
+     clipped at the right edge), so they sit two by two. */
+  @media (max-width:360px){
+    .hero-proof-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;}
+    .hps-label{overflow-wrap:anywhere;}
   }
 
   /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ----
@@ -4133,7 +4140,7 @@
   .evt-meta:empty{display:none;}
   /* The event-type label is the shared .cat-tag from /categories.js (Option A, approved colours); no local rule. */
   .evt-price{font-family:var(--font-data);font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
-  .evt-price.free{color:var(--ink);}
+  .evt-price.free{color:#3fbf6a;}
   .evt-run{white-space:nowrap;}
   .evt-go{grid-area:go;text-align:right;padding-top:1px;}
   .evt-go a{font-family:var(--font-data);font-size:16px;color:var(--accent);text-decoration:none;}
@@ -6464,12 +6471,16 @@ function animateHeroCount(el, from, to){
 }
 
 const NEXT7_STATE = Discovery.change(Discovery.defaults(), {when: 'next7'});
+// STORY-013: the hero's FREE entry counts what the existing free-only filter
+// shows (is_free === true only; unknown never counts as free).
+const FREE_STATE = Discovery.change(Discovery.defaults(), {free: true});
 function heroFigures(){
   const ctx = inventoryCtx();
   return {
     total: orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx),
     today: Discovery.count(EVENTS, TODAY_STATE, ctx),
     next7: Discovery.count(EVENTS, NEXT7_STATE, ctx),
+    free: Discovery.count(EVENTS, FREE_STATE, ctx),
     neighborhoods: computeNeighborhoodCounts().length,
   };
 }
@@ -6493,6 +6504,7 @@ function renderHeroToday(){
       <div class="hero-proof-stats">
         <button type="button" class="hero-proof-stat" onclick="viewEverything('today')"><span class="hps-num" id="heroStatToday">${n(f.today)}</span><span class="hps-label">Today</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewEverything('next7')"><span class="hps-num" id="heroStatNext7">${n(f.next7)}</span><span class="hps-label">Next 7 days</span></button>
+        <button type="button" class="hero-proof-stat hero-proof-free" onclick="viewFree()" title="Show only free events"><span class="hps-num" id="heroStatFree">${n(f.free)}</span><span class="hps-label">Free</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
       </div>
     `;
@@ -6504,6 +6516,7 @@ function renderHeroToday(){
   document.getElementById('heroStatCaption').textContent = 'Current + upcoming events';
   document.getElementById('heroStatToday').textContent = n(f.today);
   document.getElementById('heroStatNext7').textContent = n(f.next7);
+  document.getElementById('heroStatFree').textContent = n(f.free);
   document.getElementById('heroStatNeighborhoods').textContent = n(f.neighborhoods);
   if(f.total !== heroDisplayedCount){
     // Animate from whatever's actually on screen right now, not just the
@@ -6529,7 +6542,9 @@ function renderHeroToday(){
 //   viewEverything('today')  Today
 //   viewEverything('next7')  Next 7 Days — today plus six days
 function viewEverything(when){
-  setState(when ? {reset: true, when: when} : {reset: true});
+  const onlyFree = when === 'free';
+  if(onlyFree) when = undefined;
+  setState(when ? {reset: true, when: when} : (onlyFree ? {reset: true, free: true} : {reset: true}));
   document.getElementById('search').value = '';
   clearLocation({skipRender: true});
   // A When shortcut blanks the date inputs; the default view shows today as
@@ -6540,6 +6555,9 @@ function viewEverything(when){
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
+
+// Hero "Free" entry: the existing free-only filter, one tap.
+function viewFree(){ viewEverything('free'); }
 
 // "Active neighborhoods" in the hero leads to the neighborhoods themselves:
 // the Explore Neighborhoods rail, on this page.
