@@ -322,7 +322,7 @@ function shapeForDb(e, venueMap) {
     // Key omitted (not sent as null) when Ticketmaster has no time: a new row stores NULL, and the
     // upsert's merge leaves any stored time on an existing row untouched.
     ...(formatTime(start) ? { time_display: formatTime(start) } : {}),
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     price_from: priceRange ? priceRange.min : null,
     ticket_url: affiliateTicketUrl(e.url),
     image_url: pickImage(e.images),

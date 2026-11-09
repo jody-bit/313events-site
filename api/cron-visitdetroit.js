@@ -352,7 +352,7 @@ const visitDetroitHandler = async (req, res) => {
         // start time on genuinely all-day listings instead of treating
         // every null time_display as a parsing gap — see migration_028.
         is_all_day: !!h.isAllDay,
-        is_free: false, // no price signal in this index — see header comment, never guessed true
+        // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
         price_from: null,
         ticket_url: canonicalVisitDetroitUrl(h.uri), // stores /events/<slug>/: the index's bare /<slug>/ path 404s
         image_url: h.primaryImageUrl || null,

@@ -211,7 +211,7 @@ module.exports = async (req, res) => {
     venue_id: venueId,
     start_date: e.start_date,
     time_display: e.time_display,
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     source: "Cinema Detroit",
     event_url: e.event_url,
   }));

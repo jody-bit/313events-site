@@ -345,7 +345,7 @@ function parseEvent(e) {
     time_display: formatTimeDisplay(e.eventDate, e.startTime, e.endTime),
     is_recurring: !!e.recurrenceType,
     is_all_day: false, // see header note -- every demonstrated event is timed
-    is_free: false, // schema default; never inferred from absence of price (explicit instruction)
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     price_from: null, // no structured price field demonstrated
     // ticket_url deliberately omitted (not null) -- see header note.
     event_url: eventSourceUrl(e.id, e.eventDate), // occurrence page, else the official events page -- see eventSourceUrl()
