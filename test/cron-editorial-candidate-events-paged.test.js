@@ -11,6 +11,7 @@ delete process.env.CRON_SECRET;
 
 const EMPTY_RSS = `<?xml version="1.0"?><rss version="2.0"><channel><title>t</title></channel></rss>`;
 const all = Array.from({ length: 1700 }, (_, i) => ({ id: "evt-" + String(i).padStart(5, "0"), title: "E" + i, start_date: "2099-01-01" }));
+all[1650].title = "Unique Zebra Gala"; // a tail row: past row 1,000, so a cap-1000 read would miss it
 const makeRes = () => ({ _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } });
 
 async function run(cap, failOnCall, opts) {
@@ -22,7 +23,7 @@ async function run(cap, failOnCall, opts) {
     url = String(url);
     const method = opts.method || "GET";
     if (url.startsWith("https://example.supabase.co/")) {
-      if (method !== "GET") { writes.push({ url, method }); return { ok: true, status: 201, json: async () => [], text: async () => "[]" }; }
+      if (method !== "GET") { writes.push({ url, method, body: String(opts.body || "") }); return { ok: true, status: 201, json: async () => [], text: async () => "[]" }; }
       if (/\/rest\/v1\/editorial_articles\?matched_event_id=is\.null/.test(url)) return { ok: true, status: 200, json: async () => unmatched, text: async () => JSON.stringify(unmatched) };
       if (/\/rest\/v1\/events\?/.test(url)) {
         if (onlyRetry && !(/status=in\.\(approved,pending_review\)/.test(url) && /order=start_date\.asc,id\.asc/.test(url))) return { ok: true, status: 200, json: async () => [], text: async () => "[]" };
@@ -59,7 +60,8 @@ async function run(cap, failOnCall, opts) {
 
   // 2. a failing later page: an error response, no partial candidate list used.
   {
-    const { res } = await run(500, 2);
+    const { res, writes } = await run(500, 2);
+    assert.deepStrictEqual(writes, [], "no write of any kind after an incomplete candidate read: " + JSON.stringify(writes));
     assert.strictEqual(res._status, 200);
     assert.ok(/Failed to load candidate events: candidate events read incomplete/.test(res._body.error || ""), JSON.stringify(res._body).slice(0, 300));
     assert.strictEqual(res._body.upserted, 0);
@@ -80,7 +82,15 @@ async function run(cap, failOnCall, opts) {
     assert.ok(rr && /Failed to load candidate events: candidate events read incomplete/.test(rr.error || ""), "retry pass reports the incomplete read: " + JSON.stringify(rr));
     assert.strictEqual(rr.checked, 1);
     assert.strictEqual(rr.matched, 0);
-    assert.ok(!bad.writes.some((w) => /editorial_articles|editorial_article_events/.test(w.url)), "no article/join write after an incomplete read: " + JSON.stringify(bad.writes));
+    assert.deepStrictEqual(bad.writes, [], "no PATCH or POST of any kind after an incomplete read: " + JSON.stringify(bad.writes));
+
+    // (b) tail rows are used: the article matches an event past row 1,000, so a cap-1,000 read would have missed it. The write goes to the fake only.
+    const tail = { id: "art-2", title: "Don't miss the Unique Zebra Gala this weekend", excerpt: "", url: "https://news.example/a2", published_at: "2099-01-01T00:00:00Z" };
+    const hit = await run(500, 0, { unmatched: [tail], onlyRetry: true });
+    const hr = hit.res._body.retroactiveRematch;
+    assert.strictEqual(hr.matched, 1, "the retry pass matches an event past row 1,000: " + JSON.stringify(hr));
+    const patch = hit.writes.find((w) => w.method === "PATCH" && /editorial_articles\?id=eq\.art-2/.test(w.url));
+    assert.ok(patch && /evt-01650/.test(patch.body || ""), "the match write names the tail event: " + JSON.stringify(hit.writes));
   }
   console.log("PASS: the retry pass pages >1,000 candidates and fails closed (no write) on a later-page failure");
 })().catch((e) => { console.error(e); process.exit(1); });
