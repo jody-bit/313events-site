@@ -106,7 +106,7 @@ function recorder(matchedCounts) {
     for (const c of calls) {
       assert.strictEqual(c.method, "PATCH");
       const q = decodeURIComponent(c.url);
-      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.2026-10-19,end_date.gte.2026-10-19),or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)))"), "BOTH fields blank, not past, and not owner-locked: " + q);
+      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.2026-10-19,end_date.gte.2026-10-19),or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)),or(source.is.null,source.not.ilike.manual))"), "BOTH fields blank, not past, and not owner-locked: " + q);
       assert.ok(q.includes("status=eq.approved"), "approved rows only: " + q);
       assert.deepStrictEqual(Object.keys(c.body), ["event_url"], "the payload is event_url alone; ticket_url is never written");
       assert.ok(!/ticket_url["']?\s*:/.test(JSON.stringify(c.body)));
@@ -145,9 +145,11 @@ function recorder(matchedCounts) {
   // 4b. owner locks: the predicate the request sends also leaves out OWNER-CORRECTION and EDITORIAL-HOLD rows, and keeps a NULL note in reach
   {
     const blank = (v) => v === null || v === undefined || v === "";
-    // JS mirror of: or(internal_note.is.null, and(not.ilike.*OWNER-CORRECTION*, not.ilike.*EDITORIAL_HOLD*)); `_` matches any one character.
+    // JS mirror of: or(internal_note.is.null, and(not.ilike.*OWNER-CORRECTION*, not.ilike.*EDITORIAL_HOLD*)) AND or(source.is.null, source.not.ilike.manual); `_` matches any one character,
+    // and `manual` without a wildcard is a case-insensitive equality.
+    const notManual = (s) => s === null || s === undefined || String(s).toLowerCase() !== "manual";
     const unlocked = (n) => n === null || n === undefined || !/OWNER-CORRECTION|EDITORIAL.HOLD/i.test(n); // both terms are ilike (case-insensitive), like isOwnerSuppliedRow
-    const matches = (r) => r.status === "approved" && blank(r.ticket_url) && blank(r.event_url) && (r.start_date || "") >= "2026-10-19" && unlocked(r.internal_note);
+    const matches = (r) => r.status === "approved" && blank(r.ticket_url) && blank(r.event_url) && (r.start_date || "") >= "2026-10-19" && unlocked(r.internal_note) && notManual(r.source);
     const live = { status: "approved", start_date: "2026-10-30", ticket_url: null, event_url: null };
     const cases = [
       [{ ...live }, true], [{ ...live, internal_note: null }, true], [{ ...live, internal_note: "" }, true], [{ ...live, internal_note: "RA_PROVENANCE status=unresolved" }, true],
@@ -156,6 +158,10 @@ function recorder(matchedCounts) {
       [{ ...live, internal_note: "owner-correction 2026-11-07T01:00Z e-1 fields=event_url | {}" }, false],
       [{ ...live, internal_note: "EDITORIAL-HOLD keep blank" }, false], [{ ...live, internal_note: "editorial_hold" }, false], [{ ...live, internal_note: "EDITORIAL HOLD" }, false],
     ];
+    cases.push(
+      [{ ...live, source: "Manual" }, false], [{ ...live, source: "manual" }, false], [{ ...live, source: "MANUAL" }, false],
+      [{ ...live, source: null }, true], [{ ...live, source: undefined }, true], [{ ...live, source: "City of Livonia" }, true], [{ ...live, source: "Manual Labor Fest" }, true],
+    );
     for (const [r, want] of cases) assert.strictEqual(matches(r), want, JSON.stringify(r));
     console.log("PASS: owner-corrected and editorial-hold rows are outside the PATCH's reach; a NULL or ordinary note is still in reach");
   }

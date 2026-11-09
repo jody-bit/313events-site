@@ -86,7 +86,10 @@ function todayDetroit(now) {
 
 // Blank-only back-fill for the sources the written `rows` belong to. One PATCH per source. Returns { patched, bySource }
 // where patched is the number of rows the database actually changed and bySource maps the source label to that number.
-const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*))";
+// Parity with scripts/owner-supplied-row.js isOwnerSuppliedRow: a Manual-source row is owner-supplied too. `source.not.ilike.manual` has no wildcard, so it is a
+// case-insensitive equality (Manual / manual / MANUAL); a NULL source passes through the is.null alternative. (isOwnerSuppliedRow also trims the source; an
+// exact-equality filter cannot, so a source with stray spaces around "manual" is the one gap left.)
+const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)),or(source.is.null,source.not.ilike.manual)";
 
 async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, fetchImpl, now) {
   const doFetch = fetchImpl || fetch;
