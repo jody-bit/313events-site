@@ -22,6 +22,8 @@
 "use strict";
 
 const { normalizeLinkField } = require("./link-field");
+const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "..", "scripts", "owner-supplied-row")); // the shared owner-supplied rule (trims the source)
 
 // Single-venue connectors: events.source -> the connector's own SOURCE_URL / events page.
 const SOURCE_CALENDAR_PAGES = Object.freeze({
@@ -88,7 +90,7 @@ function todayDetroit(now) {
 // where patched is the number of rows the database actually changed and bySource maps the source label to that number.
 // Parity with scripts/owner-supplied-row.js isOwnerSuppliedRow: a Manual-source row is owner-supplied too. `source.not.ilike.manual` has no wildcard, so it is a
 // case-insensitive equality (Manual / manual / MANUAL); a NULL source passes through the is.null alternative. (isOwnerSuppliedRow also trims the source; an
-// exact-equality filter cannot, so a source with stray spaces around "manual" is the one gap left.)
+// exact-equality filter cannot, so the JS re-check below (isOwnerSuppliedRow, the shared rule) covers padded values.)
 const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)),or(source.is.null,source.not.ilike.manual)";
 
 async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, fetchImpl, now) {
@@ -106,12 +108,24 @@ async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, f
     // automation, even to fill a blank. internal_note NULL must pass, so the not.ilike terms sit behind an is.null alternative.
     // Approved rows only; non-past = starts today or later, or has an end date of today or later (a multi-day run in progress).
     const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}),${OWNER_LOCK_FILTER})`;
+    const scope = `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}`;
+    const headers = { "Content-Type": "application/json", apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` };
     try {
+      // Step 1 (read): the candidate rows under the SAME database filter. The filter cannot trim a padded source (" manual "), so step 2 re-checks
+      // each candidate in JS with the shared owner-supplied rule (which does trim) and drops every owner-supplied row before any write.
+      const read = await doFetch(`${scope}&select=id,source,internal_note`, { method: "GET", headers });
+      if (!read || !read.ok) continue;
+      const candidates = await read.json();
+      if (!Array.isArray(candidates)) continue;
+      const ids = candidates.filter((r) => r && r.id !== undefined && r.id !== null && !isOwnerSuppliedRow(r)).map((r) => r.id);
+      if (!ids.length) continue;
+      // Step 3 (write): blank-only as before. The identical database filter is repeated on the write (race-safe: a link or lock set since the read
+      // still wins), narrowed to the ids that passed the JS check. Payload is event_url alone.
       const resp = await doFetch(
-        `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}&select=id`,
+        `${scope}&id=in.(${ids.map((id) => encodeURIComponent(id)).join(",")})&select=id`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json", apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, Prefer: "return=representation" },
+          headers: { ...headers, Prefer: "return=representation" },
           body: JSON.stringify({ event_url: t.url }),
         }
       );

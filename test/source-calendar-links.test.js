@@ -17,16 +17,24 @@ const { upsertEventRows } = require(`${REPO_DIR}/api/_lib/event-upsert.js`);
 const BASE = "https://example.supabase.co";
 const KEY = "service-role-key";
 
-// A recording fake: answers PATCH with the ids the filter "matched" (count given per call order) and records everything.
-function recorder(matchedCounts) {
+// A recording fake. GET (the candidate read) answers the rows configured for that call, by default `matchedCounts[i]` plain rows with ids 1..n;
+// PATCH answers with the ids named in its id=in.(...) list. Everything is recorded in order.
+function recorder(matchedCounts, candidateSets) {
   const calls = [];
-  let i = 0;
+  let g = 0;
   const fetchImpl = async (url, opts) => {
-    calls.push({ url: String(url), method: opts && opts.method, body: opts && opts.body ? JSON.parse(opts.body) : null, headers: opts && opts.headers });
-    const n = matchedCounts ? matchedCounts[i++] : 0;
-    return { ok: true, status: 200, json: async () => Array.from({ length: n || 0 }, (_, k) => ({ id: k + 1 })), text: async () => "" };
+    const method = (opts && opts.method) || "GET";
+    calls.push({ url: String(url), method, body: opts && opts.body ? JSON.parse(opts.body) : null, headers: opts && opts.headers });
+    if (method === "GET") {
+      const set = candidateSets ? candidateSets[g++] : Array.from({ length: (matchedCounts && matchedCounts[g++]) || 0 }, (_, k) => ({ id: k + 1, source: "x", internal_note: null }));
+      return { ok: true, status: 200, json: async () => set || [], text: async () => "" };
+    }
+    const m = /[?&]id=in\.\(([^)]*)\)/.exec(decodeURIComponent(String(url)));
+    const ids = m ? m[1].split(",").filter(Boolean) : [];
+    return { ok: true, status: 200, json: async () => ids.map((id) => ({ id })), text: async () => "" };
   };
-  return { calls, fetchImpl };
+  const patches = () => calls.filter((c) => c.method === "PATCH");
+  return { calls, patches, fetchImpl };
 }
 
 (async () => {
@@ -94,7 +102,7 @@ function recorder(matchedCounts) {
 
   // 3. the write: blank-only filter on BOTH link fields, event_url only, scoped to the source, one PATCH per source
   {
-    const { calls, fetchImpl } = recorder([5, 3]);
+    const { calls: all, patches, fetchImpl } = recorder([5, 3]);
     const rows = [
       { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/calendar" },
       { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/calendar" },
@@ -102,7 +110,10 @@ function recorder(matchedCounts) {
       { source: "Some other connector", ticket_url: "https://x.org/t" },
     ];
     const out = await fillBlankSourceCalendarLinks(BASE, KEY, rows, fetchImpl, new Date("2026-10-19T23:30:00Z"));
+    const calls = patches();
     assert.strictEqual(calls.length, 2, "one PATCH per source, none for a source with no registered page");
+    assert.strictEqual(all.length, 4, "each source: one candidate read, then one write");
+    assert.deepStrictEqual(all.map((c) => c.method), ["GET", "PATCH", "GET", "PATCH"], "read before write");
     for (const c of calls) {
       assert.strictEqual(c.method, "PATCH");
       const q = decodeURIComponent(c.url);
@@ -166,6 +177,37 @@ function recorder(matchedCounts) {
     console.log("PASS: owner-corrected and editorial-hold rows are outside the PATCH's reach; a NULL or ordinary note is still in reach");
   }
 
+  // 4c. JS re-check before the write (the database filter cannot trim a padded source): owner-supplied rows are dropped, the rest are written, blank-only
+  {
+    const row = (id, source, note) => ({ id, source, internal_note: note });
+    const owner = [
+      row(2, " manual ", null), row(3, "\tMANUAL\n", null), row(4, "Manual", null), row(5, "HALO Detroit", "OWNER-CORRECTION 2026-11-07T01:00Z e-1 fields=title | {}"),
+      row(6, "HALO Detroit", "EDITORIAL HOLD keep blank"),
+    ];
+    // mixed batch: only the plain row is written
+    let r = recorder(null, [[row(1, "HALO Detroit", null), ...owner]]);
+    let out = await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], r.fetchImpl, new Date("2026-10-19T23:30:00Z"));
+    assert.strictEqual(r.patches().length, 1);
+    assert.ok(/id=in\.\(1\)(&|$)/.test(decodeURIComponent(r.patches()[0].url)), "only the non-owner-supplied id is written: " + decodeURIComponent(r.patches()[0].url));
+    assert.deepStrictEqual(Object.keys(r.patches()[0].body), ["event_url"]);
+    assert.deepStrictEqual(out, { patched: 1, bySource: { "HALO Detroit": 1 } });
+    // the database filter stays on the write as well (blank-only, not past, owner-lock terms), so the write is never wider than the read
+    const q = decodeURIComponent(r.patches()[0].url);
+    assert.ok(q.includes("or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.)") && q.includes("source.not.ilike.manual") && q.includes("status=eq.approved"), q);
+    // all owner-supplied: no write at all
+    r = recorder(null, [owner]);
+    out = await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], r.fetchImpl, new Date("2026-10-19T23:30:00Z"));
+    assert.strictEqual(r.patches().length, 0, "no PATCH when every candidate is owner-supplied");
+    assert.deepStrictEqual(out, { patched: 0, bySource: {} });
+    // no candidates, a failed read, or a malformed read: no write, no throw
+    r = recorder(null, [[]]);
+    await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], r.fetchImpl);
+    assert.strictEqual(r.patches().length, 0);
+    const badRead = async () => ({ ok: false, status: 500, json: async () => [] });
+    assert.deepStrictEqual(await fillBlankSourceCalendarLinks(BASE, KEY, [{ source: "HALO Detroit" }], badRead), { patched: 0, bySource: {} });
+    console.log("PASS: padded or mixed-case Manual, OWNER-CORRECTION and EDITORIAL-HOLD candidates are dropped in JS before the write; the rest are written blank-only");
+  }
+
   // 5. failure never fails a run; a non-ok response counts nothing
   {
     const boom = async () => { throw new Error("network"); };
@@ -183,6 +225,7 @@ function recorder(matchedCounts) {
     const mk = (status) => async (url, opts) => {
       log.push({ url: String(url), method: opts.method, body: opts.body });
       if (opts.method === "PATCH") return { ok: true, status: 200, json: async () => [{ id: 1 }], text: async () => "" };
+      if ((opts.method === "GET" || !opts.method) && /select=id,source,internal_note/.test(String(url))) return { ok: true, status: 200, json: async () => [{ id: 1, source: "HALO Detroit", internal_note: null }], text: async () => "[]" }; // the back-fill's candidate read
       if (opts.method === "GET" || !opts.method) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; // owner-corrections lookup
       return { ok: status < 300, status, json: async () => ({}), text: async () => "err" };
     };
