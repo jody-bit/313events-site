@@ -874,7 +874,7 @@ function getWeekendDates(){
 // EVENTS set as a whole, not one day/list slice at a time.
 // "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
 function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
-function matchesFilters(e){
+function matchesFilters(e, skipPlace){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
@@ -912,7 +912,11 @@ function matchesFilters(e){
     // now means 75 miles from Detroit's BORDER like the homepage (it was the city centre). A
     // city that cannot be placed is never guessed: it is left out of an active place filter
     // and counted by PlaceEligibility.partition() rather than lost silently.
-    if(!PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).eligible) return false;
+    if(!skipPlace){
+      const at = PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles);
+      // "Show them" lets events with a location we haven't placed through; a placed city outside the radius stays out.
+      if(!at.eligible && !(showUnplaced && at.status === 'unplaced' && isCurrentOrUpcoming(e))) return false;
+    }
   }
   return true;
 }
@@ -1054,6 +1058,60 @@ function clearAllFilters(){
   render();
 }
 
+// Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
+// and "Show them" lets them through. Same wording as the homepage.
+let showUnplaced = false;
+// "Show them" and its count only cover current and upcoming events, the same window the homepage counts
+// (the calendar and map also load the last 8 days, which the notice must not count).
+function isCurrentOrUpcoming(e){
+  const today = getTodayISO();
+  const b = EventDates.bounds(e);
+  if(b.dates && b.dates.length) return b.dates.some(d => d >= today);
+  return (b.end || e.date) >= today;
+}
+function isUnmappedNow(e, lookup){
+  return originLocation && radiusMiles !== null && isCurrentOrUpcoming(e)
+    && PlaceEligibility.withinPlace(e, lookup, originLocation, radiusMiles).status === 'unplaced';
+}
+function unplacedCount(){
+  if(!originLocation || radiusMiles === null) return 0;
+  const seen = new Set();
+  let n = 0;
+  EVENTS.forEach(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return; seen.add(e.id); }
+    if(matchesFilters(e, true) && isUnmappedNow(e, CITY_LOOKUP)) n++;
+  });
+  return n;
+}
+let unplacedPlaceKey = '';
+// A different place or radius starts again with them hidden. Runs at the start of render(), before any filtering.
+function syncUnplacedKey(){
+  const key = (originLocation && radiusMiles !== null) ? originLocation.name + '|' + radiusMiles : '';
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
+function renderUnplacedNote(tray){
+  const m = unplacedCount();
+  if(!m) return;
+  const n = m.toLocaleString('en-US');
+  const note = document.createElement('span');
+  note.className = 'af-label';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'unplacedToggle';
+  btn.className = 'af-clear';
+  btn.setAttribute('aria-expanded', String(showUnplaced));
+  if(showUnplaced){
+    note.textContent = `Includes ${n} ${m === 1 ? 'event' : 'events'} with ${m === 1 ? 'a location' : 'locations'} we haven't mapped yet, so we can't confirm ${m === 1 ? 'it is' : 'they are'} inside this area.`;
+    btn.textContent = 'Hide them';
+  } else {
+    note.textContent = `${n} more ${m === 1 ? 'event has a location' : 'events have locations'} we haven't mapped yet.`;
+    btn.textContent = 'Show them';
+  }
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); const b = document.getElementById('unplacedToggle'); if(b) b.focus(); };
+  tray.appendChild(note);
+  tray.appendChild(btn);
+}
+
 function renderActiveFilters(){
   updateCatSummary();
   const tray = document.getElementById('activeFilters');
@@ -1125,6 +1183,7 @@ function renderActiveFilters(){
   clearAll.textContent = 'Clear all';
   clearAll.onclick = ()=>{ clearAllFilters(); };
   tray.appendChild(clearAll);
+  renderUnplacedNote(tray);
 }
 
 function escapeHtml(str) {
@@ -1269,7 +1328,14 @@ function resolvePlace(e){
 // calendar.html's own matchesFilters() calls.
 function buildPlaces(){
   const places = new Map();
-  EVENTS.filter(matchesFilters).forEach(e=>{
+  EVENTS.filter(e=>matchesFilters(e)).forEach(e=>{
+    // "Show them": events whose city is not mapped are listed in their own group and get no pin,
+    // never placed inside the chosen area (even when some other field could draw a point).
+    if(showUnplaced && isUnmappedNow(e, CITY_LOOKUP)){
+      if(!places.has('u:unmapped')) places.set('u:unmapped', {key: 'u:unmapped', label: "Not mapped yet", precise: false, unmapped: true, events: []});
+      places.get('u:unmapped').events.push(e);
+      return;
+    }
     const place = resolvePlace(e);
     if(!place) return;
     if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
@@ -1380,6 +1446,7 @@ function renderMap(places){
   // are the foundation's; popup wording and what selecting a pin does stay here.
   const list = [];
   places.forEach(place=>{
+    if(place.unmapped) return; // no pin: its location is not mapped
     list.push({
       key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
       hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
@@ -1408,7 +1475,7 @@ function renderCityRail(places){
           <span class="cr-cat-dot" style="background:${hex}" aria-hidden="true"></span>
           <span class="cr-count">${place.events.length}</span>
           <span class="cr-name">${escapeHtml(place.label)}</span>
-          ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
+          ${place.unmapped ? '<span class="cr-approx">Not on the map</span>' : (!place.precise ? '<span class="cr-approx">City center</span>' : '')}
           <span class="cr-caret">&#9656;</span>
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(evtRowHtml).join('') : ''}</div>
@@ -1468,7 +1535,9 @@ function selectPlace(key, opts){
 }
 
 function updateMapStat(places){
-  const totalEvents = [...places.values()].reduce((sum,p)=> sum + p.events.length, 0);
+  const unmapped = [...places.values()].find(p => p.unmapped);
+  const totalEvents = [...places.values()].reduce((sum,p)=> p.unmapped ? sum : sum + p.events.length, 0);
+  const placeCount = places.size - (unmapped ? 1 : 0);
   const stat = document.getElementById('mapStat');
   loadDiag.plotted = totalEvents;
   if(loadState === 'loading'){ stat.textContent = 'Loading events…'; return; }
@@ -1476,11 +1545,13 @@ function updateMapStat(places){
     stat.innerHTML = `<span class="load-error" role="alert">Events could not be loaded. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>`;
     return;
   }
-  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`
+  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${placeCount.toLocaleString()}</strong> place${placeCount===1?'':'s'} in the Detroit Orbit`
+    + (unmapped ? ` <span class="stat-unmapped">+ ${unmapped.events.length.toLocaleString()} not on the map (location not mapped yet)</span>` : '')
     + (loadDiag.complete === false ? ` <span class="load-error" role="alert">Some events did not load. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>` : '');
 }
 
 function render(){
+  syncUnplacedKey();
   updateWhenButtons();
   updateRadiusButtons();
   updateMobileTriggers();
