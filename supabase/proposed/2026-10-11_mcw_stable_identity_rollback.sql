@@ -1,0 +1,78 @@
+-- PROPOSED, NOT APPLIED. Do not run without Jody's explicit approval.
+-- ROLLBACK for 2026-10-11_mcw_stable_identity.sql: restore the old external_id, for the 59 upcoming rows
+-- that matched the authoritative calendar exactly on 2026-10-11 (report-only reconciliation:
+-- 59 exact, 0 ambiguous, 0 duplicates, 0 flagged, 0 collisions). Status, notes, links and enrichment
+-- are untouched: ONLY external_id changes. Nothing is cancelled, hidden or inserted.
+-- Run order: (1) preview, (2) apply inside the transaction, check the row count, then COMMIT.
+-- Deploying the connector change that writes the new IDs is a separate step and must happen
+-- before the cron is restored; with the cron held, nothing re-creates rows under the old IDs.
+
+-- Restores the 59 old IDs. Only rows currently holding a new ID are touched.
+-- begin;
+-- with map(new_id, old_id) as (values
+--   ('mcw-uid-c298511a6991-2026-10-11', 'mcw-ical-2026-10-11-e6ed3e8492'),
+--   ('mcw-uid-5c9b001fb341-2026-10-12', 'mcw-ical-2026-10-12-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-10-12', 'mcw-ical-2026-10-12-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-10-14', 'mcw-ical-2026-10-14-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-10-15', 'mcw-ical-2026-10-15-0a026280ba'),
+--   ('mcw-uid-2927a156b306-2026-10-16', 'mcw-ical-2026-10-16-a17d1cb650'),
+--   ('mcw-uid-a99d162ce23b-2026-10-17', 'mcw-ical-2026-10-17-b5a5dd744e'),
+--   ('mcw-uid-805c90e426ff-2026-10-18', 'mcw-ical-2026-10-18-3797f972db'),
+--   ('mcw-uid-e7e18a0ccb51-2026-10-18', 'mcw-ical-2026-10-18-a0a339cceb'),
+--   ('mcw-uid-5c9b001fb341-2026-10-19', 'mcw-ical-2026-10-19-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-10-19', 'mcw-ical-2026-10-19-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-10-21', 'mcw-ical-2026-10-21-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-10-22', 'mcw-ical-2026-10-22-0a026280ba'),
+--   ('mcw-uid-e71e0abd64dc-2026-10-23', 'mcw-ical-2026-10-23-878742bdca'),
+--   ('mcw-uid-d16a7fb2e5d1-2026-10-24', 'mcw-ical-2026-10-24-1b8c3d89ca'),
+--   ('mcw-uid-636b247bc648-2026-10-25', 'mcw-ical-2026-10-25-0397cf5851'),
+--   ('mcw-uid-ff20220692f7-2026-10-25', 'mcw-ical-2026-10-25-6d6e00d3f9'),
+--   ('mcw-uid-5c9b001fb341-2026-10-26', 'mcw-ical-2026-10-26-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-10-26', 'mcw-ical-2026-10-26-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-10-28', 'mcw-ical-2026-10-28-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-10-29', 'mcw-ical-2026-10-29-0a026280ba'),
+--   ('mcw-uid-6adcf7713269-2026-10-30', 'mcw-ical-2026-10-30-e8a9dc419c'),
+--   ('mcw-uid-e69c227886b3-2026-10-31', 'mcw-ical-2026-10-31-4019db3161'),
+--   ('mcw-uid-9a41070ed845-2026-11-01', 'mcw-ical-2026-11-01-53191db56a'),
+--   ('mcw-uid-3e1df080cae5-2026-11-01', 'mcw-ical-2026-11-01-d2321436c8'),
+--   ('mcw-uid-5c9b001fb341-2026-11-02', 'mcw-ical-2026-11-02-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-11-02', 'mcw-ical-2026-11-02-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-11-04', 'mcw-ical-2026-11-04-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-11-05', 'mcw-ical-2026-11-05-0a026280ba'),
+--   ('mcw-uid-71d1e5625c03-2026-11-06', 'mcw-ical-2026-11-06-077f8f0c8a'),
+--   ('mcw-uid-d15042af436a-2026-11-07', 'mcw-ical-2026-11-07-d7206a3039'),
+--   ('mcw-uid-c298511a6991-2026-11-08', 'mcw-ical-2026-11-08-e6ed3e8492'),
+--   ('mcw-uid-5c9b001fb341-2026-11-09', 'mcw-ical-2026-11-09-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-11-09', 'mcw-ical-2026-11-09-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-11-11', 'mcw-ical-2026-11-11-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-11-12', 'mcw-ical-2026-11-12-0a026280ba'),
+--   ('mcw-uid-d98fb9b8ac69-2026-11-13', 'mcw-ical-2026-11-13-fe31eadbf1'),
+--   ('mcw-uid-7947c9e96cfd-2026-11-14', 'mcw-ical-2026-11-14-856cbe8166'),
+--   ('mcw-uid-6f55ba030e65-2026-11-14', 'mcw-ical-2026-11-14-e794287737'),
+--   ('mcw-uid-805c90e426ff-2026-11-15', 'mcw-ical-2026-11-15-3797f972db'),
+--   ('mcw-uid-e7e18a0ccb51-2026-11-15', 'mcw-ical-2026-11-15-a0a339cceb'),
+--   ('mcw-uid-5c9b001fb341-2026-11-16', 'mcw-ical-2026-11-16-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-11-16', 'mcw-ical-2026-11-16-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-11-18', 'mcw-ical-2026-11-18-7bcff15dbb'),
+--   ('mcw-uid-b45835e8d07f-2026-11-19', 'mcw-ical-2026-11-19-0a026280ba'),
+--   ('mcw-uid-2927a156b306-2026-11-20', 'mcw-ical-2026-11-20-a17d1cb650'),
+--   ('mcw-uid-a99d162ce23b-2026-11-21', 'mcw-ical-2026-11-21-b5a5dd744e'),
+--   ('mcw-uid-636b247bc648-2026-11-22', 'mcw-ical-2026-11-22-0397cf5851'),
+--   ('mcw-uid-ff20220692f7-2026-11-22', 'mcw-ical-2026-11-22-6d6e00d3f9'),
+--   ('mcw-uid-5c9b001fb341-2026-11-23', 'mcw-ical-2026-11-23-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-11-23', 'mcw-ical-2026-11-23-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-11-25', 'mcw-ical-2026-11-25-87ec0c739f'),
+--   ('mcw-uid-b45835e8d07f-2026-11-26', 'mcw-ical-2026-11-26-0a026280ba'),
+--   ('mcw-uid-e71e0abd64dc-2026-11-27', 'mcw-ical-2026-11-27-878742bdca'),
+--   ('mcw-uid-5c4cc6869325-2026-11-28', 'mcw-ical-2026-11-28-9f9e49987b'),
+--   ('mcw-uid-89a977422656-2026-11-29', 'mcw-ical-2026-11-29-e2d6719588'),
+--   ('mcw-uid-5c9b001fb341-2026-11-30', 'mcw-ical-2026-11-30-1fb6be5f86'),
+--   ('mcw-uid-5f1f31711802-2026-11-30', 'mcw-ical-2026-11-30-54a4a1652d'),
+--   ('mcw-uid-e20032d24650-2026-12-02', 'mcw-ical-2026-12-02-7bcff15dbb')
+-- )
+-- update events e set external_id = m.old_id
+--   from map m
+--  where e.external_id = m.new_id
+--    and not exists (select 1 from events x where x.external_id = m.old_id);
+-- -- check "UPDATE 59"; otherwise ROLLBACK;
+-- commit;

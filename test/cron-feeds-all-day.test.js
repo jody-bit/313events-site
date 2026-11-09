@@ -19,6 +19,8 @@
 //
 // Run: node test/cron-feeds-all-day.test.js
 "use strict";
+// api/cron-feeds.js skips new rows that have already ended (api/_lib/ingest-eligibility.js), so pin "now" before the fixtures' dates.
+require("./fixtures/freeze-clock.js").freezeClock("2025-01-01T00:00:00Z");
 const assert = require("assert");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
@@ -123,9 +125,10 @@ async function run() {
     assert.strictEqual(rows.length, 1);
     assert.strictEqual(rows[0].is_all_day, true, "a multi-day VALUE=DATE span must also set is_all_day true");
     assert.strictEqual(rows[0].start_date, "2026-10-02");
-    assert.strictEqual(rows[0].end_date, "2026-10-09", "multi-day end_date behavior must be unaffected by the is_all_day fix");
+    // DTEND;VALUE=DATE is exclusive (RFC 5545): a trip 10/2 to 10/9 exclusive ends on 10/8.
+    assert.strictEqual(rows[0].end_date, "2026-10-08", "multi-day end_date is the last day, one before the exclusive DTEND");
   }
-  console.log("PASS: a multi-day VALUE=DATE span sets is_all_day true and keeps its existing end_date behavior");
+  console.log("PASS: a multi-day VALUE=DATE span sets is_all_day true and keeps a multi-day end_date");
 
   // --- 3. Regression guard: an ordinary timed DTSTART (the overwhelming
   //     majority of real events) must still get is_all_day: false and its

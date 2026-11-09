@@ -39,8 +39,15 @@ const crypto = require("crypto");
 //                                               without touching this endpoint's query shape.
 // POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore"|"update_fields" }
 //   approve/reject: pending_review -> approved/rejected (the original submission queue)
+//     approve is refused with 409 MISSING_START_TIME for a Resident Advisor
+//     event whose time_display is still null (2026-10-12 fix -- RA Start-
+//     Time Defect investigation) unless the request also sends
+//     acknowledgeMissingTime:true. The row stays pending_review, untouched,
+//     exactly as if approve had never been called -- never a silent publish
+//     of an incomplete record.
 //   hide:           approved -> rejected (takes an already-live event off the site)
 //   restore:        rejected -> approved (undo a hide, or reverse a reject)
+//   save_correction: { id, action: "save_correction", row_version, fields, approve?, note? }  (#185; see below)
 //   update_fields:  { id, action: "update_fields", fields: { description?, venue_address_raw?,
 //                     venue_city_raw?, ticket_url?, event_url?, time_display? } } — fills in a
 //                     gap the "Needs follow-up" section flagged. Only ever fills a blank field
@@ -109,6 +116,30 @@ function isSafeHttpUrl(url) {
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = require("./_lib/environment").siteUrl();
+const { filterPendingQueue } = require("./_lib/pending-queue");
+const { classifyRows } = require("./_lib/pending-classifier");
+const { annotateQueue } = require("./_lib/submission-provenance");
+const { evaluateSources } = require("./_lib/source-health");
+
+async function buildProvenance(rows, headers) {
+  let feeds = [];
+  let runs = [];
+  let readError = null;
+  try {
+    const since = encodeURIComponent(new Date(Date.now() - 30 * 86400000).toISOString());
+    const [f, r] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name,feed_format,status,last_polled_at,last_poll_result&limit=1000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status,resume:session_data->>resume&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
+    ]);
+    if (f.ok) feeds = await f.json(); else readError = `feed_sources HTTP ${f.status}`;
+    if (r.ok) runs = await r.json(); else readError = `${readError ? readError + "; " : ""}source_runs HTTP ${r.status}`;
+  } catch (err) { readError = err.message; }
+  let vercelConfig = null;
+  try { vercelConfig = require("../vercel.json"); } catch (_) {}
+  const out = annotateQueue(rows, { feeds, runs, vercelConfig, evaluateSources });
+  if (readError && !out.health_error) out.health_error = readError;
+  return out;
+}
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)
@@ -233,6 +264,7 @@ module.exports = async (req, res) => {
     try {
       const search = typeof req.query?.search === "string" ? req.query.search.trim() : "";
       const hidden = req.query?.hidden === "1";
+      const expiredView = req.query?.expired === "1";
       const includePending = req.query?.includePending === "1";
       const incomplete = req.query?.incomplete === "1";
       const duplicates = req.query?.duplicates === "1";
@@ -269,6 +301,18 @@ module.exports = async (req, res) => {
       }
 
       let url;
+      let searchAnnotate = false;
+      // ?id=<event id>: one event of any status with what a correction needs (row_version, owner_corrected, edits). Read-only.
+      const lookupId = typeof req.query?.id === "string" ? req.query.id.trim() : "";
+      if (lookupId) {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(lookupId)}&select=*`, { headers: sbHeaders });
+        const found = r.ok ? await r.json() : null;
+        if (!r.ok || !Array.isArray(found)) { res.status(502).json({ error: "Could not read the event" }); return; }
+        if (!found[0]) { res.status(404).json({ error: "Event not found" }); return; }
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: [{ ...found[0], row_version: found[0].updated_at || null, ...ownerCorrectionView(found[0]) }] });
+        return;
+      }
       if (incomplete) {
         const todayISO = new Date().toISOString().slice(0, 10);
         // venue_id + the embedded venues(address,city) let admin.html's
@@ -308,10 +352,14 @@ module.exports = async (req, res) => {
         // as-is here, same as the working title=ilike.${encoded} branch below.
         const encoded = encodeURIComponent(`%${search}%`);
         const statusFilter = includePending ? "status=in.(approved,pending_review)" : "status=eq.approved";
-        const matchFilter = includePending
-          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded})`
+        // match=any (Live events editing): title, venue or source, so an editor who knows the venue but not the exact
+        // title can find the event. Opt-in: the takedown search and Press coverage keep their behaviour.
+        const wide = req.query?.match === "any";
+        const matchFilter = includePending || wide
+          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded}${wide ? `,source.ilike.${encoded}` : ""})`
           : `title=ilike.${encoded}`;
         url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
+        searchAnnotate = true;
       } else if (hidden) {
         // Recently hidden/rejected, most recent first — the undo list.
         // 200, not 20: one nightly run can retire sixty rows (duplicates
@@ -319,11 +367,36 @@ module.exports = async (req, res) => {
         // has to be reachable here to be put back.
         url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=200`;
       } else {
-        url = `${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc`;
+        // The submissions queue. Default: pending rows whose effective end date has not passed. ?expired=1: the
+        // historical view of pending rows that have ended. Read-side only (api/_lib/pending-queue.js); no status
+        // changes. Paged and ordered on a total order (created_at ties are common after a bulk feed run), because
+        // the queue can exceed the database's per-request cap.
+        const all = await fetchAllPages(`${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc,id.asc`, sbHeaders);
+        if (!all.ok) { res.status(502).json({ error: all.error }); return; }
+        // Read-side grouping (admin queue Stage 2): each row gets a queue_class annotation; none is dropped or changed.
+        const classified = classifyRows(filterPendingQueue(all.rows, expiredView ? "expired" : "current"));
+        // Submissions Dashboard Step 1 (additive, read-only): provenance, lane and reasons per row. Existing keys are unchanged.
+        // Source health inputs (30-day source_runs, approved feeds) are best effort; without them rows are never called blocked.
+        const provenance = await buildProvenance(classified.events, sbHeaders);
+        // #185: per row, the version to send back with a correction and what a person has already corrected. Additive.
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        const withCorrections = provenance.events.map((e) => ({ ...e, row_version: e.updated_at || null, ...ownerCorrectionView(e) }));
+        res.status(200).json({
+          events: withCorrections, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current",
+          lane_counts: provenance.lane_counts, blocked_breakdown: provenance.blocked_breakdown, blocked_sources: provenance.blocked_sources,
+          provenance_coverage: provenance.provenance_coverage, provenance_health_error: provenance.health_error,
+        });
+        return;
       }
 
       const resp = await fetch(url, { headers: sbHeaders });
       const rows = await resp.json();
+      if (resp.ok && searchAnnotate && Array.isArray(rows)) {
+        // Additive: the version to send back with a correction, and which fields a person has already corrected.
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: rows.map((e) => ({ ...e, row_version: e.updated_at || null, ...ownerCorrectionView(e) })) });
+        return;
+      }
       res.status(resp.ok ? 200 : 502).json(resp.ok ? { events: rows } : { error: rows });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -337,7 +410,7 @@ module.exports = async (req, res) => {
       try { body = JSON.parse(body); } catch { body = {}; }
     }
     body = body || {};
-    const { id, action } = body;
+    const { id, action, acknowledgeMissingTime } = body;
 
     // update_fields (2026-09-05, Jody: "how do I get to edit these fields?"
     // — asked right after the "Needs follow-up" section shipped as a
@@ -383,6 +456,108 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // save_correction (REL-001 / #185 increment 1, Jody 2026-10-18): a person's correction of a stored event. Unlike
+    // update_fields it OVERWRITES, so it is recorded: one append-only audit line in internal_note (no migration) that
+    // doubles as the owner-correction marker honoured by ingestion (api/_lib/event-contract.js, event-upsert.js). It is
+    // guarded by a row version (updated_at) checked inside the UPDATE itself, so a concurrent change is a 409 and nothing
+    // is lost. `approve:true` is a separate, gated last step: the correction is kept even when approval is refused.
+    // Contract: project files platform/issue-185-increment-1/PLATFORM-CONTRACT.md. No status change without approve:true.
+    if (action === "save_correction") {
+      const contract = require("./_lib/event-contract");
+      const { row_version: rowVersion, fields, note } = body;
+      const wantApprove = body.approve === true;
+      if (!id || typeof rowVersion !== "string" || !rowVersion) {
+        res.status(400).json({ error: "Body must include { id, action: 'save_correction', row_version, fields: { ... } }" });
+        return;
+      }
+      if (note != null && (typeof note !== "string" || note.length > 200)) {
+        res.status(400).json({ error: "note must be text of at most 200 characters", field: "note" });
+        return;
+      }
+      const publicRow = (row) => { if (!row) return row; const { internal_note, ...rest } = row; return rest; }; // the audit text itself is not echoed
+      try {
+        const read = async () => {
+          const r = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=*`, { headers: sbHeaders });
+          const rows = r.ok ? await r.json() : null;
+          return { ok: r.ok, row: Array.isArray(rows) ? rows[0] : null };
+        };
+        const cur = await read();
+        if (!cur.ok) { res.status(502).json({ error: "Could not read the event" }); return; }
+        if (!cur.row) { res.status(404).json({ error: "Event not found" }); return; }
+        const conflict = (row) => res.status(409).json({ error: "row changed", message: "This event changed after it was loaded. Nothing was saved. Reload it and apply the correction again.", current: publicRow(row), row_version: row.updated_at, ...contract.ownerCorrectionView(row) });
+        if (cur.row.updated_at !== rowVersion) { conflict(cur.row); return; }
+
+        const check = contract.validateCorrection(fields, cur.row);
+        if (check.errors.length) {
+          res.status(400).json({ error: "invalid correction", field: check.errors[0].field, errors: check.errors });
+          return;
+        }
+
+        let row = cur.row;
+        const approveBlock = { requested: wantApprove, done: false, blocked: null };
+        const statusBefore = cur.row.status;
+        let editId = null;
+        if (check.changes.length) {
+          const now = new Date().toISOString();
+          editId = `e-${now.replace(/[-:.]/g, "").slice(0, 15)}Z-${crypto.randomBytes(2).toString("hex")}`;
+          const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes: check.changes, note });
+          const patch = { internal_note: contract.appendNoteLine(cur.row.internal_note, line), updated_at: now };
+          for (const c of check.changes) patch[c.field] = c.after;
+          // The version check is part of the UPDATE: if the row changed since it was read, zero rows match.
+          const w = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&updated_at=eq.${encodeURIComponent(rowVersion)}`, {
+            method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify(patch),
+          });
+          const written = await w.json().catch(() => null);
+          if (!w.ok) {
+            const bad = written && written.code === "22P02";
+            res.status(bad ? 400 : 502).json(bad ? { error: "invalid correction", field: "category", errors: [{ field: "category", message: "not a known category" }] } : { error: "Could not save the correction", detail: written });
+            return;
+          }
+          if (!Array.isArray(written) || !written[0]) { const again = await read(); if (again.row) { conflict(again.row); } else { res.status(404).json({ error: "Event not found" }); } return; }
+          row = written[0];
+        }
+
+        if (wantApprove) {
+          if (row.status === "approved") {
+            approveBlock.blocked = { failed_gate: "already_approved", codes: [], why: "This event is already approved." };
+          } else if (row.status !== "pending_review") {
+            // Only the review queue is approved from here. A rejected or hidden event is brought back with the existing restore action.
+            approveBlock.blocked = { failed_gate: "not_pending", codes: [], why: "Only events waiting for review can be approved here. Use Restore for a rejected or hidden event." };
+          } else if (row.source === "Resident Advisor" && !row.time_display && body.acknowledgeMissingTime !== true) {
+            approveBlock.blocked = { failed_gate: "missing_time", codes: ["MISSING_START_TIME"], why: "This Resident Advisor event has no verified start time. Add the time, or approve it without one on purpose." };
+          } else {
+            // The same publication gate ingestion uses. Identity and source codes describe how a row arrived, not whether
+            // it is fit to publish, so a hand-submitted row (no external_id) is not blocked by them.
+            const verdict = contract.evaluateEvent(row, {});
+            const blockers = verdict.issues.filter((i) => i.severity !== "info" && !["IDENTITY_MISSING", "SOURCE_MISSING"].includes(i.code));
+            if (blockers.length) {
+              approveBlock.blocked = { failed_gate: "publication_gate", codes: blockers.map((i) => i.code), why: blockers.map((i) => i.message || i.code).join("; ") };
+            } else {
+              const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.pending_review`, {
+                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved" }),
+              });
+              const approved = await a.json().catch(() => null);
+              if (a.ok && Array.isArray(approved) && approved[0]) {
+                row = approved[0];
+                approveBlock.done = true;
+                await notifyEventLive(row);
+              } else {
+                approveBlock.blocked = { failed_gate: "write_failed", codes: [], why: "The correction was saved but the approval could not be written." };
+              }
+            }
+          }
+        }
+
+        res.status(200).json({
+          ok: true, edit_id: editId, event: publicRow(row), row_version: row.updated_at, changes: check.changes,
+          ...contract.ownerCorrectionView(row), status_before: statusBefore, status_after: row.status, approve: approveBlock,
+        });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (action === "update_fields") {
       const EDITABLE_FIELDS = ["description", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display"];
       const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
@@ -408,7 +583,7 @@ module.exports = async (req, res) => {
         // (even if that got filled in by another tab, or a cron re-run,
         // between page load and clicking Save).
         const currentResp = await fetch(
-          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")}`,
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")},internal_note,updated_at`,
           { headers: sbHeaders }
         );
         const currentRows = await currentResp.json();
@@ -428,13 +603,27 @@ module.exports = async (req, res) => {
           res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
           return;
         }
-        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+        // A person's fill is a correction like any other: it is recorded as an OWNER-CORRECTION line, which is also the
+        // lock that keeps the next ingestion run from writing over it, and the write is conditional on the version just read.
+        const contract = require("./_lib/event-contract");
+        const now = new Date().toISOString();
+        const editId = `e-${now.replace(/[-:.]/g, "").slice(0, 15)}Z-${crypto.randomBytes(2).toString("hex")}`;
+        const changes = Object.keys(patch).map((field) => ({ field, before: current[field] == null ? null : current[field], after: patch[field] }));
+        const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes, note: "follow-up fill" });
+        const guarded = { ...patch, internal_note: contract.appendNoteLine(current.internal_note, line), updated_at: now };
+        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "";
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}${versionGuard}`, {
           method: "PATCH",
           headers: { ...sbHeaders, Prefer: "return=representation" },
-          body: JSON.stringify(patch),
+          body: JSON.stringify(guarded),
         });
         const rows = await resp.json();
-        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
+        if (resp.ok && Array.isArray(rows) && !rows[0]) {
+          res.status(409).json({ error: "row changed", message: "This event changed after it was read. Nothing was saved. Reload it and try again." });
+          return;
+        }
+        const { internal_note: _hidden, ...publicEvent } = (resp.ok && rows[0]) || {};
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: publicEvent, row_version: rows[0].updated_at, edit_id: editId, ...contract.ownerCorrectionView(rows[0]) } : { error: rows });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -552,191 +741,16 @@ module.exports = async (req, res) => {
     // counters alone would double-count that event).
     if (action === "auto_repair_venue") {
       try {
-        const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-        const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-
-        let descriptionCounts = null;
-        let outerLimitsDescriptionError = null;
-        try {
-          const { repairOuterLimitsDescriptions } = require("../scripts/outerlimits-description-repair");
-          descriptionCounts = await repairOuterLimitsDescriptions({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (descErr) {
-          // Never lets a description-repair failure erase Step 1's real,
-          // already-persisted venue-repair results -- surfaced explicitly
-          // instead so it's visible, not masqueraded as a clean success.
-          outerLimitsDescriptionError = descErr.message;
-        }
-
-        let dossinCounts = null;
-        let dossinMetadataError = null;
-        try {
-          const { repairDossinMetadata } = require("../scripts/dossin-metadata-repair");
-          dossinCounts = await repairDossinMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (dossinErr) {
-          // Same isolation as Step 2's own failure handling -- never lets a
-          // Dossin-step failure erase Steps 1/2's real, already-persisted
-          // results.
-          dossinMetadataError = dossinErr.message;
-        }
-
-        let redfordCounts = null;
-        let redfordMetadataError = null;
-        try {
-          const { repairRedfordMetadata } = require("../scripts/redford-metadata-repair");
-          redfordCounts = await repairRedfordMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (redfordErr) {
-          // Same isolation as Steps 2/3's own failure handling -- never
-          // lets a Redford-step failure erase Steps 1/2/3's real,
-          // already-persisted results.
-          redfordMetadataError = redfordErr.message;
-        }
-
-let genericCounts = null;
-        let genericEnrichmentError = null;
-        try {
-          const { repairGenericMetadata } = require("../scripts/generic-metadata-enrichment");
-          genericCounts = await repairGenericMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (genericErr) {
-          // Same isolation as Steps 2/3/4's own failure handling -- never
-          // lets a generic-enrichment failure erase Steps 1-4's real,
-          // already-persisted results.
-          genericEnrichmentError = genericErr.message;
-        }
-
-        // Step 6 (2026-09-28, Needs Follow-up self-healing pass 2):
-        // VisitDetroit dead-event-link self-healing
-        // (scripts/visitdetroit-dead-link-repair.js's
-        // repairVisitDetroitDeadLinks()) -- live-checks every current
-        // VisitDetroit event's stored ticket_url, repairs it via the
-        // known /<slug>/ -> /events/<slug>/ URL-shape migration when a
-        // 404/410 is confirmed AND the replacement page's own text
-        // confirms the same event title (api/_lib/link-health.js +
-        // api/_lib/visitdetroit-link-recovery.js), and marks
-        // link_check_status='dead' (a new, actionable Needs Follow-up
-        // reason -- see admin.html's classifyMissingFields()) when it
-        // can't. A timeout/403/429/5xx check is never treated as evidence
-        // of anything and never writes. Same failure-isolation pattern as
-        // Steps 2-5.
-        //
-        // SCOPE NOTE (per Jody, 2026-09-28): this button step is for
-        // ONGOING drift only -- it re-checks whatever is currently in the
-        // database each time it runs, so it's naturally idempotent and
-        // safe to leave wired in here. It is deliberately NOT how the
-        // initial, systemic 2026-09-28 VisitDetroit cleanup (repairing
-        // every existing future row's time-parsing AND link-migration
-        // fallout in one historical pass) gets done -- that one-time
-        // repair is scripts/visitdetroit-initial-backfill.js, run once by
-        // hand, separately from this button, so the first historical
-        // cleanup is a deliberate, reviewed action rather than a side
-        // effect of clicking Auto-Repair for something unrelated.
-        let visitDetroitLinkCounts = null;
-        let visitDetroitLinkError = null;
-        try {
-          const { repairVisitDetroitDeadLinks } = require("../scripts/visitdetroit-dead-link-repair");
-          visitDetroitLinkCounts = await repairVisitDetroitDeadLinks({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (linkErr) {
-          // Same isolation as Steps 2-5's own failure handling -- never
-          // lets a dead-link-repair failure erase Steps 1-5's real,
-          // already-persisted results.
-          visitDetroitLinkError = linkErr.message;
-        }
-
-        // Step 7 (2026-09-30, "self-healing/enrichment pivot" root-cause
-        // fix -- see NEEDS_FOLLOWUP_ROOT_CAUSE.md): venue raw location
-        // re-parse (scripts/venue-raw-reparse-repair.js's
-        // repairVenueRawReparse()). api/_lib/ics-location.js's per-VEVENT
-        // LOCATION grammars were too narrow for several already-live
-        // multi-venue feeds (a region spelled out in full instead of
-        // abbreviated; a Tribe-style location with no region field at
-        // all) -- real address/city text fell through to the safe
-        // "unparseable" fallback and got written WHOLE into
-        // venue_name_raw instead of being split out. That grammar gap is
-        // now fixed directly in ics-location.js, so every newly-ingested
-        // event benefits automatically; this step gives EVERY event
-        // already stuck with a raw, unsplit location string in
-        // venue_name_raw (venue_id/venue_address_raw/venue_city_raw all
-        // still null) one more chance at the same parser, now that it
-        // recognizes their shape -- literally no new repair logic, just
-        // re-running the (now-fixed) shared parser against evidence
-        // already sitting on the row. Same failure-isolation pattern as
-        // Steps 2-6.
-        let venueRawReparseCounts = null;
-        let venueRawReparseError = null;
-        try {
-          const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
-          venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (reparseErr) {
-          // Same isolation as Steps 2-6's own failure handling -- never
-          // lets this step's failure erase Steps 1-6's real,
-          // already-persisted results.
-          venueRawReparseError = reparseErr.message;
-        }
-
-        // Step 7b (2026-10-05): entries that are not events (closure notices,
-        // suite-rental upsells) leave the public inventory, exactly as in the
-        // nightly run and before the duplicate pass -- see
-        // scripts/retire-non-events.js.
-        let nonEventCounts = null;
-        let nonEventRetirementError = null;
-        try {
-          const { retireNonEvents } = require("../scripts/retire-non-events");
-          nonEventCounts = await retireNonEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (nonEventErr) {
-          nonEventRetirementError = nonEventErr.message;
-        }
-
-        // Step 8 (2026-10-05): deterministic duplicate consolidation, the
-        // same pass the nightly run makes -- see scripts/duplicate-consolidation.js.
-        let duplicateCounts = null;
-        let duplicateConsolidationError = null;
-        try {
-          const { consolidateDuplicates } = require("../scripts/duplicate-consolidation");
-          duplicateCounts = await consolidateDuplicates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (dupErr) {
-          duplicateConsolidationError = dupErr.message;
-        }
-
-        const venueWrittenIds = venueCounts.writtenIds || [];
-        const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
-        const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
-        const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
-        const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
-        const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
-        const visitDetroitLinkWrittenIds = (visitDetroitLinkCounts && visitDetroitLinkCounts.writtenIds) || [];
-        const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds]);
-        const combinedFieldsWritten =
-          venueCounts.fieldsWritten +
-          ((descriptionCounts && descriptionCounts.written) || 0) +
-          ((dossinCounts && dossinCounts.written) || 0) +
-          ((redfordCounts && redfordCounts.fieldsWritten) || 0) +
-          ((genericCounts && genericCounts.fieldsWritten) || 0) +
-          ((visitDetroitLinkCounts && visitDetroitLinkCounts.fieldsWritten) || 0) +
-          ((venueRawReparseCounts && venueRawReparseCounts.written) || 0);
-
-        res.status(200).json({
-          ok: true,
-          ...venueCounts,
-          written: combinedWrittenIds.size,
-          fieldsWritten: combinedFieldsWritten,
-          venue: venueCounts,
-          outerLimitsDescription: descriptionCounts,
-          outerLimitsDescriptionError,
-          dossinMetadata: dossinCounts,
-          dossinMetadataError,
-          redfordMetadata: redfordCounts,
-          redfordMetadataError,
-          genericEnrichment: genericCounts,
-          genericEnrichmentError,
-          visitDetroitDeadLinks: visitDetroitLinkCounts,
-          visitDetroitLinkError,
-          venueRawReparse: venueRawReparseCounts,
-          venueRawReparseError,
-          nonEventRetirement: nonEventCounts,
-          nonEventRetirementError,
-          duplicateConsolidation: duplicateCounts,
-          duplicateConsolidationError,
-        });
+        // Steps, per-step timeouts and the 270 s overall budget live in
+        // api/_lib/auto-repair-steps.js (#256).
+        const { runAutoRepair } = require("./_lib/auto-repair-steps");
+        const result = await runAutoRepair({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        console.log("[auto_repair_venue]", JSON.stringify({ complete: result.complete, elapsedMs: result.elapsedMs, steps: result.steps.map((s) => `${s.key}:${s.status}:${s.ms}`) }));
+        // Preserved contract: a failed venue step (the primary repair) is an
+        // explicit error response. The other steps still ran in isolation
+        // and their per-step outcomes ride along in the body.
+        if (result.venueError) res.status(500).json({ ...result, ok: false, error: result.venueError });
+        else res.status(200).json(result);
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -744,12 +758,47 @@ let genericCounts = null;
     }
 
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'save_correction'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
       return;
     }
 
     const newStatus = (action === "approve" || action === "restore") ? "approved" : "rejected";
     try {
+      // RA start-time defect fix (2026-10-12): "approve" used to be a
+      // bare status flip with no check at all -- a row that
+      // ra-candidate-promotion.js deliberately published with no
+      // time_display (because it only ever had RA's listing card, never
+      // a detail-page time) went fully live, forever time-less, the
+      // moment a moderator approved it, even though RA's own detail page
+      // has had a real time the whole time. "restore" is NOT gated here
+      // -- it only ever un-hides/un-rejects a row that was already live
+      // before, so re-checking an unrelated field on the way back up
+      // would be a new behavior with no bug behind it.
+      //
+      // Scoped to Resident Advisor only ("do not modify unrelated
+      // ingestion sources") and skipped entirely when
+      // acknowledgeMissingTime is explicitly true -- a moderator who has
+      // confirmed by hand that RA genuinely has no time for this one
+      // (e.g. an all-day/date-only listing) can still approve it; this
+      // only blocks the SILENT case the defect actually was.
+      if (action === "approve" && !acknowledgeMissingTime) {
+        const checkResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,time_display`,
+          { headers: sbHeaders }
+        );
+        const checkRows = checkResp.ok ? await checkResp.json() : [];
+        const current = checkRows[0];
+        if (current && current.source === "Resident Advisor" && !current.time_display) {
+          res.status(409).json({
+            error: "MISSING_START_TIME",
+            message:
+              "This Resident Advisor event has no verified start time. Run the RA time backfill first, or resend with acknowledgeMissingTime:true to approve it anyway without one.",
+            id,
+          });
+          return;
+        }
+      }
+
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { ...sbHeaders, Prefer: "return=representation" },

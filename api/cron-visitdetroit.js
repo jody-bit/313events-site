@@ -1,8 +1,18 @@
 const crypto = require("crypto");
+const { fetchAllPagedRows } = require("./_lib/paged-rows"); // read EVERY matching row: Supabase caps one request at 1,000 rows with a 200
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
+const { preserveRange } = require("./_lib/range-preservation"); // MC-RANGE: a refresh never narrows a range below evidenced dates
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { canonicalVisitDetroitUrl } = require("./_lib/visitdetroit-link-recovery"); // P0 2026-10-16: store the live /events/<slug>/ page
+const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+
+// Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v3 table (with evidence tiers), loaded lazily. A ZIP
+// that is not in it is "no evidence". FEED_CITY_INCLUDE_CDP=0 drops Census-designated-place names (owner decision open).
+let zipTableCache = null;
+function zipTable() { return zipTableCache || (zipTableCache = loadZipTable()); }
 
 // Vercel Cron job — pulls Detroit-area events straight from visitdetroit.com's
 // own Algolia search index, discovered 2026-09-14 while answering Jody's
@@ -178,7 +188,7 @@ function formatTime(hour, minute) {
 // address is Algolia's own [venueName, street, "City, State (zip)"] shape —
 // seen as short as [venueName] alone for a "TBA"-style listing.
 function parseAddress(address) {
-  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null };
+  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null, zip: null };
   const name = address[0] || null;
   const street = address.length > 2 ? address[1] : null;
   const cityState = address.length > 2 ? address[2] : (address.length === 2 ? address[1] : null);
@@ -187,7 +197,18 @@ function parseAddress(address) {
     const commaIdx = cityState.indexOf(",");
     city = (commaIdx === -1 ? cityState : cityState.slice(0, commaIdx)).trim() || null;
   }
-  return { name, street, city };
+  return { name, street, city, zip: parseZip(cityState) };
+}
+
+// venue_address_raw / venue_city_raw for one hit. The parsed city is stored only when it agrees with the
+// feed's own ZIP and _geoloc (GEO-003 Addendum 2); a mismatch stores no city (NULL) and keeps the street;
+// the admin Needs Follow-up list surfaces it because the city is missing. Detroit is stored explicitly, not as NULL, so that a blank city
+// can mean "unknown" once the map stops defaulting blanks to Detroit.
+function rowCityFields(address, hit, deps) {
+  const { street, city, zip } = parseAddress(address);
+  const g = (hit && hit._geoloc) || {};
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable(), cdpNames: loadCdpNames(), tiers: loadZipTiers() });
+  return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 
 // Conservative cross-source dedupe key — see header comment. Punctuation-
@@ -235,8 +256,15 @@ function deriveDateTimeFields(h) {
   let timeDisplay = null;
   if (!h.isAllDay) {
     timeDisplay = formatTime(startParts.hour, startParts.minute);
+    // 23:59 is VisitDetroit's end-of-day filler, not a published end time
+    // (194 of 194 approved upcoming rows that end at 11:59 PM came from it): an
+    // end shown as "to 11:59 PM" is false on the card and becomes a false
+    // DTEND in "Add to calendar". Keep the start only; the calendar export
+    // then uses its own 2-hour default (project/DECISIONS.md end-time fallback).
+    const placeholderEnd = endParts && endParts.hour === 23 && endParts.minute === 59;
     if (
       endParts &&
+      !placeholderEnd &&
       endParts.date === startParts.date &&
       (endParts.hour !== startParts.hour || endParts.minute !== startParts.minute)
     ) {
@@ -248,13 +276,7 @@ function deriveDateTimeFields(h) {
 }
 
 const visitDetroitHandler = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
@@ -288,6 +310,8 @@ const visitDetroitHandler = async (req, res) => {
 
   let excludedByCategory = 0;
   let excludedByDate = 0;
+  const cityMismatches = [];
+  const cityZipAdvisories = []; // kept unverified: ZIP table does not list the feed city, nothing demonstrates it wrong
 
   const mappedRows = hits
     .map((h) => {
@@ -297,7 +321,10 @@ const visitDetroitHandler = async (req, res) => {
       const dt = deriveDateTimeFields(h);
       if (!dt) { excludedByDate++; return null; }
 
-      const { name: venueName, street, city } = parseAddress(h.address);
+      const { name: venueName } = parseAddress(h.address);
+      const { venue_address_raw, venue_city_raw, _cityDecision } = rowCityFields(h.address, h);
+      if (_cityDecision.status === "needs_follow_up") cityMismatches.push({ id: h.id, title: h.title, reason: _cityDecision.reason });
+      else if (_cityDecision.zipMismatch) cityZipAdvisories.push({ id: h.id, title: h.title, city: venue_city_raw });
 
       return {
         external_id: `vd-${h.id}`,
@@ -305,8 +332,8 @@ const visitDetroitHandler = async (req, res) => {
         description: h.content || null,
         category: cat,
         venue_name_raw: venueName,
-        venue_address_raw: street,
-        venue_city_raw: city && city.toLowerCase() !== "detroit" ? city : null,
+        venue_address_raw,
+        venue_city_raw,
         venue_id: resolveVenueId(venueMap, venueName),
         // See api/_lib/mobile-event.js -- true only when VisitDetroit's own
         // eventCategories (e.g. "Tours") or an unambiguous title keyword
@@ -327,22 +354,28 @@ const visitDetroitHandler = async (req, res) => {
         is_all_day: !!h.isAllDay,
         is_free: false, // no price signal in this index — see header comment, never guessed true
         price_from: null,
-        ticket_url: h.uri ? `https://visitdetroit.com${h.uri}` : null,
+        ticket_url: canonicalVisitDetroitUrl(h.uri), // stores /events/<slug>/: the index's bare /<slug>/ path 404s
         image_url: h.primaryImageUrl || null,
         source: SOURCE_NAME,
         note: h.readableRepeatRule
           ? `VisitDetroit lists this as recurring ("${h.readableRepeatRule}") — only this dated occurrence is captured here.`
           : null,
         _dedupeKey: dedupeKey(h.title, dt.startDate),
+        _cityDecision,
       };
     })
     .filter(Boolean);
+
+  if (cityMismatches.length) console.warn(`visitdetroit: city not stored, ${cityMismatches.length} contradicted by ZIP/coordinates:`, JSON.stringify(cityMismatches));
+  if (cityZipAdvisories.length) console.warn(`visitdetroit: city kept unverified, ${cityZipAdvisories.length} not listed for their ZIP:`, JSON.stringify(cityZipAdvisories));
 
   if (!mappedRows.length) {
     res.status(200).json({
       upserted: 0,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -356,17 +389,15 @@ const visitDetroitHandler = async (req, res) => {
     const dates = mappedRows.map((r) => r.start_date).sort();
     const minDate = dates[0];
     const maxDate = dates[dates.length - 1];
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?select=title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
-        `&start_date=gte.${minDate}&start_date=lte.${maxDate}`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    // Paged in full: a plain read stops at 1,000 rows, and a partial key set would let cross-source duplicates through. Fail-open as
+    // before (a failed page keeps the keys already read and the run proceeds), but never silent.
+    const lookup = await fetchAllPagedRows(
+      `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
+        `&start_date=gte.${minDate}&start_date=lte.${maxDate}&order=start_date.asc,id.asc`,
+      { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
     );
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingKeys = new Set(existingRows.map((r) => dedupeKey(r.title, r.start_date)));
-      }
-    }
+    if (!lookup.ok) console.warn(`[cron-visitdetroit] cross-source duplicate lookup incomplete (${lookup.rows.length} rows): ${lookup.error}`);
+    existingKeys = new Set(lookup.rows.map((r) => dedupeKey(r.title, r.start_date)));
   } catch {
     // Lookup failed — proceed with an empty exclusion set rather than fail
     // the whole run; worst case this pass over-inserts a few rows that a
@@ -376,7 +407,7 @@ const visitDetroitHandler = async (req, res) => {
 
   const newRows = mappedRows.filter((r) => !existingKeys.has(r._dedupeKey));
   const skippedAsDuplicate = mappedRows.length - newRows.length;
-  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest);
+  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest); // keeps _cityDecision until the existing-city check below
 
   if (!rows.length) {
     res.status(200).json({
@@ -384,6 +415,8 @@ const visitDetroitHandler = async (req, res) => {
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -400,21 +433,36 @@ const visitDetroitHandler = async (req, res) => {
     // (<=100 ids/request) this also fixes. Any failure aborts this run
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
-    let existingStatusByExternalId;
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates,recurrence_evidence" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // GEO-003 safeguard: an incoming city that is not evidence-confirmed never replaces a city the row already has.
+    // MC-RANGE: the refresh rolls start/end with the source; evidenced occurrence dates and classified
+    // continuous ranges already stored are never narrowed by it. Only start_date/end_date are touched,
+    // date_semantics / occurrence_dates / recurrence_evidence are still never in the payload.
+    const asOf = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Detroit" }).format(new Date()); // YYYY-MM-DD, Detroit today
+    const rangeConflicts = [];
+    const rowsWithStatus = rows.map(({ _cityDecision, ...row }) => {
+      const existing = existingRowsByExternalId.get(row.external_id);
+      const range = preserveRange(row, existing, asOf);
+      if (range.action !== "incoming") rangeConflicts.push({ external_id: row.external_id, action: range.action, ...(range.conflict || {}) });
+      return {
+        ...protectExistingCity(row, _cityDecision, existing && existing.venue_city_raw),
+        start_date: range.start_date,
+        end_date: range.end_date,
+        status: (existing && existing.status) || DEFAULT_STATUS,
+      };
+    });
+    if (rangeConflicts.length) console.warn(`visitdetroit: ${rangeConflicts.length} stored range(s) preserved against the incoming window:`, JSON.stringify(rangeConflicts));
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
@@ -424,9 +472,12 @@ const visitDetroitHandler = async (req, res) => {
     }
     res.status(200).json({
       upserted: rowsWithStatus.length,
+      rangesPreserved: rangeConflicts.length,
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {
@@ -434,8 +485,10 @@ const visitDetroitHandler = async (req, res) => {
   }
 };
 
-module.exports = visitDetroitHandler;
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+module.exports = withRunLog("visitdetroit", visitDetroitHandler);
 module.exports.detroitParts = detroitParts; // exposed for test/cron-visitdetroit-time-parsing.test.js only
 module.exports.parseAddress = parseAddress;
+module.exports.rowCityFields = rowCityFields;
 module.exports.mapCategory = mapCategory;
 module.exports.deriveDateTimeFields = deriveDateTimeFields; // exposed for scripts/visitdetroit-time-backfill.js and its test only

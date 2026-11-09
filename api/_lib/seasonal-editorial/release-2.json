@@ -1,0 +1,22 @@
+{
+ "batch": "seasonal-release-2",
+ "generated": "2026-10-19",
+ "status": "DRAFT in a pull request. The approval blocks below are drafts for Jody Tyree to confirm in review; merge, deploy and the live site are separate authorizations.",
+ "authorization": {
+  "by": "Jody Tyree",
+  "at": "2026-10-19",
+  "wording": "AUTHORIZE PUBLICATION APPROVAL: batch seasonal-release-2, 3 records, approved by Jody Tyree on 2026-10-19.",
+  "basis": "Gate-5 decision card 'Approve all three', Jody, 2026-10-19T04:03:35Z, relayed by the coordinator (the tap itself is not attachable)."
+ },
+ "frozenBatch1": { "batch": "seasonal-release-1", "records": 76, "note": "RELEASE_BATCH_1.json is closed and unchanged." },
+ "collections": {
+  "fall": ["goodison-cider-mill", "damouni-orchards"],
+  "fall-color": ["kensington-metropark"]
+ },
+ "dec029": {
+  "note": "These records carry DEC-029 provenance: an owner-accepted linked or hosted image from the destination's own site, with the source page, credit and recorded risk acceptance. Recorded risk acceptance is NOT confirmed usage rights.",
+  "goodison-cider-mill": { "route": "linked", "loadCheck": "Not recorded in linked-images.json; viewed by Experience on the Mac copy." },
+  "kensington-metropark": { "route": "linked", "loadCheck": "OPEN: the cloud fetch errored on 2026-10-19; the Mac load check is required before merge." },
+  "damouni-orchards": { "route": "acquired-file + linked-risk-acceptance", "asset": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp", "bytes": 348304, "sha256": "fbb93e6283566f565f2a9cf7dfebac41fe93fdc9a0dcabcc1e1f101c66c75f2c", "width": 1280, "height": 720 }
+ }
+}

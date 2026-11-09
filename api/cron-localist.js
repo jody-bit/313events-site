@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const path = require("path");
 const { buildVenueDetailsMap, resolveVenueFromCandidate, normalizeVenueName, citiesConflict, isBlank } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
@@ -19,6 +20,7 @@ const {
 } = require("./_lib/localist-rows");
 // The title-keyword table every feed already uses for its category
 // (api/cron-feeds.js requires it the same way).
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "scripts", "owner-supplied-row"));
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 
 // Vercel Cron job — the generalized `localist` adapter (INGESTION_BACKLOG.md
@@ -504,8 +506,10 @@ async function withdrawStaleRows(tenant, collected) {
   // it. It is theirs to keep, for good, and is marked so.
   const kept = unlisted.filter((r) => noteLines(r.internal_note).some(isKeptLine));
   const justRestored = unlisted.filter((r) => !kept.includes(r) && noteLines(r.internal_note).some(isWithdrawalLine));
-  const stale = unlisted.filter((r) => !kept.includes(r) && !justRestored.includes(r));
-  const keptByReviewer = kept.length + justRestored.length;
+  // A row the owner corrected or put on editorial hold is never withdrawn by this connector, whatever the source lists (its status is the owner's call).
+  const ownerHeld = unlisted.filter((r) => !kept.includes(r) && !justRestored.includes(r) && isOwnerSuppliedRow(r, { includeManualSource: false }));
+  const stale = unlisted.filter((r) => !kept.includes(r) && !justRestored.includes(r) && !ownerHeld.includes(r));
+  const keptByReviewer = kept.length + justRestored.length + ownerHeld.length;
   let withdrawn = 0;
   try {
     for (const group of groupBy(justRestored, (r) => r.internal_note || "")) {
@@ -584,13 +588,7 @@ function mergeWithStored(row, stored, categoryConfident, venueMaps) {
 
 module.exports = async (req, res) => {
   const startedAt = Date.now();
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   const runHandle = await startRun(SOURCE_SLUG);
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {

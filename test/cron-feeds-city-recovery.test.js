@@ -26,6 +26,8 @@
 //
 // Run: node test/cron-feeds-city-recovery.test.js
 "use strict";
+// api/cron-feeds.js skips new rows that have already ended (api/_lib/ingest-eligibility.js), so pin "now" before the fixtures' dates.
+require("./fixtures/freeze-clock.js").freezeClock("2025-01-01T00:00:00Z");
 const assert = require("assert");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
@@ -207,8 +209,10 @@ async function run() {
     assert.strictEqual(rows.noname.venue_name_raw, "Venue TBA");
     assert.strictEqual(rows.noname.venue_city_raw, "Madison Heights");
     assert.strictEqual(rows.noname.venue_id, null, "a Madison Heights event is not linked to a Detroit placeholder");
-    // A bare region is left as the text it is: not the placeholder, and no feed city.
-    assert.deepStrictEqual([rows.region.venue_name_raw, rows.region.venue_city_raw, rows.region.venue_id], ["OH", null, null]);
+    // A bare region ("OH") names no place. Since 2026-11-06 (region_only) it is shown as the existing "Venue TBA" instead of being
+    // stored as a venue name, and it still gets NO feed city and no venue link (BUG-012: the placeholder's city must not attach).
+    assert.deepStrictEqual([rows.region.venue_name_raw, rows.region.venue_city_raw, rows.region.venue_id], ["Venue TBA", null, null]);
+    assert.strictEqual(rows.region.venue_address_raw, null, "region only: no address is invented");
     // A LOCATION with any real text is never given the feed's city — it
     // states a place, even when that place cannot be read. (Independent
     // review, 2026-10-04: a first version filled every one of these with
@@ -278,7 +282,7 @@ async function run() {
       ],
     });
     assert.strictEqual(regional["region-only"].venue_city_raw, null);
-    assert.strictEqual(regional["region-only"].venue_name_raw, "MI", "a bare region is left as it is");
+    assert.strictEqual(regional["region-only"].venue_name_raw, "Venue TBA", "a bare region is shown as Venue TBA (region_only), never stored as a venue name");
 
     const regionalBlank = await runFeed({
       feedSource: { ...MUNICIPAL_FEED, id: "fs-regional2", venue_name: "Eastern Market Partnership", feed_url: "https://feed.example/emp2.ics" },

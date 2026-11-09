@@ -72,6 +72,8 @@
 // successful production RA syncs have run through this pipeline — then
 // they can be retired.
 "use strict";
+const { sanitizeRowText } = require("../api/_lib/text-sanitize");
+const { applyVenueCategoryPolicy } = require("../api/_lib/venue-category-policy");
 
 const {
   lookupExistingRows,
@@ -79,8 +81,10 @@ const {
 } = require("../api/_lib/status-lookup");
 const { startRun, finishRun } = require("../api/_lib/run-log");
 const { SLUGS } = require("../api/_lib/source-slugs");
+const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
+const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const {
   RA_ID_PATTERN,
   parseCandidateIds,
@@ -139,7 +143,9 @@ function deriveTimeDisplayAndEndDate(startIso, endIso) {
   const end = endIso ? parseIsoLocal(endIso) : null;
   const endDate = end && start && end.date !== start.date ? end.date : null;
   const startClock = start ? formatClock(start.hour, start.minute) : null;
-  const endClock = end ? formatClock(end.hour, end.minute) : null;
+  // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+  const placeholderEnd = !!end && end.hour === 23 && end.minute === 59;
+  const endClock = end && !placeholderEnd ? formatClock(end.hour, end.minute) : null;
   let timeDisplay = null;
   if (startClock && endClock) timeDisplay = `${startClock}–${endClock}`;
   else if (startClock) timeDisplay = startClock;
@@ -176,9 +182,18 @@ function deriveOffer(offersPrice) {
   return { priceFrom: n, isFree: false };
 }
 
-function deriveTicketUrl(numericId, jsonLdUrl) {
-  if (typeof jsonLdUrl === "string" && /^https?:\/\//.test(jsonLdUrl)) return jsonLdUrl;
-  return `https://ra.co/events/${numericId}`;
+// event_url: RA's own event-specific page, always https://ra.co/events/<id>.
+// The JSON-LD `url` is deliberately NOT trusted over the id: it is only ever
+// that same page, and anything else (a homepage, another event) must not
+// become the event link. ticket_url: the actual ticketing destination, only
+// when the source states one (offers.url); otherwise NULL. Never invented,
+// never an RA page. See api/_lib/ra-links.js.
+function deriveEventUrl(numericId) {
+  return deriveRaEventUrl(numericId);
+}
+
+function deriveTicketUrl(rawTicketUrl) {
+  return deriveRaTicketUrl(rawTicketUrl);
 }
 
 function deriveImageUrl(image) {
@@ -252,7 +267,8 @@ function deriveEventRow(raw, venueMap) {
   const venueName = (typeof raw.venueName === "string" && raw.venueName.trim()) || "Location TBA";
   const { priceFrom, isFree } = deriveOffer(raw.offersPrice);
   const numericId = String(raw.id).replace(/^ra-/, "");
-  const ticketUrl = deriveTicketUrl(numericId, raw.url);
+  const eventUrl = deriveEventUrl(numericId);
+  const ticketUrl = deriveTicketUrl(raw.ticketUrl || raw.offersUrl);
   const imageUrl = deriveImageUrl(raw.image);
   const { endDate, timeDisplay } = deriveTimeDisplayAndEndDate(raw.startDate, raw.endDate);
 
@@ -270,13 +286,14 @@ function deriveEventRow(raw, venueMap) {
     time_display: timeDisplay,
     is_free: isFree,
     price_from: priceFrom,
+    event_url: eventUrl,
     ticket_url: ticketUrl,
     image_url: imageUrl,
     source: "Resident Advisor",
     note: hasAddress ? null : "Venue location not yet announced by the event.",
     status: "approved",
   };
-  return { row, errors: [] };
+  return { row: applyVenueCategoryPolicy(sanitizeRowText(row)), errors: [] };
 }
 
 // ---------------------------------------------------------------------------
@@ -494,6 +511,7 @@ async function patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 // linking.js), with the real implementation wired as the default so
 // production call sites (api/cron-ra.js) don't need to pass anything extra.
 
+const DEFAULT_MAX_RETRY_PER_RUN = 10; // listing-only candidates re-queued for a detail fetch, on top of the new-id cap
 const DEFAULT_MAX_NEW_PER_RUN = 30; // same cap the old prompt's Step 4 used
 
 // Listing-card-level fields the browser walk can plausibly read straight
@@ -658,6 +676,14 @@ function parseRaListingDate(dateStr, now = new Date()) {
 // here IS the session id a completeRaSyncSession() call later depends on,
 // so handing back a diff with no way to ever complete it would silently
 // break the two-phase contract. See RaSyncSessionError below.
+function isListingOnlyCandidateNeedingDetail(row) {
+  if (!row || row.status !== "pending_review" || row.source !== "Resident Advisor") return false;
+  const note = String(row.internal_note || "");
+  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || isOwnerSuppliedRow(row)) return false;
+  const blank = (v) => v === null || v === undefined || v === "";
+  return blank(row.time_display) || blank(row.venue_address_raw);
+}
+
 async function startRaSyncSession(opts) {
   const {
     SUPABASE_URL,
@@ -665,6 +691,8 @@ async function startRaSyncSession(opts) {
     candidateIds,
     listingMetadata,
     maxNewPerRun = DEFAULT_MAX_NEW_PER_RUN,
+    maxRetryPerRun = DEFAULT_MAX_RETRY_PER_RUN,
+    nowMs = Date.now(),
     fetchFn = fetch,
     lookupExistingRowsFn = lookupExistingRows,
     lookupKnownSourceIdsFn = lookupKnownSourceIds,
@@ -674,7 +702,7 @@ async function startRaSyncSession(opts) {
   const parsed = parseCandidateIds(candidateIds);
 
   const existingRows = await lookupExistingRowsFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, parsed, {
-    select: "external_id",
+    select: "external_id,status,source,time_display,venue_address_raw,internal_note",
   });
   const existingIdSet = new Set(existingRows.keys());
 
@@ -698,6 +726,15 @@ async function startRaSyncSession(opts) {
   const knownIds = computeKnownIds(parsed, existingIdSet);
   const allNewIds = computeCandidateNewIds(parsed, existingIdSet);
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
+  // Listing-only candidates (ra-candidate-promotion rows) already have an events row, so the diff above calls
+  // them "known" and their detail page was never fetched: time/address stayed blank forever. Re-queue those, and
+  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected and editorial-hold rows (shared isOwnerSuppliedRow) are skipped, so they never use a retry slot.
+  // Eligible ids are sorted, then rotated by day, so a row whose detail page never loads (removed, blocked) cannot
+  // hold the 10 retry slots forever and starve the rest of the backlog.
+  const eligible = parsed.filter((id) => isListingOnlyCandidateNeedingDetail(existingRows.get(id))).sort();
+  const offset = eligible.length ? Math.floor(nowMs / 86400000) % eligible.length : 0;
+  const retryIds = eligible.slice(offset).concat(eligible.slice(0, offset)).slice(0, maxRetryPerRun);
+  const idsToFetch = newIdsThisRun.concat(retryIds);
   const cleanListingMetadata = sanitizeListingMetadata(parsed, listingMetadata);
 
   const runHandle = await startRunFn(SLUGS.residentAdvisor);
@@ -713,7 +750,8 @@ async function startRaSyncSession(opts) {
     knownCount: knownIds.length,
     allNewCount: allNewIds.length,
     allNewIds, // full, UNCAPPED backlog -- every genuinely-new id, not just this run's detail-fetch batch. The 30/run cap is a detail-fetch workload limit, not a discovery limit -- a blocked or partial run must never strand ids this call already knows are new.
-    newIds: newIdsThisRun,
+    newIds: idsToFetch, // complete() accepts only ids listed here; retry ids ride along so the merge path can run
+    retryIds,
     listingMetadata: cleanListingMetadata, // listing-card evidence (title/date/venue/etc, whatever the device actually read off the listing page), keyed by id, for EVERY candidate submitted -- persisted here, before any detail page is ever opened, so a DataDome block partway through detail acquisition can never erase it.
     startedAt: new Date().toISOString(),
   };
@@ -724,9 +762,10 @@ async function startRaSyncSession(opts) {
     candidateCount: parsed.length,
     knownCount: knownIds.length,
     newCount: newIdsThisRun.length,
+    retryCount: retryIds.length,
     allNewCount: allNewIds.length,
     allNewIds, // uncapped -- lets the caller persist/track the full backlog, not just this run's capped detail-fetch batch
-    ids: newIdsThisRun,
+    ids: idsToFetch,
     listingMetadataCount: Object.keys(cleanListingMetadata).length,
   };
 }
@@ -751,7 +790,7 @@ async function startRaSyncSession(opts) {
 // this path.
 const MERGE_BLANK_FIELDS = [
   "description", "venue_id", "venue_name_raw", "venue_address_raw", "venue_city_raw",
-  "ticket_url", "image_url", "end_date", "time_display", "is_free", "price_from",
+  "event_url", "ticket_url", "image_url", "end_date", "time_display", "is_free", "price_from",
 ]; // fields a later successful RA detail fetch may fill in ONLY if still blank -- see completeRaSyncSession's own updated comment.
 
 async function completeRaSyncSession(opts) {
@@ -760,6 +799,7 @@ async function completeRaSyncSession(opts) {
     SUPABASE_SERVICE_ROLE_KEY,
     runId,
     events,
+    detailReport = null, // optional device report: {attempted, blocked, blockedIds}
     fetchFn = fetch,
     finishRunFn = finishRun,
     buildVenueNameToIdMapFn = buildVenueNameToIdMap,
@@ -853,7 +893,7 @@ async function completeRaSyncSession(opts) {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rowsToUpsert.map((r) => r.row.external_id),
-        { select: `external_id,status,${MERGE_BLANK_FIELDS.join(",")}` }
+        { select: `external_id,status,source,internal_note,${MERGE_BLANK_FIELDS.join(",")}` }
       );
 
       // No existing row at all (the normal, overwhelmingly common case --
@@ -866,7 +906,10 @@ async function completeRaSyncSession(opts) {
       const toMerge = [];
       for (const entry of rowsToUpsert) {
         const existing = existingRows.get(entry.row.external_id);
-        if (existing) toMerge.push({ ...entry, existing });
+        // An owner-supplied or editorially held row is never filled by automation, not even a blank (the owner may have
+        // left it blank on purpose). Reported as skipped so the session still counts it as addressed.
+        if (existing && isOwnerSuppliedRow(existing)) skipped.push({ id: entry.id, reason: "OWNER_PROTECTED" });
+        else if (existing) toMerge.push({ ...entry, existing });
         else toInsert.push(entry);
       }
 
@@ -980,6 +1023,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors.slice(0, 20),
     duplicateDetail: duplicates.slice(0, 20),
+    importedIds: imported.map((x) => x.id),
+    ...(detailReport ? { detailReport } : {}),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, run.id, finalSessionData, fetchFn);
 
@@ -999,6 +1044,8 @@ async function completeRaSyncSession(opts) {
     errors: errors.length,
     errorDetail: errors,
     duplicateDetail: duplicates,
+    importedIds: imported.map((x) => x.id),
+    submitted: events.length,
   };
 }
 
@@ -1013,6 +1060,7 @@ module.exports = {
   deriveTimeDisplayAndEndDate,
   parseAddressText,
   deriveOffer,
+  deriveEventUrl,
   deriveTicketUrl,
   deriveImageUrl,
   deriveDescription,

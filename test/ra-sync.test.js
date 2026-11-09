@@ -114,11 +114,19 @@ async function run() {
   console.log("PASS: deriveOffer -- price=0 is explicit free, missing price is unknown (never assumed free)");
 
   {
-    assert.strictEqual(lib.deriveTicketUrl("2461133", null), "https://ra.co/events/2461133");
-    assert.strictEqual(lib.deriveTicketUrl("2461133", "https://ra.co/events/2461133"), "https://ra.co/events/2461133");
-    assert.strictEqual(lib.deriveTicketUrl("2461133", "not-a-url"), "https://ra.co/events/2461133");
+    // event_url: always RA's own event page, from the id alone.
+    assert.strictEqual(lib.deriveEventUrl("2461133"), "https://ra.co/events/2461133");
+    assert.strictEqual(lib.deriveEventUrl("ra-2461133"), "https://ra.co/events/2461133");
+    assert.strictEqual(lib.deriveEventUrl("not-an-id"), null, "never a made-up URL");
+    // ticket_url: only a real, non-RA, non-generic ticketing destination; else null.
+    assert.strictEqual(lib.deriveTicketUrl(null), null);
+    assert.strictEqual(lib.deriveTicketUrl(undefined), null);
+    assert.strictEqual(lib.deriveTicketUrl("not-a-url"), null);
+    assert.strictEqual(lib.deriveTicketUrl("https://ra.co/events/2461133"), null, "an RA page is the event page, not a ticketing destination");
+    assert.strictEqual(lib.deriveTicketUrl("https://tickets.example.com/"), null, "a bare homepage is not a ticketing destination");
+    assert.strictEqual(lib.deriveTicketUrl("https://tickets.example.com/e/123"), "https://tickets.example.com/e/123");
   }
-  console.log("PASS: deriveTicketUrl");
+  console.log("PASS: deriveEventUrl / deriveTicketUrl -- event page in event_url, ticket_url only for a verified ticketing destination");
 
   {
     assert.strictEqual(lib.deriveImageUrl("https://images.ra.co/abc.png"), "https://images.ra.co/abc.png");
@@ -191,7 +199,8 @@ async function run() {
     assert.strictEqual(row.time_display, "9:00 PM–2:00 AM");
     assert.strictEqual(row.is_free, false);
     assert.strictEqual(row.price_from, null);
-    assert.strictEqual(row.ticket_url, "https://ra.co/events/2461133");
+    assert.strictEqual(row.event_url, "https://ra.co/events/2461133");
+    assert.strictEqual(row.ticket_url, null, "no verified ticketing destination -- never an RA page, never invented");
     assert.strictEqual(row.image_url, "https://images.ra.co/4dc17dd530ddabe44b827c729b0bac137d06890f.png");
     assert.strictEqual(row.source, "Resident Advisor");
     assert.strictEqual(row.note, null);
@@ -397,6 +406,59 @@ async function run() {
     assert.strictEqual(patchedSessionData.phase, "started");
   }
   console.log("PASS: startRaSyncSession -- dedupe, known/new diff, legacy exclusion, session_data persisted, cap-ready shape");
+
+  {
+    // Listing-only candidate rows (ra-candidate-promotion) with a blank time or address are re-queued for detail;
+    // complete rows, approved rows, non-RA rows and owner-corrected rows are not.
+    const cand = (o) => Object.assign({ status: "pending_review", source: "Resident Advisor", time_display: null, venue_address_raw: null,
+      internal_note: "RA_PROVENANCE | v1 | ra_id=x | status=unresolved" }, o);
+    const rows = new Map([
+      ["ra-1", cand({})],
+      ["ra-2", cand({ time_display: "20:00", venue_address_raw: "2545 Bagley" })],
+      ["ra-3", cand({ status: "approved" })],
+      ["ra-4", cand({ source: "Other" })],
+      ["ra-5", cand({ internal_note: "RA_PROVENANCE | status=unresolved\nOWNER-CORRECTION x" })],
+      ["ra-6", cand({ time_display: "21:00" })],
+      ["ra-8", cand({ internal_note: "RA_PROVENANCE | status=unresolved\nEDITORIAL-HOLD keep blank" })],
+      ["ra-9", cand({ internal_note: "RA_PROVENANCE | status=unresolved\neditorial_hold x" })],
+    ]);
+    let sd;
+    const result = await lib.startRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      candidateIds: ["ra-1", "ra-2", "ra-3", "ra-4", "ra-5", "ra-6", "ra-7", "ra-8", "ra-9"],
+      fetchFn: async (u, o) => { sd = JSON.parse(o.body).session_data; return { ok: true, text: async () => "" }; },
+      lookupExistingRowsFn: async (u, k, ids) => new Map(ids.filter((i) => rows.has(i)).map((i) => [i, rows.get(i)])),
+      lookupKnownSourceIdsFn: async () => new Set(),
+      startRunFn: async () => ({ runId: "run-r", startedAtMs: Date.now() }),
+    });
+    assert.deepStrictEqual(result.ids.sort(), ["ra-1", "ra-6", "ra-7"]); // ra-7 new; ra-1, ra-6 retry
+    assert.strictEqual(result.newCount, 1);
+    assert.strictEqual(result.retryCount, 2);
+    assert.deepStrictEqual(sd.retryIds.sort(), ["ra-1", "ra-6"]);
+    assert.deepStrictEqual(sd.newIds.sort(), ["ra-1", "ra-6", "ra-7"]); // complete() accepts retry ids
+  }
+  console.log("PASS: startRaSyncSession -- re-queues listing-only candidates missing time/address, skips complete/approved/non-RA/owner-corrected");
+  {
+    // cap + rotation: 3 eligible, cap 1 -> different day picks a different row (no permanent starvation)
+    const mk = () => ({ status: "pending_review", source: "Resident Advisor", time_display: null, venue_address_raw: null,
+      internal_note: "RA_PROVENANCE | status=unresolved" });
+    const rows = new Map([["ra-1", mk()], ["ra-2", mk()], ["ra-3", mk()]]);
+    const picks = new Set();
+    for (const day of [0, 1, 2]) {
+      const r = await lib.startRaSyncSession({
+        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds: ["ra-3", "ra-1", "ra-2"], maxRetryPerRun: 1, nowMs: day * 86400000,
+        fetchFn: async () => ({ ok: true, text: async () => "" }),
+        lookupExistingRowsFn: async (u, k, ids) => new Map(ids.filter((i) => rows.has(i)).map((i) => [i, rows.get(i)])),
+        lookupKnownSourceIdsFn: async () => new Set(),
+        startRunFn: async () => ({ runId: "run-c", startedAtMs: Date.now() }),
+      });
+      assert.strictEqual(r.retryCount, 1);
+      assert.strictEqual(r.newCount, 0);
+      picks.add(r.ids[0]);
+    }
+    assert.strictEqual(picks.size, 3);
+  }
+  console.log("PASS: startRaSyncSession -- retry cap rotates daily, never starves");
 
   {
     // identity-widening: a candidate with no row under its own

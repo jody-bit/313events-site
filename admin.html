@@ -22,7 +22,7 @@
 <style>
   :root{
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --ok:#3fbf6a; --ok-ink:#06210f; --bad:#e07a72; --bad-ink:#3a1f1f;
@@ -132,6 +132,59 @@
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
 
+
+  /* Submissions dashboard, Step 1 (2026-10-17, read-only). Four lanes, provenance chips, reasons, filters.
+     Same dark tokens and badge language as the rest of this page. Derived values carry a dotted underline
+     and a tooltip; nothing here is a stored field unless the API supplied it. */
+  .sub-lanes{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 12px;border-bottom:1px solid var(--line);}
+  .sub-lane{background:none;border:none;border-bottom:2px solid transparent;color:var(--ink-soft);padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .sub-lane:hover{color:var(--ink);}
+  .sub-lane.active{color:var(--ink);border-bottom-color:var(--accent);}
+  .sub-lane .n{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 7px;background:var(--panel-alt);color:var(--ink-soft);border:1px solid var(--line);}
+  .sub-lane[data-lane="person"] .n{background:#443a1a;color:#e8c96b;border-color:#443a1a;}
+  .sub-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px;}
+  .sub-filters select,.sub-filters input{padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--panel-alt);color:var(--ink);font-size:12.5px;font-family:inherit;}
+  .sub-filters input{min-width:190px;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .sub-presets{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;}
+  .sub-presets button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink-soft);border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer;font-family:inherit;}
+  .sub-presets button.on{color:var(--on-accent);background:var(--accent);border-color:var(--accent);}
+  .sub-row{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 12px;margin-bottom:8px;}
+  .sub-row h3{margin:0 0 3px;font-size:14.5px;}
+  .sub-meta{font-size:12.5px;color:var(--ink-soft);}
+  .sub-chips{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 4px;}
+  .sub-chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--panel-alt);color:var(--ink-soft);border:1px solid var(--line);white-space:nowrap;}
+  .sub-chip.origin-automated{color:#8cc4ef;border-color:#1f3344;background:#1f3344;}
+  .sub-chip.origin-human{color:var(--ok);border-color:#1a3f2a;background:#1a3f2a;}
+  .sub-chip.origin-admin{color:var(--ink);}
+  .sub-chip.np{font-weight:600;text-transform:none;font-style:italic;}
+  .sub-chip[data-derived="1"],.sub-derived{border-bottom:1px dotted var(--ink-soft);cursor:help;}
+  .sub-reason{font-size:12.5px;color:var(--ink);margin:2px 0 0;}
+  .sub-ready{color:var(--muted,#9aa3ad);}
+  .sub-reason .rc{color:#e8c96b;font-weight:700;}
+  .sub-times{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  .sub-edit-btn{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit;margin-left:6px;}
+  .sub-edit-panel{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel-alt);}
+  .sub-edit-panel fieldset{border:0;margin:0 0 10px;padding:0;min-width:0;}
+  .sub-edit-panel legend{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);padding:0 0 4px;}
+  .sub-edit-panel label{display:block;font-size:12px;color:var(--ink-soft);margin:6px 0 2px;}
+  .sub-edit-panel input,.sub-edit-panel textarea{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;}
+  .sub-edit-panel textarea{min-height:90px;resize:vertical;}
+  .sub-edit-panel .changed{border-color:var(--accent);}
+  .sub-edit-evidence{font-size:12px;color:var(--ink-soft);margin:8px 0;padding:8px 10px;border:1px dashed var(--line);border-radius:6px;overflow-wrap:anywhere;}
+  .sub-edit-diff,.sub-edit-msg{font-size:12.5px;margin:6px 0;overflow-wrap:anywhere;}
+  .sub-edit-msg.err{color:#e8a0a0;}
+  .sub-edit-msg.ok{color:var(--ok);}
+  .sub-edit-msg.warn{color:#e8c96b;}
+  .sub-edited{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  .sub-row details summary{cursor:pointer;color:var(--ink-soft);font-size:12px;margin-top:6px;}
+  .sub-row .actions{margin-top:8px;}
+  .sub-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;padding:10px 12px;border:1px dashed var(--line);border-radius:8px;}
+  .sub-group{margin-bottom:14px;}
+  .sub-group>summary{cursor:pointer;font-size:13px;color:var(--ink);padding:6px 0;}
+  .sub-src{border:1px solid var(--bad);background:var(--bad-ink);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px;}
+  .sub-policy{border:1px solid #443a1a;background:#2a2410;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;}
+
   section.block{margin-top:36px;}
   section.block h2{font-size:15px;margin:0 0 4px;font-family:'Archivo Narrow',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.01em;}
   section.block .sub{color:var(--ink-soft);font-size:13px;margin-bottom:14px;}
@@ -237,7 +290,7 @@
       <button type="button" class="tab-btn" data-tab="health" onclick="showTab('health')">Smoke tests <span class="tab-badge hidden" id="badge-health">0</span></button>
       <button type="button" class="tab-btn" data-tab="tower" onclick="showTab('tower')">Control tower <span class="tab-badge hidden" id="badge-tower">0</span></button>
       <button type="button" class="tab-btn" data-tab="editorial" onclick="showTab('editorial')">Press coverage <span class="tab-badge hidden" id="badge-editorial">0</span></button>
-      <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Event submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
+      <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
       <button type="button" class="tab-btn" data-tab="followup" onclick="showTab('followup')">Needs follow-up <span class="tab-badge hidden" id="badge-followup">0</span></button>
       <button type="button" class="tab-btn" data-tab="feeds" onclick="showTab('feeds')">Feed sources <span class="tab-badge hidden" id="badge-feeds">0</span></button>
       <button type="button" class="tab-btn" data-tab="duplicates" onclick="showTab('duplicates')">Duplicates <span class="tab-badge hidden" id="badge-duplicates">0</span></button>
@@ -300,12 +353,39 @@
         <div class="refresh" style="margin:0 0 12px;"><button id="autoLinkBtn" onclick="autoLinkEditorial()">Auto-Link</button><span class="refresh-status" id="autoLinkStatus"></span></div>
         <div id="editorialList"></div>
       </section>
+      <section class="block" id="linkReviewBlock">
+        <h2>Article–event links to verify</h2>
+        <div class="sub">The site only shows an article as covering an event once that pairing is <b>verified</b>. Pairings the matcher found but could not verify wait here, hidden from the public. Confirm a pairing only if the article is really about that specific event (same event, place and dates); reject it if it is a different event with a similar name. Nothing is deleted: rejected pairings stay on record, are never re-created automatically, and can be reopened.</div>
+        <div class="refresh" style="margin:0 0 12px;"><label><input type="checkbox" id="linkShowRejected" onchange="loadLinkReview()"> Also show rejected</label> <label style="margin-left:14px;"><input type="checkbox" id="linkShowHidden" onchange="renderLinkReview(linkReviewData.links, linkReviewData.counts)"> Show hidden</label></div>
+        <div class="meta" id="linkHiddenLine" style="margin:0 0 12px;"></div>
+        <div id="linkReviewList"></div>
+      </section>
     </div>
 
     <div class="tab-panel active" data-tab-panel="submissions">
       <section class="block" style="margin-top:0;">
-        <h2>Event submissions</h2>
-        <div class="sub">Single events submitted via submit.html — approve to publish, reject to discard.</div>
+        <h2>Submissions</h2>
+        <div class="sub">Where each pending record came from, why it is waiting, and who has to act. Technical failures and source-policy holds are kept apart from decisions that need a person. Approve and Reject behave as before. Edit saves a correction and never approves unless you choose Save and approve.</div>
+        <div class="sub-lanes" id="subLanes" role="tablist" aria-label="Submission lanes">
+          <button type="button" class="sub-lane active" role="tab" data-lane="person" onclick="subSetLane('person')">Needs a person <span class="n" id="subN-person">0</span></button>
+          <button type="button" class="sub-lane" role="tab" data-lane="blocked" onclick="subSetLane('blocked')">Blocked at source <span class="n" id="subN-blocked">0</span></button>
+          <button type="button" class="sub-lane" role="tab" data-lane="auto" onclick="subSetLane('auto')">Handled automatically <span class="n" id="subN-auto">n/a</span></button>
+          <button type="button" class="sub-lane" role="tab" data-lane="history" onclick="subSetLane('history')">History <span class="n" id="subN-history">n/a</span></button>
+        </div>
+        <div class="sub-presets" id="subPresets">
+          <button type="button" data-preset="automated" onclick="subPreset('automated')">Automated sources</button>
+          <button type="button" data-preset="human" onclick="subPreset('human')">Human submissions</button>
+          <button type="button" data-preset="review" onclick="subPreset('review')">Review required</button>
+          <button type="button" data-preset="history" onclick="subPreset('history')">Processing history</button>
+        </div>
+        <div class="sub-filters" id="subFilters">
+          <label class="sr-only" for="subQ">Search submissions</label><input type="search" id="subQ" placeholder="Search title, venue, source" oninput="subFilterChanged()">
+          <label class="sr-only" for="subOrigin">Origin</label><select id="subOrigin" onchange="subFilterChanged()"><option value="">Any origin</option><option value="automated">Automated</option><option value="human">Human</option><option value="admin">Admin</option><option value="unknown">Not provided</option></select>
+          <label class="sr-only" for="subSource">Source</label><select id="subSource" onchange="subFilterChanged()"><option value="">Any source</option></select>
+          <label class="sr-only" for="subReason">Reason</label><select id="subReason" onchange="subFilterChanged()"><option value="">Any reason</option></select>
+          <label class="sr-only" for="subAdded">Added</label><select id="subAdded" onchange="subFilterChanged()"><option value="">Added any time</option><option value="1">Last 24 hours</option><option value="7">Last 7 days</option></select>
+        </div>
+        <div class="refresh-status" id="subStatus" aria-live="polite" style="margin:0 0 10px;"></div>
         <div id="list"></div>
       </section>
     </div>
@@ -345,9 +425,9 @@
     <div class="tab-panel" data-tab-panel="live">
       <section class="block" style="margin-top:0;">
         <h2>Live events</h2>
-        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
+        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — correct a wrong value with Edit, or remove it if it doesn't fit the brand. A correction keeps the event live and importers will not overwrite the corrected fields. Removing is reversible from "Recently hidden" below.</div>
         <div class="search-row">
-          <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
+          <input type="text" id="liveSearchInput" placeholder="Search by title, venue or source…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
           <button onclick="searchLiveEvents()">Search</button>
         </div>
         <div id="liveResults"></div>
@@ -472,6 +552,7 @@ async function loadControlTower() {
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'HTTP ' + resp.status));
     TOWER = data;
+    subTowerArrived(); // lanes depend only on TOWER, so re-derive even if the tower's own rendering fails below
     renderControlTower(data);
     return true;
   } catch (e) {
@@ -499,7 +580,7 @@ function renderControlTower(data) {
       + '<td><b>' + escapeHtml(s.label.replace(/\s*\(.*\)$/, '')) + '</b><br>' + towerChip(s.status) + '</td>'
       + '<td>' + (s.schedule ? escapeHtml(s.schedule.expr || 'external') + (s.schedule.cadenceHours ? ' (' + s.schedule.cadenceHours + 'h)' : '') : '<b style="color:var(--bad)">none</b>') + '</td>'
       + '<td>' + (s.runLogged ? escapeHtml(towerWhen(s.lastAttemptAt)) + ' ' + escapeHtml(s.lastOutcome || '') + '<br>ok ' + escapeHtml(towerWhen(s.lastSuccessAt)) : 'no run log') + '</td>'
-      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') : '—') + '</td>'
+      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') + (s.lastWritten === 0 && s.zeroWrite && s.zeroWrite.known ? '<br><small>' + escapeHtml(s.zeroWrite.text) + '</small>' : '') : '—') + '</td>'
       + '<td style="white-space:nowrap">' + dim(s.dimensions || {}) + '</td>'
       + '<td>' + s.upcomingPublic + (s.upcomingPending ? ' (+' + s.upcomingPending + ' pending)' : '') + '</td>'
       + '<td>' + towerPct(s.reseenShare) + '<br>' + escapeHtml(towerWhen(s.lastSeenPublicAt)) + (s.missingLinkRate !== null ? '<br>weak links ' + towerPct(s.missingLinkRate) : '') + '</td>'
@@ -673,8 +754,36 @@ async function decideDuplicate(action, firstId, secondId, btn) {
 const NO_ADVANCE_TICKET_STATUSES = new Set(['door', 'rsvp_no_advance_sale', 'free', 'registration_required']);
 
 function getMissingFields(e) {
+  // Inline copy of api/_lib/description-quality.js (a browser script cannot
+  // require it; test/description-quality.test.js asserts the two agree).
+  // A nonempty description is not automatically a useful one: placeholders,
+  // bare links, bare times, cut-off text and restated titles still need an
+  // editor. Never rewrites text -- it only reports.
+  function isUsefulDescription(description, title) {
+    const d = String(description || '').trim();
+    if (!d) return false;
+    const words = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    const PLACEHOLDER_RE = /^(?:tba|tbd|n\/?a|none|no description(?: available)?|(?:more\s+)?(?:deets|details|info(?:rmation)?|link|list|lineup|line-up|times?)\b[^.!?]{0,30}\b(?:coming soon|dropping soon|to come|tba|tbd|to be announced)|(?:description\s+)?coming soon|(?:deets|details|info)\s+(?:soon|tba|tbd)|stay tuned)[\s.!:]*$/i;
+    const SOON_RE = /\b(?:coming soon|dropping soon|deets|details to come|tba|tbd)\b/i;
+    const BARE_URL_RE = /^(?:https?:\/\/|www\.)\S+$/i;
+    const TIME = '\\d{1,2}(?::\\d{2})?\\s*(?:am|pm|a\\.m\\.|p\\.m\\.)?';
+    const TIME_ONLY_RE = new RegExp('^(?:doors?\\s*:?\\s*)?' + TIME + '(?:\\s*[-–—]\\s*|\\s+to\\s+)' + TIME + '$|^(?:doors?\\s*:?\\s*)?\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)$', 'i');
+    const FILLER = ['a', 'an', 'the', 'event', 'events', 'night', 'day', 'gg', 'presents', 'present', 'special', 'open', 'of', 'at', 'for', 'and', 'gotta', 'gacha', 'gottagacha'];
+    if (PLACEHOLDER_RE.test(d)) return false;
+    if (SOON_RE.test(d) && words(d).length <= 8) return false;
+    if (BARE_URL_RE.test(d) || TIME_ONLY_RE.test(d)) return false;
+    let depth = 0;
+    for (const ch of d) { if (ch === '(') depth++; else if (ch === ')') depth = Math.max(0, depth - 1); }
+    if (depth > 0) return false;
+    if (/(?:[(,;:&\-–]|\b(?:and|or|with|featuring|feat\.?|plus|the|a|an|of|at|in|on|by|from|to))\s*$/i.test(d)) return false;
+    const titleWords = words(title);
+    const dw = words(d);
+    if (!dw.some((w) => FILLER.indexOf(w) === -1 && titleWords.indexOf(w) === -1)) return false;
+    if (/#\s*\d|\b(?:vol(?:ume)?|no|part|edition|ep(?:isode)?)\.?\s*\d/i.test(String(title || '')) && dw.length <= 4 && !dw.some((w) => titleWords.indexOf(w) !== -1)) return false;
+    return true;
+  }
   const missing = [];
-  if (!e.description || !e.description.trim()) missing.push('description');
+  if (!e.description || !e.description.trim() || !isUsefulDescription(e.description, e.title)) missing.push('description');
   // Satisfied either by the event's own raw fields (the fallback path for
   // when there's no venue_id match at all — see schema.sql's own comment
   // on venue_name_raw) or, when this event IS linked to a real venues row,
@@ -1065,6 +1174,14 @@ async function autoRepairFollowup() {
       // recovery -- itself failed (e.g. the live Squarespace feed was
       // unreachable). That failure must never be silently absorbed into
       // what otherwise reads as a clean success line.
+      // #256: steps now run under a time budget. A run that did not finish
+      // every step says so and names each step that did not complete.
+      if (data.partial) {
+        const notDone = (data.steps || []).filter((st) => st.status !== 'completed')
+          .map((st) => `${st.label} (${String(st.status).replace(/_/g, ' ')})`);
+        summary += ` PARTIAL RUN — not all steps completed${notDone.length ? ': ' + notDone.join(', ') : ''}. Run Auto-Repair again to continue.`;
+        statusEl.classList.add('refresh-error');
+      }
       if (data.outerLimitsDescriptionError) {
         summary += ` Outer Limits description repair failed: ${data.outerLimitsDescriptionError}.`;
         statusEl.classList.add('refresh-error');
@@ -1325,6 +1442,21 @@ function formatRaCounts(run) {
   return parts.join(', ');
 }
 
+// Four-count RA telemetry line. Absent values read "unknown", never 0/success.
+// Listing promotions are pending_review (hidden) and never counted as public.
+function formatRaTelemetry(run) {
+  const t = run && run.telemetry;
+  if (!t || !t.known) return 'Run detail (listing / detail fetch / pending_review / public): unknown — not recorded for this run';
+  const c = t.counts || {};
+  const v = (x) => (x === null || x === undefined ? 'unknown' : x);
+  const per = Array.isArray(t.perCandidate) ? t.perCandidate : [];
+  const blocked = per.filter((p) => p.status === 'blocked' || p.detailBlocked).length;
+  const never = per.filter((p) => p.status === 'never_attempted').length;
+  let line = `Listing: ${v(c.listingCandidates)} candidates, ${v(c.listingNew)} new · Detail fetch: ${v(c.detailSucceeded)} succeeded, ${v(c.detailBlocked)} blocked (attempted ${v(c.detailAttempted)}) · Hidden pending_review: ${v(c.pendingReview)}, deferred by cap: ${v(c.deferredByCap)} · Public: ${v(c.public)}`;
+  if (per.length) line += ` · Candidates blocked ${blocked}, never attempted ${never}`;
+  return line;
+}
+
 function renderRaSync(data) {
   const banner = document.getElementById('raSyncBanner');
   const { latestRun, lastSuccessfulRun } = data;
@@ -1357,6 +1489,11 @@ function renderRaSync(data) {
     `;
   }
 
+  banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">${escapeHtml(formatRaTelemetry(latestRun))}</div>`;
+  if (latestRun.telemetry && latestRun.telemetry.summaryText) {
+    banner.innerHTML += `<div class="checked-at" style="margin-top:4px;">${escapeHtml(latestRun.telemetry.summaryText)}</div>`;
+  }
+
   // Surface the last time it genuinely worked whenever the latest run
   // itself wasn't a clean success -- an incomplete or failed latest run
   // should never hide how long it's actually been since RA sync last
@@ -1371,6 +1508,332 @@ function renderRaSync(data) {
   banner.style.display = 'block';
 }
 
+// ---- Submissions dashboard, Step 1 (2026-10-17, read-only) ----
+// Spec: /mnt/project-files/pipeline-review-2026-10-17/02-experience-dashboard-spec-step1-readonly.md (incl. section K).
+// Four lanes: Needs a person, Blocked at source, Handled automatically, History. READ-ONLY: nothing here changes a row's
+// status; Approve/Reject below call the same review() as before. Provenance (origin, source, method, reason) is DERIVED in
+// this file from fields the queue already returns, and every derived chip says so. Nothing is invented: an unknown value
+// reads "Not provided", and updated_at is never shown as a processing time. If the API ever supplies stored fields
+// (e.prov, e.lane, e.reasons) they win over the derivation.
+
+// Mirrors api/_lib/source-health.js ATTRIBUTION (test/admin-submissions-dashboard.test.js fails if they drift).
+const SUB_CONNECTORS = [
+  { slug: 'feeds', prefix: 'feed-' }, { slug: 'localist', prefix: 'localist-' }, { slug: 'visitdetroit', prefix: 'vd-' },
+  { slug: 'gottagacha', prefix: 'gottagacha-' }, { slug: 'resident-advisor', prefix: 'ra-' }, { slug: 'motorcitywine', prefix: 'mcw-' },
+  { slug: 'outerlimitslounge', prefix: 'oll-' }, { slug: 'redford-theatre', prefix: 'redford-' }, { slug: 'planetanttheatre', prefix: 'crowdwork-' },
+  { slug: 'halo', prefix: 'halo-' }, { slug: 'trinosophes', prefix: 'trinosophes-' }, { slug: 'bigtimebingo', prefix: 'big-' },
+  { slug: 'lagerhouse', prefix: 'lagerhouse-' }, { slug: 'dossin', prefix: 'dossin-' }, { slug: 'bagleycommunity', prefix: 'bagleycc-' },
+  { slug: 'antonartcenter', prefix: 'aac-' }, { slug: 'oldmiami', prefix: 'oldmiami-' }, { slug: 'wdet', prefix: 'wdet-' },
+  { slug: 'playgrounddetroit', prefix: 'playgrounddetroit-' }, { slug: 'poppspacking', prefix: 'poppspacking-' },
+  { slug: 'belle-isle-nature-center', prefix: 'bink-' }, { slug: 'cinema-detroit', prefix: 'cinemadetroit-' }, { slug: 'metrotimes', prefix: 'metrotimes-' },
+  { slug: 'detroitmonthofdesign', prefix: 'dmod-' }, { slug: 'detroittraining', prefix: 'dtc-' }, { slug: 'eventbrite-org', prefix: 'eventbrite-' },
+  { slug: 'ticketmaster', source: 'Ticketmaster' },
+];
+// Origin by the `source` text of rows that are not connector output. Anything not matched and not a connector row is "Not provided".
+const SUB_ORIGIN_BY_SOURCE = { 'Venue Submission': 'human', 'Manual': 'admin', 'Editorial Review': 'admin' };
+// Ingestion method only where the code says so. Everything else reads "Not provided" until Platform's registry fills it.
+const SUB_METHOD_BY_SLUG = { feeds: 'Feed (ICS/RSS)', ticketmaster: 'API', visitdetroit: 'API (search index)', 'eventbrite-org': 'API', 'resident-advisor': 'Sync' };
+const SUB_ORIGIN_LABELS = { automated: 'Automated', human: 'Human', admin: 'Admin' };
+const SUB_NP = 'Not provided';
+
+function subSlug(row) {
+  const ext = typeof row.external_id === 'string' ? row.external_id : '';
+  for (const c of SUB_CONNECTORS) {
+    if (c.prefix && ext.startsWith(c.prefix)) return c.slug;
+    if (c.source && row.source === c.source) return c.slug;
+  }
+  return null;
+}
+function subIsDearborn(row) { return /^\s*city of dearborn(?!\s+heights)\b/i.test(String((row && row.source) || '')); }
+
+function subDeriveProv(row) {
+  const slug = subSlug(row);
+  let origin = null;
+  if (SUB_ORIGIN_BY_SOURCE[row.source]) origin = SUB_ORIGIN_BY_SOURCE[row.source];
+  else if (slug || row.feed_source_id) origin = 'automated';
+  let method = null;
+  if (slug && SUB_METHOD_BY_SLUG[slug]) method = SUB_METHOD_BY_SLUG[slug];
+  else if (row.feed_source_id) method = SUB_METHOD_BY_SLUG.feeds;
+  else if (row.source === 'Venue Submission') method = 'Submission form';
+  else if (origin === 'admin') method = 'Manual entry';
+  return {
+    origin: origin, originDerived: true,
+    source: row.source || null, slug: slug,
+    method: method, methodDerived: true,
+    status: row.status || null,
+    added_at: row.created_at || null,
+    link_checked_at: row.link_checked_at || null,
+  };
+}
+
+// Reasons come only from things the pipeline or a person actually recorded or that a fixed rule can read off the row.
+function subDeriveReasons(row) {
+  const out = [];
+  const note = typeof row.note === 'string' ? row.note : '';
+  const m = note.match(/^Held for review:\s*(.+?)\.\s*Source gave no more; nothing was inferred\.?\s*$/s);
+  if (m) out.push({ code: 'pipeline_hold', text: m[1], derived: false, basis: 'recorded in the row note by the feed pipeline' });
+  if (row.source === 'Venue Submission') out.push({ code: 'human_submission', text: 'Human submission awaiting first review', derived: true, basis: 'source is Venue Submission' });
+  const q = row.queue_class;
+  if (q && q.class && q.class !== 'public_event') out.push({ code: q.class, text: (QUEUE_CLASS_LABELS[q.class] || q.class) + ': ' + q.reason, derived: true, basis: 'Stage 2 title classifier (City of Dearborn rows only)' });
+  if (q && q.cancelled) out.push({ code: 'cancelled_in_title', text: 'Title says cancelled or postponed', derived: true, basis: 'title wording; not a confirmed cancellation' });
+  const venue = String(row.venue_name_raw || '').trim();
+  if (!row.venue_id && !String(row.venue_address_raw || '').trim() && (!venue || /^(venue )?(tba|tbd)$/i.test(venue))) out.push({ code: 'missing_location', text: 'Venue not provided', derived: true, basis: 'no venue, address or name on the row' });
+  if (!row.time_display && !row.is_all_day) out.push({ code: 'missing_start_time', text: 'Start time not provided', derived: true, basis: 'no time on the row' });
+  if (row.link_check_status === 'dead') out.push({ code: 'link_dead', text: 'Event link failed its last check', derived: false, basis: 'link_check_status on the row' });
+  if (!out.length) out.push({ code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' });
+  return out;
+}
+
+// Lane is exclusive. Precedence: Blocked at source (technical, then source-policy hold) before Needs a person.
+// Technical = the Control tower says this row's connector is failing. The aggregate "feeds" slug is too coarse to blame
+// one feed for, so feed rows are never marked technical from it.
+function subLane(row, tower) {
+  const slug = subSlug(row);
+  if (tower && tower.system && Array.isArray(tower.system.sources) && slug && slug !== 'feeds') {
+    const s = tower.system.sources.find(x => x.slug === slug);
+    if (s && s.status === 'failing') return { lane: 'blocked', kind: 'technical', why: 'Source is failing: ' + String((s.reasons && s.reasons[0]) || s.label || slug) };
+  }
+  if (subIsDearborn(row)) return { lane: 'blocked', kind: 'policy', why: 'Held by source policy: City of Dearborn feed is paused and reviewed as a whole' };
+  return { lane: 'person', kind: null, why: null };
+}
+
+// Platform's API (PR #161) supplies stored/derived fields per row: prov{origin:{value,derived},source:{slug,name},method:{value,derived},
+// status,added_at,link_checked_at,last_seen_at_source,source_last_run_at}, lane ('person'|'blocked'), lane_kind ('technical'|'policy_hold'),
+// reasons[{code,text}]. When present they win; this file only normalizes them for display and labels them derived.
+const SUB_METHOD_LABELS = { api: 'API', ics: 'ICS feed', rss: 'RSS feed', sync: 'Sync', scrape: 'Website extraction', generated: 'Generated schedule', form: 'Submission form', manual: 'Manual entry' };
+function subNormServerProv(sp, fallback) {
+  const val = (x) => (x && typeof x === 'object' ? x.value : x);
+  const o = val(sp.origin), m = val(sp.method);
+  const src = sp.source && typeof sp.source === 'object' ? sp.source : (sp.source ? { name: sp.source, slug: null } : {});
+  return {
+    origin: o && o !== 'unknown' ? o : null,
+    originDerived: !(sp.origin && typeof sp.origin === 'object' && sp.origin.derived === false),
+    source: src.name || null, slug: src.slug || null,
+    method: m && m !== 'unknown' ? (SUB_METHOD_LABELS[m] || m) : null,
+    methodDerived: !(sp.method && typeof sp.method === 'object' && sp.method.derived === false),
+    status: sp.status || fallback.status,
+    added_at: sp.added_at || fallback.added_at,
+    link_checked_at: sp.link_checked_at || null,
+    last_seen_at_source: sp.last_seen_at_source || null,
+    source_last_run_at: sp.source_last_run_at || null,
+  };
+}
+function subBuild(events, tower) {
+  return (events || []).map(e => {
+    let lane;
+    if (e.lane && typeof e.lane === 'object') lane = e.lane;
+    else if (typeof e.lane === 'string') lane = { lane: e.lane, kind: e.lane_kind === 'policy_hold' ? 'policy' : (e.lane_kind || null), why: e.lane_why || null };
+    else lane = subLane(e, tower);
+    const fallback = subDeriveProv(e);
+    const prov = e.prov && typeof e.prov === 'object' ? subNormServerProv(e.prov, fallback) : fallback;
+    let reasons;
+    // Optional enrichment gaps (a missing description) are never a review reason, whatever an API version sends (owner 2026-10-17).
+    const isOptionalGap = r => r && r.code === 'missing_description';
+    if (Array.isArray(e.reasons) && e.reasons.length) {
+      reasons = e.reasons.filter(r => !isOptionalGap(r)).map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
+      if (!reasons.length) reasons = [{ code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' }];
+    } else reasons = subDeriveReasons(e);
+    // A row with no genuine reason is not a problem: it stays in Needs a person, shown quietly as "Ready to approve" (owner 2026-10-17).
+    reasons = reasons.map(r => (r.code === 'no_reason_recorded' || r.code === 'none_recorded' || r.code === 'ready_to_approve') ? { code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' } : r);
+    // Unknown lane values from a newer API never drop a row: only blocked is special, everything else is Needs a person.
+    if (lane.lane !== 'blocked') lane = Object.assign({}, lane, { lane: 'person' });
+    // The Blocked lane draws only technical and policy kinds; any other kind goes to Needs a person so the count equals the rows shown.
+    if (lane.lane === 'blocked' && lane.kind !== 'technical' && lane.kind !== 'policy') {
+      lane = Object.assign({}, lane, { lane: 'person', kind: null, why: null });
+      reasons = [{ code: 'blocked_kind_unrecognized', text: 'Marked blocked at source, but the block type is not recognised; needs a person to look', derived: true, basis: 'API lane is blocked with a lane_kind this page does not know' }].concat(reasons.filter(r => r.code !== 'ready_to_approve'));
+    }
+    if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
+    const notes = (Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : []).map(n => n.code === 'missing_description' ? { code: n.code, text: 'Description not yet available' } : n);
+    if (Array.isArray(e.reasons) && e.reasons.some(isOptionalGap) && !notes.some(n => n.code === 'missing_description')) notes.push({ code: 'missing_description', text: 'Description not yet available' });
+    if (!notes.some(n => n.code === 'missing_description') && !String(e.description || '').trim()) notes.push({ code: 'missing_description', text: 'Description not yet available' });
+    return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons, notes: notes } });
+  });
+}
+
+function subCounts(rows) {
+  const c = { person: 0, blocked: 0, technical: 0, policy: 0 };
+  rows.forEach(r => { c[r._sub.lane]++; if (r._sub.kind) c[r._sub.kind]++; });
+  return c;
+}
+
+const SUB_FILTERS = { lane: 'person', q: '', origin: '', source: '', reason: '', added: '' };
+function subMatches(r, f, nowMs) {
+  const p = r._sub.prov;
+  if (f.origin && (p.origin || 'unknown') !== f.origin) return false;
+  if (f.source && (p.source || '') !== f.source) return false;
+  if (f.reason && !r._sub.reasons.some(x => x.code === f.reason)) return false;
+  if (f.added) {
+    const t = Date.parse(p.added_at || '');
+    if (!Number.isFinite(t) || nowMs - t > Number(f.added) * 86400000) return false;
+  }
+  if (f.q) {
+    const hay = [r.title, r.venue_name_raw, p.source, r.submitter_org_name].join(' ').toLowerCase();
+    if (!hay.includes(f.q.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function subAgo(iso, nowMs) {
+  const t = Date.parse(iso || '');
+  if (!Number.isFinite(t)) return null;
+  const m = Math.max(0, Math.round((nowMs - t) / 60000));
+  if (m < 60) return m + ' min ago';
+  if (m < 2880) return Math.round(m / 60) + ' h ago';
+  return Math.round(m / 1440) + ' d ago';
+}
+function subDetroit(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleString('en-US', { timeZone: 'America/Detroit', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function subChip(cls, text, derivedTip) {
+  return '<span class="sub-chip ' + cls + '"' + (derivedTip ? ' data-derived="1" title="' + escapeAttr(derivedTip) + '"' : '') + '>' + escapeHtml(text) + '</span>';
+}
+
+function subRowHtml(e, nowMs, withActions) {
+  const s = e._sub, p = s.prov;
+  const chips = [];
+  chips.push(p.origin ? subChip('origin-' + p.origin, SUB_ORIGIN_LABELS[p.origin], p.originDerived ? 'Origin is derived from the source name and ID prefix; no origin field is stored yet.' : '') : subChip('np', 'Origin: ' + SUB_NP));
+  chips.push(p.source ? subChip('', p.source) : subChip('np', 'Source: ' + SUB_NP));
+  chips.push(p.method ? subChip('', p.method, p.methodDerived ? 'Method is read from the connector registry in code; no method field is stored yet.' : '') : subChip('np', 'Method: ' + SUB_NP));
+  chips.push(subChip('', p.status === 'pending_review' ? 'Awaiting review' : (p.status || SUB_NP)));
+  const times = [];
+  const added = p.added_at ? (subAgo(p.added_at, nowMs) + ' (' + subDetroit(p.added_at) + ')') : SUB_NP;
+  times.push('Added: ' + added);
+  if (p.link_checked_at) times.push('Link checked: ' + subDetroit(p.link_checked_at));
+  if (p.last_seen_at_source) times.push('Last seen at source: ' + subDetroit(p.last_seen_at_source));
+  if (p.source_last_run_at) times.push('Source last ran: ' + subDetroit(p.source_last_run_at));
+  times.push('Last processed: ' + (p.last_pipeline_at ? subDetroit(p.last_pipeline_at) : SUB_NP));
+  // Inside the source-policy hold the standing policy sentence is stated once, in the group banner, not repeated per row.
+  let rs = s.kind === 'policy' ? s.reasons.filter(r => r.code !== 'pipeline_hold') : s.reasons;
+  if (s.kind === 'policy' && !rs.length) rs = [{ code: 'policy_hold', text: 'Held by source policy; no row-specific reason recorded', derived: false }];
+  const reasonHtml = rs.map((r, i) => r.code === 'ready_to_approve' ? '<div class="sub-reason sub-ready">' + escapeHtml(r.text) + '</div>' : '<div class="sub-reason">' + (i === 0 ? '<span class="rc">Why: </span>' : '<span class="rc">Also: </span>') + escapeHtml(r.text)
+    + (r.derived ? ' <span class="sub-derived" title="' + escapeAttr('Derived: ' + (r.basis || '')) + '">(derived)</span>' : '') + '</div>').join('');
+  const price = e.is_free ? 'Free' : (e.price_from ? 'From $' + e.price_from : null);
+  return '<div class="sub-row" id="card-' + escapeAttr(e.id) + '">'
+    + '<h3>' + escapeHtml(e.title) + '</h3>'
+    + '<div class="sub-meta"><b>' + escapeHtml(e.category) + '</b> · ' + escapeHtml(e.start_date) + ' · ' + (e.time_display ? escapeHtml(e.time_display) : 'Time ' + SUB_NP.toLowerCase())
+    + ' · ' + (e.venue_name_raw ? escapeHtml(e.venue_name_raw) : 'Venue ' + SUB_NP.toLowerCase()) + (price ? ' · ' + escapeHtml(price) : '') + '</div>'
+    + '<div class="sub-chips">' + chips.join('') + '</div>'
+    + reasonHtml
+    + (s.notes && s.notes.length ? '<div class="sub-times">' + s.notes.map(n => 'Note: ' + escapeHtml(n.text)).join(' · ') + '</div>' : '')
+    + '<div class="sub-times">' + times.map(escapeHtml).join(' · ') + '</div>'
+    + subEditedHtml(e)
+    + '<details><summary>Details</summary><div class="sub-meta" style="margin-top:6px;">'
+    + (e.ticket_url ? '<a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a> ' : '')
+    + (e.event_url && e.event_url !== e.ticket_url ? '<a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">event page</a> ' : '')
+    + (e.submitter_org_name || e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || SUB_NP) + '</b> (' + escapeHtml(e.submitter_email || SUB_NP) + ')' : '')
+    + '<br>Description: ' + (e.description ? escapeHtml(e.description) : SUB_NP) + '</div></details>'
+    + (withActions ? '<div class="actions"><button class="btn-approve" onclick="review(\'' + escapeAttr(e.id) + '\',\'approve\')">Approve</button><button class="btn-reject" onclick="review(\'' + escapeAttr(e.id) + '\',\'reject\')">Reject</button><button type="button" class="sub-edit-btn" id="subeditbtn-' + escapeAttr(e.id) + '" aria-expanded="' + (SUB_EDIT[e.id] && SUB_EDIT[e.id].open ? 'true' : 'false') + '" onclick="subEditOpen(\'' + escapeAttr(e.id) + '\')">Edit</button></div>' : '')
+    + (withActions ? subEditNoticeHtml(e) + subEditPanelHtml(e) : '')
+    + '</div>';
+}
+
+// ---- state + rendering ----
+let SUB_ROWS = [];        // current (not ended) pending rows with _sub
+let SUB_ENDED = null;     // ended pending rows (History), loaded on first open
+let SUB_EXTRA = null;     // server-supplied lane_counts / blocked_sources when present
+
+function subSetLane(lane) { SUB_FILTERS.lane = lane; if (lane === 'history' && SUB_ENDED === null) subLoadEnded(); subRender(); }
+function subPreset(name) {
+  const f = SUB_FILTERS;
+  const sel = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  if (name === 'history') { sel('subOrigin', ''); f.origin = ''; subSetLane('history'); return; }
+  f.origin = ''; f.reason = ''; sel('subReason', '');
+  if (name === 'automated') { f.origin = 'automated'; sel('subOrigin', 'automated'); f.lane = 'person'; }
+  if (name === 'human') { f.origin = 'human'; sel('subOrigin', 'human'); f.lane = 'person'; }
+  if (name === 'review') { sel('subOrigin', ''); f.lane = 'person'; }
+  document.querySelectorAll('#subPresets button').forEach(b => b.classList.toggle('on', b.dataset.preset === name));
+  subRender();
+}
+function subFilterChanged() {
+  const v = id => (document.getElementById(id) || {}).value || '';
+  SUB_FILTERS.q = v('subQ'); SUB_FILTERS.origin = v('subOrigin'); SUB_FILTERS.source = v('subSource'); SUB_FILTERS.reason = v('subReason'); SUB_FILTERS.added = v('subAdded');
+  document.querySelectorAll('#subPresets button').forEach(b => b.classList.remove('on'));
+  subRender();
+}
+function subFillOptions(rows) {
+  const fill = (id, items, keep) => {
+    const el = document.getElementById(id); if (!el) return;
+    const cur = el.value;
+    const first = el.options[0] ? el.options[0].outerHTML : '';
+    el.innerHTML = first + items.map(([v, l]) => '<option value="' + escapeAttr(v) + '"' + (v === cur ? ' selected' : '') + '>' + escapeHtml(l) + '</option>').join('');
+  };
+  const sources = {}, reasons = {};
+  rows.forEach(r => { const s = r._sub.prov.source; if (s) sources[s] = (sources[s] || 0) + 1; r._sub.reasons.forEach(x => { reasons[x.code] = reasons[x.code] || x.text; }); });
+  fill('subSource', Object.keys(sources).sort().map(k => [k, k + ' (' + sources[k] + ')']));
+  fill('subReason', Object.keys(reasons).sort().map(k => [k, reasons[k].length > 48 ? reasons[k].slice(0, 46) + '…' : reasons[k]]));
+}
+
+function subRender() {
+  const list = document.getElementById('list');
+  if (!list) return;
+  const now = Date.now();
+  const counts = subCounts(SUB_ROWS);
+  const setN = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setN('subN-person', counts.person); setN('subN-blocked', counts.blocked);
+  setN('subN-history', SUB_ENDED === null ? 'n/a' : SUB_ENDED.length);
+  setTabBadge('submissions', counts.person);
+  document.querySelectorAll('#subLanes .sub-lane').forEach(b => { b.classList.toggle('active', b.dataset.lane === SUB_FILTERS.lane); b.setAttribute('aria-selected', b.dataset.lane === SUB_FILTERS.lane ? 'true' : 'false'); });
+  subFillOptions(SUB_ROWS.concat(SUB_ENDED || []));
+  const lane = SUB_FILTERS.lane;
+  const status = document.getElementById('subStatus');
+  if (lane === 'auto') {
+    status.textContent = '';
+    list.innerHTML = '<div class="sub-note"><b>Not tracked yet.</b> Handled-automatically needs a per-record processing state (stage, outcome, last pipeline time) that is not stored today. This lane stays empty rather than guess. Rescheduled and missing-from-source events are likewise not detected yet; only a title that says cancelled or postponed is shown, as a derived hint. Suppressed administrative meetings: not tracked yet.</div>';
+    return;
+  }
+  if (lane === 'history') {
+    const ended = SUB_ENDED === null ? null : SUB_ENDED.filter(r => subMatches(r, SUB_FILTERS, now));
+    status.textContent = ended === null ? 'Loading ended pending events…' : ended.length + ' ended pending event' + (ended.length === 1 ? '' : 's');
+    list.innerHTML = '<div class="sub-note">Step 1 history = pending events whose date has passed (nothing rejected or deleted). Per-source run history is in <button type="button" class="ct-link" onclick="showTab(\'tower\')">Control tower</button>. Per-record history, suppressed meetings and the suppression count are not tracked yet.</div>'
+      + (ended === null ? '' : (ended.length ? ended.map(r => subRowHtml(r, now, true)).join('') : '<div class="empty">No ended pending events match.</div>'));
+    return;
+  }
+  const rows = SUB_ROWS.filter(r => r._sub.lane === lane && subMatches(r, SUB_FILTERS, now));
+  status.textContent = rows.length + ' shown' + (rows.length !== counts[lane] ? ' of ' + counts[lane] : '')
+    + (SUB_EXTRA && SUB_EXTRA.health_error ? ' · Source health could not be read (' + SUB_EXTRA.health_error + '), so technical blocks were not evaluated.' : '')
+    + (SUB_EXTRA && SUB_EXTRA.unmapped && SUB_EXTRA.unmapped.length ? ' · ' + SUB_EXTRA.unmapped.length + ' source name' + (SUB_EXTRA.unmapped.length === 1 ? '' : 's') + ' not mapped to an origin or method yet.' : '');
+  if (lane === 'person') {
+    list.innerHTML = rows.length ? rows.map(r => subRowHtml(r, now, true)).join('') : '<div class="empty">Nothing needs a person right now.</div>';
+    return;
+  }
+  // Blocked at source: technical failures first (grouped by source, no actions), then the source-policy hold.
+  const tech = rows.filter(r => r._sub.kind === 'technical');
+  const pol = rows.filter(r => r._sub.kind === 'policy');
+  let html = '';
+  if (tech.length) {
+    const bySrc = {};
+    tech.forEach(r => { (bySrc[r._sub.prov.source] = bySrc[r._sub.prov.source] || []).push(r); });
+    html += Object.keys(bySrc).sort().map(k => '<div class="sub-src"><b>' + escapeHtml(k) + '</b>: ' + bySrc[k].length + ' event' + (bySrc[k].length === 1 ? '' : 's') + ' waiting on a technical problem. ' + escapeHtml(bySrc[k][0]._sub.why) + '. Nothing to decide here; fix the connector (see <button type="button" class="ct-link" onclick="showTab(\'tower\')">Control tower</button>).</div>').join('');
+  }
+  if (pol.length) {
+    const up = pol.length;
+    html += '<div class="sub-policy"><b>City of Dearborn: ' + up + ' held by source policy.</b> The feed is paused and every row is reviewed as a whole because it carries no event-type field. This is one source-level decision, not ' + up + ' separate tasks. Real public events can still be recovered below; nothing is bulk-approved.</div>';
+    html += QUEUE_CLASS_ORDER.map(cls => {
+      const g = pol.filter(r => (r.queue_class && r.queue_class.class) === cls);
+      if (!g.length) return '';
+      return '<details class="sub-group"' + (cls === 'public_event' ? ' open' : '') + '><summary><b>' + escapeHtml(QUEUE_CLASS_LABELS[cls]) + '</b> (' + g.length + ')</summary>' + g.map(r => subRowHtml(r, now, true)).join('') + '</details>';
+    }).join('');
+    const other = pol.filter(r => !r.queue_class);
+    if (other.length) html += other.map(r => subRowHtml(r, now, true)).join('');
+  }
+  list.innerHTML = html || '<div class="empty">Nothing is blocked at source.</div>';
+}
+
+async function subLoadEnded() {
+  try {
+    const resp = await fetch('/api/admin-events?expired=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load ended events'));
+    SUB_ENDED = subBuild(data.events || [], TOWER);
+  } catch (err) {
+    SUB_ENDED = [];
+    const st = document.getElementById('subStatus'); if (st) st.textContent = 'Failed to load ended events: ' + err.message;
+  }
+  subRender();
+}
+
 async function loadQueue() {
   const gateErr = document.getElementById('gateErr');
   gateErr.style.display = 'none';
@@ -1378,41 +1841,193 @@ async function loadQueue() {
     const resp = await fetch('/api/admin-events', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Failed to load queue'));
-
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
-    renderList(data.events || []);
+    SUB_EXTRA = {
+      lane_counts: data.lane_counts || null, blocked_sources: data.blocked_sources || null,
+      health_error: data.provenance_health_error || null,
+      unmapped: (data.provenance_coverage && data.provenance_coverage.unmapped_sources) || null,
+    };
+    SUB_ROWS = subBuild(data.events || [], TOWER);
+    SUB_ENDED = null;
+    subRender();
   } catch (err) {
     gateErr.textContent = err.message;
     gateErr.style.display = 'block';
   }
 }
+// The Control tower loads in parallel; once it arrives, re-derive lanes so technical failures leave the human lane.
+function subTowerArrived() { if (SUB_ROWS.length) { SUB_ROWS = subBuild(SUB_ROWS, TOWER); subRender(); } }
 
-function renderList(events) {
-  const list = document.getElementById('list');
-  setTabBadge('submissions', events.length);
-  if (!events.length) {
-    list.innerHTML = '<div class="empty">No pending submissions. 🎉</div>';
-    return;
+// Stage 2 grouping labels (api/_lib/pending-classifier.js).
+const QUEUE_CLASS_ORDER = ['public_event', 'ambiguous', 'civic_meeting', 'service', 'observance'];
+const QUEUE_CLASS_LABELS = { public_event: 'Events and programs', ambiguous: 'Needs a closer look', civic_meeting: 'Civic & Community: public meetings', service: 'Community services', observance: 'Calendar observances' };
+
+
+// ---- Review-queue editing (#185 increment 1) ----
+// Saves go through POST /api/admin-events {action:'save_correction'}. A save is a correction: it replaces a value and is
+// recorded by the API; it never clears a value and never approves unless "Save and approve" is used. The page shows only
+// what the API returns: row_version, owner_corrected[], edits[]. The recorded actor is the shared "admin" secret, so no
+// person's name is ever shown. There is no stored as-ingested snapshot yet, so the evidence block says "Recorded values".
+const SUB_EDIT_GROUPS = [
+  { title: 'What and when', fields: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'category', label: 'Category', type: 'text' },
+    { key: 'time_display', label: 'Time (for example 9:00 PM)', type: 'text' } ] },
+  { title: 'Where', fields: [
+    { key: 'venue_name_raw', label: 'Venue name', type: 'text' },
+    { key: 'venue_address_raw', label: 'Venue address', type: 'text' },
+    { key: 'venue_city_raw', label: 'Venue city', type: 'text' } ] },
+  { title: 'Links', fields: [
+    { key: 'ticket_url', label: 'Ticket link', type: 'url' },
+    { key: 'event_url', label: 'Event link', type: 'url' } ] },
+  { title: 'Description', fields: [
+    { key: 'description', label: 'Description', type: 'textarea' } ] },
+];
+const SUB_EDIT_LABELS = {};
+SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => { SUB_EDIT_LABELS[f.key] = f.label.replace(/ \(.*\)$/, ''); }));
+SUB_EDIT_LABELS.venue_id = 'Venue link';
+const SUB_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+
+function subEditFind(id) { return SUB_ROWS.find(r => r.id === id) || (SUB_ENDED || []).find(r => r.id === id) || null; }
+function subEditValue(e, key) { const d = SUB_EDIT[e.id] && SUB_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function subEditLabel(k) { return SUB_EDIT_LABELS[k] || k; }
+
+function subEditedHtml(e) {
+  const oc = Array.isArray(e.owner_corrected) ? e.owner_corrected : [];
+  if (!oc.length) return '';
+  return '<div class="sub-edited">Edited by owner: ' + escapeHtml(oc.map(subEditLabel).join(', ')) + '. Importers will not overwrite these fields.</div>';
+}
+function subEditNoticeHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.notice || st.open) return '';
+  return '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>';
+}
+function subEditHistoryHtml(e) {
+  const eds = Array.isArray(e.edits) ? e.edits : [];
+  if (!eds.length) return '<div>No corrections recorded.</div>';
+  return '<ul style="margin:4px 0 0;padding-left:18px;">' + eds.map(x => '<li>' + escapeHtml(subEditLabel(x.field)) + ': ' + escapeHtml(x.before == null ? SUB_NP : x.before) + ' → ' + escapeHtml(x.after == null ? SUB_NP : x.after)
+    + ' (' + (x.at ? escapeHtml(subDetroit(x.at)) : SUB_NP) + ', by admin)</li>').join('') + '</ul>';
+}
+function subEditPanelHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id), p = e._sub.prov;
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'subedit-' + id + '-' + f.key, v = subEditValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="subEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="subEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> The original as-imported copy is not stored yet, so earlier values are only available from the corrections below.'
+    + '<br>Source: ' + escapeHtml(p.source || SUB_NP) + ' · Method: ' + escapeHtml(p.method || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit event" onkeydown="if(event.key===\'Escape\'){subEditClose(\'' + id + '\');}">'
+    + groups + evidence
+    + '<div class="sub-edit-diff" id="subeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="subeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="subeditsave-' + id + '" onclick="subEditSave(\'' + id + '\',false)">Save correction</button>'
+    + '<button type="button" class="btn-approve" id="subeditapprove-' + id + '" onclick="subEditSave(\'' + id + '\',true)">Save and approve</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="subEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+
+// What the form would change, from the live inputs (or the draft when the inputs are not on screen).
+function subEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = subEditValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function subEditDiffRefresh(id) {
+  const e = subEditFind(id); if (!e) return;
+  const r = subEditChanges(e), diff = document.getElementById('subeditdiff-' + id);
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = SUB_EDIT[id], dis = !r.changes.length || r.blanks.length > 0 || (st && st.busy);
+  ['subeditsave-', 'subeditapprove-'].forEach(pre => { const b = document.getElementById(pre + id); if (b) b.disabled = !!dis; });
+}
+function subEditInput(id) {
+  const st = SUB_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  subEditDiffRefresh(id);
+}
+function subEditOpen(id) {
+  const e = subEditFind(id); if (!e) return;
+  SUB_EDIT[id] = Object.assign(SUB_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  subRender();
+  subEditDiffRefresh(id);
+  const first = document.getElementById('subedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function subEditClose(id) {
+  if (SUB_EDIT[id]) { SUB_EDIT[id].open = false; SUB_EDIT[id].draft = null; SUB_EDIT[id].notice = ''; }
+  subRender();
+  const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+}
+// Rebuild the derived lane data after the API returned new field values.
+function subEditApply(id, patch) {
+  const apply = list => list && list.map(r => r.id === id ? subBuild([Object.assign({}, r, patch)], TOWER)[0] : r);
+  SUB_ROWS = apply(SUB_ROWS);
+  if (SUB_ENDED) SUB_ENDED = apply(SUB_ENDED);
+}
+async function subEditSave(id, approve) {
+  const e = subEditFind(id), st = SUB_EDIT[id]; if (!e || !st) return;
+  subEditInput(id);
+  const r = subEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { subEditDiffRefresh(id); return; }
+  const rv = e.row_version || null;
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Reload the queue and try again.'; st.noticeKind = 'err'; subRender(); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; subEditDiffRefresh(id);
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields, approve: !!approve }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      // Someone or something changed the event after this page loaded. Show the current values; keep what was typed.
+      if (data.current) subEditApply(id, Object.assign({}, data.current, { row_version: data.row_version || (data.current && data.current.updated_at) || null }));
+      st.notice = 'This event changed since you opened it, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    const ap = data.approve || {};
+    if (ap.done) {
+      SUB_ROWS = SUB_ROWS.filter(x => x.id !== id); if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(x => x.id !== id);
+      delete SUB_EDIT[id]; subRender(); return;
+    }
+    subEditApply(id, Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    let msg = 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still awaiting review.', kind = 'ok';
+    if (ap.requested && ap.blocked) { msg += ' Not approved: ' + (ap.blocked.why || 'a publication check failed') + (ap.blocked.codes && ap.blocked.codes.length ? ' (' + ap.blocked.codes.join(', ') + ')' : '') + '.'; kind = 'warn'; }
+    SUB_EDIT[id] = { open: false, draft: null, notice: msg, noticeKind: kind };
+    subRender();
+    const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    subRender(); subEditDiffRefresh(id);
   }
-  list.innerHTML = events.map(e => `
-    <div class="card" id="card-${e.id}">
-      <h3>${escapeHtml(e.title)}</h3>
-      <div class="meta">
-        <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
-        Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
-        ${e.is_free ? 'Free' : (e.price_from ? 'From $' + e.price_from : 'Paid')}
-        ${e.ticket_url ? ' · <a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a>' : ''}
-        ${e.event_url && e.event_url !== e.ticket_url ? ' · <a href="' + escapeHtml(e.event_url) + '" target="_blank" rel="noopener">event page</a>' : ''}<br>
-        Submitted by: <b>${escapeHtml(e.submitter_org_name || '—')}</b> (${escapeHtml(e.submitter_email || '—')})
-        ${e.description ? '<br><br>' + escapeHtml(e.description) : ''}
-      </div>
-      <div class="actions">
-        <button class="btn-approve" onclick="review('${e.id}','approve')">Approve</button>
-        <button class="btn-reject" onclick="review('${e.id}','reject')">Reject</button>
-      </div>
-    </div>
-  `).join('');
 }
 
 async function review(id, action) {
@@ -1427,6 +2042,10 @@ async function review(id, action) {
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
+    delete SUB_EDIT[id];
+    SUB_ROWS = SUB_ROWS.filter(r => r.id !== id);
+    if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(r => r.id !== id);
+    subRender();
   } catch (err) {
     card.style.opacity = '1';
     alert(err.message);
@@ -1613,6 +2232,7 @@ async function loadEditorial() {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
     renderEditorialList(data.articles || []);
+    loadLinkReview();
   } catch (err) {
     document.getElementById('editorialList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
   }
@@ -1653,9 +2273,118 @@ async function autoLinkEditorial() {
   }
 }
 
+// ---- DQ-004: article<->event links waiting for verification ----
+let editorialQueueCount = 0;
+let linkReviewCount = 0;
+let linkReviewData = { links: [], counts: { active: 0, hidden: 0, ended: 0, removed: 0, outside_orbit: 0 } };
+async function loadLinkReview() {
+  const list = document.getElementById('linkReviewList');
+  if (!list) return;
+  const showRejected = document.getElementById('linkShowRejected') && document.getElementById('linkShowRejected').checked;
+  const status = showRejected ? 'candidate,needs_follow_up,rejected' : 'candidate,needs_follow_up';
+  try {
+    const resp = await fetch('/api/admin-editorial?view=links&status=' + status, { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load links to verify'));
+    renderLinkReview(data.links || [], data.counts);
+  } catch (err) {
+    list.innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function linkReviewCard(l) {
+  const a = l.editorial_articles || {};
+  const e = l.events || {};
+  const v = e.venues || {};
+  const venue = e.venue_name_raw || v.name || '';
+  const city = e.venue_city_raw || v.city || '';
+  const published = a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+  const key = escapeAttr(l.article_id) + "','" + escapeAttr(l.event_id);
+  const reopen = l.verification_status === 'rejected';
+  const status = { candidate: 'Candidate', needs_follow_up: 'Needs follow-up', rejected: 'Rejected', verified: 'Verified' }[l.verification_status] || l.verification_status;
+  const history = Array.isArray(l.verification_history) ? l.verification_history : [];
+  const histHtml = history.length
+    ? '<details><summary>History (' + history.length + ')</summary>' + history.map(h => '<div class="meta">' + escapeHtml((h.at || '').slice(0, 16).replace('T', ' ')) + ' · ' + escapeHtml((h.from || 'new') + ' → ' + h.to) + ' · ' + escapeHtml(h.by || '') + (h.basis ? ' · ' + escapeHtml(h.basis) : '') + '</div>').join('') + '</details>'
+    : '';
+  const q = l.queue || {};
+  const rec = q.recommendation;
+  const recHtml = rec
+    ? '<div class="meta"><b>Editorial recommendation: ' + escapeHtml(rec.verdict) + '</b> (a recommendation, not a status) · ' + escapeHtml(rec.by || '') + (rec.on ? ' · ' + escapeHtml(rec.on) : '') + (rec.basis ? '<br>' + escapeHtml(rec.basis) : '') + '</div>'
+    : '';
+  const hiddenHtml = q.hidden ? '<div class="meta"><b>Hidden by rule:</b> ' + escapeHtml(q.reasonText || q.reason || '') + '. Nothing was changed.</div>' : '';
+  return `
+    <div class="card article-card" id="link-card-${escapeAttr(l.article_id)}-${escapeAttr(l.event_id)}">
+      <div class="ac-body">
+        <div class="meta"><b>${escapeHtml(status)}</b> · ${escapeHtml(l.verification_basis || 'no evidence recorded')}</div>
+        ${recHtml}${hiddenHtml}
+        <h3>Article: ${escapeHtml(a.title || '')}</h3>
+        <div class="meta"><b>${escapeHtml(a.source || '')}</b>${published ? ' · ' + escapeHtml(published) : ''} · <a href="${escapeAttr(a.url || '#')}" target="_blank" rel="noopener">read the article</a></div>
+        ${a.excerpt ? `<div class="ac-excerpt">${escapeHtml(a.excerpt)}</div>` : ''}
+        <h3>Event: ${escapeHtml(e.title || '')}</h3>
+        <div class="meta">${escapeHtml([e.start_date, venue, city].filter(Boolean).join(' · '))}</div>
+        ${histHtml}
+        <div class="actions">
+          ${reopen
+            ? `<button class="btn-approve" onclick="decideLink('reopen_link','${key}')">Reopen for review</button>`
+            : `<button class="btn-approve" onclick="decideLink('confirm_link','${key}')">Confirm: article covers this event</button>
+               <button class="btn-dismiss" onclick="decideLink('reject_link','${key}')">Reject: different event</button>
+               ${l.verification_status === 'needs_follow_up' ? '' : `<button onclick="decideLink('follow_up_link','${key}')">Needs follow-up</button>`}`}
+        </div>
+      </div>
+    </div>`;
+}
+
+// Hidden line text is built from live counts only (never hard-coded).
+function linkHiddenLineText(c) {
+  if (!c || !c.hidden) return '';
+  const parts = [];
+  if (c.ended) parts.push('the event has ended (' + c.ended + ')');
+  if (c.outside_orbit) parts.push('the event is outside the Orbit (' + c.outside_orbit + ')');
+  if (c.removed) parts.push('the event was removed (' + c.removed + ')');
+  return c.hidden + ' link' + (c.hidden === 1 ? '' : 's') + ' hidden by rule: ' + parts.join(', ') + '. Nothing was deleted or changed.';
+}
+
+function renderLinkReview(links, counts) {
+  const list = document.getElementById('linkReviewList');
+  linkReviewData = { links: links, counts: counts || { active: links.length, hidden: 0, ended: 0, removed: 0, outside_orbit: 0 } };
+  const showHidden = document.getElementById('linkShowHidden') && document.getElementById('linkShowHidden').checked;
+  const active = links.filter(l => !(l.queue && l.queue.hidden));
+  // The tab badge counts only active, unresolved rows.
+  linkReviewCount = active.filter(l => l.verification_status !== 'rejected').length;
+  setTabBadge('editorial', editorialQueueCount + linkReviewCount);
+  const line = document.getElementById('linkHiddenLine');
+  if (line) line.textContent = linkHiddenLineText(linkReviewData.counts);
+  const shown = showHidden ? links : active;
+  if (!shown.length) {
+    list.innerHTML = '<div class="empty">No article–event links waiting for verification.</div>';
+    return;
+  }
+  list.innerHTML = shown.map(linkReviewCard).join('');
+}
+
+async function decideLink(action, articleId, eventId) {
+  let note = '';
+  if (action === 'reject_link' || action === 'confirm_link') {
+    note = window.prompt(action === 'reject_link' ? 'Why is this a different event? (kept on record)' : 'Evidence that the article covers this event (kept on record)', '') || '';
+  }
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ articleId, eventId, action, note }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to update the link'));
+    await loadLinkReview();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
 function renderEditorialList(articles) {
   const list = document.getElementById('editorialList');
-  setTabBadge('editorial', articles.length);
+  editorialQueueCount = articles.length;
+  setTabBadge('editorial', articles.length + linkReviewCount);
   if (!articles.length) {
     list.innerHTML = '<div class="empty">Nothing waiting for review. 🎉</div>';
     return;
@@ -1910,7 +2639,7 @@ async function searchLiveEvents() {
   if (!q) { results.innerHTML = ''; return; }
   results.innerHTML = '<div class="empty">Searching…</div>';
   try {
-    const resp = await fetch('/api/admin-events?search=' + encodeURIComponent(q), {
+    const resp = await fetch('/api/admin-events?match=any&search=' + encodeURIComponent(q), {
       headers: { 'x-admin-secret': SECRET },
     });
     const data = await resp.json();
@@ -1921,24 +2650,146 @@ async function searchLiveEvents() {
   }
 }
 
-function renderLiveResults(events) {
-  const results = document.getElementById('liveResults');
-  if (!events.length) {
-    results.innerHTML = '<div class="empty">No live events match that search.</div>';
-    return;
-  }
-  results.innerHTML = events.map(e => `
-    <div class="card" id="live-card-${e.id}">
+// Live events: results are kept so an Edit panel can be drawn beside Remove. Corrections go through the same
+// save_correction action as the review queue (see "Review-queue editing"); a live event stays live, nothing is approved.
+let LIVE_ROWS = [];
+const LIVE_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+function liveRowVersion(e) { return e.row_version || e.updated_at || null; }
+function liveFind(id) { return LIVE_ROWS.find(r => r.id === id) || null; }
+function liveValue(e, key) { const d = LIVE_EDIT[e.id] && LIVE_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function liveCardHtml(e) {
+  const id = escapeAttr(e.id), st = LIVE_EDIT[e.id];
+  const notice = st && st.notice && !st.open ? '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>' : '';
+  return `
+    <div class="card" id="live-card-${id}">
       <h3>${escapeHtml(e.title)}</h3>
       <div class="meta">
         <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b> · Source: <b>${escapeHtml(e.source || 'Manual')}</b>
       </div>
+      ${subEditedHtml(e)}${notice}${livePanelHtml(e)}
       <div class="actions">
-        <button class="btn-hide" id="hide-btn-${e.id}" onclick="hideEvent('${e.id}')">Remove from site</button>
+        <button class="sub-edit-btn" id="liveeditbtn-${id}" onclick="liveEditOpen('${id}')"${st && st.open ? ' aria-expanded="true"' : ' aria-expanded="false"'}>Edit</button>
+        <button class="btn-hide" id="hide-btn-${id}" onclick="hideEvent('${id}')">Remove from site</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+function renderLiveResults(events) {
+  const results = document.getElementById('liveResults');
+  LIVE_ROWS = events;
+  if (!events.length) {
+    results.innerHTML = '<div class="empty">No live events match that search.</div>';
+    return;
+  }
+  results.innerHTML = events.map(liveCardHtml).join('');
+}
+function liveRender(id) {
+  const e = liveFind(id), card = document.getElementById('live-card-' + id);
+  if (!e || !card) return;
+  const tmp = document.createElement('div'); tmp.innerHTML = liveCardHtml(e).trim();
+  card.replaceWith(tmp.firstChild);
+}
+function livePanelHtml(e) {
+  const st = LIVE_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id);
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'liveedit-' + id + '-' + f.key, v = liveValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="liveEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="liveEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> Source: ' + escapeHtml(e.source || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit live event" onkeydown="if(event.key===\'Escape\'){liveEditClose(\'' + id + '\');}">'
+    + groups + evidence
+    + '<div class="sub-edit-diff" id="liveeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="liveeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="liveeditsave-' + id + '" onclick="liveEditSave(\'' + id + '\')">Save correction</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="liveEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+function liveEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = liveValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function liveEditDiffRefresh(id) {
+  const e = liveFind(id); if (!e) return;
+  const r = liveEditChanges(e), diff = document.getElementById('liveeditdiff-' + id);
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') + '. The event stays live.' : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = LIVE_EDIT[id], b = document.getElementById('liveeditsave-' + id);
+  if (b) b.disabled = !r.changes.length || r.blanks.length > 0 || !!(st && st.busy);
+}
+function liveEditInput(id) {
+  const st = LIVE_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  liveEditDiffRefresh(id);
+}
+function liveEditOpen(id) {
+  if (!liveFind(id)) return;
+  LIVE_EDIT[id] = Object.assign(LIVE_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  liveRender(id); liveEditDiffRefresh(id);
+  const first = document.getElementById('liveedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function liveEditClose(id) {
+  if (LIVE_EDIT[id]) { LIVE_EDIT[id].open = false; LIVE_EDIT[id].draft = null; LIVE_EDIT[id].notice = ''; }
+  liveRender(id);
+  const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+}
+async function liveEditSave(id) {
+  const e = liveFind(id), st = LIVE_EDIT[id]; if (!e || !st) return;
+  liveEditInput(id);
+  const r = liveEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { liveEditDiffRefresh(id); return; }
+  const rv = liveRowVersion(e);
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Search again and retry.'; st.noticeKind = 'err'; liveRender(id); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; liveEditDiffRefresh(id);
+  const replace = row => { LIVE_ROWS = LIVE_ROWS.map(x => x.id === id ? Object.assign({}, x, row) : x); };
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      if (data.current) replace(Object.assign({}, data.current, { row_version: data.row_version || data.current.updated_at || null }));
+      st.notice = 'This event changed since you searched, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    replace(Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    LIVE_EDIT[id] = { open: false, draft: null, notice: 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still live, and importers will not overwrite the corrected fields.', noticeKind: 'ok' };
+    liveRender(id);
+    const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    liveRender(id); liveEditDiffRefresh(id);
+  }
 }
 
 // Two-step confirm, inline (no native confirm() dialogs): first click arms

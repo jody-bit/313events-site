@@ -82,4 +82,15 @@ async function visitDetroitRecoveryStrategy(deadUrl, { title, fetchFn = fetch } 
   return candidate;
 }
 
-module.exports = { visitDetroitRecoveryStrategy, OLD_SHAPE_RE };
+// The URL to store for a search hit's `uri` (P0 link integrity, 2026-10-16). The index still emits the
+// pre-restructure path "/<slug>/"; the live event page is "/events/<slug>/" (R&Q tested 292 approved
+// upcoming rows: every root form 404s, every /events/ twin is 200 and the right event). Single-segment
+// paths are rewritten, anything else (already /events/..., multi-segment, empty) is kept as given.
+function canonicalVisitDetroitUrl(uri) {
+  if (typeof uri !== "string" || !uri) return null;
+  const m = /^\/([\p{L}\p{N}-]+)\/?$/u.exec(uri);
+  if (m && m[1].toLowerCase() !== "events") return `https://visitdetroit.com/events/${m[1]}/`;
+  return `https://visitdetroit.com${uri}`;
+}
+
+module.exports = { visitDetroitRecoveryStrategy, OLD_SHAPE_RE, canonicalVisitDetroitUrl };

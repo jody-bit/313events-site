@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 
@@ -98,13 +99,7 @@ function timingSafeStringEqual(a, b) {
 }
 
 module.exports = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ ok: false, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured — nothing to do." });
@@ -301,6 +296,21 @@ module.exports = async (req, res) => {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
       error_sample: stepErrors.length ? stepErrors.join(" | ") : undefined,
+      // Per-record description outcomes (issue #100): counts by outcome, and
+      // the records that were changed, skipped or failed (not the untouched
+      // ones). Observation only; capSessionData drops the samples if too big.
+      // The candidate-cap record (how many rows were examined, whether the cap or the ordering limited the run) rides
+      // beside the outcomes and survives capSessionData, which only ever drops `samples`; without it a run row cannot
+      // say whether rows were left unexamined (B-037).
+      session_data: genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)
+        ? {
+            ...(genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
+            total_considered: genericCounts.totalConsidered,
+            cap_reached: genericCounts.capReached === true,
+            ...(genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),
+            ...(genericCounts.descriptionOutcomes ? { samples: genericCounts.descriptionOutcomeSamples || [] } : {}),
+          }
+        : undefined,
     });
 
     res.status(200).json({

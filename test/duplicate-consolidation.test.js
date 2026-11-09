@@ -270,7 +270,7 @@ const row = (o) => ({ id: `e${++n}`, status: "approved", created_at: `2026-09-${
   const calls = [];
   const fetchFn = async (url, opts = {}) => {
     calls.push({ url, method: opts.method || "GET", body: opts.body ? JSON.parse(opts.body) : null, prefer: (opts.headers || {}).Prefer });
-    if (url.includes("/editorial_article_events?event_id=eq.")) return { ok: true, status: 200, json: async () => [{ article_id: "art-9" }] };
+    if (url.includes("/editorial_article_events?event_id=eq.")) return { ok: true, status: 200, json: async () => [{ article_id: "art-9", verification_status: "verified", verified_by: "admin", verified_at: "2026-10-01T00:00:00Z", verification_basis: "admin link_event", verification_history: [{ at: "2026-10-01T00:00:00Z", from: null, to: "verified", by: "admin", basis: "admin link_event" }] }] };
     return { ok: true, status: 200, json: async () => [] };
   };
   const r = await applyMerge("https://x.supabase.co", "key", { survivor, loser, rule: "two_sources_one_place" }, { fetchFn });
@@ -286,7 +286,12 @@ const row = (o) => ({ id: `e${++n}`, status: "approved", created_at: `2026-09-${
   const artPatch = calls.find((c) => c.method === "PATCH" && c.url.includes("editorial_articles?matched_event_id=eq."));
   assert.deepStrictEqual(artPatch.body, { matched_event_id: survivor.id });
   const join = calls.find((c) => c.method === "POST" && c.url.includes("editorial_article_events?on_conflict"));
-  assert.deepStrictEqual(join.body, { article_id: "art-9", event_id: survivor.id }, "press links follow the canonical row");
+  assert.strictEqual(join.body.article_id, "art-9");
+  assert.strictEqual(join.body.event_id, survivor.id, "press links follow the canonical row");
+  assert.strictEqual(join.body.verification_status, "verified", "DQ-004: the link keeps its verification state when it moves");
+  assert.strictEqual(join.body.verified_by, "admin");
+  assert.strictEqual(join.body.verification_history.length, 2, "…and the move is added to its audit trail");
+  assert.strictEqual(join.body.verification_history[1].by, "duplicate_consolidation");
   const retire = calls.find((c) => c.method === "PATCH" && c.url.includes(`/events?id=eq.${loser.id}`));
   assert.ok(retire.url.includes("&status=eq.approved"), "retiring is guarded on the status the pass read");
   assert.strictEqual(retire.body.status, "rejected", "retired, never deleted");

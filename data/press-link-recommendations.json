@@ -1,0 +1,152 @@
+{
+  "_meta": {
+    "purpose": "Editorial RECOMMENDATIONS for the admin Links tab. Not verification statuses: nothing here changes editorial_article_events. A documented verified recommendation keeps an unresolved row visible after its event ends (Stage 3). Held on owner decision 2026-10-16: Sweet Endings 6a2458a4/87808e63 (Oct 2 vs Oct 3-4 conflict) is deliberately absent.",
+    "source": "editorial/dq-004-decision-batch-2026-10-16.csv"
+  },
+  "recommendations": [
+    {
+      "article_id": "7f43f0e5-9cf4-4f67-b4d4-7515c2dac530",
+      "event_id": "e262afbc-1a8e-4376-b4dc-cac3ff67bfbb",
+      "recommended_verdict": "verified",
+      "basis": "\"The temple is slated to celebrate the centennial with a gala on Oct. 17\" (Straits Journal, attributing the date to Hour Detroit)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "231f9751-9433-4417-9da7-f5af59fe7671",
+      "event_id": "7cefcf6c-180b-4d25-99cc-1e52497da1c0",
+      "recommended_verdict": "verified",
+      "basis": "Packard Proving Grounds fall open house 1-5 p.m. Oct. 25, with the \"Gems from the Vault\" talk 1-2 p.m. (C&G)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "a66ec58b-f714-4a6e-bb72-2c83c2ba5b1f",
+      "event_id": "14dc6a02-7a0a-481c-9805-9e907d78dd45",
+      "recommended_verdict": "verified",
+      "basis": "\"Hispanic Heritage Month celebration Saturday, October 10 at the Detroit Historical Museum\" (Straits Journal)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "f839d668-6fdc-495c-ba4b-6bca7c922075",
+      "event_id": "14dc6a02-7a0a-481c-9805-9e907d78dd45",
+      "recommended_verdict": "verified",
+      "basis": "WDET guide lists \"Hispanic Heritage Month Celebration, Oct. 10, Detroit Historical Museum\"",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "ff28a1d4-5382-4495-83df-c7d13c0606b9",
+      "event_id": "96a0a514-a325-4d74-a02e-506e7e601561",
+      "recommended_verdict": "verified",
+      "basis": "\"What's So Funny About Detroit\", Thursday Aug. 27, The Old Miami on Cass Avenue (WDET)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "7d319a59-3e26-422d-85ea-a019127031f2",
+      "event_id": "8bc4b1c5-ece2-4797-88b1-e58ee0feebd2",
+      "recommended_verdict": "verified",
+      "basis": "\"On Saturday night she'll be at the Flagstar Strand Theater in Pontiac at 8 p.m.\" (article dated Sept 28, so Oct 3)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "b72004e2-7f19-486c-a5cf-519b177771d3",
+      "event_id": "77f86a29-a61b-4761-9ace-a936e4f7398e",
+      "recommended_verdict": "verified",
+      "basis": "Venue page lists \"Artist Talk: Zahra Almajidi on Casting the Net\", September 26, 2026",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "adff53ae-360a-4dac-8482-bf3003863e15",
+      "event_id": "719dbc47-00dd-49fd-9f73-5f41cc8eb05b",
+      "recommended_verdict": "rejected",
+      "basis": "Article is about the Busy Bee Hardware murals and a redevelopment; Saturday Market is not mentioned",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "fe792148-e8ec-4b9e-ab17-d751caf50f89",
+      "event_id": "7eed45dc-9b4e-4c3a-a3de-9a638cab4f1b",
+      "recommended_verdict": "rejected",
+      "basis": "Sept 3 storm report; \"flooding\" is weather only; no concert or Crofoot",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "172f2c27-0e9d-4755-bc95-eab6e2b19512",
+      "event_id": "7eed45dc-9b4e-4c3a-a3de-9a638cab4f1b",
+      "recommended_verdict": "rejected",
+      "basis": "\"rendered a total loss amid the devastation of flooding\" (War Memorial Patriot Theater); no concert (paywalled excerpt)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "4682ee3c-498b-43a6-b086-1b88f741546c",
+      "event_id": "770b4daa-ab6e-4cbb-be5d-2a7c8f856f34",
+      "recommended_verdict": "rejected",
+      "basis": "Oakland County took over Bowers Farm and Johnson Nature Center from Bloomfield Hills Schools; nothing about Sterling Heights or jewelry",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "b536e692-c426-4376-ab13-835ef9ded093",
+      "event_id": "3c7fadb2-61a8-4516-8de9-9edff310f65f",
+      "recommended_verdict": "rejected",
+      "basis": "Published March 8, 2018 about the July 2018 Mo Pop; Staples is only a 2018 headliner",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "b536e692-c426-4376-ab13-835ef9ded093",
+      "event_id": "1edeb01e-2e74-40c8-af6e-24b312d83791",
+      "recommended_verdict": "rejected",
+      "basis": "Same 2018 article (event row removed as rejected)",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "5379a9d1-7781-4dae-b07f-55f22998d0f7",
+      "event_id": "56b56837-4b61-4c88-aa90-921810892004",
+      "recommended_verdict": "rejected",
+      "basis": "About SNAP enrollment; \"Michiganders\" means residents, not the musician",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "cd43d343-6ffe-4a90-8f0b-5291fa09eefc",
+      "event_id": "56b56837-4b61-4c88-aa90-921810892004",
+      "recommended_verdict": "rejected",
+      "basis": "About Nessel's record and utility cases; no musician or concert",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "1d85d6e0-7a2d-48b0-b846-a4f3ec172920",
+      "event_id": "c1903e2b-4562-4c6a-9cc6-66d8976f6c1b",
+      "recommended_verdict": "rejected",
+      "basis": "Only Thanksgiving mention: \"The program ends around Thanksgiving this year\"; no Royal Oak event",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "a7be505f-5e0e-4332-b8dd-53d89b67750c",
+      "event_id": "b753fe10-af6d-4cc8-8ec6-9a34d33a9b81",
+      "recommended_verdict": "rejected",
+      "basis": "News roundup on Janese Chapman's death; no LEGACY event or tribute",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    },
+    {
+      "article_id": "643b9882-89f8-4113-b20c-248bef6dbe17",
+      "event_id": "56c2c4c4-3b5b-4656-bce9-14bae70834ab",
+      "recommended_verdict": "rejected",
+      "basis": "R&Q Mac read (Hour Detroit, 2026-10-16): sponsored robot-landing story at Roosevelt Park on Sept 26 (published Oct 12); it never names or describes the Corktown Corpse tour, gives no event dates or organizer, and the word \"Corktown\" does not appear. Only link is geographic (the tour stop is Roosevelt Park).",
+      "recommended_by": "05 Editorial Products",
+      "recommended_on": "2026-10-16"
+    }
+  ]
+}

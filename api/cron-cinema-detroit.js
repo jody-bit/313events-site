@@ -1,6 +1,8 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { zeroWriteReasons } = require("./_lib/zero-write-reasons");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
@@ -125,13 +127,7 @@ function parsePage(page) {
 }
 
 module.exports = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   // WP 0.5: the run begins here, once the request is confirmed to be a
   // real cron invocation -- see api/_lib/run-log.js.
   const runHandle = await startRun(SOURCE_SLUG);
@@ -177,7 +173,8 @@ module.exports = async (req, res) => {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  const parsed = pages.map(parsePage).filter((e) => e && e.start_date >= today);
+  const parsedAll = pages.map(parsePage);
+  const parsed = parsedAll.filter((e) => e && e.start_date >= today);
 
   if (!parsed.length) {
     // This is Cinema Detroit's normal, expected state (see the LOW
@@ -192,6 +189,10 @@ module.exports = async (req, res) => {
       records_fetched: pages.length,
       records_parsed: 0,
       records_written: 0,
+      session_data: zeroWriteReasons(pages.length, {
+        unparsed: parsedAll.filter((e) => !e).length,
+        past_date: parsedAll.filter((e) => e && e.start_date < today).length,
+      }),
     });
     res.status(200).json({ upserted: 0, checked: pages.length, note: "No upcoming screenings found — see LOW CONFIDENCE note in source.", fetchedAt: new Date().toISOString() });
     return;

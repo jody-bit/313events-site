@@ -19,6 +19,15 @@ const sql = read("supabase/migrations/20261006000003_sz01_public_access_boundary
 const grant = sql.match(/grant select \(([^)]+)\) on table events to anon, authenticated;/);
 assert(grant, "migration must column-grant SELECT on events to anon, authenticated");
 const allow = new Set(grant[1].split(",").map((s) => s.trim()).filter(Boolean));
+// Later, additive column grants applied to production after SZ-01 (anon only). The date-semantics
+// columns were granted on 2026-10-13; recurrence_evidence is deliberately not among them.
+const ADDITIVE_GRANTS = ["supabase/proposed/2026-10-13_events_date_columns_anon_grant.sql"];
+for (const f of ADDITIVE_GRANTS) {
+  const extra = read(f).split("\n").filter((l) => !l.trim().startsWith("--")).join("\n")
+    .match(/grant select \(([^)]+)\) on public\.events to anon;/);
+  assert(extra, f + " must contain its anon column grant");
+  for (const c of extra[1].split(",").map((x) => x.trim()).filter(Boolean)) allow.add(c);
+}
 
 const PRIVATE = ["note", "submitter_email", "submitter_org_name", "internal_note", "organizer_id", "feed_source_id",
   "external_id", "created_at", "followup_dismissed", "followup_dismissed_note", "followup_dismissed_at",

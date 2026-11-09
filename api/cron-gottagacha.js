@@ -1,9 +1,11 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { decideSourceDescription } = require("./_lib/description-strength");
 
 // Vercel Cron job — pulls upcoming events from GottaGacha (gottagacha.com),
 // a gaming arcade/TCG venue in Warren, MI. Added 2026-09-22 after a
@@ -209,6 +211,17 @@ function eventDetailUrl(seriesId, eventDate) {
   return `https://www.gottagacha.com/events/${seriesId.toLowerCase()}?date=${eventDate}`;
 }
 
+// Every GottaGacha event links back to GottaGacha. When no occurrence page
+// can be derived (malformed series id or date) the official events page --
+// the same page the occurrence pages hang off, verified in the evidence above
+// -- is the source link, so the event is never left with no source link and
+// never sent to Needs Follow Up for that alone. A derived occurrence page
+// always wins. This is event_url only; ticket_url stays omitted.
+const OFFICIAL_EVENTS_PAGE = "https://www.gottagacha.com/events";
+function eventSourceUrl(seriesId, eventDate) {
+  return eventDetailUrl(seriesId, eventDate) || OFFICIAL_EVENTS_PAGE;
+}
+
 // keepEventUrl(existing, derived) -> the event_url to send, or undefined to
 // send no event_url at all (the stored value stands). Admin Hardening
 // slice 1 safeguards, 2026-10-08:
@@ -253,7 +266,9 @@ function formatTimeDisplay(eventDate, startTime, endTime) {
     };
     if (endTime) {
       const end = new Date(`${eventDate}T${endTime}`);
-      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime()) {
+      // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+      const placeholderEnd = end.getHours() === 23 && end.getMinutes() === 59;
+      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime() && !placeholderEnd) {
         return `${fmt(start)} – ${fmt(end)}`;
       }
     }
@@ -333,7 +348,7 @@ function parseEvent(e) {
     is_free: false, // schema default; never inferred from absence of price (explicit instruction)
     price_from: null, // no structured price field demonstrated
     // ticket_url deliberately omitted (not null) -- see header note.
-    event_url: eventDetailUrl(e.id, e.eventDate), // the source's own occurrence page -- see eventDetailUrl()
+    event_url: eventSourceUrl(e.id, e.eventDate), // occurrence page, else the official events page -- see eventSourceUrl()
     image_url: null, // VERIFIED UNAVAILABLE -- see header note
     source: "GottaGacha",
     internal_note: isAmbiguous
@@ -345,13 +360,7 @@ function parseEvent(e) {
 }
 
 module.exports = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   // WP 0.5: the run begins here, once the request is confirmed to be a
   // real cron invocation -- see api/_lib/run-log.js. Fully fail-safe by
   // that module's own design: if migration_035/source_runs isn't live in
@@ -461,7 +470,7 @@ module.exports = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,event_url" }
+        { select: "external_id,status,event_url,description,description_source,title" }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
@@ -483,6 +492,18 @@ module.exports = async (req, res) => {
       const eventUrl = keepEventUrl(existingEventUrlByExternalId.get(row.external_id), rest.event_url);
       if (eventUrl === undefined) delete rest.event_url;
       else rest.event_url = eventUrl;
+      // Description strength rule (api/_lib/description-strength.js): a weaker
+      // or blank source text never replaces a stronger stored description
+      // (manual / authoritative / generated repair / good source text), and a
+      // blank source never writes null over stored text. When the source text
+      // is allowed to replace a generated one, the label is cleared so
+      // description_source stays truthful.
+      const prev = existingRows.get(row.external_id);
+      if (prev && prev.description) {
+        const verdict = decideSourceDescription({ stored: prev.description, storedSource: prev.description_source, incoming: rest.description, title: rest.title || prev.title });
+        if (!verdict.write) delete rest.description;
+        else if (prev.description_source === "generated") rest.description_source = null;
+      }
       return {
         ...rest,
         status: existingStatusByExternalId.get(row.external_id) || _defaultStatusForRow,
@@ -525,6 +546,7 @@ module.exports = async (req, res) => {
 module.exports.parseEvent = parseEvent; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.mapCategory = mapCategory; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.keepEventUrl = keepEventUrl; // exposed for test/gottagacha-event-url.test.js only
+module.exports.eventSourceUrl = eventSourceUrl; // exposed for test/gottagacha-source-link.test.js only
 module.exports.eventDetailUrl = eventDetailUrl; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.buildExternalId = buildExternalId; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.isCanonicalGottaGachaLocation = isCanonicalGottaGachaLocation; // exposed for test/cron-gottagacha-runlog.test.js only

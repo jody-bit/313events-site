@@ -73,6 +73,8 @@ function makeMockFetch(routes) {
     if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return routes.runInsert ? routes.runInsert() : { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
     if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return routes.runUpdate ? routes.runUpdate() : { ok: true, status: 204, json: async () => ({}) };
+    // #185: the shared upsert writer reads owner-corrected rows once per events write (separate from the status lookup).
+    if (url.includes("/rest/v1/events") && url.includes("internal_note=like.") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return routes.statusLookup ? routes.statusLookup() : { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && opts.method === "POST") {
       if (routes.upsertCapture) routes.upsertCapture.body = JSON.parse(opts.body);
@@ -255,8 +257,9 @@ async function run() {
     global.fetch = fetchFn;
     const res = makeRes();
     await handler({ headers: {} }, res);
-    const lookupCalls = calls.filter((c) => c.url.includes("/rest/v1/events") && (!c.opts.method || c.opts.method === "GET"));
+    const lookupCalls = calls.filter((c) => c.url.includes("/rest/v1/events") && !c.url.includes("internal_note=like.") && (!c.opts.method || c.opts.method === "GET"));
     assert.strictEqual(lookupCalls.length, 1, "exactly one existing-value lookup request, same as before SH.8");
+    assert.strictEqual(calls.filter((c) => c.url.includes("internal_note=like.")).length, 1, "plus the one owner-correction read that the shared upsert writer makes (#185), separate from this lookup");
     assert.ok(lookupCalls[0].url.includes("select=external_id,status,event_url"), "event_url is fetched via the same existing request, not a new one");
   }
   console.log("PASS: event_url is fetched via one extra select field on the existing lookup request — no new network call");

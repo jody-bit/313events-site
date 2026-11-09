@@ -16,7 +16,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Copyright / DMCA — 313.events">
@@ -45,8 +45,9 @@
 -->
 <style>
   :root{
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
@@ -64,17 +65,16 @@
     display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
   }
-  .wordmark{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
-    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
-  }
-  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .wordmark{display:flex;align-items:center;min-height:33px;text-decoration:none;}
+  .wordmark img{display:block;height:26px;width:auto;}
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   h1.legal-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(26px,5vw,36px);line-height:1.1;letter-spacing:-.01em;
     text-transform:uppercase;margin:0 0 8px;
   }
@@ -82,7 +82,7 @@
   .legal-intro{font-size:15px;color:var(--ink-soft);margin:0 0 30px;max-width:62ch;}
 
   h2.legal-h{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:19px;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:19px;
     text-transform:uppercase;letter-spacing:-.005em;margin:34px 0 10px;
     padding-top:18px;border-top:1px solid var(--line-soft);
   }
@@ -123,7 +123,7 @@
 <body>
   <div class="wrap">
     <header class="site">
-      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="wordmark" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="26"></a>
       <a class="back-link" href="/">All events</a>
     </header>
 
@@ -161,6 +161,61 @@
       <strong>Note on DMCA safe-harbor status:</strong> Sentient Productions LLC has not yet registered a designated agent with the U.S. Copyright Office. That registration (a separate step at copyright.gov) is required to actually rely on the DMCA's safe-harbor protections, and is a planned follow-up, not something this page claims has already happened.
     </div>
 
+    <h2 class="legal-h" id="photo-credits">Photo credits</h2>
+    <p class="legal-p">Neighborhood photographs on the 313.events homepage come from Wikimedia Commons. Each was resized to 960 pixels on its longest side and converted to WebP; no other changes were made. Photos under CC BY-SA licenses are shared here under the same license, and the modified versions are available under it as well.</p>
+    <ul class="legal-ul">
+      <li class="legal-li"><strong>Downtown</strong> &mdash; photo by Mikerussell, <a href="https://commons.wikimedia.org/wiki/File:MikerussellCampusmartiusParkDetroit.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Eastern Market</strong> &mdash; photo by Michael Barera, <a href="https://commons.wikimedia.org/wiki/File:Detroit_May_2023_03_%28Eastern_Market%29.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Midtown</strong> &mdash; photo by Sailko, <a href="https://commons.wikimedia.org/wiki/File:Detroit_institute_of_arts%2C_esterno_01.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>North Corktown</strong> &mdash; photo by Polishdill86, <a href="https://commons.wikimedia.org/wiki/File:North_Corktown%2C_Detroit_neighborhood.jpg" rel="noopener">source on Wikimedia Commons</a>, Public domain.</li>
+      <li class="legal-li"><strong>Mexicantown / Southwest Detroit</strong> &mdash; photo by Lian Chang, <a href="https://commons.wikimedia.org/wiki/File:Mexican_Village_Detroit.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+      <li class="legal-li"><strong>Old Redford</strong> &mdash; photo by Dave Parker, <a href="https://commons.wikimedia.org/wiki/File:RedfordTheatreMarquee.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Fitzgerald-Marygrove</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+    </ul>
+    <p class="legal-p">Destination photographs on the Fall Is On., Fall Colors and Halloween pages that are credited &ldquo;Photo: &hellip; via Wikimedia Commons&rdquo; come from Wikimedia Commons under the license shown. Each was cropped to a 3:2 frame, resized where needed and converted to WebP; no other changes were made. Photos under CC BY-SA licenses are shared here under the same license, and the modified versions are available under it as well. Each photo shows the place named on its card, not necessarily the season or event described.</p>
+    <ul class="legal-ul" id="seasonal-photo-credits">
+      <li class="legal-li"><strong>Franklin Cider Mill</strong> &mdash; photo by Griffinharms, <a href="https://commons.wikimedia.org/wiki/File:Historic_Franklin_Cider_Mill.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Plymouth Orchards &amp; Cider Mill</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Plymouth_Orchards_and_Cider_Mill,_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road,_Superior_Township,_Michigan_-_panoramio.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Three Cedars Farm</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Three_Cedars_Farm,_7897_Six_Mile_Road,_Salem_Township,_Michigan_-_panoramio.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Yates Cider Mill</strong> &mdash; photo by Ekardiff, <a href="https://commons.wikimedia.org/wiki/File:Yates_Cider_Mill_main_building.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Bennett Arboretum</strong> &mdash; photo by Saul Vielmetti, <a href="https://commons.wikimedia.org/wiki/File:Hines_Drive_at_Bennett_Arboretum.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Bird Hills Nature Area</strong> &mdash; photo by Michael Barera, <a href="https://commons.wikimedia.org/wiki/File:Bird_Hills_Nature_Area_May_2025_05.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Black Oak Heritage Park</strong> &mdash; photo by Crisco 1492, <a href="https://commons.wikimedia.org/wiki/File:Black_Oak_Heritage_Park,_Windsor,_Ontario,_2025-06-07_09.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Dexter-Huron Metropark</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Dexter-huron_metropark_huron_riverJPG.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Elmwood Cemetery</strong> &mdash; photo by Sarahfraser3585, <a href="https://commons.wikimedia.org/wiki/File:ELMWOOD_CEMETERY_4.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Hines Drive / Edward N. Hines Parkway</strong> &mdash; photo by Jeffery Roberts, <a href="https://commons.wikimedia.org/wiki/File:Brilliant_Fall_Color_-_panoramio.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Hudson Mills Metropark</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Hudson_mills_metropark_river_grove.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Lower Huron Metropark</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Lower_huron_metropark_huron_river_bridge.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Maybury State Park</strong> &mdash; photo by ellenm1, <a href="https://commons.wikimedia.org/wiki/File:Maybury_Sanatorium.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+      <li class="legal-li"><strong>Oakwoods Metropark</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Huron_River_in_Oakwoods_Metropark,_New_Boston,_Michigan_-_panoramio.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Paint Creek Trail</strong> &mdash; photo by Cjunker1, <a href="https://commons.wikimedia.org/wiki/File:Rochester_Michigan_Paint_Creek_Trail.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0/" rel="noopener">Public domain</a>.</li>
+      <li class="legal-li"><strong>Point Pelee National Park</strong> &mdash; photo by Ken Lund, <a href="https://commons.wikimedia.org/wiki/File:Marsh_Boardwalk,_Point_Pelee_National_Park,_Leamington,_Ontario,_Canada_(21586377780).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/" rel="noopener">CC BY-SA 2.0</a>.</li>
+      <li class="legal-li"><strong>Rouge Park</strong> &mdash; photo by DontCallMeLateForDinner, <a href="https://commons.wikimedia.org/wiki/File:Rouge_Park_Detroit_south_entrance.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Seven Lakes State Park</strong> &mdash; photo by Kris Runstrom, <a href="https://commons.wikimedia.org/wiki/File:Seven_Lakes_State_Park.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+      <li class="legal-li"><strong>Side Cut Metropark</strong> &mdash; photo by Nyttend, <a href="https://commons.wikimedia.org/wiki/File:Locks_Four_and_Three,_Miami_Sidecut.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0/" rel="noopener">Public domain</a>.</li>
+      <li class="legal-li"><strong>Stage Nature Center</strong> &mdash; photo by Traveler100, <a href="https://commons.wikimedia.org/wiki/File:LloydAStageNatureCenter-01.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Waterloo State Recreation Area</strong> &mdash; photo by cmadler, <a href="https://commons.wikimedia.org/wiki/File:Waterloo_565.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Wildwood Preserve Metropark</strong> &mdash; photo by Tim Kiser, <a href="https://commons.wikimedia.org/wiki/File:Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>.</li>
+      <li class="legal-li"><strong>Willow Metropark</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Washago_Pond,_Willow_Metropark,_Huron_Township,_Michigan.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Fort Meigs Garrison Ghost Walk</strong> &mdash; photo by Mbrickn, <a href="https://commons.wikimedia.org/wiki/File:Fort_Meigs_Blockhouse_and_Flag.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Halloween Ghosts &amp; Goodies at Crossroads Village</strong> &mdash; photo by Rodney Campbell, <a href="https://commons.wikimedia.org/wiki/File:Church_in_the_Woods.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+      <li class="legal-li"><strong>Laser Halloween</strong> &mdash; photo by Michael Barera, <a href="https://commons.wikimedia.org/wiki/File:Flint_July_2018_12_(Robert_T._Longway_Planetarium).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Sandwich Town Ghost Tour</strong> &mdash; photo by Crisco 1492, <a href="https://commons.wikimedia.org/wiki/File:Historic_Sandwich_Town_Arch,_Windsor,_Ontario,_2025-06-03_01.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Spooky Jane's Walk</strong> &mdash; photo by LauraF84, <a href="https://commons.wikimedia.org/wiki/File:Duff-Baby_House,_2012.JPG" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Eerie Manor Tours at Wildwood Preserve</strong> &mdash; photo by John Michael Dewees, <a href="https://commons.wikimedia.org/wiki/File:Robert_A._Stranahan_residence,_exterior_views,_2019_-_DPLA_-_eed3161fa610da19ad462be4f1d0fb8d_(page_1).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="noopener">CC0</a>.</li>
+      <li class="legal-li"><strong>Zoo Boo at the Detroit Zoo</strong> &mdash; photo by WMrapids, <a href="https://commons.wikimedia.org/wiki/File:Detroit_Zoo.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="noopener">CC0</a>.</li>
+      <li class="legal-li"><strong>Parshallville Cider Mill</strong> &mdash; photo by JoannaPoe, <a href="https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Barton Nature Area</strong> &mdash; photo by Dwight Burdette, <a href="https://commons.wikimedia.org/wiki/File:Huron_River_Viewed_from_Barton_Nature_Area,_Ann_Arbor,_Michigan_-_panoramio.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>.</li>
+      <li class="legal-li"><strong>Belle Isle Park</strong> &mdash; photo by TheDetroitGeographer, <a href="https://commons.wikimedia.org/wiki/File:Early_Fall_foliage_in_Belle_Isle_State_Park_Detroit,_Michigan_2026-10-07_1120.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="noopener">CC0</a>.</li>
+      <li class="legal-li"><strong>Cranbrook House and Gardens</strong> &mdash; photo by Barbara Eckstein, <a href="https://commons.wikimedia.org/wiki/File:Cranbrook_Gardens_(7150931405).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+      <li class="legal-li"><strong>Dequindre Cut Greenway</strong> &mdash; photo by Michael Barera, <a href="https://commons.wikimedia.org/wiki/File:Detroit_May_2023_01_(Dequindre_Cut).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Farnsworth Metropark</strong> &mdash; photo by Jmslagle, <a href="https://commons.wikimedia.org/wiki/File:Farnsworth_Metropark.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Holly State Recreation Area</strong> &mdash; photo by TheKuLeR, <a href="https://commons.wikimedia.org/wiki/File:Hollystaterec.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA 3.0</a>.</li>
+      <li class="legal-li"><strong>Oak Openings Preserve Metropark</strong> &mdash; photo by Mbrickn, <a href="https://commons.wikimedia.org/wiki/File:Mallard_Lake_Foliage.jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>.</li>
+      <li class="legal-li"><strong>Secor Metropark</strong> &mdash; photo by Benny Mazur, <a href="https://commons.wikimedia.org/wiki/File:The_wild_geraniums_lined_the_trail_(2503375911).jpg" rel="noopener">source on Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a>.</li>
+    </ul>
+    <p class="legal-p">Destination cards on the Fall Is On., Fall Colors and Halloween pages use one of three kinds of image. A photograph credited &ldquo;Photography &copy; Miriam Vukich&rdquo; was taken specifically for 313.events and is used with her authorization, including commercial use. A card marked &ldquo;Illustrative image&rdquo; shows generated artwork supplied by 313.events. It is not a photograph of the place.</p>
+
     <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
       <p class="footer-links">
@@ -170,6 +225,7 @@
         <a href="terms.html">Terms</a> &middot;
         <a href="privacy.html">Privacy</a> &middot;
         <a href="copyright.html">Copyright / DMCA</a> &middot;
+        <a href="/photo-credits">Photo Credits</a> &middot;
         <a href="accessibility.html">Accessibility</a> &middot;
         <a href="mailto:jody@sentientproductions.com">Contact</a>
       </p>
@@ -178,5 +234,6 @@
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
     </footer>
   </div>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

@@ -46,7 +46,8 @@ function extract(pattern, label) {
 }
 
 const SRC_INVENTORY_CTX = extract(/function inventoryCtx\(\)\{[\s\S]*?\n\}/, "inventoryCtx");
-const SRC_DISCOVERY = fs.readFileSync(`${REPO_DIR}/discovery.js`, "utf8");
+// discovery.js needs the shared blocked-names.js and place-list.js loaded first (issue #16), exactly as index.html does.
+const SRC_DISCOVERY = ["blocked-names.js", "place-list.js", "discovery.js"].map((f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")).join("\n");
 const SRC_RAIL_LIMIT = extract(/const NEIGHBORHOOD_RAIL_LIMIT = \d+;/, "NEIGHBORHOOD_RAIL_LIMIT");
 const SRC_COMPUTE_COUNTS = extract(/function computeNeighborhoodCounts\(\)\{[\s\S]*?\n\}/, "computeNeighborhoodCounts");
 const SRC_RENDER_RAIL = extract(/function renderNeighborhoodsRail\(\)\{[\s\S]*?\n\}/, "renderNeighborhoodsRail");
@@ -230,7 +231,10 @@ console.log("PASS (11): the rail is ordered by event count, ties by name");
 //     interpolation of the `count` destructured straight from
 //     computeNeighborhoodCounts()'s own [name, count] tuples. ---
 assert.ok(/\$\{count\}/.test(SRC_RENDER_RAIL), "the card's event count must be a dynamic template interpolation of the real computed count, not hardcoded");
-assert.ok(/computeNeighborhoodCounts\(\)\.slice\(0,\s*NEIGHBORHOOD_RAIL_LIMIT\)/.test(SRC_RENDER_RAIL), "renderNeighborhoodsRail must derive its visible cards from computeNeighborhoodCounts(), not a separately maintained list");
+assert.ok(/ranked = computeNeighborhoodCounts\(\)/.test(SRC_RENDER_RAIL) && /\.slice\(0,\s*NEIGHBORHOOD_RAIL_LIMIT\)/.test(SRC_RENDER_RAIL), "renderNeighborhoodsRail must derive its visible cards from computeNeighborhoodCounts(), not a separately maintained list");
+// Homepage V2 presentation rule: photographed neighborhoods lead, the rest
+// follow — a partition of the same computed list, never a different list.
+assert.ok(/ranked\.filter\(\(\[n\]\) => NEIGHBORHOOD_PHOTOS\[n\]\)\.concat\(ranked\.filter\(\(\[n\]\) => !NEIGHBORHOOD_PHOTOS\[n\]\)\)/.test(SRC_RENDER_RAIL), "the rail is the computed list partitioned photographed-first, nothing added or removed");
 console.log("PASS: the rendered event count is a live interpolation of the real computed count, never hardcoded");
 
 // --- Zero qualifying neighborhoods -> the whole section hides itself

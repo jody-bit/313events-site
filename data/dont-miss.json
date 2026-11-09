@@ -1,0 +1,32 @@
+{
+  "_readme": "Don't Miss placements (DEC-025). Order here is the order on the homepage; at most 3 show. Two kinds of entry: an EVENT placement {eventId, eyebrow?, reason?} featuring one existing canonical event (eventId is the id= in its event.html?id=... link; it shows only while that event is current and has an image), or a STATIC EDITORIAL card {title, copy, cta, image, image2x?, alt, focus?} such as the seasonal guides (optional root-relative href makes it a link). Optional from/to (YYYY-MM-DD) on either kind. Remove an entry to stop featuring it. Selection is editorial only and is never paid for.",
+  "placements": [
+    {
+      "title": "Detroit Orbit Fall Guide",
+      "href": "/fall",
+      "copy": "Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall.",
+      "cta": "Explore fall",
+      "image": "/assets/photography/home-tiles/home-tile-apples-eastern-market-800.webp",
+      "image2x": "/assets/photography/home-tiles/home-tile-apples-eastern-market-1600.webp",
+      "alt": "Wooden baskets piled with red and yellow Ludicrisp apples beside a handwritten \"Ludicrisp Apples $6 qt\" sign at an Eastern Market stand."
+    },
+    {
+      "title": "Off the Beaten Orbit",
+      "href": "/off-the-beaten-orbit",
+      "copy": "Potters, makers, historic houses and unexpected winter outings across the Detroit Orbit.",
+      "cta": "Explore winter",
+      "image": "/assets/guides/off-the-beaten-orbit-guide-800.webp",
+      "image2x": "/assets/guides/off-the-beaten-orbit-guide-1600.webp",
+      "alt": "Shoppers browse rows of independent maker booths at the Detroit Urban Craft Fair."
+    },
+    {
+      "title": "Fall Colors",
+      "href": "/fall-color",
+      "copy": "Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color.",
+      "cta": "Chase color",
+      "image": "/assets/photography/home-tiles/home-tile-autumn-boardwalk-800.webp",
+      "image2x": "/assets/photography/home-tiles/home-tile-autumn-boardwalk-1600.webp",
+      "alt": "A wooden boardwalk and gravel trail leading past orange and yellow autumn trees on a sunny day."
+    }
+  ]
+}

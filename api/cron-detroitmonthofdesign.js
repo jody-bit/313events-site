@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
@@ -260,7 +261,8 @@ async function mapWithConcurrency(items, limit, worker) {
   return results;
 }
 
-module.exports = async (req, res) => {
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const handleRequest = async (req, res) => {
   // BUG-003 (2026-09-21) diagnostic instrumentation. No upstream/parsing
   // defect was found during the production incident triage — sitemap,
   // JSON-LD parsing, and a real future event all checked out live — so
@@ -275,13 +277,7 @@ module.exports = async (req, res) => {
   const stats = { retryCounts: {} }; // e.g. { "429": 12, "503": 2 }
   console.log(`[cron-detroitmonthofdesign] cron started ${new Date().toISOString()}`);
 
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
@@ -433,3 +429,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports = withRunLog("detroitmonthofdesign", handleRequest);

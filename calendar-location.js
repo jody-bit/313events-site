@@ -128,7 +128,22 @@
     var country = c.country && c.country !== "US" ? c.country : "";
     var cityPart = c.city;
     if (!c.state && c.zip) { cityPart = [c.city, c.zip].filter(Boolean).join(" "); region = ""; }
-    var parts = [clean(name), c.street, cityPart, region, country].filter(Boolean);
+    // a street that already ends in the city ("318 Highland Street Highland Park" +
+    // city "Highland Park", with or without a comma) would repeat it; drop the street's
+    // trailing copy, but only when a house number and a street name remain
+    var street = c.street;
+    if (street && c.city) {
+      var cityKey = normKey(c.city), words = clean(street.replace(/,/g, " ")).split(" ");
+      var n = cityKey.split(" ").length;
+      if (words.length > n && normKey(words.slice(-n).join(" ")) === cityKey) {
+        var rest = street.replace(/[\s,]+$/, "");
+        // the last n words (and any commas between them) are the city
+        var m = rest.match(new RegExp("[\\s,]+(?:\\S+[\\s,]+){" + (n - 1) + "}\\S+$"));
+        var kept = m ? rest.slice(0, rest.length - m[0].length) : "";
+        if (kept && hasHouseNumber(kept) && /[A-Za-z]/.test(kept.replace(/^\s*\d+[A-Za-z]?\b/, ""))) street = kept;
+      }
+    }
+    var parts = [clean(name), street, cityPart, region, country].filter(Boolean);
     // collapse an adjacent duplicate ("Detroit, Detroit")
     var dedup = [];
     parts.forEach(function (p) { if (!dedup.length || normKey(dedup[dedup.length - 1]) !== normKey(p)) dedup.push(p); });
@@ -162,7 +177,112 @@
     else if (!hasHouseNumber(base.street)) missing.push("house_number");
     if (!base.city) missing.push("city");
     var navigable = !!(base.street && hasHouseNumber(base.street) && base.city);
-    return { text: text, navigable: navigable, missing: missing, source: source, name: name, street: base.street, city: base.city, state: base.state || "", zip: base.zip };
+    return { text: text, navigable: navigable, missing: missing, source: source, name: name, street: base.street, city: base.city, state: base.state || "", zip: base.zip, country: base.country || "" };
+  }
+
+  // ---- public display (event detail street line) ---------------------------
+  // streetLineForEvent() is the display twin of resolve(): same precedence
+  // (a complete event-level address wins, the canonical venue is the fallback,
+  // nothing is invented), but it returns ONLY the street/city/ZIP line a person
+  // reads beneath the venue name. It never writes "TBA" or any placeholder: no
+  // usable street means an empty line. Add to Calendar does not call it, so the
+  // calendar LOCATION output is unchanged.
+  var STATE_NAMES = { michigan: "MI", ohio: "OH", ontario: "ON" };
+  var ORDINALS = { first: "1st", second: "2nd", third: "3rd", fourth: "4th", fifth: "5th", sixth: "6th", seventh: "7th", eighth: "8th", ninth: "9th", tenth: "10th" };
+  var CORE_DROP = /^(?:n|s|e|w|ne|nw|se|sw|st|rd|ave|blvd|dr|hwy|pkwy|ct|pl|ln|ter|cir)$/;
+
+  // Display-only tidy of structured source strings: "15 S Saginaw St; Pontiac,
+  // MI 48342; United States" -> comma separated, and a standalone full state
+  // name that the source itself wrote ("Michigan") becomes its abbreviation.
+  // Components are only rearranged, never added; the stored text is not changed.
+  function tidyForDisplay(address) {
+    if (isBlank(address)) return "";
+    var text = String(address);
+    // A source that wrote the whole address in lower case ("1600 clay street; detroit")
+    // is shown with initial capitals; mixed-case text is left exactly as written.
+    if (text === text.toLowerCase()) text = text.replace(/(^|[\s,;(\/-])([a-z])/g, function (m, pre, ch) { return pre + ch.toUpperCase(); });
+    // a country glued on without a comma ("... MI  48228 United States")
+    text = text.replace(/\s+(?:United States(?: of America)?|USA)\s*$/i, "");
+    var parts = text.replace(/\s*;\s*/g, ", ").split(",").map(clean).filter(Boolean);
+    parts = parts.map(function (p) {
+      var m = /^([A-Za-z .]+?)\s+(\d{5}(?:-\d{4})?)$/.exec(p);   // "Michigan 48202"
+      if (m && STATE_NAMES[m[1].toLowerCase()]) return STATE_NAMES[m[1].toLowerCase()] + " " + m[2];
+      return STATE_NAMES[p.toLowerCase()] || p;
+    });
+    return parts.join(", ");
+  }
+
+  function houseNumberOf(street) {
+    var segs = street.split(",");
+    for (var i = 0; i < segs.length; i++) {
+      var m = /^\s*(\d+[A-Za-z]?)\b/.exec(segs[i]);
+      if (m && !/^\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)\b/i.test(segs[i])) return { number: m[1].toLowerCase(), rest: segs[i].slice(m[0].length) };
+    }
+    return null;
+  }
+  function streetCore(rest) {
+    return streetKey(rest).split(" ").map(function (w) { return ORDINALS[w] || w; }).filter(function (w) { return w && !CORE_DROP.test(w); }).join(" ");
+  }
+  // Same house number and the same street name once directions, street types
+  // and spelled-out ordinals are ignored ("318 W 4th St" = "318 West Fourth St.";
+  // "100 Strand Dr" = "100 Strand on Belle Isle"). Anything else is a different street.
+  function sameStreetLine(a, b) {
+    var x = houseNumberOf(a), y = houseNumberOf(b);
+    if (!x || !y || x.number !== y.number) return false;
+    var cx = streetCore(x.rest), cy = streetCore(y.rest);
+    return cx === cy || cx.indexOf(cy + " ") === 0 || cy.indexOf(cx + " ") === 0;
+  }
+
+  // -> { text, source, conflict }   conflict is "" | "street" | "city".
+  // When the event's own address and the venue's address disagree (a different
+  // street, or a different city) the page would combine one place's name with
+  // another place's address, so no line is shown and the reason is returned for
+  // QA. Source data is never corrected here.
+  function streetLineParts(e) {
+    e = e || {};
+    var name = e.venue && e.venue !== "Venue TBA" ? e.venue : "";
+    var evAddr = tidyForDisplay(e.locEventAddress), vnAddr = tidyForDisplay(e.locVenueAddress);
+    var ev = candidate(evAddr, e.locEventCity, "", name);
+    var vn = candidate(vnAddr, e.locVenueCity, e.locVenueZip, name);
+    var evUsable = !!(ev.street && hasHouseNumber(ev.street));
+    var vnUsable = !!(vn.street && hasHouseNumber(vn.street));
+    var none = { text: "", source: "none", conflict: "" };
+    if (!evUsable && !vnUsable) return none;
+    if (evUsable && vnUsable) {
+      if (!sameStreetLine(ev.street, vn.street)) return { text: "", source: "none", conflict: "street" };
+      if (ev.city && vn.city && normKey(ev.city) !== normKey(vn.city)) return { text: "", source: "none", conflict: "city" };
+    }
+    var r = resolve({ name: name, eventAddress: evAddr, eventCity: e.locEventCity, venueAddress: vnAddr, venueCity: e.locVenueCity, venueZip: e.locVenueZip });
+    if (!r.street || !hasHouseNumber(r.street)) return none;
+    var text = compose("", { street: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country });
+    return { text: text, source: r.source, conflict: "", street: r.street, city: r.city };
+  }
+
+  // The street line for a GROUP of events that share one marker (map popup). A single
+  // street is returned only when every event that has a usable street resolves to the
+  // same street and city; any event/venue conflict, or two different locations, means
+  // no street at all. Events with no usable street neither support nor contradict.
+  // -> { text, conflict }  conflict is "" | "event" | "group".
+  function sharedStreetLine(events) {
+    var none = { text: "", conflict: "" };
+    var lines = (events || []).map(streetLineParts);
+    if (lines.some(function (l) { return l.conflict; })) return { text: "", conflict: "event" };
+    var known = lines.filter(function (l) { return l.text; });
+    if (!known.length) return none;
+    var first = known[0];
+    for (var i = 1; i < known.length; i++) {
+      var k = known[i];
+      if (!sameStreetLine(first.street, k.street)) return { text: "", conflict: "group" };
+      if (first.city && k.city && normKey(first.city) !== normKey(k.city)) return { text: "", conflict: "group" };
+    }
+    // same place, different wording: show the most complete rendering (longest text)
+    var best = known.reduce(function (a, b) { return b.text.length > a.text.length ? b : a; });
+    return { text: best.text, conflict: "" };
+  }
+
+  function streetLineForEvent(e) {
+    var r = streetLineParts(e);
+    return { text: r.text, source: r.source, conflict: r.conflict };
   }
 
   // An event object as the pages build it: venue (display name), locEventAddress/
@@ -178,6 +298,98 @@
       venueCity: e.locVenueCity,
       venueZip: e.locVenueZip
     });
+  }
+
+
+  // ---- safe directions (draft, 2026-11-06) ---------------------------------
+  // safeDirections() decides whether a "Get directions" link may be shown. A Maps search on a partial
+  // address (a bare number, a street with no number, a region, a truncated city or ZIP, a placeholder)
+  // routes somewhere wrong, which is worse than no link. It never repairs or invents: it only says
+  // ready / not ready and why, and builds the query from the parts the data actually carries.
+  //   input: { name, address, city, state, zip, country, entrance }
+  //   -> { ready, reason, query, label }   reason: "" when ready, else a short code
+  // "entrance" is an explicit, data-supplied named entrance or meeting point (parks, campuses). It is
+  // never derived: when present it makes Directions ready with that label.
+  var PLACEHOLDER = /^(?:tba|tbd|tba\b.*|venue tba|location tba|location to be (?:announced|determined)|to be (?:announced|determined)|various(?: locations?)?|multiple locations?|secret(?: location)?|undisclosed(?: location)?|private(?: location| residence)?|online|virtual)\.?$/i;
+  var REGION_WORDS = /^(?:michigan|ohio|ontario|canada|usa|united states|mi|oh|on|us|ca)\.?$/i;
+  var SECRECY = /\b(?:secret|undisclosed|secluded)\b|\bprivate (?:location|residence|address|home)\b|\brsvp\b[^|]{0,40}\baddress\b|\baddress\b[^|]{0,40}\b(?:after|upon) (?:rsvp|registration|purchase)\b|\blocation\b[^|]{0,30}\b(?:shared|sent|revealed|released|announced|provided|given)\b[^|]{0,30}\b(?:after|upon|to ticket|to rsvp|via email|by email)\b|\bsecret location\b/i;
+  // City names that exist in more than one country within reach of the data. Extend only with names that actually occur.
+  var AMBIGUOUS_CITIES = { "windsor": true };
+  function validZip(z) { z = clean(z); return US_ZIP.test(z) || CA_POSTAL.test(z) ? z.toUpperCase() : ""; }
+  function stripTrailing(s) { return clean(s).replace(/[\s,;]+$/, "").replace(/^[\s,;]+/, ""); }
+  function safeDirections(input) {
+    input = input || {};
+    var name = clean(input.name), addr = stripTrailing(input.address), city = stripTrailing(input.city);
+    var no = function (reason) { return { ready: false, reason: reason, query: "", label: "" }; };
+    // A secrecy marker anywhere (name, address or description text) always wins: the location is deliberately withheld.
+    if (SECRECY.test([name, addr, input.description].map(clean).join(" | "))) return no("secrecy");
+    if (PLACEHOLDER.test(addr) || PLACEHOLDER.test(city)) return no("placeholder");
+    // A placeholder NAME ("Venue TBA") does not by itself hide a stated street address, but only when the caller
+    // passes addressVerified === true from the data (the event publishes a complete public address). Default: not ready.
+    if (PLACEHOLDER.test(name) && input.addressVerified !== true) return no("placeholder");
+    // a city column that carries more than a city ("Warren, MI 48092") is parsed together with the address
+    var p = /[,\d]/.test(city) ? parseAddress(addr ? addr + ", " + city : city, "") : parseAddress(addr, city);
+    var street = tidyStreet(p.street), c = stripTrailing(p.city) || (/[,\d]/.test(city) ? "" : city);
+    var state = clean(input.state).toUpperCase() || p.state, zip = validZip(input.zip || p.zip);
+    var country = clean(input.country) || p.country;
+    var entrance = stripTrailing(input.entrance);
+    if (entrance && !PLACEHOLDER.test(entrance) && !/^\d+$/.test(entrance)) {
+      var ctxE = [c, state, zip].filter(Boolean).join(", ");
+      return { ready: true, reason: "", query: [entrance, ctxE].filter(Boolean).join(", "), label: entrance };
+    }
+    if (!street && !c) return no(addr || city ? (REGION_WORDS.test(addr) || REGION_WORDS.test(city) ? "region_only" : "empty") : "empty");
+    if (!street) return no(REGION_WORDS.test(city) ? "region_only" : "city_only");
+    if (REGION_WORDS.test(street)) return no("region_only");
+    if (/^\d+$/.test(street.replace(/[\s,]/g, ""))) return no("number_only");
+    if (!hasHouseNumber(street)) return no("street_only");
+    // a house number needs a street NAME after it ("123 St", "123 Dr" are not addresses)
+    var seg = street.split(",").map(clean).filter(function (x) { return /^\d+[A-Za-z]?\b/.test(x); })[0] || "";
+    var rest = seg.replace(/^\d+[A-Za-z]?\s*/, "").toLowerCase().replace(/[.,]/g, "").split(/\s+/).filter(function (w) { return w && !CORE_DROP.test(w) && !/^\d+[A-Za-z]?$/.test(w); });
+    if (!rest.length || !rest.some(function (w) { return /[a-z]/.test(w) || /^\d+(?:st|nd|rd|th)$/.test(w); })) {
+      if (!/\b\d+(?:st|nd|rd|th)\b|\b\d+\s+(?:mile|mi)\b/i.test(seg)) return no("number_only");
+    }
+    // no separate city is acceptable only when the address itself carries a state and a valid ZIP/postal code
+    if (!c && !(state && zip)) return no("city_missing");
+    if (c && (REGION_WORDS.test(c) || STATE_NAMES[c.toLowerCase()])) return no("region_only");
+    if (c && (/\d/.test(c) || /\s[A-Za-z]\.?$/.test(c) || c.length < 3)) return no("truncated_city");
+    var regionOk = CA_PROVINCES.test(state) || (US_STATE.test(state) && !CA_PROVINCES.test(state));
+    // Which country does the data itself point to? Each signal is only what is stored, never inferred from the city.
+    var sigCA = CA_PROVINCES.test(state) || CA_POSTAL.test(zip) || /^(?:canada|ca|can)$/i.test(country);
+    var sigUS = (US_STATE.test(state) && !CA_PROVINCES.test(state)) || US_ZIP.test(zip) || COUNTRY_US.test(country) || country === "US";
+    // Conflicting evidence (a province with a US ZIP, a US state with a Canadian postal code, ...) is a data error: no link.
+    if (sigCA && sigUS) return no("conflicting_region");
+    // A city name shared by places in different countries ("Windsor": Ontario, Connecticut, ...) needs a stated
+    // region, postal/ZIP code or country. Without one the link would be a guess, so it is not ready (a region is never inferred).
+    if (c && AMBIGUOUS_CITIES[normKey(c)] && !(sigCA || sigUS)) return no("ambiguous_city");
+    var ctx = [c, [regionOk ? state : "", zip].filter(Boolean).join(" ")];
+    // Country is added only when the data says which one: a Canadian province or postal code => Canada,
+    // a US state or ZIP => USA. A bare "Windsor" is left bare rather than guessed in either direction.
+    var cty = sigCA ? "Canada" : (sigUS ? "USA" : "");
+    var q = [street].concat(ctx, [cty]).filter(Boolean).join(", ");
+    return { ready: true, reason: "", query: q, label: "" };
+  }
+
+  // Sourcing for the placeholder-name rescue: an explicit, reviewed record in data/address-verified.json
+  // ({eventId, street, city, verifiedAt, verifiedBy, source}). True only when the record is complete AND the event's
+  // own resolved street and city still equal the recorded ones, so an address that later changes in the source
+  // drops the link until it is re-verified. Pure; the page supplies the parsed JSON.
+  function addressVerifiedFor(e, entries) {
+    e = e || {};
+    if (!Array.isArray(entries) || !e.id) return false;
+    var rec = entries.filter(function (x) { return x && String(x.eventId) === String(e.id); })[0];
+    if (!rec || isBlank(rec.street) || isBlank(rec.city) || isBlank(rec.verifiedAt) || isBlank(rec.verifiedBy) || isBlank(rec.source)) return false;
+    var r = resolveForEvent(e);
+    return !!r.street && !!r.city && streetKey(r.street) === streetKey(rec.street) && normKey(r.city) === normKey(rec.city);
+  }
+
+  // Event pages: the resolver's chosen parts (event address first, venue fallback, nothing invented),
+  // unless the event's and venue's addresses disagree, in which case no link (existing conflict rule).
+  function directionsForEvent(e) {
+    e = e || {};
+    var line = streetLineParts(e);
+    if (line.conflict) return { ready: false, reason: "conflict", query: "", label: "" };
+    var r = resolveForEvent(e);
+    return safeDirections({ name: e.venue, description: e.description, addressVerified: e.addressVerified === true, address: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country, entrance: e.entrance });
   }
 
   // ---- serialisation -------------------------------------------------------
@@ -209,6 +421,11 @@
   var api = {
     resolve: resolve,
     resolveForEvent: resolveForEvent,
+    streetLineForEvent: streetLineForEvent,
+    safeDirections: safeDirections,
+    directionsForEvent: directionsForEvent,
+    addressVerifiedFor: addressVerifiedFor,
+    sharedStreetLine: sharedStreetLine,
     parseAddress: parseAddress,
     icsEscape: icsEscape,
     foldICSLine: foldICSLine,

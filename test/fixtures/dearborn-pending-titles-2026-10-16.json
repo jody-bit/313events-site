@@ -1,0 +1,611 @@
+[
+ {
+  "title": "Annual Thanksgiving Hockey Tournament",
+  "venue_name_raw": "14900 Ford Rd. Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 3
+ },
+ {
+  "title": "Building Board of Appeals",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Camp Dearborn Halloween Weekend 3",
+  "venue_name_raw": "Camp Dearborn",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Camp Dearborn Reservations OPEN",
+  "venue_name_raw": "Camp Dearborn",
+  "category": "community",
+  "expected": "ambiguous",
+  "count": 1
+ },
+ {
+  "title": "CANCELED - Demolition Board of Appeals Meeting",
+  "venue_name_raw": "Dearborn Administrative Center, 16901 Michigan Ave",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "City Beautiful Commission",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "City Council Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 3
+ },
+ {
+  "title": "Committee of the Whole",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Committee of The Whole Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Daylight Saving Time Ends-Change Clocks/Batteries",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Community Concert Band",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "music",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Community Concert Band",
+  "venue_name_raw": "Venue TBA",
+  "category": "music",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Dog Park Begins Winter Hours",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "ambiguous",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Historical Commission Meeting",
+  "venue_name_raw": "915 S. Brady St.",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Historical Society Lecture",
+  "venue_name_raw": "915 S. Brady St.",
+  "category": "community",
+  "expected": "public_event",
+  "count": 2
+ },
+ {
+  "title": "Dearborn Holiday Choral Festival",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Specials Art Daze",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "public_event",
+  "count": 3
+ },
+ {
+  "title": "Dearborn Specials Christmas Craft Night",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Specials Dance",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "dance",
+  "expected": "public_event",
+  "count": 2
+ },
+ {
+  "title": "Dearborn Specials Halloween Craft Night",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Specials Pizza and & Bingo",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "nightlife",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Symphony Orchestra Concert",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "music",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Dearborn Youth Symphony Concert",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "music",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "December Board of Review",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Demolition Board of Appeal",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "Demolition Board of Appeals",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Demolition Hearing Officer Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "Disability Commission Meets",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Diwali",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Dix-Vernor Business District Improvement Authority Board Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "DPW YARD OPEN",
+  "venue_name_raw": "2951 Greenfield Road, Dearborn, MI, USA",
+  "category": "community",
+  "expected": "service",
+  "count": 2
+ },
+ {
+  "title": "DPW YARD OPEN & Tire Drop-Off Day",
+  "venue_name_raw": "2951 Greenfield Road, Dearborn, MI, USA",
+  "category": "community",
+  "expected": "service",
+  "count": 1
+ },
+ {
+  "title": "Early Warning Siren Test",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 2
+ },
+ {
+  "title": "East Dearborn Downtown Development Authority Board Meeting (copy)",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "East Dearborn Downtown Development Authority Board Meeting (Joint DDA)",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Environmental Commission Meeting",
+  "venue_name_raw": "Dearborn Administrative Center, 16901 Michigan Ave",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Federation of Neighborhood Associations",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Festival of Trees",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 4
+ },
+ {
+  "title": "Festival of Trees",
+  "venue_name_raw": "Venue TBA",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Festival of Trees Opens",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Festival of Trees Preview Party",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Fire Department Open House",
+  "venue_name_raw": "19800 Outer Drive, Dearborn, MI 48124",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Five-Week Session Monday/Wednesday Swim Lessons Begins",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Friends Of The Library-Dearborn (FOLD) Used Book Sale",
+  "venue_name_raw": "16301 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 2
+ },
+ {
+  "title": "Gleaners Mobile Community Food Pantry",
+  "venue_name_raw": "Henry Ford Centennial Library",
+  "category": "food",
+  "expected": "service",
+  "count": 5
+ },
+ {
+  "title": "Hanukkah Ends",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Hanukkah Festival of Lights (Begins at Sundown)",
+  "venue_name_raw": "Venue TBA",
+  "category": "fest",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Haunted Trail",
+  "venue_name_raw": "22051 Cherry Hill St,",
+  "category": "community",
+  "expected": "public_event",
+  "count": 2
+ },
+ {
+  "title": "Haunted Trail",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "HFCL Rain Garden Spruce Up",
+  "venue_name_raw": "Henry Ford Centennial Library",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Holiday Market Opens",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "vendor",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Housing Commission Meeting",
+  "venue_name_raw": "Townsend Towers, 7000 Freda St",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Housing Commission Meeting",
+  "venue_name_raw": "TBD",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Joint DDA Executive Committee Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Kwanzaa Begins",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Liquid Nutrition Distributed",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "service",
+  "count": 1
+ },
+ {
+  "title": "Liquid Nutrition Distribution",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "service",
+  "count": 1
+ },
+ {
+  "title": "Mayor Hammoud's Briefing Session",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "MI Bright Lights 5k Fun Walk/Run ",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "MI Bright Lights Light Fest at Camp Dearborn",
+  "venue_name_raw": "Camp Dearborn",
+  "category": "fest",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Motor City Brass Band Concert",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "music",
+  "expected": "public_event",
+  "count": 2
+ },
+ {
+  "title": "National Day of Giving",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Nominations Due For Sports Halls of Fame",
+  "venue_name_raw": "Ford Community & Performing Arts Center",
+  "category": "sports",
+  "expected": "ambiguous",
+  "count": 1
+ },
+ {
+  "title": "Parks & Recreation Commission Meets",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Pearl Harbor Remembrance Day",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Pension Board Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 3
+ },
+ {
+  "title": "Planning Commission",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "Saturday Drop-In Basketball Program Begins",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Senior Citizen Commission Meets",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Session 2 Dearborn Specials Gym Night Begins",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Session 2 Dearborn Specials Swim Night Begins",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Small Business Saturday",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Surplus Food Distribution",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "food",
+  "expected": "service",
+  "count": 2
+ },
+ {
+  "title": "The Nutcracker 1",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "The Nutcracker 2",
+  "venue_name_raw": "Ford Community & Performing Arts Center",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Traffic Commission",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "Veterans Day Ceremony",
+  "venue_name_raw": "Ford Community & Performing Arts Center",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Victorian Open House",
+  "venue_name_raw": "Dearborn Historical Museum Commandant's Quarters",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Waiver Committee",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Warren Business District Improvement Authority Board Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "West Dearborn Downtown Development Authority Board Meeting",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 2
+ },
+ {
+  "title": "West Dearborn Downtown Development Authority Board Meeting (Joint DDA)",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "Winter Begins",
+  "venue_name_raw": "Venue TBA",
+  "category": "community",
+  "expected": "observance",
+  "count": 1
+ },
+ {
+  "title": "Zoning Board of Appeals",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 3
+ },
+ {
+  "title": "Camp Dearborn Halloween Weekend 4",
+  "venue_name_raw": "Camp Dearborn",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ },
+ {
+  "title": "Mayor Hammoud's Briefing Session",
+  "venue_name_raw": "16901 Michigan Avenue, Dearborn",
+  "category": "community",
+  "expected": "civic_meeting",
+  "count": 1
+ },
+ {
+  "title": "The Nutcracker 3",
+  "venue_name_raw": "15801 Michigan Avenue, Dearborn, MI 48126",
+  "category": "community",
+  "expected": "public_event",
+  "count": 1
+ }
+]

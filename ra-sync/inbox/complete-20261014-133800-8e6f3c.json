@@ -1,0 +1,133 @@
+{
+  "runToken": "20261014-133800-8e6f3c",
+  "action": "complete",
+  "runId": "f6448375-0bfc-4d03-9a70-cd4c7e5f0ebc",
+  "events": [
+    {
+      "id": "ra-2560389",
+      "title": "Industrial Detroit - The Treasury, Hexx Head, Mission to the Sun, Deadlines",
+      "description": "The Treasury is the Richmond based project of Troy Hancock. With a sound rooted in industrial and EBM, The Treasury brings punk elements creating a fresh take on darkwave. Following their 2025 release on DKA Records, The Treasury has toured extensively and become known for a hard hitting live set.\n\nHexx Head is the collaboration of artists Allie Coppola and Mike Frazier. The Boston-based electronic duo is known for blending industrial, EBM, and noise. Since their debut release, Seabeds Cough, they’ve toured from east to west coast, delivering off-kilter rhythms fused with dance music’s beat-forward structure. \n\nMission to the Sun is a Detroit based project of Kirill and C.M. Samuels ( Ritual Howls ). All new set of beat driven material at this show. \n\nDJ Deadlines on the decks, holding it down before and in-between bands",
+      "startDate": "2026-11-20T22:00:00.000",
+      "endDate": "2026-11-21T02:00:00.000",
+      "venueName": "Outer Limits Lounge",
+      "address": "5507 Caniff St, Hamtramck, MI 48212, USA",
+      "image": [
+        "https://images.ra.co/65c1e52e41a57183557184fb55d1408b26d5e2da.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2560405",
+      "title": "Groove Night",
+      "description": null,
+      "startDate": "2026-10-15T22:00:00.000",
+      "endDate": "2026-10-16T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/dd18d2e0bf3639c677d22e7fdaa40006b58c549a.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560407",
+      "title": "Interface",
+      "description": null,
+      "startDate": "2026-10-16T22:00:00.000",
+      "endDate": "2026-10-17T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/bcd7232231fd41c78fa6baed3faf4b3a7f3ecd31.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560411",
+      "title": "Serve",
+      "description": null,
+      "startDate": "2026-10-18T07:00:00.000",
+      "endDate": "2026-10-18T15:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/ff968859cbd91f346e216cb95d503dc4337542b0.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2560840",
+      "title": "DJ Etta & Fabiola",
+      "description": null,
+      "startDate": "2026-10-14T20:00:00.000",
+      "endDate": "2026-10-15T01:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/537ac0f8e8e81e9738b5f87e609c4aae0c9f8914.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560841",
+      "title": "Wrckles",
+      "description": null,
+      "startDate": "2026-10-15T20:00:00.000",
+      "endDate": "2026-10-16T01:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/a817f52db0351774c759d5e751fdf7406da394ed.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560845",
+      "title": "Shigeto",
+      "description": null,
+      "startDate": "2026-10-17T17:00:00.000",
+      "endDate": "2026-10-18T01:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/226b4ac236e7193032b8fc499debc51d21bb42bc.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560847",
+      "title": "Mike Medow",
+      "description": null,
+      "startDate": "2026-10-16T21:00:00.000",
+      "endDate": "2026-10-17T02:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/5556fd525f02e6d40a4a7123020777d49c382aa4.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2560884",
+      "title": "GED/Ghettotech, Electro, Drum'n'Bass",
+      "description": "GED: Ghettotech Electro Drum'n'Bass is back with3 local DJs/hardware musicians playing these genres.  Using these shows to organize around these genres in the Washtenaw County Area - monthly shows focused on one or two genres (and adjacent). We want to hear everyone's voice on how said shows should look like.  Venue is a cannabis lounge 1 block of main street downtown Ann Arbor.  Dancing and visuals.  BYOB.",
+      "startDate": "2026-10-16T20:00:00.000",
+      "endDate": "2026-10-17T00:30:00.000",
+      "venueName": "Ashley Street Social",
+      "address": "336 S Ashley St, Ann Arbor, MI 48104",
+      "image": [
+        "https://images.ra.co/134d8c8afd0820215e8495b5f936965f80ad17af.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

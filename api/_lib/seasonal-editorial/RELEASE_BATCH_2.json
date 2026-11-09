@@ -1,0 +1,84 @@
+{
+ "batch": "seasonal-release-2",
+ "status": "APPLIED IN A DRAFT PR. DRAFT in a pull request. The approval blocks below are drafts for Jody Tyree to confirm in review; merge, deploy and the live site are separate authorizations.",
+ "authorization": {
+  "by": "Jody Tyree",
+  "at": "2026-10-19",
+  "wording": "AUTHORIZE PUBLICATION APPROVAL: batch seasonal-release-2, 3 records, approved by Jody Tyree on 2026-10-19.",
+  "basis": "Gate-5 decision card 'Approve all three', Jody, 2026-10-19T04:03:35Z, relayed by the coordinator (the tap itself is not attachable)."
+ },
+ "counts": {
+  "total": 3,
+  "fall": 2,
+  "fall-color": 1
+ },
+ "reconciles": {
+  "batch1": 76,
+  "batch2": 3,
+  "total": 79
+ },
+ "records": [
+  {
+   "collection": "fall",
+   "id": "goodison-cider-mill",
+   "name": "Goodison Cider Mill",
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
+   },
+   "source": {
+    "page": "https://goodisoncidermill.com/",
+    "link": "https://goodisoncidermill.com/wp-content/uploads/2020/11/goodison-cider-mill-2020.jpg",
+    "credit": "Goodison Cider Mill (official site)",
+    "acceptedBy": "Jody Tyree (owner)",
+    "acceptedAt": "2026-10-19"
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "damouni-orchards",
+   "name": "Damouni Orchards",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "linked-risk-acceptance",
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
+   },
+   "source": {
+    "page": "https://www.damouniorchards.com/",
+    "link": "https://www.damouniorchards.com/cdn/shop/files/IMG_9472.jpg",
+    "credit": "Damouni Orchards (official site)",
+    "acceptedBy": "Jody Tyree (owner)",
+    "acceptedAt": "2026-10-19"
+   },
+   "acquired": {
+    "file": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
+    "bytes": 348304,
+    "sha256": "fbb93e6283566f565f2a9cf7dfebac41fe93fdc9a0dcabcc1e1f101c66c75f2c",
+    "width": 1280,
+    "height": 720,
+    "acquiredAt": "2026-10-19"
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "kensington-metropark",
+   "name": "Kensington Metropark",
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
+   },
+   "source": {
+    "page": "https://www.metroparks.com/kensington-metropark/",
+    "link": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+    "credit": "Huron-Clinton Metroparks",
+    "acceptedBy": "Jody Tyree (owner)",
+    "acceptedAt": "2026-10-11"
+   }
+  }
+ ]
+}

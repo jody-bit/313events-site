@@ -1,0 +1,1517 @@
+{
+ "source": "api/_lib/seasonal-editorial/halloween-qa.json at feature/halloween-completion 7e094df",
+ "note": "Frozen. Reviewers save image choices in their browser as {destinationId: optionId} (localStorage 313-halloween-qa-image-choices-v1). Every option id here must still exist, and the defaults must not move.",
+ "count": 52,
+ "destinations": {
+  "erebus": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "link-erebus",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "link-erebus": "linked_third_party",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Multi-story haunted attraction in Pontiac."
+  },
+  "eloise-asylum": {
+   "default": "313p-73cbabcb",
+   "options": [
+    "313p-73cbabcb",
+    "313p-6ed1a1f0",
+    "313p-89398e17",
+    "313p-69c45aee",
+    "313p-23047f66-f034",
+    "313p-23047f66-f124",
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "313p-73cbabcb": "owner_photo_destination",
+    "313p-6ed1a1f0": "owner_photo_destination",
+    "313p-89398e17": "owner_photo_destination",
+    "313p-69c45aee": "owner_photo_destination",
+    "313p-23047f66-f034": "owner_photo_destination",
+    "313p-23047f66-f124": "owner_photo_destination",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland."
+  },
+  "hush-haunted-attraction": {
+   "default": "link-hush-haunted-attraction",
+   "options": [
+    "link-hush-haunted-attraction",
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "link-hush-haunted-attraction": "linked_official",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Multiple haunted houses"
+  },
+  "azra-chamber-of-horrors": {
+   "default": "link-azra-chamber-of-horrors",
+   "options": [
+    "link-azra-chamber-of-horrors",
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "link-azra-chamber-of-horrors": "linked_official",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Multilevel haunted maze"
+  },
+  "rotten-manor": {
+   "default": "link-rotten-manor",
+   "options": [
+    "link-rotten-manor",
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "link-rotten-manor": "linked_official",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted manor, forest and asylum"
+  },
+  "wiards-night-terrors": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "link-wiards-night-terrors",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "link-wiards-night-terrors": "linked_third_party",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted thrill park"
+  },
+  "slay-nights": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Story-driven haunted house"
+  },
+  "scarefest-scream-park": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "link-scarefest-scream-park",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "link-scarefest-scream-park": "linked_third_party",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted hayride, maze and forest"
+  },
+  "blakes-haunted-attractions": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted barn and hayride"
+  },
+  "the-scream-machine": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted asylum experience"
+  },
+  "deranged-haunt": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted woods"
+  },
+  "slaughterhouse-adventure": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted house and corn maze"
+  },
+  "full-moon-manor-at-bonadeo-farms": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted farm"
+  },
+  "exit-13-haunted-house": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Extreme interactive haunt; operating status needs verification"
+  },
+  "nightmare-fields-at-the-pumpkin-factory": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Haunted field attraction"
+  },
+  "scarehouse-windsor": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "summary": "Indoor haunted attractions and immersive horror"
+  },
+  "the-howling-haunted-trail-and-party": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted woodland trail"
+  },
+  "terrorfied-forest": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Outdoor haunted forest"
+  },
+  "past-tense-after-dark": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted hayride, corn maze and house"
+  },
+  "spooky-trails": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted maze, cornfield and hayride"
+  },
+  "panic-in-the-pines": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted hayride and woods"
+  },
+  "field-of-fear": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted cornfield attractions"
+  },
+  "bates-haunted-sawmill": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Rustic haunted sawmill and maze; radius check"
+  },
+  "dearborn-haunted-trail": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "link-dearborn-haunted-trail",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "link-dearborn-haunted-trail": "linked_official",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted woodland trail"
+  },
+  "sanilac-museums-haunted-village": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Haunted historic village; radius check"
+  },
+  "distracted-haunted-house": {
+   "default": "gen-halloween-1",
+   "options": [
+    "gen-halloween-1",
+    "gen-halloween-4",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-1.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Indoor haunted house; radius check"
+  },
+  "haunted-hydro": {
+   "default": "gen-halloween-4",
+   "options": [
+    "gen-halloween-4",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-4": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-4.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Industrial haunted attraction; radius check"
+  },
+  "mortuary-manor-funeral-museum": {
+   "default": "gen-halloween-2",
+   "options": [
+    "gen-halloween-2",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-2": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-2.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Funeral history and paranormal tours"
+  },
+  "wildwood-manor-house": {
+   "default": "gen-halloween-8",
+   "options": [
+    "gen-halloween-8",
+    "gen-halloween-2",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-8": "generated_illustrative",
+    "gen-halloween-2": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-8.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Seasonal eerie manor tours"
+  },
+  "fort-meigs-garrison-ghost-walk": {
+   "default": "gen-halloween-2",
+   "options": [
+    "gen-halloween-2",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-2": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-2.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Historical ghost walk"
+  },
+  "haunted-waterville-tours": {
+   "default": "gen-halloween-8",
+   "options": [
+    "gen-halloween-8",
+    "gen-halloween-2",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-8": "generated_illustrative",
+    "gen-halloween-2": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-8.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Historical ghost tours"
+  },
+  "glenlore-carnevil-2": {
+   "default": "313p-8dda6dde",
+   "options": [
+    "313p-8dda6dde",
+    "313p-cc8f40e5",
+    "313p-14468368-f025",
+    "313p-14468368-f075",
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "313p-8dda6dde": "owner_photo_destination",
+    "313p-cc8f40e5": "owner_photo_destination",
+    "313p-14468368-f025": "owner_photo_destination",
+    "313p-14468368-f075": "owner_photo_destination",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "categories": [
+    "strange-unusual",
+    "haunted-attractions"
+   ],
+   "summary": "Illuminated forest walk with a carnival-horror theme in Commerce Township."
+  },
+  "halloween-stroll-at-canterbury-village": {
+   "default": "gen-halloween-3",
+   "options": [
+    "gen-halloween-3",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-3.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Halloween light displays and characters"
+  },
+  "hallowglow-at-treerunner": {
+   "default": "link-hallowglow-at-treerunner",
+   "options": [
+    "link-hallowglow-at-treerunner",
+    "gen-halloween-7",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "link-hallowglow-at-treerunner": "linked_official",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "categories": [
+    "strange-unusual"
+   ],
+   "summary": "Halloween-themed aerial adventure"
+  },
+  "halloween-greenfield-village": {
+   "default": "313p-522299e9-f337",
+   "options": [
+    "313p-522299e9-f337",
+    "link-halloween-greenfield-village",
+    "gen-halloween-6",
+    "gen-halloween-3",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "313p-522299e9-f337": "owner_photo_destination",
+    "link-halloween-greenfield-village": "linked_official",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "categories": [
+    "family-friendly",
+    "ghosts-history"
+   ],
+   "summary": "The Henry Ford's evening Halloween event in Greenfield Village."
+  },
+  "theatre-bizarre": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "313p-97d678d8",
+    "313p-222947d7",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "313p-97d678d8": "owner_photo_destination",
+    "313p-222947d7": "owner_photo_destination",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "strange-unusual"
+   ],
+   "summary": "Adults-only immersive masquerade; 2026 occurrence must be verified"
+  },
+  "scarehouse-windsor-immersive-dinner": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "strange-unusual"
+   ],
+   "summary": "Theatrical horror dining"
+  },
+  "zoo-boo": {
+   "default": "link-zoo-boo",
+   "options": [
+    "link-zoo-boo",
+    "gen-halloween-3",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "link-zoo-boo": "linked_official",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Halloween trick-or-treating event at the Detroit Zoo."
+  },
+  "crossroads-ghosts-goodies": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "link-crossroads-ghosts-goodies",
+    "gen-halloween-3",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "link-crossroads-ghosts-goodies": "linked_official",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad."
+  },
+  "brick-or-treat-at-legoland-discovery-center": {
+   "default": "gen-halloween-3",
+   "options": [
+    "gen-halloween-3",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-3.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "LEGO-themed Halloween activities"
+  },
+  "ooky-spooky-light-show": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "gen-halloween-3",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Planetarium Halloween show"
+  },
+  "laser-halloween": {
+   "default": "gen-halloween-3",
+   "options": [
+    "gen-halloween-3",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-3.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Halloween-themed laser show"
+  },
+  "thiessen-orchards-scaredy-cat-barn": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "gen-halloween-3",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Gentle haunted barn; radius check"
+  },
+  "jack-o-lanterns-among-the-trees": {
+   "default": "gen-halloween-3",
+   "options": [
+    "gen-halloween-3",
+    "link-jack-o-lanterns-among-the-trees",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-3": "generated_illustrative",
+    "link-jack-o-lanterns-among-the-trees": "linked_third_party",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-3.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Illuminated woodland walk"
+  },
+  "halloween-stroll": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "gen-halloween-3",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-3": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "family-friendly"
+   ],
+   "summary": "Family Halloween trail"
+  },
+  "agony-on-alcott": {
+   "default": "gen-halloween-5",
+   "options": [
+    "gen-halloween-5",
+    "gen-halloween-7",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-5.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Independent residential haunt"
+  },
+  "reapers-gate-home-haunt": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-1",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-1": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "summary": "Free home haunt with actors and animatronics"
+  },
+  "windsor-essex-yard-haunt-map": {
+   "default": "gen-halloween-7",
+   "options": [
+    "gen-halloween-7",
+    "gen-halloween-6",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-7": "generated_illustrative",
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-7.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "strange-unusual"
+   ],
+   "summary": "Community Halloween display discovery"
+  },
+  "halloween-hunt-the-haunts": {
+   "default": "gen-halloween-6",
+   "options": [
+    "gen-halloween-6",
+    "gen-halloween-5",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-6": "generated_illustrative",
+    "gen-halloween-5": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-6.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "strange-unusual"
+   ],
+   "summary": "Regional haunt-discovery experience"
+  },
+  "motor-city-ghosts": {
+   "default": "gen-halloween-2",
+   "options": [
+    "gen-halloween-2",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-2": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-2.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Guided ghost walks"
+  },
+  "spooky-janes-walk": {
+   "default": "gen-halloween-8",
+   "options": [
+    "gen-halloween-8",
+    "gen-halloween-2",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-8": "generated_illustrative",
+    "gen-halloween-2": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-8.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Haunted-history walking tours"
+  },
+  "sandwich-town-ghost-tour": {
+   "default": "gen-halloween-2",
+   "options": [
+    "gen-halloween-2",
+    "gen-halloween-8",
+    "313p-4e36da88",
+    "313p-9f336786",
+    "313p-cf666d14",
+    "313p-98ab90f5"
+   ],
+   "types": {
+    "gen-halloween-2": "generated_illustrative",
+    "gen-halloween-8": "generated_illustrative",
+    "313p-4e36da88": "owner_photo_atmospheric",
+    "313p-9f336786": "owner_photo_atmospheric",
+    "313p-cf666d14": "owner_photo_atmospheric",
+    "313p-98ab90f5": "owner_photo_atmospheric"
+   },
+   "primary_image": "/assets/seasonal/halloween-card-2.webp",
+   "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+   "categories": [
+    "ghosts-history"
+   ],
+   "summary": "Historical ghost walk"
+  }
+ }
+}

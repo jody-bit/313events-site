@@ -16,7 +16,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" id="ogTitle" content="Event — 313.events">
@@ -42,17 +42,12 @@
 -->
 <style>
   :root{
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
-    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
-    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
-    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
-    --c-vendor:#39FF14; /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -67,14 +62,13 @@
     display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
   }
-  .wordmark{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
-    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
-  }
-  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .wordmark{display:flex;align-items:center;min-height:33px;text-decoration:none;}
+  .wordmark img{display:block;height:26px;width:auto;}
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
   #notFoundState{display:none;}
@@ -106,17 +100,16 @@
     background:var(--panel-alt);border:1px solid var(--line);
   }
 
-  .evt-cat-badge{
-    display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
-    padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
-  }
+  .evt-cat-slot{margin-bottom:12px;}
+  /* The event-type label is the shared .cat-tag from /categories.js (detail size); no local rule. */
   h1.evt-detail-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
-    text-transform:uppercase;margin:0 0 14px;
+    text-transform:uppercase;margin:0 0 14px;overflow-wrap:anywhere;
   }
-  .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
+  .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;overflow-wrap:anywhere;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  .evt-ended{display:inline-block;margin:2px 0 8px;padding:3px 10px;border:1px solid var(--ink-soft);border-radius:var(--radius);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   /* Street address (2026-09-04) — a plain "Get directions" link, distinct
@@ -137,18 +130,30 @@
     font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;text-decoration:none;
     border-radius:var(--radius);padding:9px 16px;
   }
+  /* Affiliate notice: full-width last line of the action box, so it reads as part of the ticket link and the box's bottom margin
+     (28px) separates it from whatever follows (owner review 2026-10-23: at least 24px from the description). */
+  .evt-detail-actions #evtAffiliateNote{flex-basis:100%;margin:0;padding-top:2px;}
   .btn-primary{background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);}
   .btn-primary:hover{opacity:.9;}
   .btn-secondary{background:none;color:var(--ink);border:1px solid var(--line);}
   .btn-secondary:hover{background:var(--panel-hover);}
+  /* Touch targets: Share (36px) and Get QR code (19px) get 44px invisible hit areas; painted size unchanged. */
+  #evtShareBtn,#evtQrToggleBtn{position:relative;}
+  #evtShareBtn::after{content:"";position:absolute;inset:-8px 0 0;}
+  #evtQrToggleBtn::after{content:"";position:absolute;inset:-18px -4px -7px;}
 
-  .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;}
+  .evt-detail-desc{font-size:16.5px;line-height:1.65;color:var(--ink);max-width:40em;margin-bottom:24px;overflow-wrap:anywhere;}
+  .evt-detail-desc p{margin:0 0 1em;}
+  .evt-detail-desc ul{margin:0 0 1em;padding-left:1.25em;}
+  .evt-detail-desc li{margin:0 0 .35em;}
+  .evt-detail-desc a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere;}
+  h2.evt-about-h{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:18px;letter-spacing:.02em;text-transform:uppercase;margin:0 0 10px;}
   /* Content-nature descriptor, distinct from the italic editorial note
      below — a plain fact about the event, not a caveat. See
      migration_034_clothing_optional.sql. */
   .evt-tag-clothing-optional{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:3px 8px;margin-bottom:16px;}
   .evt-detail-note{font-size:13.5px;color:#d1b34a;font-style:italic;margin-bottom:20px;}
-  .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;}
+  .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;overflow-wrap:anywhere;}
 
   /* Resale-availability note (2026-09-16, Jody: "see if the event is sold
      out ... to get tickets cheaper on the resale apps") -- only shown for
@@ -238,18 +243,28 @@
   }
   footer.site .footer-links a:hover, footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-links.js"></script>
+<script src="/description-format.js"></script>
+<script src="/event-dates.js"></script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="site">
-      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="wordmark" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="26"></a>
       <a class="back-link" href="/">All events</a>
     </header>
+<main id="main" tabindex="-1">
 
     <div id="loadingState">Loading event…</div>
 
@@ -262,15 +277,16 @@
       <div class="evt-image-wrap" id="evtImageWrap" style="display:none;">
         <img id="evtImage" alt="">
       </div>
-      <div class="evt-cat-badge" id="evtCatBadge"></div>
+      <div class="evt-cat-slot" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
+      <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
       <div class="evt-detail-meta" id="evtWhere"></div>
       <a class="evt-address" id="evtAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
 
       <div class="evt-detail-actions" id="evtActions"></div>
-      <div class="evt-detail-note" id="evtAffiliateNote" style="display:none;"></div>
+      <div id="evtAffiliateNote" style="display:none;"></div>
       <div class="evt-detail-note" id="evtTicketStatusNote" style="display:none;"></div>
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
@@ -289,9 +305,10 @@
       </div>
     </article>
 
-    <footer class="site">
+    </main>
+<footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -302,23 +319,11 @@
 const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
 const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -331,6 +336,17 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML;
+}
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
 }
 function safeUrl(url) {
   if (!url) return '';
@@ -386,8 +402,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return null;
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return null;
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return null; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return null;
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return null;
+  }
   if(!e.ticketStatus) return null;
   return TICKET_STATUS_NOTES[e.ticketStatus] || null;
 }
@@ -474,8 +493,85 @@ function parseTimeRange(timeStr){
   if(!resolved.length) return null;
   return {start: resolved[0].time, end: resolved.length>1 ? resolved[1].time : null};
 }
+// P0 date reliability (2026-10-16): a multiday range with no verified schedule is a published range, not daily
+// availability. The heading keeps the range and says so; the page offers no calendar export for it (Share stays), so
+// it never implies specific days.
+function isDatesUnconfirmed(e){
+  return typeof EventDates !== 'undefined' && EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
+    time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) === 'unverified';
+}
+// #151: an event with evidenced occurrence dates (recurring + occurrence_dates) shows those dates, not its stored
+// range, and Add to Calendar uses the next one. "Today" is America/Detroit, as on the homepage.
+// Detroit "now": the date and the minutes after midnight in America/Detroit (Intl handles DST).
+function detroitNow(){
+  const p = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
+    .formatToParts(new Date()).forEach(x=>{ p[x.type] = x.value; });
+  return { iso: `${p.year}-${p.month}-${p.day}`, mins: (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10) };
+}
+function detroitTodayIso(){ return detroitNow().iso; }
+function isoPlusOneDay(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const n = new Date(y, m-1, d+1);
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// Has this occurrence ended, in Detroit time? An explicit end clock time ends it then (an end earlier than the start
+// is an overnight run that ends the next morning); with no stated end time, the whole day counts and nothing is invented.
+function occurrenceEnded(e, occIso, now){
+  const range = parseTimeRange(e.time);
+  if(!range || !range.end) return now.iso > occIso;
+  const startM = range.start.h * 60 + range.start.m, endM = range.end.h * 60 + range.end.m;
+  if(endM < startM){
+    const nx = isoPlusOneDay(occIso);
+    return now.iso > nx || (now.iso === nx && now.mins >= endM);
+  }
+  return now.iso > occIso || (now.iso === occIso && now.mins >= endM);
+}
+function occurrenceDays(e){
+  if(typeof EventDates === 'undefined' || EventDates.semanticsOf(e) !== 'recurring') return null;
+  const days = EventDates.expand(e);
+  return days.length ? days : null;
+}
+// The occurrence to export: the first one that has not ended, else the last one that was evidenced.
+function nextOccurrence(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const now = detroitNow();
+  return days.find(d=>!occurrenceEnded(e, d, now)) || days[days.length - 1];
+}
+// Add to Calendar is offered only when there is something to add: not for unverified dates, and not when the event has
+// verified occurrence dates and every one of them has ended.
+function calendarExportAvailable(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const days = occurrenceDays(e);
+  if(!days) return true;
+  const now = detroitNow();
+  return days.some(d=>!occurrenceEnded(e, d, now));
+}
+// Has the event ended for good? Only when its dates are verified and the final verified occurrence has ended in Detroit
+// time (same rule as occurrenceEnded: stated end, else overnight end, else end of the Detroit day). Unverified dates are
+// never "ended": the page cannot say when, or whether, anything happened. Nothing here infers an end time.
+function eventHasEnded(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const now = detroitNow();
+  const days = occurrenceDays(e);
+  if(days) return days.every(d=>occurrenceEnded(e, d, now));
+  const continuous = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'continuous';
+  const finalIso = continuous ? (e.endDate || e.date) : e.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(finalIso || '')) return false;
+  return occurrenceEnded(e, finalIso, now);
+}
+function upcomingOccurrences(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const today = detroitTodayIso();
+  const up = days.filter(d=>d >= today);
+  return up.length ? up : [days[days.length - 1]];
+}
 function pad2(n){ return String(n).padStart(2,'0'); }
 function eventDateTimeParts(e){
+  const occ = nextOccurrence(e);
+  if(occ) e = Object.assign({}, e, {date: occ, endDate: occ});
   const [y,m,d] = e.date.split('-').map(Number);
   const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
@@ -505,6 +601,9 @@ function eventDateTimeParts(e){
       endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
     }
   } else {
+    // Technical convention (DEC-028): a start with no stated end gets a two-hour calendar block. It sizes the
+    // calendar entry only; it is not an event end time, is never shown on the page, and plays no part in deciding
+    // whether the event has ended (that uses the stated end, else the end of the Detroit day).
     const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
     endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
     endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
@@ -517,9 +616,11 @@ const icsEscape = CalendarLocation.icsEscape;
 const foldICSLine = CalendarLocation.foldICSLine;
 function buildEventDescription(e){
   const parts = [];
+  const occDays = upcomingOccurrences(e);
+  if(occDays && occDays.length > 1) parts.push('Also on: ' + occDays.slice(1, 6).map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short', day:'numeric'})).join(', ') + (occDays.length > 6 ? ` and ${occDays.length - 6} more` : ''));
   if(e.description) parts.push(truncateText(e.description, 300));
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   parts.push(`Details: ${window.location.href}`);
   return parts.join('\n');
 }
@@ -551,7 +652,7 @@ function buildGoogleCalUrl(e){
 function shareEvent(e){
   const dateLabel = dateRangeLabel(e, 'short');
   const bits = [e.title, e.venue].filter(Boolean).join(' — ');
-  const when = [dateLabel, e.time].filter(Boolean).join(' ');
+  const when = [dateLabel, isDatesUnconfirmed(e) ? '' : e.time].filter(Boolean).join(' ');
   const text = when ? `${bits} (${when})` : bits;
   const url = window.location.href;
   if(navigator.share){ navigator.share({title: e.title, text, url}).catch(()=>{}); return; }
@@ -608,6 +709,8 @@ function mapRow(row) {
     // it also fixes Add to Calendar (eventDateTimeParts()) always creating
     // a 1-day entry for a multi-day event regardless of its real span.
     endDate: row.end_date || row.start_date,
+    dateSemantics: row.date_semantics || null,
+    occurrenceDates: row.occurrence_dates || null,
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
@@ -628,17 +731,17 @@ function mapRow(row) {
     locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — index.html/calendar.html/map.html
     // each already have a function called eventUrl(e) (the internal
     // event.html permalink); keeping this field's name distinct everywhere
     // avoids colliding with that. See migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     priceFrom: row.price_from ?? undefined,
     ticketStatus: row.ticket_status || undefined,
   };
@@ -652,6 +755,11 @@ function mapRow(row) {
 // prominent evtWhen heading, 'short' for the share-sheet text.
 function dateRangeLabel(e, weekdayStyle){
   const opts = {weekday: weekdayStyle, month: weekdayStyle === 'long' ? 'long' : 'short', day: 'numeric'};
+  const occDays = upcomingOccurrences(e);
+  if(occDays){
+    const fmt = d=>new Date(d+"T12:00:00").toLocaleDateString('en-US', opts);
+    return occDays.slice(0, 4).map(fmt).join(' · ') + (occDays.length > 4 ? ` · +${occDays.length - 4} more` : '');
+  }
   const start = new Date(e.date+"T12:00:00").toLocaleDateString('en-US', opts);
   if(!e.endDate || e.endDate <= e.date) return start;
   const end = new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US', opts);
@@ -710,20 +818,36 @@ function renderEvent(e){
   // ---- badge / title / meta ----
   const cat = CATS[e.cat] || {label: e.cat || 'Event', color: 'var(--accent)'};
   const badge = document.getElementById('evtCatBadge');
-  badge.textContent = cat.label;
-  badge.style.background = cat.color;
+  badge.innerHTML = Categories.tagHtml(e.cat, {size:'detail'});
   document.getElementById('evtTitle').textContent = e.title;
-  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time?` · ${escapeHtml(e.time)}`:''}`;
+  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this
   // event resolved to a real venues row (venue_id) — stays plain text for
   // the "Venue TBA"/unmatched cases rather than linking to a guessed page.
   const venueHref = e.venueId != null ? `venue.html?id=${encodeURIComponent(e.venueId)}` : null;
   document.getElementById('evtWhere').innerHTML = `${venueHref?`<a class="evt-venue-link" href="${escapeHtml(venueHref)}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}`;
 
+  // Street line: the shared CalendarLocation resolver decides (the event's own
+  // complete address first, the canonical venue as fallback, nothing invented).
+  // No usable street -> no line; it never says "TBA". When the event's address
+  // and the venue's disagree (different street or city) no line is shown rather
+  // than pairing one place's name with another's address; the reason is left on
+  // the element for QA and the source data is not touched.
   const addrEl = document.getElementById('evtAddress');
-  if(e.address){
-    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.address)}`;
-    addrEl.textContent = `📍 ${e.address} — Get directions`;
+  const streetLine = CalendarLocation.streetLineForEvent(e);
+  if(streetLine.conflict){ addrEl.dataset.locationConflict = streetLine.conflict; } else { delete addrEl.dataset.locationConflict; }
+  // Directions are offered only for a complete address (CalendarLocation.directionsForEvent): house number,
+  // street name and city, a named entrance supplied by the data, and no event/venue conflict. An incomplete
+  // address is shown as plain text, never as a Maps link that would route somewhere wrong.
+  const dir = CalendarLocation.directionsForEvent(e);
+  addrEl.dataset.directions = dir.ready ? 'ready' : (dir.reason || 'none');
+  if(streetLine.text && dir.ready){
+    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dir.query)}`;
+    addrEl.textContent = `📍 ${dir.label ? dir.label : streetLine.text} — Get directions`;
+    addrEl.style.display = 'block';
+  } else if(streetLine.text){
+    addrEl.removeAttribute('href');
+    addrEl.textContent = `📍 ${streetLine.text}`;
     addrEl.style.display = 'block';
   } else {
     addrEl.style.display = 'none';
@@ -731,54 +855,52 @@ function renderEvent(e){
   priceHtml(e);
 
   // ---- actions ----
+  // Ended-event message: the dates in the heading stay as they are.
+  document.getElementById('evtEnded').style.display = eventHasEnded(e) ? 'inline-block' : 'none';
   const actions = document.getElementById('evtActions');
   let actionsHtml = '';
-  if(e.ticketUrl && safeUrl(e.ticketUrl)){
-    actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets & info'}</a>`;
-  }
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl){
-    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`;
-  }
+  // One rule for which link is the main button (event-links.js): an event-specific ticket link, else an event-specific
+  // event page. A bare venue homepage is never the main button; it appears only as a "Venue website" link.
+  const L = EventLinks.resolve(e);
+  const linkBtn = (l, cls) => { const u = safeUrl(l.url); return u ? `<a class="${cls}" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  if(L.primary) actionsHtml += linkBtn(L.primary, 'btn-primary');
+  if(L.event) actionsHtml += linkBtn(L.event, 'btn-secondary');
+  if(L.venue) actionsHtml += linkBtn(L.venue, 'btn-secondary');
   // Fallback when neither a real ticket link nor an event page link exists
   // — see sourceSearchUrl()'s comment above. Never shown alongside a real
   // link; only fills the gap when there'd otherwise be nothing to click
   // through to at all.
-  if(!(e.ticketUrl && safeUrl(e.ticketUrl)) && !(e.eventPageUrl && safeUrl(e.eventPageUrl))){
+  if(!L.primary && !L.venue){
     const fallbackUrl = sourceSearchUrl(e.source);
     if(fallbackUrl){
       actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
     }
   }
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
-  // Blob + download, not a bare `data:` URI — see index.html's identical
-  // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
-  // and iPhone with the old data: URI approach).
-  const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
-  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  // Dates not confirmed (owner decision 2026-10-17, option B): no Add to Calendar at all. An export would either span the
+  // whole stored range or invent a day, and either reads as confirmed attendance. Likewise when every verified
+  // occurrence has ended (owner decision 2026-10-17). Share and Tickets stay.
+  if(calendarExportAvailable(e)){
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
+    // Blob + download, not a bare `data:` URI — see index.html's identical
+    // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
+    // and iPhone with the old data: URI approach).
+    const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+    const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  }
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
   // No street address -> the calendar entry is not navigable; mark it for QA/enrichment (DEBT-013).
   const calLoc = CalendarLocation.resolveForEvent(e);
   if(calLoc.navigable) delete actions.dataset.locationIncomplete; else actions.dataset.locationIncomplete = calLoc.missing.join(',');
 
-  // Conditional Ticketmaster affiliate disclosure (2026-10-01, Phase 1
-  // Legal + Trust pass, item F / Jody's decision 1: "Only show this
-  // disclosure when the ticket URL is actually an affiliate link. Do not
-  // show it on ordinary ticket links."). api/cron-ticketmaster.js's
-  // affiliateTicketUrl() wraps EVERY Ticketmaster event's non-null
-  // ticket_url in an Impact Radius affiliate redirect unconditionally, so
-  // source === 'Ticketmaster' plus a real ticketUrl is both necessary and
-  // sufficient here -- see legal-snippets.js's affiliateDisclosureHtml()
-  // for the identical condition used on the list-card views.
-  const affiliateNote = (e.source === 'Ticketmaster' && e.ticketUrl && safeUrl(e.ticketUrl)) ? TICKET_AFFILIATE_NOTE_TEXT : null;
+  // Affiliate disclosure: the one shared component (legal-snippets.js), keyed on the links this page shows.
+  const affiliateNoteHtml = affiliateDisclosureHtml(e);
   const affiliateNoteEl = document.getElementById('evtAffiliateNote');
-  if(affiliateNote){
-    affiliateNoteEl.textContent = affiliateNote;
-    affiliateNoteEl.style.display = 'block';
-  } else {
-    affiliateNoteEl.style.display = 'none';
-  }
+  affiliateNoteEl.innerHTML = affiliateNoteHtml;
+  affiliateNoteEl.style.display = affiliateNoteHtml ? 'block' : 'none';
+  // The notice belongs to the ticket link, so it sits inside the action row (last, full width) and not beside the description.
+  if(affiliateNoteHtml) actions.appendChild(affiliateNoteEl);
 
   const ticketStatusNote = ticketStatusNoteHtml(e);
   const ticketStatusNoteEl = document.getElementById('evtTicketStatusNote');
@@ -792,8 +914,19 @@ function renderEvent(e){
   // ---- description / note / source ----
   if(e.description){
     const d = document.getElementById('evtDesc');
-    d.textContent = e.description;
-    d.style.display = 'block';
+    // Readable blocks from the stored text (description-format.js): source breaks, lists and lineups kept, links checked, never innerHTML.
+    const body = document.createElement('div');
+    // If /description-format.js failed to load, show the stored text as plain paragraphs (text nodes only) rather than dropping the block.
+    const rendered = (typeof DescriptionFormat !== 'undefined' && DescriptionFormat && typeof DescriptionFormat.render === 'function')
+      ? DescriptionFormat.render(body, e.description, safeUrl)
+      : String(e.description).split(/\n{2,}/).map(t => t.trim()).filter(Boolean).map(t => { const p = document.createElement('p'); p.textContent = t; body.appendChild(p); return p; }).length;
+    if(rendered){
+      const h = document.createElement('h2');
+      h.className = 'evt-about-h';
+      h.textContent = 'About this event';
+      d.replaceChildren(h, body);
+      d.style.display = 'block';
+    }
   }
   if(e.clothingOptional){
     document.getElementById('evtClothingOptional').style.display = 'inline-block';
@@ -813,16 +946,27 @@ function renderEvent(e){
   // ---- JSON-LD Event schema (helps this page get picked up as a rich
   // result / event listing in search — one of the concrete organic-traffic
   // levers discussed earlier: individual shareable, structured event URLs). ----
+  // Structured-data dates follow the same schedule rule as the page (EventDates): a continuous run keeps its
+  // start/end range; a recurring series states its next evidenced occurrence, not the whole span; a
+  // schedule-unverified range is a promotional period, so no Event block is emitted (it would claim a run
+  // the page itself says is not confirmed).
+  const ldState = (typeof EventDates !== 'undefined') ? EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
+    time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) : 'confirmed';
+  const ldRecurring = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'recurring' && ldState === 'confirmed';
+  let ldStart = e.date, ldEnd = e.endDate;
+  if(ldRecurring){
+    const occ = EventDates.expand(e);
+    ldStart = EventDates.nextDate(e) || occ[occ.length - 1] || e.date;
+    ldEnd = null;
+  }
   const ld = {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": e.title,
-    "startDate": e.date,
+    "startDate": ldStart,
     // endDate (2026-09-02 audit fix): only set when genuinely later than
-    // startDate — schema.org treats a present-but-equal endDate as fine
-    // either way, but omitting it for the common single-day case keeps this
-    // block matching what it always emitted before for those events.
-    ...(e.endDate && e.endDate > e.date ? { "endDate": e.endDate } : {}),
+    // startDate; omitted for single-day events.
+    ...(ldEnd && ldEnd > ldStart ? { "endDate": ldEnd } : {}),
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     "location": { "@type": "Place", "name": e.venue, "address": e.city || "Detroit, MI" },
@@ -830,11 +974,13 @@ function renderEvent(e){
     "url": window.location.href,
   };
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
-  const ldScript = document.createElement('script');
-  ldScript.type = 'application/ld+json';
-  ldScript.textContent = JSON.stringify(ld);
-  document.head.appendChild(ldScript);
+  if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
+  if(ldState !== 'unverified'){
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify(ld);
+    document.head.appendChild(ldScript);
+  }
 }
 
 // "As seen in" — same source of truth as index.html's editorialByEvent,
@@ -849,7 +995,7 @@ function renderEvent(e){
 // of press mentions, so this is never actually fetching much.
 async function loadEditorialLink(id){
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(id)}&select=editorial_articles(title,url,source,published_at)&limit=5`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(id)}&verification_status=eq.verified&select=editorial_articles(title,url,source,published_at)&limit=5`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) return;
     const rows = await resp.json();
@@ -909,12 +1055,18 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional,date_semantics,occurrence_dates`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();
     if(!Array.isArray(rows) || !rows.length) throw new Error('not found');
     currentEvent = mapRow(rows[0]);
+    // Placeholder-name rescue (CalendarLocation.addressVerifiedFor): a reviewed record in /data/address-verified.json.
+    // A failed or missing file just leaves addressVerified unset, which keeps Directions off for placeholder names.
+    try {
+      const vr = await fetch('/data/address-verified.json', {cache: 'no-cache'});
+      if(vr.ok){ const vj = await vr.json(); currentEvent.addressVerified = CalendarLocation.addressVerifiedFor(currentEvent, vj && vj.entries); }
+    } catch(_) {}
     renderEvent(currentEvent);
     loadEditorialLink(currentEvent.id);
   } catch (err) {
@@ -924,5 +1076,6 @@ async function init(){
 }
 init();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>
