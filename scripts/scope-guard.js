@@ -17,22 +17,53 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // City stated by a street address (P1 audit EXPORT-2): shared by api/submit.js and scripts/ra-sync.js.
+  "api/_lib/address-city.js",
+  // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
+  "api/_lib/venue-location-gate.js",
+  // Public submit form stores the city its address states (P1 audit EXPORT-2).
+  "api/submit.js",
+  // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
+  "api/_lib/ics-location.js",
+  // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
+  "api/_lib/zero-write-reasons.js",
+  // RA telemetry (draft, 2026-11-07): pure run-summary builder/reader and Admin RA read endpoint; its own reviewed PR.
+  "api/_lib/ra-run-summary.js", "api/admin-ra.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // #256 Auto-Repair step time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).
+  "api/_lib/step-runner.js", "api/_lib/auto-repair-steps.js",
+  // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
+  "api/_lib/control-tower.js",
+  // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
+  "api/_lib/non-event-filter.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
   "api/_lib/feed-run-health.js",
+  // Schedule-evidence Stage 1 support (owner approval 2026-10-18 14:58Z): pure robots.txt parser and read-only polite fetcher; no callers, no writes.
+  "api/_lib/robots.js", "api/_lib/evidence-fetch.js",
+  // Seasonal expiration safeguard, report-first (owner decision 2026-10-20).
+  "api/_lib/seasonal-editorial/expiration.js", "api/_lib/seasonal-editorial/EDITORIAL_EXPIRATION_PROCESS.md",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
   "assets/guides/fall-color-guide-1600.webp", "assets/guides/fall-color-guide-800.webp",
   "assets/guides/fall-guide-1600.webp", "assets/guides/fall-guide-800.webp",
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
+  "assets/guides/off-the-beaten-orbit-guide-1600.webp", "assets/guides/off-the-beaten-orbit-guide-800.webp",
+  "assets/guides/source/off-the-beaten-orbit-detroit-urban-craft-fair-original.webp",
+  "assets/guides/source/pewabic-holiday-showcase-snowflake-ornaments-original.webp",
   // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
   "api/_lib/ra-links.js", "api/admin-events.js",
   // #185 increment 1 (owner-correction lock in the shared events writer; owner GO for the draft 2026-10-18 05:05Z, release needs R&Q + owner word).
   "api/_lib/event-contract.js", "api/_lib/event-upsert.js", "api/_lib/link-field.js",
+  // N7 / #224 shared text sanitizer (entities, tags, CSS/RTF blocks) applied in the shared events writer; owner GO to be confirmed at release.
+  "api/_lib/text-sanitize.js",
+  // RA retry: Admin "new" count excludes re-queued candidates (one line).
+  "api/admin-ra.js",
+  // Owner directive Nov 7: exact Andy Arts category policy, reviewed with the live-ingestion fix.
+  "api/_lib/venue-category-policy.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   // Description enrichment per-record outcomes (issue #100, approved by the owner 2026-10-13): the enrichment cron passes them to the run log.
@@ -47,6 +78,8 @@ const ALLOWED = [
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
   "api/_lib/pending-classifier.js",
+  // All-caps title proposal (shadow mode, EI 2026-10-19): pure function, nothing calls it yet.
+  "api/_lib/title-case.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
@@ -54,9 +87,21 @@ const ALLOWED = [
   // Package 1: these handlers export through withRunLog (truthful source_runs rows).
   "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
-  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
+  // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
+  "api/_lib/localist-rows.js",
+  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js", "api/_lib/meeting-classifier.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
+  // Decision 7: rotating link check (dry by default).
+  "api/_lib/link-check-run.js", "api/cron-link-check.js",
+  // Server-side paging (draft 2026-11-09, held): sitemap and link-check read every row past the 1,000-row server cap.
+  "api/_lib/paged-rows.js", "api/sitemap.js",
+  // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
+  "api/admin-venues.js", "api/_lib/venue-lookup.js",
+  // Owner-approved 2026-11-09 (#399): description enrichment drops the filler end time conditionally (single entry; no write or schedule change).
+  "api/_lib/description-enrichment.js",
+  // Owner-approved 2026-11-09 (#70): read-only Ticketmaster report module; no writes, keys or schedules.
+  "api/_lib/ticketmaster-report.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
@@ -66,6 +111,12 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.json",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.md",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_HALLOWEEN_1.json",
+  "api/_lib/seasonal-editorial/placements.json",
+  "api/_lib/seasonal-editorial/locations.json",
+  "api/_lib/seasonal-editorial/refresh-preview.json",
+  "api/seasonal-preview.js",
+  "api/seasonal-collection.js",
+  "api/_lib/seasonal-editorial/refresh-release.json",
   "api/_lib/seasonal-editorial/candidate-images.json",
   "api/_lib/seasonal-editorial/candidates.json",
   "api/_lib/seasonal-editorial/defaults.json",
@@ -89,6 +140,8 @@ const ALLOWED = [
   "api/_lib/feed-publication.js",
   "api/_lib/dearborn-enrichment.js",
   "api/cron-feeds.js",
+  // Fallback event link (draft PR, Platform 2026-10-19): the new blank-only source calendar-page helper. Release needs R&Q + owner word.
+  "api/_lib/source-calendar-links.js",
   // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
   "api/_lib/ingest-eligibility.js",
   // GEO-003 step 2 (owner order 2026-10-16): VisitDetroit stores the feed city only when it agrees with ZIP and _geoloc.
@@ -102,7 +155,10 @@ const ALLOWED = [
   "api/_lib/editorial-verification.js",
   "api/admin-editorial.js",
   "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
-  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql"
+  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql",
+  // Schedule-evidence pass, Stage 1 (owner approval 2026-10-18): pure read-only extraction and decision rules + the source allow-list data. No network, no database write.
+  "api/_lib/schedule-evidence.js",
+  "api/_lib/schedule-evidence-sources.json"
 ];
 
 class ScopeGuardError extends Error {}

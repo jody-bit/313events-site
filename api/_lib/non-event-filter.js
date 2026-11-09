@@ -121,12 +121,29 @@ function isClosureNotice(title) {
   return !!split && isReasonText(split[1], { allowEmpty: false }) && isClosureCore(split[2]);
 }
 
+// A venue's own label for a closed rental: the WHOLE title is "[CODE:] PRIVATE [CLOSED] EVENT" or "[CODE] PRIVATE PARTY", where CODE is
+// the renter's short upper-case tag (HALO Detroit publishes "NACD: PRIVATE CLOSED EVENT", "MCJ PRIVATE EVENT"). Confirmed live
+// 2026-10-23. The tag is matched case-sensitively and must be 2-6 upper-case letters or digits that are not a little word, so
+// "The Private Event" (a play or a band) and "Our Private Party" are not matched; nothing before "private" other than that tag, and
+// nothing after "event" or "party", is allowed.
+const PRIVATE_LABEL_TAG = /^\W*([A-Z0-9]{2,6})\s*:?\s+(.+?)\W*$/;
+const PRIVATE_LABEL_BODY = /^private(?:,)?\s+(?:closed\s+)?event$|^private\s+party$/i;
+const PRIVATE_TAG_STOPWORDS = new Set(["THE", "OUR", "MY", "AND", "FOR", "A", "AN", "THIS", "YOUR", "ONE", "NO", "ANY"]);
+function isPrivateLabel(title) {
+  const bare = title.replace(/^\W+|\W+$/g, "");
+  if (PRIVATE_LABEL_BODY.test(bare)) return true; // the whole title is the label
+  const m = PRIVATE_LABEL_TAG.exec(title);
+  if (!m || PRIVATE_TAG_STOPWORDS.has(m[1])) return false;
+  return PRIVATE_LABEL_BODY.test(m[2].trim());
+}
+
 // Which rule a title matches, or null. The names are what the retirement
 // pass (scripts/retire-non-events.js) writes beside a row it retires.
 function nonEventRule(title) {
   if (typeof title !== "string" || !title || title.length > MAX_TITLE_LENGTH) return null;
   if (TITLE_PATTERNS[0].test(title)) return "closed_for_private_event";
   if (TITLE_PATTERNS[1].test(title)) return "suite_rental";
+  if (isPrivateLabel(title)) return "private_event_label";
   if (isClosureNotice(title)) return "closure_notice";
   return null;
 }

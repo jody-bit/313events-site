@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 43,
-  "eligiblePublished": 23,
+  "ownerApproved": 27,
+  "eligiblePublished": 7,
   "held": 20,
-  "excluded": 9,
+  "excluded": 25,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -63,221 +63,150 @@
    "inventoryNo": "2",
    "name": "Eloise Asylum",
    "city": "Westland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "eloise-asylum",
-    "name": "Eloise Asylum",
-    "city": "Westland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
-    "website": "https://eloiseasylum.com/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-1.webp",
-      "/assets/seasonal/halloween-card-4.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "313.events archive"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Eloise removal from The Dark Is On 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "halloween-greenfield-village",
    "inventoryNo": "35",
    "name": "Hallowe'en in Greenfield Village",
    "city": "Dearborn",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "halloween-greenfield-village",
-    "name": "Hallowe'en in Greenfield Village",
-    "city": "Dearborn",
-    "region": "MI",
-    "categories": [
-     "family-friendly",
-     "ghosts-history"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
-    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
-    "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates.",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp",
-      "/assets/seasonal/halloween-card-3.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © The Henry Ford"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "zoo-boo",
    "inventoryNo": "38",
    "name": "Zoo Boo at the Detroit Zoo",
    "city": "Royal Oak",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "zoo-boo",
-    "name": "Zoo Boo at the Detroit Zoo",
-    "city": "Royal Oak",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
-    "website": "https://detroitzoo.org/events/zoo-boo/",
-    "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: WMrapids, CC0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "glenlore-carnevil-2",
    "inventoryNo": "32",
    "name": "Glenlore Trails: CarnEvil 2",
    "city": "Commerce Township",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "glenlore-carnevil-2",
-    "name": "Glenlore Trails: CarnEvil 2",
-    "city": "Commerce Township",
-    "region": "MI",
-    "categories": [
-     "strange-unusual",
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
-    "website": "https://glenloretrails.com",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "313.events archive"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "crossroads-ghosts-goodies",
    "inventoryNo": "39",
    "name": "Halloween Ghosts & Goodies at Crossroads Village",
    "city": "Flint",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "crossroads-ghosts-goodies",
-    "name": "Halloween Ghosts & Goodies at Crossroads Village",
-    "city": "Flint",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
-    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-3.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: Rodney Campbell, CC BY 2.0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "hush-haunted-attraction",
    "inventoryNo": "3",
    "name": "Hush Haunted Attraction",
    "city": "Westland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "hush-haunted-attraction",
-    "name": "Hush Haunted Attraction",
-    "city": "Westland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Multiple haunted houses",
-    "website": "https://hushhauntedattractions.com/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-4.webp",
-      "/assets/seasonal/halloween-card-5.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © Hush Haunted Attractions"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "azra-chamber-of-horrors",
@@ -464,108 +393,75 @@
    "inventoryNo": "11",
    "name": "Deranged Haunt",
    "city": "Romulus",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "deranged-haunt",
-    "name": "Deranged Haunt",
-    "city": "Romulus",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted woods",
-    "website": "https://derangedhauntedattraction.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-4.webp",
-      "/assets/seasonal/halloween-card-5.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "slaughterhouse-adventure",
    "inventoryNo": "12",
    "name": "Slaughterhouse Adventure",
    "city": "Fowlerville",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "slaughterhouse-adventure",
-    "name": "Slaughterhouse Adventure",
-    "city": "Fowlerville",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and corn maze",
-    "website": "https://slaughterhouseadventure.net/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "full-moon-manor-at-bonadeo-farms",
    "inventoryNo": "13",
    "name": "Full Moon Haunted House at Bonadeo Farms",
    "city": "Highland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "full-moon-manor-at-bonadeo-farms",
-    "name": "Full Moon Haunted House at Bonadeo Farms",
-    "city": "Highland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
-    "website": "https://fullmoonhauntedhouse.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-4.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-7.webp",
-      "/assets/seasonal/halloween-card-1.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "exit-13-haunted-house",
@@ -697,35 +593,25 @@
    "inventoryNo": "20",
    "name": "Spooky Trails",
    "city": "Swartz Creek",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "spooky-trails",
-    "name": "Spooky Trails",
-    "city": "Swartz Creek",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Farm haunt with a haunted hayride, a zombie-themed family hayride and a haunted cornfield walk.",
-    "website": "https://www.spookytrails.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-5.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-7.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "panic-in-the-pines",
@@ -749,35 +635,25 @@
    "inventoryNo": "22",
    "name": "Field of Fear",
    "city": "Monclova",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "field-of-fear",
-    "name": "Field of Fear",
-    "city": "Monclova",
-    "region": "OH",
-    "categories": [
-     "haunted-attractions"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted cornfield attractions",
-    "website": "https://fieldoffear.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-1.webp",
-      "/assets/seasonal/halloween-card-4.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Field of Fear page listed its final night as Oct 31, 2026. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Field of Fear page listed its final night as Oct 31, 2026. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "bates-haunted-sawmill",
@@ -921,35 +797,25 @@
    "inventoryNo": "29",
    "name": "Eerie Manor Tours at Wildwood Preserve",
    "city": "Toledo",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "wildwood-manor-house",
-    "name": "Eerie Manor Tours at Wildwood Preserve",
-    "city": "Toledo",
-    "region": "OH",
-    "categories": [
-     "ghosts-history"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Seasonal eerie manor tours",
-    "website": "https://metroparkstoledo.com/eeriemanor",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__wildwood-manor-house__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-2.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: John Michael Dewees, CC0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Wildwood Preserve page listed Friday Oct 23 through Saturday Oct 31, 2026, 2 to 8 p.m.; the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Wildwood Preserve page listed Friday Oct 23 through Saturday Oct 31, 2026, 2 to 8 p.m.; the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "fort-meigs-garrison-ghost-walk",
@@ -998,75 +864,50 @@
    "inventoryNo": "33",
    "name": "Halloween Stroll at Canterbury Village",
    "city": "Lake Orion",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "halloween-stroll-at-canterbury-village",
-    "name": "Halloween Stroll at Canterbury Village",
-    "city": "Lake Orion",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Halloween light displays and characters",
-    "website": "https://www.canterburyvillage.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "hallowglow-at-treerunner",
    "inventoryNo": "34",
    "name": "HallowGlow at TreeRunner",
    "city": "West Bloomfield",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "linked",
    "rightsRoute": "linked-risk-acceptance",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "hallowglow-at-treerunner",
-    "name": "HallowGlow at TreeRunner",
-    "city": "West Bloomfield",
-    "region": "MI",
-    "categories": [
-     "strange-unusual",
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "After-dark treetop climbing and ziplining among glowing lights with a festive Halloween-season atmosphere at TreeRunner West Bloomfield.",
-    "website": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-7.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true,
-     "remote": {
-      "src": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
-      "sourcePage": "https://treerunnerparks.com/westbloomfield/glow-nights/",
-      "credit": "TreeRunner Parks (official site)"
-     }
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The TreeRunner page listed Oct 2-4, 9-11, 16-18, 23-25 and 30-31, 2026; the final night was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The TreeRunner page listed Oct 2-4, 9-11, 16-18, 23-25 and 30-31, 2026; the final night was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "theatre-bizarre",
@@ -1112,35 +953,25 @@
    "inventoryNo": "40",
    "name": "Brick-or-Treat at LEGOLAND Discovery Center",
    "city": "Auburn Hills",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "brick-or-treat-at-legoland-discovery-center",
-    "name": "Brick-or-Treat at LEGOLAND Discovery Center",
-    "city": "Auburn Hills",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "LEGO-themed Halloween activities",
-    "website": "https://www.legolanddiscoverycenter.com/michigan/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-1.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-3.webp",
-      "/assets/seasonal/halloween-card-6.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: LEGOLAND Discovery Center's operator-stated 2026 range was Oct 1-31 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "LEGOLAND Discovery Center's operator-stated 2026 range was Oct 1-31 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "ooky-spooky-light-show",
@@ -1183,36 +1014,25 @@
    "inventoryNo": "42",
    "name": "Laser Halloween",
    "city": "Flint",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "laser-halloween",
-    "name": "Laser Halloween",
-    "city": "Flint",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Halloween-themed laser show",
-    "website": "https://www.sloanlongway.org/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-3.webp",
-      "/assets/seasonal/halloween-card-6.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Sloan Longway calendar listed the last Laser Halloween shows on Saturday Oct 31, 2026, at 7 and 8 PM. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Sloan Longway calendar listed the last Laser Halloween shows on Saturday Oct 31, 2026, at 7 and 8 PM. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "thiessen-orchards-scaredy-cat-barn",

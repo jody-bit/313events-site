@@ -57,12 +57,6 @@
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
-    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
-    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
-    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
-    --c-vendor:#39FF14;
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -82,6 +76,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
   #notFoundState{display:none;}
@@ -117,7 +113,6 @@
     display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);
   }
   .venue-event-row:last-child{border-bottom:none;}
-  .venue-event-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
   .venue-event-body{min-width:0;flex:1;}
   .venue-event-date{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;}
   .venue-event-title{display:block;font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;margin-top:2px;}
@@ -139,6 +134,10 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
+<script src="/event-dates.js"></script>
+<script src="/calendar-location.js"></script>
+<script src="/event-dates.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -170,7 +169,7 @@
 
     <footer class="site">
       <p>Always confirm dates, times, and venues before making plans.</p>
-      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+      <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -181,23 +180,11 @@
 const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
 const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -226,8 +213,53 @@ function truncateText(str, maxLen){
   const lastSpace = cut.lastIndexOf(' ');
   return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
 }
+// ---- venue events: which rows a venue page lists (regression: test/venue-ongoing-events.test.js) ----
+function detroitTodayISO(now){
+  const p = {};
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Detroit', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(now || new Date()).forEach(x => { p[x.type] = x.value; });
+  return p.year + '-' + p.month + '-' + p.day;
+}
+function venueEventsUrl(base, venueId, todayISO){
+  return `${base}/rest/v1/events_public?venue_id=eq.${encodeURIComponent(venueId)}&or=(start_date.gte.${todayISO},and(date_semantics.eq.continuous,end_date.gte.${todayISO}))&select=id,title,category,start_date,end_date,time_display,date_semantics,occurrence_dates&order=start_date.asc,id.asc&limit=100`;
+}
+// The query already narrows earlier-starting rows to continuous + not ended, so unverified past ranges cannot
+// crowd out the 100-row limit; the filter below stays as the eligibility rule.
+// Starts today or later: listed as before. Started earlier: listed only when its schedule is verified as
+// continuous (an exhibition) and it has not ended. Unverified multi-day ranges that began in the past are not
+// listed as attendable (owner rule 2026-10-16).
+function venueUpcomingEvents(rows, todayISO){
+  return rows.filter(e => {
+    if (!e || !e.start_date) return false;
+    if (e.start_date >= todayISO) return true;
+    return EventDates.scheduleState(e) === 'ongoing' && !!e.end_date && e.end_date >= todayISO;
+  }).map(e => (e.start_date < todayISO ? Object.assign({}, e, { ongoing: true }) : e));
+}
+
 function shortDateLabel(dateStr){
   return new Date(dateStr+"T12:00:00").toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+
+// Public venue columns -> the page's venue object (kept as a function so a test can feed it public-shaped rows).
+function mapVenueRow(row, neighborhoodName){
+  return {
+    id: row.id,
+    name: decodeEntities(row.name),
+    address: row.address ? decodeEntities(row.address) : undefined,
+    city: row.city ? decodeEntities(row.city) : undefined,
+    zip_code: row.zip_code || undefined,
+    website: row.website || undefined,
+    instagram_url: row.instagram_url || undefined,
+    facebook_url: row.facebook_url || undefined,
+    tiktok_url: row.tiktok_url || undefined,
+    twitter_url: row.twitter_url || undefined,
+    neighborhood: neighborhoodName || null,
+  };
+}
+// Directions are offered only for a complete address (CalendarLocation.safeDirections). The venues table carries no
+// state or country column, so the postal/ZIP code is the only region evidence this page has.
+function venueDirections(v){
+  return CalendarLocation.safeDirections({name: v.name, address: v.address, city: v.city, zip: v.zip_code, entrance: v.entrance});
 }
 
 function renderVenue(v, events){
@@ -258,9 +290,16 @@ function renderVenue(v, events){
 
   const addrEl = document.getElementById('venueAddress');
   if(v.address){
-    const fullAddr = `${v.address}, ${v.city || 'Detroit'}`;
-    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddr)}`;
-    addrEl.textContent = `📍 ${v.address} — Get directions`;
+    // Directions only for a complete address; otherwise the address is plain text (CalendarLocation.safeDirections).
+    const dir = venueDirections(v);
+    addrEl.dataset.directions = dir.ready ? 'ready' : dir.reason;
+    if(dir.ready){
+      addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dir.query)}`;
+      addrEl.textContent = `📍 ${dir.label ? dir.label : v.address} — Get directions`;
+    } else {
+      addrEl.removeAttribute('href');
+      addrEl.textContent = `📍 ${v.address}`;
+    }
     addrEl.style.display = 'block';
   }
   const linksWrap = document.getElementById('venueLinks');
@@ -297,14 +336,12 @@ function renderVenue(v, events){
     listEl.innerHTML = `<p class="venue-empty">No upcoming events listed for this venue right now.</p>`;
   } else {
     listEl.innerHTML = events.map(e => {
-      const cat = CATS[e.category] || {color:'var(--accent)'};
       return `
         <div class="venue-event-row">
-          <span class="venue-event-dot" style="background:${cat.color}"></span>
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span>
+            <span class="venue-event-date">${e.ongoing ? 'Through ' + escapeHtml(shortDateLabel(e.end_date)) : escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
-            ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
+            ${(!e.ongoing && EventDates.displayTime(e.time_display || '')) ? `<span class="venue-event-time">${escapeHtml(EventDates.displayTime(e.time_display || ''))}</span>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -341,7 +378,7 @@ async function init(){
   }
   const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   try {
-    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,website,instagram_url,facebook_url,tiktok_url,twitter_url,neighborhood_id`;
+    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,zip_code,website,instagram_url,facebook_url,tiktok_url,twitter_url,neighborhood_id`;
     const venueResp = await fetch(venueUrl, { headers });
     if(!venueResp.ok) throw new Error('fetch failed');
     const venueRows = await venueResp.json();
@@ -359,25 +396,17 @@ async function init(){
       } catch { /* neighborhood tag just doesn't render — not fatal */ }
     }
 
-    const venue = {
-      id: row.id,
-      name: decodeEntities(row.name),
-      address: row.address ? decodeEntities(row.address) : undefined,
-      city: row.city ? decodeEntities(row.city) : undefined,
-      website: row.website || undefined,
-      instagram_url: row.instagram_url || undefined,
-      facebook_url: row.facebook_url || undefined,
-      tiktok_url: row.tiktok_url || undefined,
-      twitter_url: row.twitter_url || undefined,
-      neighborhood: neighborhoodName,
-    };
+    const venue = mapVenueRow(row, neighborhoodName);
 
-    const todayISO = new Date().toISOString().slice(0,10);
-    const eventsUrl = `${SUPABASE_URL}/rest/v1/events?venue_id=eq.${encodeURIComponent(id)}&status=eq.approved&start_date=gte.${todayISO}&select=id,title,category,start_date,time_display&order=start_date.asc&limit=100`;
+    // Detroit "today" (not the UTC date: after 7 PM EST toISOString() is already tomorrow), and events that
+    // started earlier but are still running (classified continuous, end_date >= today) are included.
+    // events_public is the approved-only public view (same source as the homepage).
+    const todayISO = detroitTodayISO();
+    const eventsUrl = venueEventsUrl(SUPABASE_URL, id, todayISO);
     const eventsResp = await fetch(eventsUrl, { headers });
     const events = eventsResp.ok ? await eventsResp.json() : [];
 
-    renderVenue(venue, Array.isArray(events) ? events : []);
+    renderVenue(venue, venueUpcomingEvents(Array.isArray(events) ? events : [], todayISO));
   } catch (err) {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('notFoundState').style.display = 'block';
@@ -385,5 +414,6 @@ async function init(){
 }
 init();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

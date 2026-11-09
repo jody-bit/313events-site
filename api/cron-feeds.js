@@ -6,10 +6,12 @@ const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { decideSourceDescription, REPAIR_SOURCES } = require("./_lib/description-strength");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { fillBlankSourceCalendarLinks } = require("./_lib/source-calendar-links");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
 const { partitionExpired } = require("./_lib/ingest-eligibility");
+const { backfillPatch } = require("./_lib/dearborn-enrichment");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -23,7 +25,7 @@ const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Congregation-specific rule) — that's shared logic other consumers
 // (press-coverage matching) also depend on, and changing it is a separate
 // decision.
-const { resolveLinkField, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
+const { resolveLinkField, eventPageFromDescription, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -281,6 +283,26 @@ function formatIcsTime(hour, minute) {
 // there is genuinely no per-event location signal to fall back on.
 const VENUE_TBA = "Venue TBA";
 
+// A LOCATION that names no place at all, though it has text: a bare country
+// ("Canada", "USA") or a generic placeholder ("Various Locations", "TBD", "See description"). P1 audit
+// EXPORT-2 found Tourism Windsor Essex rows published with the venue "ON" and
+// "Various Locations". A bare state or province ("ON", "MI") is already
+// handled upstream (parseIcsLocation region_only), so it is not repeated here. Such text is not a venue: the row takes the project's
+// existing "Venue TBA" and, having no city, stays with the people who review
+// location gaps. Nothing is invented and no city is guessed. A LOCATION that
+// is any other text, readable or not ("Online", "Caesars Windsor, Windsor ON"),
+// is still kept whole as before.
+const NON_PLACE_LOCATION = new Set([
+  "canada", "usa", "us", "united states",
+  "various", "various locations", "various location", "multiple locations", "multiple location", "multiple venues",
+  "location varies", "locations vary", "varies", "tbd", "tba", "to be determined", "to be announced",
+  "n/a", "na", "none", "see description", "see details", "see event description",
+]);
+function isNonPlaceLocation(text) {
+  const t = String(text || "").toLowerCase().replace(/[.!]/g, "").replace(/\s+/g, " ").trim();
+  return NON_PLACE_LOCATION.has(t);
+}
+
 // Resolves ONE VEVENT's own venue fields for a feed_source flagged
 // location_per_event (migration_043) — added 2026-09-29 for the Phase 6
 // per-event venue-resolution shared infrastructure (see
@@ -318,6 +340,12 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
   }
 
+  if (parsed.status === "region_only") {
+    // Only a region was stated ("ON"): no venue, no address, no city is invented, and it is not a "says nothing" location, so
+    // the feed's default city is never attached (rowsWithNoStatedLocation takes "blank" only). Shown as the existing "Venue TBA".
+    return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+  }
+
   if (parsed.status === "unparseable") {
     // BUG-012 (2026-10-04): the text is still kept whole as the honest raw
     // location; no venue name, no street address and no venue link is
@@ -325,6 +353,9 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     // <ST> <ZIP>" the city is kept (api/_lib/ics-location.js,
     // findTrailingCity). Before this, the city was discarded with the rest
     // and the event could not be placed.
+    if (isNonPlaceLocation(parsed.rawText)) {
+      return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+    }
     return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: parsed.trailingCity || null };
   }
 
@@ -537,6 +568,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
         };
 
     const link = resolveLinkField(ev.url, feedSource.feed_url);
+    // A feed whose VEVENT URL is only the calendar-feed path (CivicPlus) still prints the event's own page in its DESCRIPTION
+    // ("https://<same site>/calendar.aspx?EID=<uid>"). Taken only when it is on the feed's own site, unique, and carries this
+    // event's UID (api/_lib/link-field.js); stored as event_url, never as a ticket link. The description is left as given.
+    const derivedEventUrl = link.url ? null : eventPageFromDescription(ev.description, feedSource.feed_url, ev.uid);
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
@@ -601,6 +636,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden, and
       // the field is then left out of the write so it never replaces a stored link.
       ticket_url: link.url,
+      ...(derivedEventUrl ? { event_url: derivedEventUrl } : {}),
       image_url: ev.image || null,
       // Just the feed's own organization/venue name, matching every other
       // single-venue cron's convention (e.g. cron-trinosophes.js's
@@ -617,6 +653,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // Times, which lands pending_review because IT is an unvetted general
       // calendar, not a single approved venue.
       feed_source_id: feedSource.id,
+      // Internal marker (stripped before the write, upsertParsedRows): the feed's approved website, used only as the blank-only
+      // fallback link when the source supplies no per-event link (api/_lib/source-calendar-links.js).
+      _calendarUrl: feedSource.website || null,
     };
 
     // SH.1 (Metadata Self-Healing, 2026-09-21) — this connector has always
@@ -807,6 +846,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       image_url: null,
       source: feedSource.venue_name,
       feed_source_id: feedSource.id,
+      _calendarUrl: feedSource.website || null, // internal marker, stripped before the write (see the ICS builder above)
       // Visible, honest flag distinguishing the two ways this row's date
       // was produced — never silently indistinguishable from a real ICS
       // DTSTART. explicit._confidence is read by the caller below to pick
@@ -845,7 +885,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
       rows.map((r) => r.external_id),
-      { select: "external_id,status,title,description,description_source" }
+      { select: "external_id,status,source,title,description,description_source,event_url,note,internal_note" }
     );
     existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {
@@ -862,7 +902,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const rowsWithStatus = keep.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, _publication, _enrichment, _recurring, ...cleanRow } = row;
+    const { _dateConfidence, _publication, _enrichment, _recurring, _calendarUrl, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
     // Description strength rule (api/_lib/description-strength.js), for the sources the repair is rolled out to: a
@@ -883,6 +923,13 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     if (!existingStatus && _enrichment) {
       if (_enrichment.event_url && !out.event_url) out.event_url = _enrichment.event_url;
       if (_enrichment.category) out.note = `${out.note ? out.note + " " : ""}Source page category: ${_enrichment.category}.`;
+    } else if (existingStatus === "pending_review" && _enrichment && stored) {
+      // Stage 5 (owner decision 2026-10-16): a row nobody has reviewed yet still gets the safe-match link and category
+      // hint, but ONLY into an empty link and only once. A stored link, a reviewer's edit, any other status, and the
+      // title/date/description/category/status are never touched. A second run finds both in place and writes nothing.
+      const patch = backfillPatch(stored, _enrichment);
+      if (patch.event_url) out.event_url = patch.event_url;
+      if (patch.note) out.note = patch.note;
     }
     return out;
   });
@@ -895,7 +942,10 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     // partial write from being read as a clean one by the caller.
     return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, skippedPast, upserted: upsertResp.written, failed: true };
   }
-  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}`, upserted: keep.length, skippedPast };
+  // Blank-only source calendar-page fallback for events this source gave no link at all (api/_lib/source-calendar-links.js).
+  const fallback = await fillBlankSourceCalendarLinks(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, keep);
+  const fallbackNote = fallback.patched ? `; ${fallback.patched} given the source calendar page as a fallback link` : "";
+  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}${fallbackNote}`, upserted: keep.length, skippedPast };
 }
 
 async function patchFeedSource(id, patch, sbHeaders) {
@@ -926,6 +976,7 @@ function feedLimits(env = process.env) {
     minStartMs: num(env.FEEDS_MIN_START_MS, 10000),
     resumeWindowMs: num(env.FEEDS_RESUME_WINDOW_MS, 6 * 60 * 60 * 1000),
     stalledAfterMs: num(env.FEEDS_STALLED_AFTER_MS, 10 * 60 * 1000),
+    staleAfterMs: num(env.FEEDS_STALE_AFTER_MS, 72 * 60 * 60 * 1000),
   };
 }
 
@@ -940,7 +991,7 @@ function feedSourceFailures(body) {
   const results = Array.isArray(body && body.results) ? body.results : [];
   const deferred = results.filter((r) => r && r.kind === health.KINDS.DEFERRED).length;
   return {
-    attempted: results.length - deferred,
+    attempted: results.filter((r) => r && r.kind !== health.KINDS.DEFERRED && r.kind !== health.KINDS.SKIPPED_RESUME).length,
     failed: results.filter((r) => health.RUN_FAILURE_KINDS.has(r && r.kind) && r.kind !== health.KINDS.DEFERRED).length,
     deferred,
   };
@@ -958,6 +1009,14 @@ const handleRequest = async (req, res) => {
     apikey: SUPABASE_SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
   };
+
+  // A resume run exists to finish what the 22:00Z run did not reach; if that run is somehow still going, do nothing
+  // rather than poll the same feeds twice.
+  const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
+  if (resume && await health.otherRunInProgress({ supabaseUrl: SUPABASE_URL, headers: sbHeaders })) {
+    res.status(200).json({ upserted: 0, resume: true, note: "resume run skipped: another feeds run is still in progress", fetchedAt: new Date().toISOString() });
+    return;
+  }
 
   let feedSources;
   try {
@@ -979,7 +1038,7 @@ const handleRequest = async (req, res) => {
   const runStartedAt = Date.now();
   const budget = createBudget({ budgetMs: limits.budgetMs });
   const stalledRuns = await health.closeStalledRuns({ supabaseUrl: SUPABASE_URL, headers: sbHeaders, olderThanMs: limits.stalledAfterMs });
-  const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
+  const staleFeeds = health.staleFeeds(feedSources, runStartedAt, limits.staleAfterMs); // judged on the state before this run polls anything
   const orderedFeeds = health.orderFeedsForRun(feedSources);
   let budgetExhausted = false;
 
@@ -996,6 +1055,7 @@ const handleRequest = async (req, res) => {
   const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const runDay = new Date(runStartedAt).toISOString().slice(0, 10); // UTC date this run started (first-seen date of a block)
   const preambleMs = Date.now() - runStartedAt; // feed list, stalled-run close and venue lookups, before the first feed
   for (const feedSource of orderedFeeds) {
     const previousResult = feedSource.last_poll_result;
@@ -1025,7 +1085,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           const rssItems = parseRssItems(text);
@@ -1055,7 +1115,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           // A 200 whose body is not a calendar (HTML, a challenge page, a truncated file) is a failed fetch, not an
@@ -1089,7 +1149,7 @@ const handleRequest = async (req, res) => {
         }
       }
     } catch (err) {
-      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
+      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message + health.describeFetchError(err);
     }
 
     results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult), ms: Date.now() - feedStartedAt });
@@ -1097,10 +1157,12 @@ const handleRequest = async (req, res) => {
   }
 
   linkLog.flush();
-  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted });
+  const runHealth = health.summarizeRun(results, { today: runDay, stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
   health.logAlerts(runHealth.alerts);
-  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, preambleMs, results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, resume, preambleMs, perFeed: health.compactResults(results), results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
 module.exports.feedSourceFailures = feedSourceFailures;
 module.exports.feedLimits = feedLimits;
+module.exports.resolveIcsEventVenue = resolveIcsEventVenue; // test seam (region-only LOCATION)
+module.exports.icsEventsToRows = icsEventsToRows; // test seam (region-only LOCATION never takes the feed's default city)

@@ -108,6 +108,11 @@ function isoDay(v) {
 // reads the marker; protectOwnerCorrections() applies it to a batch of rows about to be upserted.
 const OWNER_CORRECTION_MARKER = "OWNER-CORRECTION";
 const OWNER_EDITABLE_FIELDS = Object.freeze(["title", "description", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display", "price_from"]);
+// Fields a lock line may name but save_correction does not accept (the Editorial Gateway records its image pick with
+// fields=image_url; end_date is held the same way when an owner fixes a feed end date; neither has a validated text edit). They are locked against ingestion exactly like the
+// editable fields, so a source's feed image cannot revert an owner-chosen one.
+const OWNER_LOCK_ONLY_FIELDS = Object.freeze(["image_url", "end_date"]);
+const OWNER_LOCKABLE_FIELDS = Object.freeze(OWNER_EDITABLE_FIELDS.concat(OWNER_LOCK_ONLY_FIELDS));
 // A corrected venue name must not be re-resolved to a different venue by the next run.
 const OWNER_LOCK_ALSO = Object.freeze({ venue_name_raw: ["venue_id"] });
 const OWNER_CORRECTION_LINE = new RegExp("^" + OWNER_CORRECTION_MARKER + "\\s+\\S+\\s+\\S+\\s+fields=([a-z_,]+)", "gm");
@@ -118,7 +123,7 @@ function ownerCorrectedFields(internalNote) {
   if (typeof internalNote !== "string" || !internalNote.includes(OWNER_CORRECTION_MARKER)) return out;
   for (const m of internalNote.matchAll(OWNER_CORRECTION_LINE)) {
     for (const f of m[1].split(",")) {
-      if (!OWNER_EDITABLE_FIELDS.includes(f)) continue;
+      if (!OWNER_LOCKABLE_FIELDS.includes(f)) continue;
       out.add(f);
       for (const extra of OWNER_LOCK_ALSO[f] || []) out.add(extra);
     }
@@ -220,7 +225,7 @@ function parseOwnerEdits(internalNote) {
 // Row annotation for the review queue: nothing from internal_note itself leaves the server.
 function ownerCorrectionView(row) {
   const note = row && row.internal_note;
-  return { owner_corrected: Array.from(ownerCorrectedFields(note)).filter((f) => OWNER_EDITABLE_FIELDS.includes(f)), edits: parseOwnerEdits(note) };
+  return { owner_corrected: Array.from(ownerCorrectedFields(note)).filter((f) => OWNER_LOCKABLE_FIELDS.includes(f)), edits: parseOwnerEdits(note) };
 }
 
 function issue(code, field, severity, message) { return { code, field: field || null, severity, message: message || code }; }
@@ -417,6 +422,6 @@ function applyPublicationGate(rows, opts = {}) {
 module.exports = {
   GATE_VERSION, DECISION, ELIGIBILITY, SEVERITY, FIELD_POLICY,
   evaluateEvent, applyPublicationGate, sanitizeRow, isoDay,
-  OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, ownerCorrectedFields, protectOwnerCorrections,
+  OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, OWNER_LOCK_ONLY_FIELDS, OWNER_LOCKABLE_FIELDS, ownerCorrectedFields, protectOwnerCorrections,
   validateCorrection, buildOwnerCorrectionLine, appendNoteLine, parseOwnerEdits, ownerCorrectionView,
 };

@@ -44,6 +44,35 @@ const FAILURE_RE = /^(Fetch failed|Error:|Skipped — unrecognized|Parsed \d+ ev
 const EMPTY_RE = /^Fetched OK — 0 events found/;
 const HAD_EVENTS_RE = /^([1-9]\d*) events? found/;
 
+// The leading "Fetch failed: HTTP 403" of a blocked result. Diagnostic detail and the first-seen date after it
+// (blockedResult below) never decide whether a block is new or persistent.
+const blockedStatus = (s) => (/^Fetch failed: HTTP \d+/.exec(String(s || "")) || [""])[0];
+
+// A bare "fetch failed" hides why. The underlying Node/undici error carries a short machine code on err.code or
+// err.cause.code. Only values in these two fixed sets are ever recorded as NEW metadata: a known network/undici code
+// or a known undici error name. Any other value (an unknown code, a code-shaped secret, free text) is omitted, never
+// echoed. Scope: this constrains only the added " (cause: ...)" suffix. The existing "Error: " + err.message text is
+// unchanged by this patch and is NOT redacted by it.
+const KNOWN_ERROR_CODES = new Set([
+  "ECONNREFUSED", "ECONNRESET", "ECONNABORTED", "ENOTFOUND", "EAI_AGAIN", "ETIMEDOUT", "EHOSTUNREACH", "ENETUNREACH",
+  "EPIPE", "EPROTO", "CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN",
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY", "ERR_TLS_CERT_ALTNAME_INVALID",
+  "ERR_SSL_WRONG_VERSION_NUMBER", "ERR_SSL_PROTOCOL_ERROR", "ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR",
+  "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_HEADERS_TIMEOUT", "UND_ERR_BODY_TIMEOUT", "UND_ERR_SOCKET",
+  "UND_ERR_ABORTED", "UND_ERR_CLOSED", "UND_ERR_DESTROYED", "UND_ERR_REQ_CONTENT_LENGTH_MISMATCH",
+  "UND_ERR_RES_CONTENT_LENGTH_MISMATCH", "UND_ERR_RESPONSE_STATUS_CODE", "UND_ERR_INFO", "UND_ERR_INVALID_ARG",
+  "UND_ERR_NOT_SUPPORTED", "HPE_INVALID_CONSTANT", "HPE_HEADER_OVERFLOW", "HPE_UNEXPECTED_CONTENT_LENGTH",
+]);
+const KNOWN_ERROR_NAMES = new Set(["ConnectTimeoutError", "HeadersTimeoutError", "BodyTimeoutError", "SocketError", "AbortError"]);
+function describeFetchError(err) {
+  const seen = [];
+  for (let e = err, depth = 0; e && typeof e === "object" && depth < 3; e = e.cause, depth++) {
+    if (typeof e.code === "string" && KNOWN_ERROR_CODES.has(e.code)) seen.push(e.code);
+    else if (typeof e.name === "string" && KNOWN_ERROR_NAMES.has(e.name) && depth > 0) seen.push(e.name);
+  }
+  return seen.length ? ` (cause: ${[...new Set(seen)].join(", ")})` : "";
+}
+
 const stripVolatile = (s) => String(s || "").replace(/\d+/g, "#").slice(0, 160);
 
 function classifyFeedResult(result, previousResult) {
@@ -52,7 +81,7 @@ function classifyFeedResult(result, previousResult) {
   if (r.startsWith("Deferred:")) return KINDS.DEFERRED;
   if (r.startsWith("Not polled automatically")) return KINDS.MANUAL;
   if (r.startsWith("Skipped (resume)")) return KINDS.SKIPPED_RESUME;
-  if (BLOCKED_RE.test(r)) return BLOCKED_RE.test(prev) && stripVolatile(prev) === stripVolatile(r) ? KINDS.BLOCKED_PERSISTENT : KINDS.BLOCKED;
+  if (BLOCKED_RE.test(r)) return BLOCKED_RE.test(prev) && blockedStatus(prev) === blockedStatus(r) ? KINDS.BLOCKED_PERSISTENT : KINDS.BLOCKED;
   if (r === TIMED_OUT_RESULT) return prev === TIMED_OUT_RESULT ? KINDS.TIMEOUT_PERSISTENT : KINDS.TIMEOUT;
   if (FAILURE_RE.test(r)) return prev && stripVolatile(prev) === stripVolatile(r) ? KINDS.FAILED_PERSISTENT : KINDS.FAILED;
   if (EMPTY_RE.test(r)) return HAD_EVENTS_RE.test(prev) ? KINDS.EMPTY_UNEXPECTED : KINDS.EMPTY;
@@ -80,7 +109,78 @@ function shouldSkipOnResume(feed, now, windowMs) {
   return kind === KINDS.OK || kind === KINDS.EMPTY;
 }
 
+// Approved feeds last polled more than staleAfterMs ago: the "repeatedly skipped or stalled" signal. A feed never
+// polled is new, not stale (it leads the run order anyway), and manual-format feeds are never polled automatically.
+// Returns the feeds, oldest first.
+function staleFeeds(feeds, now, staleAfterMs) {
+  const stamp = (f) => (f && f.last_polled_at ? Date.parse(f.last_polled_at) || 0 : 0);
+  return orderFeedsForRun((feeds || []).filter((f) => f && f.feed_format !== "manual" && stamp(f) > 0 && now - stamp(f) > staleAfterMs));
+}
+
+// One compact entry per feed for the run record: which feed, what happened, how long it took.
+function compactResults(entries) {
+  return (Array.isArray(entries) ? entries : []).map((e) => {
+    const o = { id: e.id, kind: e.kind };
+    if (typeof e.ms === "number") o.ms = e.ms;
+    return o;
+  });
+}
+
+// ---- blocked-feed diagnostics ----------------------------------------------------------------------------------
+// A 401/403 tells us a publisher refused the fetch, not why. blockedResult() writes the status plus a few
+// NON-SECRET, NON-VOLATILE response facts that separate a firewall/bot rule from a wrong address, and the date the
+// block was first seen, so a block that is never fixed can be raised again after N days instead of only on day one.
+// It reads response header NAMES and a few short values only: never the body, never cookies, never a request header.
+// No retry, no changed request, no workaround: this only describes the refusal.
+const WAF_HEADERS = Object.freeze(["cf-ray", "cf-mitigated", "x-sucuri-id", "x-sucuri-cache", "x-iinfo", "x-datadome", "x-akamai-request-id", "x-amz-cf-id", "x-azure-ref", "x-waf-event-info", "x-cdn", "x-powered-by-plesk"]);
+const headerGet = (h, name) => {
+  if (!h) return "";
+  if (typeof h.get === "function") return h.get(name) || "";
+  const k = Object.keys(h).find((x) => x.toLowerCase() === name);
+  return k ? String(h[k] || "") : "";
+};
+const token = (v, max) => String(v || "").toLowerCase().split(";")[0].replace(/[^a-z0-9._\/+-]/g, "").slice(0, max);
+
+// -> "server=cloudflare; type=text/html; cf-mitigated=challenge; waf=cf-ray,x-sucuri-id" ("" when nothing useful)
+function blockDetail(headers) {
+  const parts = [];
+  const server = token(headerGet(headers, "server"), 40);
+  if (server) parts.push(`server=${server}`);
+  const type = token(headerGet(headers, "content-type"), 40);
+  if (type) parts.push(`type=${type}`);
+  const mitigated = token(headerGet(headers, "cf-mitigated"), 20);
+  if (mitigated) parts.push(`cf-mitigated=${mitigated}`);
+  const waf = WAF_HEADERS.filter((n) => n !== "cf-mitigated" && headerGet(headers, n));
+  if (waf.length) parts.push(`waf=${waf.join(",")}`);
+  return parts.join("; ");
+}
+
+const FIRST_SEEN_RE = /first seen (\d{4}-\d{2}-\d{2})/;
+// status, response headers, the feed's previous last_poll_result, today's date (YYYY-MM-DD)
+// -> the string stored in feed_sources.last_poll_result. Non-blocked statuses are left exactly as before.
+function blockedResult(status, headers, previousResult, today) {
+  const base = `Fetch failed: HTTP ${status}`;
+  if (!BLOCKED_RE.test(base)) return base;
+  const prev = String(previousResult || "");
+  const since = BLOCKED_RE.test(prev) && FIRST_SEEN_RE.test(prev) ? FIRST_SEEN_RE.exec(prev)[1] : today;
+  const detail = blockDetail(headers);
+  return `${base} [${detail ? detail + "; " : ""}first seen ${since}]`;
+}
+
+const DAY_MS = 86400000;
+const daysBetween = (from, to) => Math.floor((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS);
+// Days a blocked result says it has been blocked, or null (not blocked, no first-seen date, or a bad date).
+function blockedDays(result, today) {
+  const r = String(result || "");
+  if (!BLOCKED_RE.test(r)) return null;
+  const m = FIRST_SEEN_RE.exec(r);
+  if (!m) return null;
+  const d = daysBetween(m[1], today);
+  return Number.isFinite(d) && d >= 0 ? d : null;
+}
+
 const MAX_ALERTS = 20;
+const BLOCKED_ALERT_DAYS = 3; // raise a still-blocked feed again at this many days, then every 7th day
 
 // entries: [{ id, venue, result, kind }]; extras: { stalledRuns, upserted, budgetExhausted }
 function summarizeRun(entries, extras = {}) {
@@ -90,10 +190,21 @@ function summarizeRun(entries, extras = {}) {
   for (const e of list) {
     if (ALERT_KINDS.has(e.kind)) alerts.push({ type: e.kind === KINDS.EMPTY_UNEXPECTED ? "unexpected_empty" : e.kind, feed: e.venue, detail: String(e.result || "").slice(0, 160) });
   }
+  const alertDays = Number.isInteger(extras.blockedAlertDays) && extras.blockedAlertDays > 0 ? extras.blockedAlertDays : BLOCKED_ALERT_DAYS;
+  if (extras.today) {
+    for (const e of list) {
+      if (e.kind !== KINDS.BLOCKED && e.kind !== KINDS.BLOCKED_PERSISTENT) continue;
+      const days = blockedDays(e.result, extras.today);
+      if (days === null || days < alertDays) continue;
+      if (days === alertDays || days % 7 === 0) alerts.push({ type: "blocked_long", feed: e.venue, detail: `still blocked after ${days} day(s): ${String(e.result || "").slice(0, 140)}` });
+    }
+  }
   const deferred = count(KINDS.DEFERRED);
   if (deferred) alerts.push({ type: "budget_exhausted", detail: `${deferred} feed(s) deferred to the next run` });
   const stalled = (extras.stalledRuns || []).length;
   if (stalled) alerts.push({ type: "stalled_run", detail: `${stalled} earlier run(s) started and never finished (probable function time limit): ${extras.stalledRuns.map((r) => r.started_at).join(", ")}` });
+  const stale = Array.isArray(extras.staleFeeds) ? extras.staleFeeds : [];
+  if (stale.length) alerts.push({ type: "stale_feeds", detail: `${stale.length} approved feed(s) not polled for ${Math.round((extras.staleAfterMs || 0) / 3600000)} h or more: ${stale.slice(0, 8).map((f) => f.venue_name || f.id).join(", ")}`.slice(0, 300) });
   const polled = list.filter((e) => ![KINDS.MANUAL, KINDS.DEFERRED, KINDS.SKIPPED_RESUME].includes(e.kind)).length;
   if (polled >= 3 && !extras.upserted && !count(KINDS.FAILED) && !count(KINDS.TIMEOUT) && !count(KINDS.BLOCKED)) {
     alerts.push({ type: "suspected_empty_run", detail: `${polled} feeds polled, 0 events written` });
@@ -109,6 +220,7 @@ function summarizeRun(entries, extras = {}) {
     feedsSkippedOnResume: count(KINDS.SKIPPED_RESUME),
     budgetExhausted: !!extras.budgetExhausted,
     stalledRunsClosed: stalled,
+    feedsStale: stale.length,
     alerts: alerts.slice(0, MAX_ALERTS),
   };
   const parts = [];
@@ -155,9 +267,35 @@ async function closeStalledRuns({ supabaseUrl, headers, slug = "feeds", olderTha
   return closed;
 }
 
+// True when another invocation of `slug` started within withinMs and has not finished. beforeMs keeps the caller's
+// own just-written "started" row out of the answer. Fail-safe: any problem answers false (the run proceeds; its
+// writes are upserts keyed on external_id, so a rare overlap costs time, not data).
+async function otherRunInProgress({ supabaseUrl, headers, slug = "feeds", withinMs = 90 * 1000, beforeMs = 5000, now = Date.now(), fetchImpl = fetch, timeoutMs = 4000 } = {}) {
+  try {
+    if (!supabaseUrl || !headers) return false;
+    const lo = new Date(now - withinMs).toISOString();
+    const hi = new Date(now - beforeMs).toISOString();
+    const q = `${supabaseUrl}/rest/v1/source_runs?source_slug=eq.${encodeURIComponent(slug)}&outcome=eq.started&finished_at=is.null&started_at=gte.${encodeURIComponent(lo)}&started_at=lt.${encodeURIComponent(hi)}&select=id&limit=1`;
+    const r = await fetchImpl(q, { headers, signal: AbortSignal.timeout(timeoutMs) });
+    if (!r || !r.ok) return false;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows.length > 0;
+  } catch (_) {
+    return false;
+  }
+}
+
 module.exports = {
   KINDS,
+  blockedResult,
+  blockDetail,
+  blockedDays,
+  BLOCKED_ALERT_DAYS,
+  staleFeeds,
+  compactResults,
+  otherRunInProgress,
   TIMED_OUT_RESULT,
+  describeFetchError,
   DEFERRED_RESULT,
   NOT_A_CALENDAR_RESULT,
   RUN_FAILURE_KINDS,

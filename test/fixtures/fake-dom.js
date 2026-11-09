@@ -174,6 +174,7 @@ function makeDocument(seed) {
     body,
     listeners: {},
     createElement: (tag) => new FakeElement(tag, doc),
+    createTextNode: (t) => { const n = new FakeElement("#text", doc); n.textContent = t; return n; },
     getElementById(id) {
       // An element the script itself built and gave this id wins…
       const built = body._descendants([]).find((el) => el.id === id && !el._standIn);
@@ -219,6 +220,8 @@ function loadPage(options) {
     innerWidth: options.width || 1440,
   };
   sandbox.window = sandbox;
+  // What /categories.js (loaded in <head> on every page) provides in a real browser.
+  sandbox.Categories = require("../../categories.js");
   // What /config.js (api/config.js) provides in a real browser.
   sandbox.__313_CONFIG = { environment: "test", supabaseUrl: "https://example.supabase.co", supabaseAnonKey: "test-anon-key" };
   vm.createContext(sandbox);

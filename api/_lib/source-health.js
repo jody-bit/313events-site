@@ -46,6 +46,8 @@
 // reschedules anything. A stale event is a question for a person.
 
 const { SOURCE_SLUGS } = require("./source-slugs");
+const { readZeroWriteReasons } = require("./zero-write-reasons");
+const { readRaTelemetry } = require("./ra-run-summary");
 
 const HOUR_MS = 3600000;
 const STREAK_FAILING = 3; // consecutive runs: one bad day is noise, three is a pattern
@@ -357,6 +359,10 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       lastAttemptAt: latest ? latest.started_at : null,
       lastSuccessAt: (done.find((r) => r.outcome === "success" || r.outcome === "partial") || {}).started_at || null,
       lastOutcome: latest ? latest.outcome : null,
+      // Why the latest finished run wrote nothing (connectors that record it); known:false when not recorded.
+      zeroWrite: readZeroWriteReasons(latestDone && latestDone.zero_write_reasons),
+      // RA only: persisted four-count telemetry of the latest run (unknown when absent).
+      ...(slug === "resident-advisor" ? { raTelemetry: readRaTelemetry({ summary: latest && latest.ra_summary, summaryText: latest && latest.ra_summary_text, perCandidate: latest && latest.ra_per_candidate }) } : {}),
       lastFetched: latestDone && typeof latestDone.records_fetched === "number" ? latestDone.records_fetched : null,
       lastParsed: latestDone && typeof latestDone.records_parsed === "number" ? latestDone.records_parsed : null,
       lastWritten: latestDone && typeof latestDone.records_written === "number" ? latestDone.records_written : null,
@@ -414,13 +420,16 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       s.placeholderVenueRate = placeholder / publicUpcoming.length;
     }
 
-    // volume: latest fetched/written vs the median of the runs before it
-    if (done.length >= 3 && (done[0].outcome === "success" || done[0].outcome === "partial")) {
+    // volume: latest fetched/written vs the median of the runs before it.
+    // A second-pass "resume" run (cron-feeds ?resume=1, session_data.resume) only finishes what the first run did
+    // not reach, so its counts are small by design; it is left out of both sides of the comparison.
+    const volumeRuns = done.filter((r) => r.resume !== "true" && r.resume !== true);
+    if (volumeRuns.length >= 3 && (volumeRuns[0].outcome === "success" || volumeRuns[0].outcome === "partial")) {
       // baseline from completed runs only: a failed run's zero is not "normal volume"
-      const prior = done.slice(1).filter((r) => r.outcome === "success" || r.outcome === "partial").slice(0, 7);
+      const prior = volumeRuns.slice(1).filter((r) => r.outcome === "success" || r.outcome === "partial").slice(0, 7);
       const out = {};
       for (const field of ["records_fetched", "records_written"]) {
-        const cur = done[0][field];
+        const cur = volumeRuns[0][field];
         const base = median(prior.map((r) => r[field]));
         if (typeof cur !== "number" || base === null) continue;
         const delta = cur - base;

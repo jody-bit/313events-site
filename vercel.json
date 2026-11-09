@@ -42,6 +42,10 @@
       "schedule": "0 22 * * *"
     },
     {
+      "path": "/api/cron-feeds?resume=1",
+      "schedule": "10 22 * * *"
+    },
+    {
       "path": "/api/cron-editorial",
       "schedule": "0 23 * * *"
     },
@@ -111,6 +115,9 @@
     }
   ],
   "functions": {
+    "api/admin-events.js": {
+      "maxDuration": 300
+    },
     "api/event-meta.js": {
       "includeFiles": "event-template.html"
     },
@@ -164,6 +171,15 @@
     },
     "api/seasonal-qa.js": {
       "includeFiles": "api/_lib/seasonal-editorial/**"
+    },
+    "api/cron-link-check.js": {
+      "maxDuration": 60
+    },
+    "api/seasonal-preview.js": {
+      "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
+    },
+    "api/seasonal-collection.js": {
+      "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
     }
   },
   "rewrites": [
@@ -200,6 +216,10 @@
       "destination": "/copyright.html"
     },
     {
+      "source": "/photo-credits",
+      "destination": "/photo-credits.html"
+    },
+    {
       "source": "/editorial-policy",
       "destination": "/editorial-policy.html"
     },
@@ -209,7 +229,15 @@
     },
     {
       "source": "/fall",
-      "destination": "/fall.html"
+      "destination": "/api/seasonal-collection?c=fall"
+    },
+    {
+      "source": "/outside-the-ordinary",
+      "destination": "/api/seasonal-collection?c=outside-the-ordinary"
+    },
+    {
+      "source": "/off-the-beaten-orbit",
+      "destination": "/api/seasonal-collection?c=off-the-beaten-orbit"
     },
     {
       "source": "/halloween",

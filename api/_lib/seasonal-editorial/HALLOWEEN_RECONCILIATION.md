@@ -9,43 +9,27 @@ Owner decisions applied: approval of 2026-10-11 (all 52 destinations approved fo
 | | Records |
 |---|---|
 | Inventory records preserved | 52 |
-| Owner-approved (49 carry the approval; 3 excluded carry none) | 43 |
-| **Eligible and published through the gate** | **23** |
+| Owner-approved (49 carry the approval; 3 excluded carry none) | 27 |
+| **Eligible and published through the gate** | **7** |
 | Held (retained, not public) | 20 |
-| Excluded as duplicate or closed (retained with history) | 9 |
-| Check: 23 + 20 + 9 | 52 |
+| Excluded as duplicate or closed (retained with history) | 25 |
+| Check: 7 + 20 + 25 | 52 |
 
-Image route: 9 of the 23 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 14 use an owner photo or a linked image.
+Image route: 2 of the 7 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 5 use an owner photo or a linked image.
 
 All 20 held records are held for factual verification: 9 have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; 11 have no official 2026 evidence (Rotten Manor has a linked image but no 2026 evidence).
 
-## Published through the gate (23)
+## Published through the gate (7)
 
 | Destination | Image route | Rights route | Public advisory |
 |---|---|---|---|
 | Erebus Haunted Attraction | illustration | owner-supplied-illustration |  |
-| Eloise Asylum | owner-photo | owner-authorization |  |
-| Hallowe'en in Greenfield Village | owner-photo | owner-authorization | General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates. |
-| Zoo Boo at the Detroit Zoo | acquired-file | third-party-license | Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo. |
-| Glenlore Trails: CarnEvil 2 | owner-photo | owner-authorization |  |
-| Halloween Ghosts & Goodies at Crossroads Village | acquired-file | third-party-license |  |
-| Hush Haunted Attraction | owner-photo | owner-authorization |  |
 | Azra Chamber of Horrors | linked | linked-risk-acceptance |  |
 | Scarefest Scream Park | owner-photo | owner-authorization |  |
 | Blake's Haunted Attractions | illustration | owner-supplied-illustration |  |
-| Deranged Haunt | illustration | owner-supplied-illustration |  |
-| Slaughterhouse Adventure | illustration | owner-supplied-illustration |  |
-| Full Moon Haunted House at Bonadeo Farms | illustration | owner-supplied-illustration |  |
 | The Howling Haunted Trail & Party | owner-photo | owner-authorization |  |
-| Spooky Trails | illustration | owner-supplied-illustration |  |
-| Field of Fear | illustration | owner-supplied-illustration |  |
 | Distracted Haunted House | owner-photo | owner-authorization |  |
-| Eerie Manor Tours at Wildwood Preserve | acquired-file | third-party-license |  |
-| Halloween Stroll at Canterbury Village | illustration | owner-supplied-illustration |  |
-| HallowGlow at TreeRunner | linked | linked-risk-acceptance |  |
-| Brick-or-Treat at LEGOLAND Discovery Center | illustration | owner-supplied-illustration |  |
 | Ooky Spooky Light Show | owner-photo | owner-authorization |  |
-| Laser Halloween | owner-photo | owner-authorization |  |
 
 Four of these (Zoo Boo, Hush, Azra, HallowGlow) use a linked image on the owner's recorded risk acceptance. That is not a license; no rights-holder permission is on file. Each falls back to the generated card with the "Illustrative image" label if the link fails.
 
@@ -74,15 +58,31 @@ Four of these (Zoo Boo, Hush, Azra, HallowGlow) use a linked image on the owner'
 | 49 | Halloween Hunt the Haunts | HOLD_UNVERIFIED | Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. wehavefun.ca has a 'Hunt the Haunts 2026' section: interactive map plus Catch 'Em All Hunt app and a 2026 registration form; says registration is required every year. No 2026 dates printed. https://wehavefun.ca/ (read 2026-10-12). No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet. |
 | 50 | Motor City Ghosts | HOLD_UNVERIFIED | Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Operator's Detroit page (last modified Oct 8, 2026 per the page) says tours run daily year-round, 8 PM start, bookable online; no season-specific dates. https://usghostadventures.com/ghost-tours/detroit/ (read 2026-10-12). Medium: 'daily, 365 days' rather than dated 2026 events. No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet. |
 
-## Excluded as duplicate or closed (9)
+## Excluded as duplicate or closed (25)
 
 | # | Record | Disposition | Reason |
 |---|---|---|---|
+| 2 | Eloise Asylum | ended | Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 35 | Hallowe'en in Greenfield Village | ended | The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved. |
+| 38 | Zoo Boo at the Detroit Zoo | ended | The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved. |
+| 32 | Glenlore Trails: CarnEvil 2 | ended | The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 39 | Halloween Ghosts & Goodies at Crossroads Village | ended | The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 3 | Hush Haunted Attraction | ended | The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 11 | Deranged Haunt | ended | The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 12 | Slaughterhouse Adventure | ended | The operator's page stated: "Friday 10/30: last night to experience the haunted slaughterhouse"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 13 | Full Moon Haunted House at Bonadeo Farms | ended | The operator's page stated: "We are closed for the season" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 14 | Exit 13 Haunted House | closed | Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record. |
+| 20 | Spooky Trails | ended | The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 22 | Field of Fear | ended | The Field of Fear page listed its final night as Oct 31, 2026. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 24 | Dearborn Haunted Trail | ended | City of Dearborn listed Fri Oct 16 to Sun Oct 18, 7 PM; the final night is Oct 18. Retained as a non-public record. |
 | 25 | Sanilac Museum's Haunted Village | ended | Museum calendar listed Saturdays Oct 10 and 17, 7-9 PM only; both dates have passed. Retained as a non-public record. |
+| 29 | Eerie Manor Tours at Wildwood Preserve | ended | The Wildwood Preserve page listed Friday Oct 23 through Saturday Oct 31, 2026, 2 to 8 p.m.; the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 30 | Fort Meigs Garrison Ghost Walk | ended | The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved. |
+| 33 | Halloween Stroll at Canterbury Village | ended | The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 34 | HallowGlow at TreeRunner | ended | The TreeRunner page listed Oct 2-4, 9-11, 16-18, 23-25 and 30-31, 2026; the final night was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 37 | Scarehouse Windsor Immersive Dinner | duplicate of `scarehouse-windsor` | Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record. |
+| 40 | Brick-or-Treat at LEGOLAND Discovery Center | ended | LEGOLAND Discovery Center's operator-stated 2026 range was Oct 1-31 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
+| 42 | Laser Halloween | ended | The Sloan Longway calendar listed the last Laser Halloween shows on Saturday Oct 31, 2026, at 7 and 8 PM. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 45 | Halloween Stroll | ended | The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved. |
 | 48 | Windsor–Essex Yard Haunt Map | duplicate of `halloween-hunt-the-haunts` | Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record. |
 | 51 | Spooky Jane's Walk | ended | Jane's Walk site listed a single walk, Saturday Oct 17, 11 AM-12 PM; it has passed. Retained as a non-public record. |

@@ -20,7 +20,7 @@ const PRIVATE = ED.allCollections(); // every record, published or not (private 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 assert.deepStrictEqual(DATA.ORDER, ["fall", "halloween", "fall-color"]);
-assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED"]);
+assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED", "ENDED"]);
 const routes = { fall: "/fall", halloween: "/halloween", "fall-color": "/fall-color" };
 
 // A complete record, built from a real file on disk, for gate tests only.
@@ -214,7 +214,7 @@ assert.strictEqual(allEntries, 251, "70 fall + 52 halloween + 129 fall-color rec
   const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
   set.forEach((k) => { n[k.split("/")[0]]++; });
   for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, n[slug], slug + ": public destinations = the authorized batch");
-  assert.deepStrictEqual(n, { fall: 38, halloween: 23, "fall-color": 41 });
+  assert.deepStrictEqual(n, { fall: 38, halloween: 7, "fall-color": 41 });
 }
 
 // ---- 3. renderer behaviour, exercised on complete synthetic records
@@ -295,7 +295,8 @@ for (const slug of DATA.ORDER) {
   for (const e of PRIVATE[slug].entries.filter((x) => !DATA.isPublic(x))) assert.ok(!html.includes(e.name), slug + ": unpublished record leaked into the page: " + e.name);
   assert.ok(html.includes("Illustrative image") && html.includes('class="sc-hero"'), "the approved hero (labelled illustrative) is unchanged");
   assert.ok(html.includes("not only this collection") && html.includes("Open events map") && !/View on map/.test(html));
-  for (const other of DATA.ORDER.filter((s) => s !== slug)) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.ORDER.filter((s) => s !== slug && !DATA.PAUSED.includes(s))) assert.ok(html.includes('href="' + routes[other] + '"'));
+  for (const other of DATA.PAUSED) assert.ok(!html.includes('href="' + routes[other] + '"'), "paused collection " + other + " is not cross-linked");
   const built = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(!/fixture/i.test(built), slug + ".html must never contain test fixtures");
 }
@@ -335,16 +336,16 @@ for (const slug of DATA.ORDER) {
   for (const c of withEntry) assert.strictEqual(c.status, DATA.readiness(col.entries.find((e) => e.id === c.entry_id)).state, c.entry_id + " registry status equals derived state");
   assert.deepStrictEqual(rows.filter((c) => c.status === "PUBLISHED").map((c) => c.entry_id).sort(), DATA.published(col).map((e) => e.id).sort());
 }
-assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 102, "the ledger shows exactly the 79 Fall records (76 + 3) and the 23 Halloween records that pass the gate as PUBLISHED");
+assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 86, "the ledger shows exactly the 79 Fall records (76 + 3) and the 7 Halloween records that pass the gate as PUBLISHED");
 
 // ---- 7. built pages in sync, routed, homepage cards link to them
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 const dm = JSON.parse(fs.readFileSync(path.join(root, "data/dont-miss.json"), "utf8")).placements;
-assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/halloween", "/fall-color"]);
+assert.deepStrictEqual(dm.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"]);
 for (const [slug, route] of Object.entries(routes)) {
   const rule = vercel.rewrites.find((r) => r.source === route);
-  assert.ok(rule && rule.destination === "/" + slug + ".html", "rewrite for " + route);
+  assert.ok(rule && (rule.destination === "/" + slug + ".html" || (slug === "fall" && rule.destination === "/api/seasonal-collection?c=fall")), "rewrite for " + route);   // /fall is served by api/seasonal-collection.js since the 2026-11-04 owner release (fall.html stays as the fallback)
   const page = fs.readFileSync(path.join(root, slug + ".html"), "utf8");
   assert.ok(page.includes('rel="canonical" href="https://313.events' + route + '"'));
   assert.ok(page.includes('data-collection="' + slug + '"'));

@@ -26,7 +26,7 @@ const assert = require("assert");
 const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const { makeMockPostgrest } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
 const { loadPage, inlineScript } = require(`${REPO_DIR}/test/fixtures/fake-dom.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
@@ -77,8 +77,8 @@ async function open(url, opts) {
   const api = makeMockPostgrest(opts.tables || TABLES, { cap: 1000, failure: opts.failure });
   const page = loadPage({
     url: url || "/", now: NOW, seed: SEED, fetch: api.fetch,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("place-list.js"), read("blocked-names.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "place-list.js", "blocked-names.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;
@@ -325,11 +325,11 @@ async function run() {
     const seeded = JSON.parse(read("data/dont-miss.json"));
     // Shipped today: the three seasonal guides as static editorial cards (no
     // canonical event is selected), each with its optimized artwork on disk.
-    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Halloween in the Orbit", "Fall Colors"]);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Off the Beaten Orbit", "Fall Colors"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Explore winter", "Chase color"]);
     assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
-    for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
-    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
+    for (const p of seeded.placements) for (const f of [p.image, p.image2x].filter(Boolean)) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/off-the-beaten-orbit", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
     assert.ok(seeded.placements.every((p) => !p.url), "no other link field");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");

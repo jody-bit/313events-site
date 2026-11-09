@@ -5,6 +5,7 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Vercel Cron job — scrapes HALO Detroit's own events page
 // (thehalodetroit.com/currentevents). robots.txt for this site places no
 // restrictions on crawling it. The site is built on Wix, has no JSON-LD or
@@ -295,7 +296,11 @@ const haloHandler = async (req, res) => {
     return { ticket_url: null, event_url: null, ticket_status: "door" };
   }
 
-  const rawRows = parsed.map((e) => ({
+  // A closed rental the venue lists on its own calendar ("NACD: PRIVATE CLOSED EVENT") is not an event the public can attend
+  // (owner rule 2026-10-01: skipped altogether). Same shared filter every other connector uses; the skip is counted in the log.
+  const publicParsed = parsed.filter((e) => !isLikelyNotARealEvent({ title: e.title }));
+  if (publicParsed.length !== parsed.length) console.log(`[halo] skipped ${parsed.length - publicParsed.length} non-event listing(s) (private or closed rental)`);
+  const rawRows = publicParsed.map((e) => ({
     external_id: `halo-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "nightlife", // best-effort default — HALO's own page doesn't distinguish cabaret/DJ/social events
