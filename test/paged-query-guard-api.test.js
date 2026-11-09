@@ -53,7 +53,8 @@ function classify(lines, i) {
   const win = lines.slice(i, i + 13).join("\n");
   // The URL template can continue on the next lines (`...&order=x&limit=5000`): look at the URL line plus the two after it.
   const line = lines.slice(i, i + 3).join("");
-  if (PAGERS.test(win)) return "paged";
+  // The pager call can open on the line BEFORE the URL template (`await fetchAllPagedRows(\n  `${URL}/rest/v1/...`)`), so look one line back too.
+  if (PAGERS.test(win) || (i > 0 && PAGERS.test(lines[i - 1]))) return "paged";
   if (/count=exact/.test(win)) return "count";
   // limit of 1000 or more is checked BEFORE the write exemption: a list read capped at 1,000 is an offender whatever follows it.
   const lim = /[?&]limit=(\d+)/.exec(line);
@@ -88,10 +89,8 @@ const KNOWN = [
   "api/_lib/venue-lookup.js:venues:limit=1000",
   "api/admin-venues.js:venues:limit=1000",
   "api/cron-antonartcenter.js:events:limit=1000",
-  "api/cron-editorial.js:events:unbounded",
   "api/cron-motorcitywine.js:events:limit=1000",
   "api/cron-post-to-facebook.js:events:unbounded",
-  "api/cron-visitdetroit.js:events:unbounded",
 ];
 
 const uniq = (a) => Array.from(new Set(a));
@@ -114,4 +113,5 @@ assert.strictEqual(t("await doFetch(\n  `${U}/rest/v1/events?title=ilike.x`,\n  
 assert.strictEqual(t("fetch(`${U}/rest/v1/events?status=eq.x`, {\n method: \"PATCH\" })"), "write");
 assert.strictEqual(t("const url = `${U}/rest/v1/events?select=id`;\nawait fetchAllPagedRows(url, h)"), "paged");
 assert.strictEqual(t("fetch(`${U}/rest/v1/events?select=id`, { headers: { Prefer: \"count=exact\" } })"), "count");
+assert.strictEqual(classify(["const r = await fetchAllPagedRows(", "  `${U}/rest/v1/events?select=id`,", "  h);"], 1), "paged", "a pager call on the line before the URL counts");
 console.log("paged-query-guard-api: ok (" + KNOWN.length + " known offenders)");
