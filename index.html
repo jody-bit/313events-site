@@ -3606,6 +3606,12 @@
     .hps-num{font-size:15px;}
     .hps-label{font-size:12px;letter-spacing:.05em;}
   }
+  /* 320px phones: four figures no longer fit one row (ACTIVE NEIGHBORHOODS
+     clipped at the right edge), so they sit two by two. */
+  @media (max-width:360px){
+    .hero-proof-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;}
+    .hps-label{overflow-wrap:anywhere;}
+  }
 
   /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ----
      Homepage V2. Desktop: three control cards and the search field on one
