@@ -21,7 +21,7 @@ Launch date, traffic or audience numbers, partnerships, founder quotes, event co
 `313-events-wordmark-on-dark.svg` is a byte copy of `assets/wordmark.svg`; `...-on-light.svg` is a byte copy of `assets/wordmark-reversed.svg`; `313-events-signal-mark.svg` is a copy of `assets/313-events-signal.svg`. PNGs are rendered from those SVGs with a transparent background. No redraw, recolor or edit.
 
 ## Still open before publication
-- Product screenshots: mobile 375 calendar (public site, captured Nov 9, supplied by Jody) is in the PDF and ZIP, captioned "as of Nov 9, 2026; illustrative UI, counts are not a marketing claim"; the upload is kept unchanged in `originals/` (it is a JPEG, converted to PNG for use). Desktop calendar shot to follow from Codex: add and re-render.
+- Product screenshots: mobile 375 calendar (public site, captured Nov 9, supplied by Jody) is in the PDF and ZIP, captioned "as of Nov 9, 2026; illustrative UI, counts are not a marketing claim"; the upload is kept unchanged in `originals/` (it is a JPEG, converted to PNG for use). Desktop calendar shot (supplied by Jody, captured Nov 9) is also in; its upload is kept unchanged in `originals/`. No images were hidden or altered: the calendar UI holds no third-party photos.
 - Jody's read of the long bio (`bio.md`).
 - Experience: `/media` page, About and footer links, after #405.
 - Publication GO.
