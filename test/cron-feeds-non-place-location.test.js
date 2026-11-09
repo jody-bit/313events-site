@@ -11,7 +11,7 @@ const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 
 const FEED = { id: "fs-twe", venue_name: "Tourism Windsor Essex Pelee Island", default_category: "community", feed_url: "https://feed.example/twe.ics", feed_format: "ics", status: "approved", location_per_event: true };
-const esc = (x) => x.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\;");
+const esc = (x) => x.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;");
 
 async function run(events) {
   process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -31,6 +31,7 @@ async function run(events) {
     if (url.includes("/rest/v1/feed_sources")) return opts.method === "PATCH" ? { ok: true, status: 204, json: async () => [], text: async () => "" } : { ok: true, status: 200, json: async () => [FEED] };
     if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
+    if (url.includes("/rest/v1/source_runs")) return (!opts.method || opts.method === "GET") ? { ok: true, status: 200, json: async () => [] } : { ok: true, status: 201, json: async () => [{ id: "run-1" }], text: async () => "" };
     if (url === FEED.feed_url) return { ok: true, status: 200, text: async () => lines.join("\r\n") };
     if (url.includes("/rest/v1/events") && opts.method === "POST") { written.push(...JSON.parse(opts.body)); return strictWriteResponse(url, opts); }
     throw new Error("unmocked URL: " + url);
