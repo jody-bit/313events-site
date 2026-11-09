@@ -3,6 +3,10 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+// FREE only when the source states free ADMISSION/ENTRY. A bare "free" in a description ("free parking", "free with admission",
+// "free drinks") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// column default.
+const EXPLICIT_FREE = /\bfree (admission|entry|event|to attend|to the public|and open to the public|of charge|opening|reception|screening|concert|show|exhibition|exhibit|workshop|class|talk|tour)\b|\badmission (is )?free\b|\bfree of charge\b/i;
 // Vercel Cron job — pulls the full Detroit Month of Design festival program
 // (September 2026) from detroitmonthofdesign.org. Added 2026-09-02 at
 // Jody's request ("let's add this calendar feed to the database").
@@ -238,7 +242,7 @@ async function fetchEventFromDetailPage(url, stats) {
     start_date: startDatePortion,
     end_date: endDatePortion !== startDatePortion ? endDatePortion : undefined,
     time_display: timeDisplay || undefined,
-    is_free: !!(ld.description && /\bfree\b/i.test(ld.description)),
+    is_free: ld.isAccessibleForFree === true || (ld.description && EXPLICIT_FREE.test(ld.description)) ? true : undefined,
     source: "Detroit Month of Design",
     image_url: ld.image && ld.image.url ? ld.image.url : undefined,
     ticket_url: url,

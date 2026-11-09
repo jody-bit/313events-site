@@ -4,6 +4,10 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { createBudget, fetchText, isTimeout, rotate } = require("./_lib/run-budget"); // bounded fetching, see that file
+// FREE only when the source states free ADMISSION/ENTRY. A bare "free" in a description ("free parking", "free with admission",
+// "free drinks") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// column default.
+const EXPLICIT_FREE = /\bfree (admission|entry|event|to attend|to the public|and open to the public|of charge|opening|reception|screening|concert|show|exhibition|exhibit|workshop|class|talk|tour)\b|\badmission (is )?free\b|\bfree of charge\b/i;
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -340,7 +344,7 @@ async function fetchEventDetail(ev, categoryNames, cfg, budget) {
     start_date: start.date,
     end_date: end && end.date !== start.date ? end.date : undefined,
     time_display: timeDisplay || undefined,
-    is_free: !!(description && /\bfree\b/i.test(description)),
+    is_free: description && EXPLICIT_FREE.test(description) ? true : undefined,
     source: "PLAYGROUND DETROIT",
     image_url: imageUrl,
     ticket_url: ev.link,
