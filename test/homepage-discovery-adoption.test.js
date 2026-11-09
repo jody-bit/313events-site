@@ -340,8 +340,8 @@ async function run() {
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "next7" })), "resets search and sets Next 7 Days");
     assert.deepStrictEqual(plain(D.window(v.state, { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "exactly today through the sixth day after it");
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.heading, "Showing 10 events in the next 7 days", "the list is the hero's NEXT 7 DAYS figure (10; was 11 before 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a specific day)");
-    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4].map((n) => heading(day(n))), "nothing past the seventh day (Big Game, on day 20, is not listed); no \"Dates not confirmed\" group in a date-specific view");
+    assert.strictEqual(v.heading, "Showing 10 events in the next 7 days &middot; plus 1 with dates not confirmed, below", "P0 2026-11-09: the confirmed figure stays 10, the unclassified Fall Festival is named beside it. The list is the hero's NEXT 7 DAYS figure (10; was 11 before 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a specific day)");
+    assert.deepStrictEqual(v.days.map((d) => d.day), [...[0, 1, 2, 4].map((n) => heading(day(n))), "Dates not confirmed"], "nothing past the seventh day (Big Game, on day 20, is not listed); the Fall Festival sits in its own Dates not confirmed group");
     assert.deepStrictEqual(v.tray, ["Next 7 Days"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Next 7 Days");
     assert.strictEqual(v.url, "/?when=next7");
