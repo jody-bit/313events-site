@@ -946,16 +946,27 @@ function renderEvent(e){
   // ---- JSON-LD Event schema (helps this page get picked up as a rich
   // result / event listing in search — one of the concrete organic-traffic
   // levers discussed earlier: individual shareable, structured event URLs). ----
+  // Structured-data dates follow the same schedule rule as the page (EventDates): a continuous run keeps its
+  // start/end range; a recurring series states its next evidenced occurrence, not the whole span; a
+  // schedule-unverified range is a promotional period, so no Event block is emitted (it would claim a run
+  // the page itself says is not confirmed).
+  const ldState = (typeof EventDates !== 'undefined') ? EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
+    time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) : 'confirmed';
+  const ldRecurring = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'recurring' && ldState === 'confirmed';
+  let ldStart = e.date, ldEnd = e.endDate;
+  if(ldRecurring){
+    const occ = EventDates.expand(e);
+    ldStart = EventDates.nextDate(e) || occ[occ.length - 1] || e.date;
+    ldEnd = null;
+  }
   const ld = {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": e.title,
-    "startDate": e.date,
+    "startDate": ldStart,
     // endDate (2026-09-02 audit fix): only set when genuinely later than
-    // startDate — schema.org treats a present-but-equal endDate as fine
-    // either way, but omitting it for the common single-day case keeps this
-    // block matching what it always emitted before for those events.
-    ...(e.endDate && e.endDate > e.date ? { "endDate": e.endDate } : {}),
+    // startDate; omitted for single-day events.
+    ...(ldEnd && ldEnd > ldStart ? { "endDate": ldEnd } : {}),
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     "location": { "@type": "Place", "name": e.venue, "address": e.city || "Detroit, MI" },
@@ -964,10 +975,12 @@ function renderEvent(e){
   };
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
   if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
-  const ldScript = document.createElement('script');
-  ldScript.type = 'application/ld+json';
-  ldScript.textContent = JSON.stringify(ld);
-  document.head.appendChild(ldScript);
+  if(ldState !== 'unverified'){
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify(ld);
+    document.head.appendChild(ldScript);
+  }
 }
 
 // "As seen in" — same source of truth as index.html's editorialByEvent,
