@@ -75,6 +75,7 @@ function deriveRaTicketUrl(candidate) {
 //   - an incoming value that is missing or generic never changes anything
 //     (a missing value never erases, a homepage never replaces a specific URL);
 //   - a blank stored value is filled;
+//   - a stored non-web value (mailto:, tel:, unparseable) is never replaced and is flagged;
 //   - a stored bare homepage counts as blank, so a specific incoming value
 //     may replace it ("replace_generic");
 //   - two different specific URLs are a conflict: keep the stored one and
@@ -89,11 +90,23 @@ function normalizeSpecificUrl(url) {
   }
 }
 
+function isHttpUrl(value) {
+  try {
+    const u = new URL(String(value).trim());
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function decideLinkMerge(stored, incoming) {
   const incomingBlank = typeof incoming !== "string" || !incoming.trim();
   if (incomingBlank || isGenericLink(incoming)) return { action: "keep" };
   const storedBlank = typeof stored !== "string" || !stored.trim();
   if (storedBlank) return { action: "fill" };
+  // A stored non-web value (mailto:, tel:, javascript:, an unparseable string) is neither blank nor a bare homepage: never replace it,
+  // flag it for review so a human decides.
+  if (!isHttpUrl(stored)) return { action: "flag" };
   if (isGenericLink(stored)) return { action: "replace_generic" };
   if (normalizeSpecificUrl(stored) === normalizeSpecificUrl(incoming)) return { action: "keep" };
   return { action: "flag" };

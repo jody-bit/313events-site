@@ -16,6 +16,10 @@ const OTHER = "https://tickets.example.com/restricted-2026";
 // 1. A generic stored URL is replaced by a specific one.
 assert.deepStrictEqual(decideLinkMerge(HOME, SPECIFIC), { action: "replace_generic" });
 assert.deepStrictEqual(decideLinkMerge("https://paxahau.com", SPECIFIC), { action: "replace_generic" });
+assert.strictEqual(decideLinkMerge("mailto:tickets@example.com", SPECIFIC).action, "flag", "stored non-web value is flagged, never replaced");
+assert.strictEqual(decideLinkMerge("tel:+13135550100", SPECIFIC).action, "flag");
+assert.strictEqual(decideLinkMerge("not a url", SPECIFIC).action, "flag");
+assert.strictEqual(decideLinkMerge("mailto:tickets@example.com", HOME).action, "keep", "a generic incoming value never changes anything");
 // 2. A specific stored URL is never replaced by a generic one.
 assert.strictEqual(decideLinkMerge(SPECIFIC, HOME).action, "keep");
 assert.strictEqual(decideLinkMerge(SPECIFIC, "https://russellindustrialcenter.com").action, "keep");
