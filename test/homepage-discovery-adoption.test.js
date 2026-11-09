@@ -397,8 +397,8 @@ async function run() {
     page.fire("whenDateEndInput", "change", { value: day(7) });
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(4), to: day(7) });
-    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`], "each event once: the continuous exhibition under the range's first day; REWRITTEN 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a picked range");
-    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10");
+    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, "Dates not confirmed | Fall Festival"], "each event once: the continuous exhibition under the range's first day; REWRITTEN 2026-11-09 (P0): the unclassified Fall Festival overlaps the picked range, so it is offered under Dates not confirmed, never counted");
+    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10 &middot; plus 1 with dates not confirmed, below");
     assert.deepStrictEqual(v.tray, ["Oct 7–Oct 10"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7–Oct 10");
     assert.strictEqual(v.url, `/?when=dates&from=${day(4)}&to=${day(7)}`);
@@ -712,8 +712,9 @@ async function run() {
       assert.deepStrictEqual(plain(D.fromQuery(after)), v.state, `${after} means the same thing`);
       // And the list is exactly what Discovery says for that state.
       const ctx = { now: new Date(NOW), defaultWhen: "all", coverage: { c01: true } }; // the homepage's resting view is everything upcoming
-      const expected = plain(page.get("EVENTS")).filter((e) => D.matches(e, v.state, ctx)).map((e) => e.title);
-      assert.deepStrictEqual(sorted(v.titles), sorted(expected), `${link}: lists exactly the events Discovery matches, once each`);
+      // P0 2026-11-09: plus, on a picked date or range, the unconfirmed runs Discovery offers under "Dates not confirmed".
+      const expected = plain(page.get("EVENTS")).filter((e) => D.matches(e, v.state, ctx) || D.unconfirmedOn(e, v.state, ctx)).map((e) => e.title);
+      assert.deepStrictEqual(sorted(v.titles), sorted(expected), `${link}: lists exactly the events Discovery matches (plus its unconfirmed group), once each`);
     }
     // Controls restored from a link.
     let page = await open(`/?when=range&rangeStart=${day(4)}&rangeEnd=${day(7)}&q=fest&loc=ann%20arbor&radius=25&cats=fest,music&free=1`);

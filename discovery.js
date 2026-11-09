@@ -850,16 +850,22 @@
     // Anna Sui). unconfirmedOn() says whether such an event's STORED range covers the one day Today or
     // Tomorrow is showing, and passes the same what / where / search filters. It is a separate list:
     // callers show it as "Dates not confirmed", never count it with matches()/count(), never offer a
-    // calendar export. Other windows (tonight, weekend, picked dates) return false: nothing is inferred.
+    // calendar export.  a picked date or range is covered; weekend, week and next-7 return false.
     function unconfirmedOn(event, state, ctx) {
       var s = normalize(state), c = resolveCtx(ctx);
       if (!event || isBlocked(event)) return false;
       var w = windowOf(s, c);
-      if (w.mode !== "today" && w.mode !== "tomorrow") return false;
+      // P0 2026-11-09: a picked date or range (not just Today / Tomorrow) also offers an unclassified range whose
+      // STORED range overlaps it. Tonight, weekend, week and next-7 stay excluded (their headline counts and the
+      // evening rule are confirmed-only). Still a separate, never-counted, never-exported list.
+      if (w.mode !== "today" && w.mode !== "tomorrow" && w.mode !== "dates") return false;
+      if (w.from === null || w.to === null) return false;
       var ED = (typeof EventDates !== "undefined") ? EventDates : null;
-      if (!ED || ED.availabilityOn(event, w.from) !== "unverified") return false;
-      var end = (typeof event.endDate === "string" && event.endDate > event.date) ? event.endDate : event.date;
-      if (w.mode === "today" && end === c.today && endedByClock(event.time, c.minutes)) return false;
+      if (!ED || ED.scheduleState(event) !== "unverified") return false;
+      var start = event.date;
+      var end = (typeof event.endDate === "string" && event.endDate > start) ? event.endDate : start;
+      if (typeof start !== "string" || start > w.to || end < w.from) return false;
+      if (w.forward && end === c.today && endedByClock(event.time, c.minutes)) return false;
       return matchWhat(event, s.what, c, undefined) && matchSearch(event, s.q) && matchWhere(event, s.where, undefined);
     }
 
