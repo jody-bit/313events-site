@@ -33,6 +33,12 @@ async function run() {
     const base = { title: "Show", venue_name_raw: "The Hall", start_date: "2026-11-20" };
     assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 11:59 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM.");
     assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 9:00 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM – 9:00 PM.");
+    // #396 spellings and the conditions: dropped only as a trailing end after a real start; a lone "23:59" or "11:59 PM" and a real "11:58 PM" end stay as stored.
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 23:59" }), "Show takes place at The Hall on November 20 at 5:00 PM.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 11:59 P.M." }), "Show takes place at The Hall on November 20 at 5:00 PM.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "23:59" }), "Show takes place at The Hall on November 20 at 23:59.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "11:59 PM" }), "Show takes place at The Hall on November 20 at 11:59 PM.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "10:00 PM – 11:58 PM" }), "Show takes place at The Hall on November 20 at 10:00 PM – 11:58 PM.");
   }
   console.log("PASS: placeholder 11:59 PM end is dropped from the stored description; a real end is kept");
 
