@@ -17,24 +17,47 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
+  "api/_lib/ics-location.js",
+  // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
+  "api/_lib/zero-write-reasons.js",
+  // RA telemetry (draft, 2026-11-07): pure run-summary builder/reader and Admin RA read endpoint; its own reviewed PR.
+  "api/_lib/ra-run-summary.js", "api/admin-ra.js",
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // #256 Auto-Repair step time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).
+  "api/_lib/step-runner.js", "api/_lib/auto-repair-steps.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
   "api/_lib/control-tower.js",
+  // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
+  "api/_lib/non-event-filter.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
   "api/_lib/feed-run-health.js",
+  // Schedule-evidence Stage 1 support (owner approval 2026-10-18 14:58Z): pure robots.txt parser and read-only polite fetcher; no callers, no writes.
+  "api/_lib/robots.js", "api/_lib/evidence-fetch.js",
+  // Seasonal expiration safeguard, report-first (owner decision 2026-10-20).
+  "api/_lib/seasonal-editorial/expiration.js", "api/_lib/seasonal-editorial/EDITORIAL_EXPIRATION_PROCESS.md",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
   "assets/guides/fall-color-guide-1600.webp", "assets/guides/fall-color-guide-800.webp",
   "assets/guides/fall-guide-1600.webp", "assets/guides/fall-guide-800.webp",
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
+  "assets/guides/off-the-beaten-orbit-guide-1600.webp", "assets/guides/off-the-beaten-orbit-guide-800.webp",
+  "assets/guides/source/off-the-beaten-orbit-detroit-urban-craft-fair-original.webp",
+  "assets/guides/source/pewabic-holiday-showcase-snowflake-ornaments-original.webp",
   // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
   "api/_lib/ra-links.js", "api/admin-events.js",
   // #185 increment 1 (owner-correction lock in the shared events writer; owner GO for the draft 2026-10-18 05:05Z, release needs R&Q + owner word).
   "api/_lib/event-contract.js", "api/_lib/event-upsert.js", "api/_lib/link-field.js",
+  // N7 / #224 shared text sanitizer (entities, tags, CSS/RTF blocks) applied in the shared events writer; owner GO to be confirmed at release.
+  "api/_lib/text-sanitize.js",
+  // RA retry: Admin "new" count excludes re-queued candidates (one line).
+  "api/admin-ra.js",
+  // Owner directive Nov 7: exact Andy Arts category policy, reviewed with the live-ingestion fix.
+  "api/_lib/venue-category-policy.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   // Description enrichment per-record outcomes (issue #100, approved by the owner 2026-10-13): the enrichment cron passes them to the run log.
@@ -60,9 +83,13 @@ const ALLOWED = [
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
   // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
   "api/_lib/localist-rows.js",
-  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
+  "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js", "api/_lib/meeting-classifier.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
+  // Decision 7: rotating link check (dry by default).
+  "api/_lib/link-check-run.js", "api/cron-link-check.js",
+  // Server-side paging (draft 2026-11-09, held): sitemap and link-check read every row past the 1,000-row server cap.
+  "api/_lib/paged-rows.js", "api/sitemap.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
@@ -72,6 +99,12 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.json",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_1.md",
   "api/_lib/seasonal-editorial/RELEASE_BATCH_HALLOWEEN_1.json",
+  "api/_lib/seasonal-editorial/placements.json",
+  "api/_lib/seasonal-editorial/locations.json",
+  "api/_lib/seasonal-editorial/refresh-preview.json",
+  "api/seasonal-preview.js",
+  "api/seasonal-collection.js",
+  "api/_lib/seasonal-editorial/refresh-release.json",
   "api/_lib/seasonal-editorial/candidate-images.json",
   "api/_lib/seasonal-editorial/candidates.json",
   "api/_lib/seasonal-editorial/defaults.json",
@@ -108,7 +141,10 @@ const ALLOWED = [
   "api/_lib/editorial-verification.js",
   "api/admin-editorial.js",
   "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
-  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql"
+  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql",
+  // Schedule-evidence pass, Stage 1 (owner approval 2026-10-18): pure read-only extraction and decision rules + the source allow-list data. No network, no database write.
+  "api/_lib/schedule-evidence.js",
+  "api/_lib/schedule-evidence-sources.json"
 ];
 
 class ScopeGuardError extends Error {}

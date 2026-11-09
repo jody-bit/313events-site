@@ -219,6 +219,59 @@
     return null;
   }
 
+  // America/Detroit wall clock for a given instant (default: now). The calendar and map used the visitor's
+  // device clock for "today"; the homepage already used Detroit time. One definition, so they agree.
+  function detroitClock(now) {
+    var d = now || new Date();
+    var parts = {};
+    new Intl.DateTimeFormat("en-US", { timeZone: "America/Detroit", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false, weekday: "short" }).formatToParts(d)
+      .forEach(function (p) { parts[p.type] = p.value; });
+    var hour = parseInt(parts.hour, 10) % 24;
+    return {
+      iso: parts.year + "-" + parts.month + "-" + parts.day,
+      hours: hour + parseInt(parts.minute, 10) / 60,
+      dow: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parts.weekday)
+    };
+  }
+
+  // Is the event still to come (or still running) on todayIso? One definition for every list that
+  // filters "upcoming" or labels "past" (radar.html; api/ code may require() this file). todayIso defaults to
+  // the America/Detroit date, never the device or UTC date. A recurring row with evidenced dates is upcoming
+  // while any occurrence is today or later; a continuous row while its end date is today or later; any other
+  // row (single, schedule-unverified range) while its start or end date is today or later. A row with no usable
+  // start date is not upcoming. Eligibility only: whether a day is ATTENDABLE is still availabilityOn().
+  function isUpcoming(e, todayIso) {
+    var today = isIso(todayIso) ? todayIso : detroitClock().iso;
+    var start = startOf(e);
+    if (!isIso(start)) return false;
+    if (scheduleState(e) === "confirmed" && semanticsOf(e) === "recurring") {
+      var occ = occurrenceList(e);
+      return occ.length > 0 && occ[occ.length - 1] >= today;
+    }
+    if (scheduleState(e) === "confirmed") return start >= today;
+    return endOf(e) >= today;
+  }
+
+  // The next date the event can be attended on or after todayIso, or null: its next evidenced occurrence
+  // (recurring), today or its start (continuous, while running), its start date (single). A schedule-unverified
+  // range has no attendable date, so null: nothing is synthesised.
+  function nextDate(e, todayIso) {
+    var today = isIso(todayIso) ? todayIso : detroitClock().iso;
+    var start = startOf(e);
+    if (!isIso(start)) return null;
+    var st = scheduleState(e);
+    if (st === "unverified") return null;
+    if (st === "ongoing") {
+      var en = endOf(e);
+      if (en < today) return null;
+      return start > today ? start : today;
+    }
+    var dates = explicitDates(e);
+    for (var i = 0; i < dates.length; i++) if (dates[i] >= today) return dates[i];
+    return null;
+  }
+
   var EventDates = Object.freeze({
     MAX_SPAN_DAYS: MAX_SPAN_DAYS,
     semanticsOf: semanticsOf,
@@ -227,6 +280,9 @@
     expand: expand,
     isActiveOn: isActiveOn,
     availabilityOn: availabilityOn,
+    detroitClock: detroitClock,
+    isUpcoming: isUpcoming,
+    nextDate: nextDate,
     reviewReason: reviewReason,
     displayTime: displayTime
   });

@@ -76,6 +76,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
   #notFoundState{display:none;}
@@ -133,6 +135,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/calendar-location.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -212,6 +215,28 @@ function shortDateLabel(dateStr){
   return new Date(dateStr+"T12:00:00").toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
 }
 
+// Public venue columns -> the page's venue object (kept as a function so a test can feed it public-shaped rows).
+function mapVenueRow(row, neighborhoodName){
+  return {
+    id: row.id,
+    name: decodeEntities(row.name),
+    address: row.address ? decodeEntities(row.address) : undefined,
+    city: row.city ? decodeEntities(row.city) : undefined,
+    zip_code: row.zip_code || undefined,
+    website: row.website || undefined,
+    instagram_url: row.instagram_url || undefined,
+    facebook_url: row.facebook_url || undefined,
+    tiktok_url: row.tiktok_url || undefined,
+    twitter_url: row.twitter_url || undefined,
+    neighborhood: neighborhoodName || null,
+  };
+}
+// Directions are offered only for a complete address (CalendarLocation.safeDirections). The venues table carries no
+// state or country column, so the postal/ZIP code is the only region evidence this page has.
+function venueDirections(v){
+  return CalendarLocation.safeDirections({name: v.name, address: v.address, city: v.city, zip: v.zip_code, entrance: v.entrance});
+}
+
 function renderVenue(v, events){
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('venueContent').style.display = 'block';
@@ -240,9 +265,16 @@ function renderVenue(v, events){
 
   const addrEl = document.getElementById('venueAddress');
   if(v.address){
-    const fullAddr = `${v.address}, ${v.city || 'Detroit'}`;
-    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddr)}`;
-    addrEl.textContent = `📍 ${v.address} — Get directions`;
+    // Directions only for a complete address; otherwise the address is plain text (CalendarLocation.safeDirections).
+    const dir = venueDirections(v);
+    addrEl.dataset.directions = dir.ready ? 'ready' : dir.reason;
+    if(dir.ready){
+      addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dir.query)}`;
+      addrEl.textContent = `📍 ${dir.label ? dir.label : v.address} — Get directions`;
+    } else {
+      addrEl.removeAttribute('href');
+      addrEl.textContent = `📍 ${v.address}`;
+    }
     addrEl.style.display = 'block';
   }
   const linksWrap = document.getElementById('venueLinks');
@@ -282,7 +314,7 @@ function renderVenue(v, events){
       return `
         <div class="venue-event-row">
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category)}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
             ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
           </div>
@@ -321,7 +353,7 @@ async function init(){
   }
   const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   try {
-    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,website,instagram_url,facebook_url,tiktok_url,twitter_url,neighborhood_id`;
+    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,zip_code,website,instagram_url,facebook_url,tiktok_url,twitter_url,neighborhood_id`;
     const venueResp = await fetch(venueUrl, { headers });
     if(!venueResp.ok) throw new Error('fetch failed');
     const venueRows = await venueResp.json();
@@ -339,18 +371,7 @@ async function init(){
       } catch { /* neighborhood tag just doesn't render — not fatal */ }
     }
 
-    const venue = {
-      id: row.id,
-      name: decodeEntities(row.name),
-      address: row.address ? decodeEntities(row.address) : undefined,
-      city: row.city ? decodeEntities(row.city) : undefined,
-      website: row.website || undefined,
-      instagram_url: row.instagram_url || undefined,
-      facebook_url: row.facebook_url || undefined,
-      tiktok_url: row.tiktok_url || undefined,
-      twitter_url: row.twitter_url || undefined,
-      neighborhood: neighborhoodName,
-    };
+    const venue = mapVenueRow(row, neighborhoodName);
 
     const todayISO = new Date().toISOString().slice(0,10);
     const eventsUrl = `${SUPABASE_URL}/rest/v1/events?venue_id=eq.${encodeURIComponent(id)}&status=eq.approved&start_date=gte.${todayISO}&select=id,title,category,start_date,time_display&order=start_date.asc&limit=100`;
@@ -365,5 +386,6 @@ async function init(){
 }
 init();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

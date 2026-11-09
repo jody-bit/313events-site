@@ -59,6 +59,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   h1.legal-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
@@ -154,5 +156,6 @@
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
     </footer>
   </div>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

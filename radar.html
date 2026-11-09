@@ -68,6 +68,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   .page-head{margin-bottom:24px;}
   h1.page-title{
@@ -156,6 +158,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/event-dates.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -304,7 +307,7 @@ async function loadArticles(){
     // making this page's fetch fail and show "Couldn't load press coverage
     // right now." The explicit !constraint-name hint pins this embed to the
     // original single-match FK, same relationship this page always used.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,end_date,date_semantics,occurrence_dates,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -342,6 +345,9 @@ async function loadArticles(){
           id: r._v.event.id,
           title: decodeEntities(r._v.event.title),
           date: r._v.event.start_date,
+          endDate: r._v.event.end_date || null,
+          dateSemantics: r._v.event.date_semantics || null,
+          occurrenceDates: r._v.event.occurrence_dates || null,
           venue: decodeEntities(resolveVenueDisplay(r._v.event).name) || 'Venue TBA',
           city: (function(){ const vc = resolveVenueDisplay(r._v.event).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
           cat: r._v.event.category,
@@ -361,7 +367,7 @@ async function loadArticles(){
 // filter applied), so a chip's number is the number of cards its click reveals (DQ-004).
 function outletPool(){
   const todayIso = getTodayISO();
-  return upcomingOnly ? ALL_ITEMS.filter(i => i.event && i.event.date >= todayIso) : ALL_ITEMS;
+  return upcomingOnly ? ALL_ITEMS.filter(i => i.event && eventUpcoming(i.event, todayIso)) : ALL_ITEMS;
 }
 
 function buildOutletChips(){
@@ -389,9 +395,18 @@ document.getElementById('upcomingOnlyToggle').addEventListener('change', (e) => 
   render();
 });
 
+// "Today" is the America/Detroit date, as on the homepage, calendar and map (not the device clock).
 function getTodayISO(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return EventDates.detroitClock().iso;
+}
+// Upcoming = not over yet: a running exhibition or a recurring series with a future date is still upcoming
+// (EventDates.isUpcoming), not "Past event" just because it started earlier.
+function eventUpcoming(ev, todayIso){
+  return EventDates.isUpcoming(ev, todayIso);
+}
+// Soonest-first key: the next attendable date when there is one, else the stored start date.
+function eventSortDate(ev, todayIso){
+  return EventDates.nextDate(ev, todayIso) || ev.date;
 }
 
 // Two card layouts, branching on item.event:
@@ -412,7 +427,7 @@ function radarCardHtml(item){
 
   if(item.event){
     const todayIso = getTodayISO();
-    const isPast = item.event.date < todayIso;
+    const isPast = !eventUpcoming(item.event, todayIso);
     const dateLabel = new Date(item.event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
     const metaBits = [dateLabel, item.event.venue].filter(Boolean).join(' · ');
     const eventHref = `event.html?id=${encodeURIComponent(item.event.id)}`;
@@ -427,7 +442,7 @@ function radarCardHtml(item){
           <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
             <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
           </a>
-          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat, {size:'compact'})}</div>` : ''}
+          ${cat ? `<div class="rc-cat">${Categories.tagHtml(item.event.cat)}</div>` : ''}
           <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
           <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
           <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
@@ -464,7 +479,7 @@ function render(){
   // Unmatched articles have no event date to evaluate, so "upcoming only"
   // excludes them along with past-event matches rather than crashing on
   // i.event being null.
-  if(upcomingOnly) items = items.filter(i => i.event && i.event.date >= todayIso);
+  if(upcomingOnly) items = items.filter(i => i.event && eventUpcoming(i.event, todayIso));
 
   // 2026-09-16 (Jody: "default order should be articles about events
   // happening that day so from now until the future") — this page used to
@@ -479,9 +494,9 @@ function render(){
   // and keep the old newest-published-first order among themselves, tucked
   // in after every upcoming-dated item rather than interleaved with them.
   items = items.slice().sort((a, b) => {
-    const aUpcoming = a.event && a.event.date >= todayIso;
-    const bUpcoming = b.event && b.event.date >= todayIso;
-    if(aUpcoming && bUpcoming) return a.event.date.localeCompare(b.event.date);
+    const aUpcoming = a.event && eventUpcoming(a.event, todayIso);
+    const bUpcoming = b.event && eventUpcoming(b.event, todayIso);
+    if(aUpcoming && bUpcoming) return eventSortDate(a.event, todayIso).localeCompare(eventSortDate(b.event, todayIso));
     if(aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
     return (b.publishedAt || '').localeCompare(a.publishedAt || '');
   });
@@ -504,5 +519,6 @@ function render(){
 
 loadArticles();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

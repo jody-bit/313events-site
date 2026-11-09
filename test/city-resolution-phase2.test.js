@@ -23,10 +23,18 @@ vm.runInContext(html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=LOCATION
 const place = (city, source, venue) => ctx.resolvePlace({ venue: venue || "v", city, source });
 
 // 1. The table is exactly EI's 30 sourced cities, coordinates identical, each with provenance.
-assert.strictEqual(P2.length, 30);
+// ...plus Dryden village (added 2026-10-24, Census TIGERweb GEOID 2623140, researched by EI; not part of the Oct 15 research).
+assert.strictEqual(P2.length, 33);
+const highland = P2.find((x) => x.name === "Highland");
+assert.deepStrictEqual({ r: highland.region, la: highland.lat, ln: highland.lng, f: highland.featureId, s: highland.sources }, { r: "Michigan", la: 42.655768, ln: -83.6213863, f: "2612538080", s: ["visitdetroit"] });
+const belle = P2.find((x) => x.name === "Belle River");
+assert.deepStrictEqual({ r: belle.region, la: belle.lat, ln: belle.lng, f: belle.featureId, s: belle.source }, { r: "Ontario", la: 42.2913889, ln: -82.7044444, f: "FAGXD", s: "NRCan CGN" });
+const dryden = P2.find((x) => x.name === "Dryden");
+assert.deepStrictEqual({ r: dryden.region, la: dryden.lat, ln: dryden.lng, f: dryden.featureId, s: dryden.source }, { r: "Michigan", la: 42.9455811, ln: -83.1239865, f: "2623140", s: "Census TIGERweb" });
+assert.deepStrictEqual(dryden.sources, ["manual", "avenue ticketing"]);
 assert.ok(!P2.some((x) => /maidstone/i.test(x.name)), "Maidstone must stay out");
 const eiBy = new Map(ei.map((r) => [r.city, r]));
-for (const x of P2) {
+for (const x of P2.filter((y) => y.name !== "Dryden" && y.name !== "Belle River" && y.name !== "Highland")) {
   const r = eiBy.get(x.name);
   assert.ok(r, x.name + " is not in EI's research");
   assert.strictEqual(x.lat, r.lat, x.name + " lat");
@@ -35,7 +43,7 @@ for (const x of P2) {
   assert.ok(x.source && x.featureId && x.verified && x.jurisdiction, x.name + " lacks provenance");
   assert.ok(x.sources && x.sources.length, x.name + " lacks evidence sources");
 }
-console.log("PASS: 30 cities, EI coordinates exact, provenance and evidence sources present, Maidstone absent");
+console.log("PASS: 30 cities + Dryden, Belle River and Highland, EI coordinates exact, provenance and evidence sources present, Maidstone absent");
 
 // 2. No Phase 2 name duplicates a city already in the table, and none is a neighborhood name.
 const names = ctx.LOCATIONS.map((l) => l.name.toLowerCase());

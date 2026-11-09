@@ -3451,6 +3451,11 @@
   .nav-search-btn:hover, .nav-toggle:hover{color:var(--ink);}
   .nav-search-btn svg, .nav-toggle svg{display:block;width:20px;height:20px;}
   .nav-toggle{display:none;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  @media (min-width:901px){.site-nav-link{position:relative;}.site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}}
   .submit-btn{
     display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;
     font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -3568,7 +3573,7 @@
     color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
   .hps-label{
-    font-family:var(--font-data);font-size:10.5px;line-height:1.3;letter-spacing:.1em;
+    font-family:var(--font-data);font-size:12px;line-height:1.3;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);
   }
   .hero-proof-stat:hover .hps-num, .hero-proof-stat:focus-visible .hps-num{color:var(--accent);}
@@ -3588,7 +3593,7 @@
     .hero-signal{--signal-size:clamp(26px,9cqw,44px);}
     .hero-stat-number{font-size:clamp(40px,14cqw,56px);}
     .hero-stat-caption{font-size:clamp(15px,5cqw,20px);}
-    .hps-label{font-size:10px;letter-spacing:.08em;}
+    .hps-label{font-size:12px;letter-spacing:.08em;}
     .hero-proof-stat + .hero-proof-stat::before{margin:0 7px;}
   }
   /* Narrow phones: the three figures sit in three columns, number over
@@ -3598,7 +3603,7 @@
     .hero-proof-stat{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0;}
     .hero-proof-stat + .hero-proof-stat::before{content:none;}
     .hps-num{font-size:15px;}
-    .hps-label{font-size:9.5px;letter-spacing:.05em;}
+    .hps-label{font-size:12px;letter-spacing:.05em;}
   }
 
   /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ----
@@ -3618,7 +3623,7 @@
   .mt-chev{width:14px;height:14px;display:block;color:var(--ink-soft);}
   .mt-text{display:flex;flex-direction:column;gap:3px;min-width:0;}
   .mobile-trigger .mt-label, .search-field .mt-label{
-    font-family:var(--font-data);font-size:9.5px;font-weight:400;line-height:1.2;letter-spacing:.12em;
+    font-family:var(--font-data);font-size:12px;font-weight:400;line-height:1.2;letter-spacing:.12em;
     color:var(--ink-soft);text-transform:uppercase;
   }
   .mobile-trigger .mt-sub{
@@ -3697,7 +3702,7 @@
     color:var(--ink);text-transform:uppercase;letter-spacing:0;
   }
   .active-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
-  .af-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
+  .af-label{font-family:var(--font-data);font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
   .af-chip{
     display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
     border-radius:0;padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
@@ -3713,6 +3718,11 @@
   }
   .af-clear:hover{color:var(--ink);border-color:var(--ink);}
   .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .cat-summary{flex:0 0 100%;width:100%;margin:2px 0 6px;font-size:13px}
+  .cat-summary:focus{outline:2px solid var(--accent,#c8ff00);outline-offset:3px}
+  .cat-summary-line{margin:0;line-height:2}
+  .cat-name{display:inline-flex;align-items:center;gap:6px;margin:0 6px 0 0;padding:2px 8px;border:1px solid #3a3a3a}
+  .cat-name .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
   .chip{
     border:1px solid var(--line);background:var(--bg);border-radius:0;padding:8px 13px;
     font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink);
@@ -3723,7 +3733,7 @@
   .chip#allTypesChip.active{background:var(--panel-alt);color:var(--ink);border-color:var(--ink);}
   .location-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
   .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .loc-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
+  .loc-label{font-family:var(--font-data);font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
   .loc-combo{position:relative;min-width:220px;}
   #locInput{
     border:1px solid var(--line);border-radius:0;padding:8px 30px 8px 12px;font-size:14px;width:100%;min-width:220px;
@@ -3756,7 +3766,7 @@
   .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);color:var(--ink);}
   .loc-geo-btn:disabled{opacity:.6;cursor:default;}
   .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .radius-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-right:2px;}
+  .radius-label{font-family:var(--font-data);font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-right:2px;}
   .radius-chip{
     border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);border-radius:0;
     padding:6px 12px;font-family:var(--font-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
@@ -3802,7 +3812,7 @@
   }
   .sec-sub{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.3;min-width:0;}
   .sec-link{
-    margin-left:auto;font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    margin-left:auto;font-family:var(--font-data);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--ink);text-decoration:none;white-space:nowrap;
   }
   .sec-link:hover, .sec-link:focus-visible{color:var(--accent);}
@@ -3829,15 +3839,15 @@
   .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);}
   .orbit-lbl{
     position:absolute;transform:translate(-2px,-50%);white-space:nowrap;display:flex;gap:6px;align-items:center;
-    font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+    font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
   }
   .orbit-lbl i{width:5px;height:5px;background:var(--ink-soft);border-radius:50%;display:inline-block;flex:none;}
   .orbit-lbl b{color:var(--ink-soft);font-weight:400;}
   .orbit-lbl.is-left{transform:translate(calc(-100% + 2px),-50%);flex-direction:row-reverse;}
   .orbit-lbl.is-center{color:var(--accent);transform:translate(10px,-50%);}
   .orbit-lbl.is-center b{color:var(--ink-soft);}
-  .orbit-mile{position:absolute;font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
-  .orbit-foot{position:absolute;left:14px;top:12px;z-index:2;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .orbit-mile{position:absolute;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .orbit-foot{position:absolute;left:14px;top:12px;z-index:2;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
   .orbit-readout{
     position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
     padding:12px 16px;border-top:1px solid var(--line);background:var(--panel-alt);
@@ -3847,7 +3857,7 @@
     font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.9;color:var(--ink);
     letter-spacing:-.01em;font-variant-numeric:tabular-nums;
   }
-  .orbit-caption{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0;line-height:1.4;}
+  .orbit-caption{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0;line-height:1.4;}
   .orbit-cta{
     font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-accent);
     background:var(--accent);border:1px solid var(--accent);padding:9px 14px;cursor:pointer;white-space:nowrap;
@@ -3909,7 +3919,7 @@
   }
   .rc-link:hover .rc-title, .rc-link:focus-visible .rc-title{text-decoration:underline;text-underline-offset:3px;}
   .rc-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
-  .rc-date{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .rc-date{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   .rc-event{
     display:block;padding:8px 12px 9px;border-top:1px solid var(--line);
     font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
@@ -4023,13 +4033,13 @@
   .day-cell.today{background:var(--today);box-shadow:inset 0 0 0 2px var(--today-ring);}
   .daynum{font-family:var(--font-data);font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);display:flex;align-items:baseline;gap:6px;}
   .day-cell.today .daynum{color:var(--accent);}
-  .today-label{font-family:var(--font-data);font-size:9px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
-  .day-count{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
+  .today-label{font-family:var(--font-data);font-size:12px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
+  .day-count{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
   .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
   .pill{font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:0;padding:2px 5px;margin-bottom:3px;display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;}
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
+  .more-link{font-size:12px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
   /* ---- the stream: WHAT'S HAPPENING, a departure board (Homepage V2) ----
      A date strip, then dense chronological rows: time, artwork, title and
@@ -4049,8 +4059,8 @@
     font-family:var(--font-data);text-transform:uppercase;letter-spacing:.1em;text-align:left;scroll-snap-align:start;
   }
   .ds-day:hover{border-color:var(--ink-dim);background:var(--panel-hover);}
-  .ds-dow{font-size:10.5px;line-height:1.2;color:var(--ink);}
-  .ds-date{font-size:10px;line-height:1.2;color:var(--ink-soft);}
+  .ds-dow{font-size:12px;line-height:1.2;color:var(--ink);}
+  .ds-date{font-size:12px;line-height:1.2;color:var(--ink-soft);}
   .ds-day.active{background:var(--accent);border-color:var(--accent);}
   .ds-day.active .ds-dow, .ds-day.active .ds-date{color:var(--on-accent);font-weight:700;}
   .ds-step{
@@ -4092,7 +4102,7 @@
   }
   .evt-time .t-clock{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:24px;line-height:.95;letter-spacing:0;}
   .evt-time .t-mer{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:1;color:var(--ink);}
-  .evt-time small{display:block;margin-top:3px;font-size:9.5px;letter-spacing:.04em;color:var(--ink-soft);}
+  .evt-time small{display:block;margin-top:3px;font-size:11px;letter-spacing:.04em;color:var(--ink-soft);}
   /* The artwork frame: one frame for every row, the Orbit field beneath,
      the event's own artwork laid over it when the source has any. The
      frame never changes size, so a column of rows keeps its rhythm. */
@@ -4112,11 +4122,11 @@
   .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
   .evt-place{
     display:flex;flex-wrap:wrap;gap:2px 0;margin-top:3px;
-    font-family:var(--font-data);font-size:10px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+    font-family:var(--font-data);font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
   }
   .evt-place:empty{display:none;}
   .evt-place > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);}
-  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:10px;}
+  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:12px;}
   .evt-side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:1px;}
   .evt-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
   .evt-meta:empty{display:none;}
@@ -4133,8 +4143,8 @@
   }
   .note{font-size:12px;color:var(--ink-soft);margin-top:5px;font-style:italic;overflow-wrap:anywhere;}
   .evt-desc, .evt-title, .evt-venue{overflow-wrap:anywhere;}
-  .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;}
+  .src{font-size:12px;color:var(--ink-dim);font-style:italic;}
+  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;}
   .evt-link:hover{color:var(--accent);}
   .evt-link::after{content:'→';}
   /* ~44px tap areas for the card-row controls; invisible, no layout or visual change. */
@@ -4163,18 +4173,18 @@
   .evt-editorial-mention .ei-tag{color:var(--ink-soft);flex-shrink:0;}
   .evt-editorial-mention .ei-title{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;text-transform:none;letter-spacing:0;font-family:var(--font-ui);font-size:12.5px;font-weight:500;}
   .evt-editorial-mention .ei-src{color:var(--ink-soft);flex-shrink:0;}
-  .evt-editorial-also{font-family:var(--font-data);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+  .evt-editorial-also{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
   .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:4px;column-gap:14px;margin-top:6px;}
   .evt-actions:empty{display:none;}
-  .evt-cal{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;}
+  .evt-cal{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;}
   .evt-cal a{color:var(--ink-soft);text-decoration:none;}
   .evt-cal a:hover{color:var(--ink);}
   .evt-cal a + a::before{content:'· ';color:var(--ink-dim);}
-  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
+  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
   .evt-share:hover{color:var(--ink);}
   .evt-share:disabled{color:var(--accent);cursor:default;}
-  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
-  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:9.5px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
+  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
+  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:12px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
   /* Tablet and mobile: time and artwork down the left, then title, place and
      tags stacked, the arrow at the right. */
   @media (max-width:980px){
@@ -4200,8 +4210,8 @@
     .evt-side{padding-top:4px;}
     .evt-time .t-clock{font-size:20px;}
     .evt-time .t-mer{font-size:14px;}
-    .evt-time{font-size:10.5px;}
-    .evt-time small{font-size:9px;letter-spacing:0;line-height:1.25;}
+    .evt-time{font-size:12px;}
+    .evt-time small{font-size:11px;letter-spacing:0;line-height:1.25;}
     .evt-art{width:62px;height:46px;}
     .evt-art .evt-art-code{font-size:7px;left:5px;top:4px;}
     .evt-editorial-mention{display:flex;flex-wrap:wrap;gap:3px 7px;}
@@ -4214,6 +4224,12 @@
   /* Owner condition: a little room at the card's left edge on phones (must follow the 640px block,
      which sets the padding and gap). Thumbnail gap stays at the original 10px. */
   @media (max-width:480px){ .evt-row{padding-left:8px;} }
+  /* "Time not confirmed" (rows under Dates not confirmed): 11px like the rest of the small-text floor, wraps only between words.
+     Space Mono advances 0.612em, so "confirmed" (9 characters) is 60.6px at 11px: the rows that carry it get a 64px time column
+     on tablet and phone (the desktop column is already 68px). Confirmed rows keep their own column widths. */
+  .evt-time small.evt-time-unconfirmed{overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;}
+  @media (max-width:980px){ .evt-row--unconfirmed{grid-template-columns:64px 80px minmax(0,1fr) 24px;} }
+  @media (max-width:640px){ .evt-row--unconfirmed{grid-template-columns:64px 62px minmax(0,1fr) 20px;} }
   .stream-foot{
     display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
     padding:18px 0 8px;margin-top:8px;border-top:1px solid var(--ink);
@@ -4367,17 +4383,25 @@
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
+<script src="/city-resolution.js"></script>
+<script src="/city-table-phase2.js"></script>
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-links.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <header class="site">
@@ -4407,6 +4431,7 @@
       </button>
     </div>
   </header>
+<main id="main" tabindex="-1">
 
   <section class="hero" id="heroSection" aria-label="THE CITY IS ON.">
     <div class="hero-photo" id="heroPhoto"><!-- populated by the carousel script below --></div>
@@ -4432,10 +4457,12 @@
     // added 2026-09-14; 'I' pulled 2026-09-16, too boring; 'L' (Bikini Kill
     // @ Royal Oak Music Theatre, Jody's own photo) added 2026-09-17 — see
     // HERO_PHOTOS below and the manifest for sourcing).
+    // 2026-11-05 (owner request): 'J' (graffiti booklet) and 'C' (woman walking through the Hart Plaza crowd) are no longer referenced here; their
+    // files stay in assets/photography/hero/ untouched. 'D' (Michael Monroe silhouette, raised horns) is PROTECTED by owner preference: never remove or replace it.
+    // 'M' (Redford Theatre), 'N' (Highland SRA boardwalk), 'O' (Detroit parade float) are owner-library photos, see the manifest.
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
-      { file:'C', w:2400, h:1350, alt:'A concert crowd at dusk, backlit by stage lights and video screens.' },
       { file:'D', w:1536, h:1024, alt:'A crowd throwing up rock horns as a silhouetted performer faces them under stage lights.' },
       // 2026-09-14 addition — source photo is a portrait 665x1182 crop (much
       // lower resolution than candidates A-C), so this one leans softer at
@@ -4457,12 +4484,14 @@
       // batch (location never identified). Left out entirely rather than
       // replaced, so the rotation is 10 candidates until a livelier one
       // takes its place — see the manifest for the full record.
-      { file:'J', w:2400, h:1350, alt:'The cover of a book titled "The Yard Graffiti Museum, Southwest Detroit, MI," showing a photograph of a graffiti-covered wall.' },
       { file:'K', w:2400, h:1350, alt:'A backyard concert crowd at dusk seated at picnic tables strung with string lights, with a musician performing on a small stage.' },
       // 'L' added 2026-09-17 -- Jody: "i wanted that picture to be in the hero
       // section on the home page in the slide show" (the same Bikini Kill
       // photo already live on that event's own page).
-      { file:'L', w:2400, h:1350, alt:'Bikini Kill performing on stage at the Royal Oak Music Theatre under blue stage lighting, seen from the crowd with a sound and lighting booth in the foreground.' }
+      { file:'L', w:2400, h:1350, alt:'Bikini Kill performing on stage at the Royal Oak Music Theatre under blue stage lighting, seen from the crowd with a sound and lighting booth in the foreground.' },
+      { file:'M', w:1600, h:900, alt:"The packed Redford Theatre auditorium, with its ornate Japanese-style proscenium and a crimson curtain lit for a show." },
+      { file:'N', w:1600, h:900, alt:"A wooden boardwalk and gravel trail curving into autumn-colored trees under a blue sky at Highland State Recreation Area." },
+      { file:'O', w:1600, h:900, alt:"A parade float painted with graffiti-style \"Detroit\" lettering, with riders on top, rolling down a Detroit street." }
     ];
     var ROTATE_MS = 8000;
     var container = document.getElementById('heroPhoto');
@@ -4531,7 +4560,7 @@
         <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"></circle></svg><span class="mt-text"><span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5"></rect></svg><span class="mt-text"><span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All types</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
+        <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5"></rect></svg><span class="mt-text"><span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All categories</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
       </button>
       <div class="search-wrap">
         <label class="search-field" for="search">
@@ -4666,7 +4695,8 @@
     </div>
   </div>
 
-  <footer class="site">
+  </main>
+<footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
     <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
@@ -5142,8 +5172,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return ''; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  }
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
@@ -5191,6 +5224,36 @@ function currentListMeta(){
 // isWithinRadius(); they were removed 2026-10-03 when it adopted the
 // shared layer.
 
+// "Categories: 2 of 15 selected — Nightlife, Music". Read from the one filter state on every call, so it can never disagree with the list.
+// Display-only context (name with its category colour); no extra controls. Nothing selected is stated in words.
+function updateCatSummary(){
+  const box = document.getElementById('catSummary');
+  if(!box) return;
+  const total = Object.keys(CATS).length, keys = state.what.paths.filter(k=>Object.prototype.hasOwnProperty.call(CATS, k));
+  box.innerHTML = '';
+  const line = document.createElement('p');
+  line.className = 'cat-summary-line';
+  const strong = document.createElement('strong');
+  strong.textContent = 'Categories:';
+  line.appendChild(strong);
+  line.appendChild(document.createTextNode(` ${keys.length} of ${total} selected`));
+  if(!keys.length){
+    line.appendChild(document.createTextNode(' \u2014 showing every category'));
+  } else {
+    line.appendChild(document.createTextNode(' \u2014 '));
+    keys.forEach((k, i)=>{
+      if(i) line.appendChild(document.createTextNode(' '));
+      // Display-only: the category's own colour dot and name. Selecting and deselecting stays with the category chips above.
+      const c = document.createElement('span');
+      c.className = 'cat-name';
+      const d = document.createElement('span'); d.className = 'dot'; d.setAttribute('aria-hidden', 'true'); d.style.background = CATS[k].color;
+      c.appendChild(d); c.appendChild(document.createTextNode(CATS[k].label));
+      line.appendChild(c);
+    });
+  }
+  box.appendChild(line);
+}
+
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
   bar.innerHTML = '';
@@ -5212,6 +5275,16 @@ function buildFilterBar(){
   header.appendChild(headerClose);
   bar.appendChild(header);
 
+  // Selected-categories summary (Jody 2026-11-04): count out of the total, then every selected name as its own removable button, plus clear all.
+  const catSummary = document.createElement('div');
+  catSummary.id = 'catSummary';
+  catSummary.className = 'cat-summary';
+  catSummary.tabIndex = -1;
+  catSummary.setAttribute('role', 'status');
+  catSummary.setAttribute('aria-live', 'polite');
+  bar.appendChild(catSummary);
+  updateCatSummary();
+
   // "All types" — a single, explicit way back to the unfiltered Event Type
   // state, distinct from "Reset filters" below (which also clears When,
   // Where, and search). Active whenever no category has been narrowed.
@@ -5227,7 +5300,7 @@ function buildFilterBar(){
   // 15 today via migration_007/009b/018/031-032/036-037, each a deliberate,
   // explicit expansion. "gaming" (Gaming & Esports) is the most recent,
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
-  allChip.textContent = 'All types';
+  allChip.textContent = 'All categories';   // Jody 2026-11-04: spelled out; this chip clears the Categories selection (Event Type is separate and unchanged)
   allChip.onclick = ()=>{
     setState({what: {clear: true}});
     render();
@@ -5314,6 +5387,7 @@ function toggleCategory(key){
 function syncFilterBar(){
   const bar = document.getElementById('filterBar');
   if(!bar) return;
+  updateCatSummary();
   const selected = state.what.paths;
   const all = selected.length === 0;
   const light = (el, on)=>{
@@ -5400,9 +5474,8 @@ function removeFilter(entry){
 // "filter state must be visible" requirement. What is active, what each is
 // called, and how to remove it all come from Discovery.describe(); this
 // page chooses the order it has always shown them in, and collapses the
-// selected categories into one "N of 15 categories" chip (showing up to
-// fourteen category chips here, on top of the chip row itself, would just
-// be noise).
+// selected categories into one "N of 15 categories" chip (the names are shown
+// in the filter sheet).
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const entries = Discovery.describe(state);
@@ -5514,6 +5587,13 @@ function shouldShowSource(e){
 // Only allow http(s) links into href attributes. Blocks javascript: URLs and
 // similar schemes that would otherwise let a submitted "ticket link" execute
 // code on click instead of just navigating.
+// Which link(s) an event card offers: one rule for every page, see event-links.js (a bare venue homepage is never the main button).
+function eventLinksHtml(e){
+  const L = EventLinks.resolve(e);
+  const a = (l) => { const u = safeUrl(l.url); return u ? `<a class="evt-link" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  return [L.primary, L.event, L.venue].filter(Boolean).map(a).join('');
+}
+
 function safeUrl(url) {
   if (!url) return '';
   try {
@@ -5522,6 +5602,18 @@ function safeUrl(url) {
   } catch {
     return '';
   }
+}
+
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
 }
 
 // Real pricing only — never fabricated or inferred (approved: existing
@@ -5714,7 +5806,7 @@ function buildEventDescription(e){
   const parts = [];
   if(e.description) parts.push(truncateText(e.description, 300));
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl) parts.push(safeUrl(e.eventPageUrl));
   const permalink = eventUrl(e);
   parts.push(`Details: ${permalink ? 'https://313.events/'+permalink : 'https://313.events/'}`);
@@ -5968,7 +6060,12 @@ function streamRows(ctx){
       if(seen.has(e.id)) return;
       seen.add(e.id);
     }
-    if(!Discovery.matches(e, state, ctx)) return;
+    if(!Discovery.matches(e, state, ctx)){
+      // Today / Tomorrow: an unclassified long run whose stored range covers the day is offered under "Dates not
+      // confirmed" instead of vanishing (P1 discovery incident 2026-11-07). Never counted as a confirmed event.
+      if(Discovery.unconfirmedOn(e, state, ctx)) unverifiedRows.push({event: e, day: null});
+      return;
+    }
     if(EventDates.scheduleState(e) === 'unverified'){ unverifiedRows.push({event: e, day: null}); return; }
     const listableFrom = e.date < floor ? floor : e.date;
     let day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
@@ -6007,8 +6104,8 @@ function streamRowHtml(e, dayIso, ctx){
     ? `<a href="${escapeHtml(eventUrl(e))}" aria-label="Open ${escapeHtml(e.title)}">&rarr;</a>`
     : '';
   return `
-        <div class="evt-row">
-          <div class="evt-time">${timeCellHtml(e.time)}</div>
+        <div class="evt-row${dayIso === null ? ' evt-row--unconfirmed' : ''}">
+          <div class="evt-time">${dayIso === null ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : timeCellHtml(e.time)}</div>
           <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
           <div class="evt-main">
             <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
@@ -6018,8 +6115,7 @@ function streamRowHtml(e, dayIso, ctx){
           </div>
           <div class="evt-act">
             <div class="evt-actions">
-              ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-              ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+              ${eventLinksHtml(e)}
               ${addToCalendarHtml(e)}
               ${shareButtonHtml(e)}
             </div>
@@ -6209,6 +6305,11 @@ function renderList(){
   }
 
   const total = rows.length;
+  // On Today / Tomorrow the heading counts confirmed events only; the unconfirmed ones are named beside it.
+  const dayMode = (m => m === 'today' || m === 'tomorrow')(Discovery.window(state, ctx).mode);
+  const unconfirmedN = dayMode ? rows.filter(r => r.day === null).length : 0;
+  const headTotal = total - unconfirmedN;
+  const unconfirmedNote = unconfirmedN ? ` &middot; plus ${unconfirmedN.toLocaleString('en-US')} with dates not confirmed, below` : '';
   const shown = Math.min(streamShown, total);
   const todayIso = getTodayISO();
   const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
@@ -6216,7 +6317,7 @@ function renderList(){
 
   const filtered = Discovery.describe(state).length > 0;
   const head = (meta.countLabel || filtered)
-    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`)
+    ? headHtml(`<p class="list-count-heading">Showing ${headTotal.toLocaleString('en-US')} event${headTotal===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unconfirmedNote}</p>`)
     : headHtml(`<p class="sec-sub">${total.toLocaleString('en-US')} current + upcoming event${total===1?'':'s'}, in date order.</p>`);
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
@@ -7633,10 +7734,10 @@ function updateMobileTriggers(){
   const totalCats = Object.keys(CATS).length;
   const selectedCats = state.what.paths.length, features = state.what.features.length;
   const parts = [];
-  if(selectedCats) parts.push(`${selectedCats}/${totalCats} cats`);
+  if(selectedCats) parts.push(`${selectedCats} of ${totalCats} categories`);
   if(state.what.free) parts.push('Free');
   if(features) parts.push(`${features} feature${features===1?'':'s'}`);
-  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
@@ -7801,12 +7902,12 @@ function mapSupabaseRow(row) {
     // description, same as every other editorial caveat).
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink, below); keeping
     // this field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
     // 2026-09-14: resolved server-side by events_public via the real
@@ -8174,5 +8275,6 @@ function renderOnRadarCard(){
   updateRails();
 }
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

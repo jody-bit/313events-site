@@ -138,6 +138,12 @@
   }
   .nav-search-btn:hover{color:var(--ink);}
   .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  .site-nav-link{position:relative;}
+  .site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
@@ -224,6 +230,11 @@
   .filters{
     display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
   }
+  .cat-summary{flex:0 0 100%;width:100%;margin:2px 0 6px;font-size:13px;color:var(--ink,#fff)}
+  .cat-summary:focus{outline:2px solid var(--accent,#c8ff00);outline-offset:3px}
+  .cat-summary-line{margin:0;line-height:2}
+  .cat-name{display:inline-flex;align-items:center;gap:6px;margin:0 6px 0 0;padding:2px 8px;border:1px solid #3a3a3a}
+  .cat-name .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
   .chip{
     border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
     font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
@@ -317,7 +328,7 @@
     color:var(--accent);text-transform:uppercase;
   }
   .day-count{
-    font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);
+    font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);
     margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;
   }
   .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
@@ -327,7 +338,7 @@
   }
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
+  .more-link{font-size:12px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
   /* Day detail panel */
   #dayPanel{
@@ -348,6 +359,8 @@
      for state, not decoration) is a hierarchy correction, not new styling
      for its own sake. */
   .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;max-width:132px;overflow-wrap:break-word;font-weight:700;padding-top:2px;}
+  /* "Time not confirmed" for schedule-unverified rows (Dates not confirmed): same label and 11px floor as index.html, wraps only between words. */
+  .evt-time small.evt-time-unconfirmed{display:block;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0;font-size:11px;line-height:1.25;font-weight:700;}
   /* Free-text hours from the source (e.g. "Select nights; Friday 7–11 PM, ...") can be a full sentence. Without a cap the time column took the whole row and pushed the title aside; with it the text wraps inside a fixed gutter and the title stays beside it. */
   .evt-main{flex:1;}
   /* Thumbnail (2026-09-04) — same "flex row inside .evt-main, only when an
@@ -376,11 +389,12 @@
   .tag.free{background:#3fbf6a;}
   .tag.price{background:var(--panel-hover);color:var(--ink);}
   .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
-  .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
+  .src{font-size:12px;color:var(--ink-dim);font-style:italic;}
   .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
+  .evt-link:not(:last-child){margin-right:16px;} /* Get tickets / Event details / Venue website must not read as one run (390px) */
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
   @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
 
@@ -646,6 +660,10 @@
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
+  /* Skip link: hidden until a keyboard user focuses it. */
+  .skip-link{position:absolute;left:12px;top:-60px;z-index:1000;background:var(--ink);color:var(--bg,#0A0A0A);padding:10px 14px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+  .skip-link:focus{top:8px;outline:2px solid var(--accent);outline-offset:2px;}
+  #main:focus{outline:none;}
 </style>
 <!-- Leaflet (Map view, added 2026-08-28 — see the "Detroit Orbit Map" view-toggle
      button below). Hash verified against the real leaflet@1.9.4 npm package. -->
@@ -655,10 +673,15 @@
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/city-resolution.js"></script>
+<script src="/city-table-phase2.js"></script>
+<script src="/place-eligibility.js"></script>
+<script src="/event-links.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
 
   <header class="site">
@@ -690,6 +713,7 @@
       <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
     </div>
   </header>
+<main id="main" tabindex="-1">
 
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
@@ -700,7 +724,7 @@
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+        <span class="mt-label">Categories</span><span class="mt-sub" id="filterTriggerSub">All categories</span>
       </button>
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
@@ -787,7 +811,8 @@
 
   <div id="dayPanel"></div>
 
-  <footer class="site">
+  </main>
+<footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
     <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
@@ -798,6 +823,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/map-foundation.js"></script>
 <script>
 // Keys, labels, order and colours all come from /categories.js (one definition for every page).
 const CATS = {};
@@ -949,6 +975,11 @@ const LOCATIONS = [
   {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
   {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
   {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
+  // Copied exactly from discovery.js `places` so the homepage, calendar and map agree on the
+  // same 56-city base table (test/place-eligibility.test.js fails if they drift).
+  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
+  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56},
+  {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
 ];
 
 // Only cities are matched against event data (venue_city_raw) — neighborhoods
@@ -956,6 +987,10 @@ const LOCATIONS = [
 const CITY_LOOKUP = new Map(
   LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
 );
+// Place filter lookup: the base cities plus the 30 sourced Phase 2 cities, resolved through
+// CityResolution by PlaceEligibility (/place-eligibility.js) -- the same rule the homepage and
+// map use, so the three surfaces agree on which events a place filter keeps.
+const PLACE_LOOKUP = PlaceEligibility.buildLookup(LOCATIONS, PHASE2_CITIES);
 
 // Great-circle distance in miles — matches the method used to derive
 // SERVICE_AREA.md's own boundary table, so radius math stays consistent
@@ -1289,8 +1324,7 @@ function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).p
 // reasoning as renderMonth()'s own todayISO: Detroit is UTC-4/-5, so late
 // evening through midnight local time would otherwise read as tomorrow.
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  return EventDates.detroitClock().iso; // America/Detroit, same as the homepage (2026-10-16)
 }
 
 // Best-effort parse of the free-text time_display field ("7:30 PM",
@@ -1372,23 +1406,24 @@ function timeSortMinutes(timeStr){
 // next upcoming one — never a weekend that's already fully over. Returns 3
 // ISO date strings.
 function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  const c = EventDates.detroitClock();
+  const deltaToFriday = c.dow === 0 ? -2 : 5 - c.dow;
+  const fri = new Date(c.iso + "T12:00:00Z");
+  fri.setUTCDate(fri.getUTCDate() + deltaToFriday);
   return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+    const x = new Date(fri); x.setUTCDate(fri.getUTCDate()+off);
+    return x.toISOString().slice(0,10);
   });
 }
 
+// "Tickets available" means the card's main button says Get tickets (a ticketing vendor), not just that some link exists.
+function hasTicketLink(e){ const L = EventLinks.resolve(e); return !!(L.primary && L.primary.label === 'Get tickets'); }
 function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
   // FEATURE_CHIPS filters — see their declaration above for the reasoning.
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('tickets') && !hasTicketLink(e)) return false;
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
@@ -1418,7 +1453,7 @@ function matchesFilters(e){
         if(range && range.end && range.end.h >= range.start.h){
           // The >= guard skips a range that crosses midnight (e.g.
           // 10pm-2am): still legitimately "now" all the way through.
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const nowHour = EventDates.detroitClock().hours;
           const endHour = range.end.h + range.end.m/60;
           if(endHour < nowHour) return false;
         }
@@ -1432,30 +1467,48 @@ function matchesFilters(e){
     }
   }
   if(originLocation && radiusMiles !== null){
-    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-    // An event whose city isn't in the reference table has no resolvable
-    // distance from the chosen origin — excluded rather than guessed at,
-    // the same "deliberate narrowing over silent inclusion" call made for
-    // TONIGHT above (this is an active, opt-in radius filter, not a safety
-    // net like NOW).
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      // Detroit Orbit: not narrowed by the chosen origin location itself
-      // (that's what makes it the widest tier), but still hard-capped at 75
-      // miles from Detroit's own city center — the fixed definition of the
-      // Detroit Orbit boundary — so results never drift outside the site's
-      // real coverage area no matter where the user searched from.
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
+    // Shared place rule (PlaceEligibility): the city is resolved like the homepage and map do
+    // (state/ZIP, Twp, Mt = Mount, aliases, source-gated Phase 2 cities), and Detroit Orbit
+    // means 75 miles from Detroit's BORDER, as on the homepage. A city that still cannot be
+    // placed is never guessed: it is left out of an active place filter and counted by
+    // PlaceEligibility.partition() rather than lost silently.
+    if(!PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles).eligible) return false;
   }
   return true;
 }
 
 // (No isInDetroitOrbit()/renderHeroToday() on this page — that stat panel
 // backs the homepage hero, which doesn't exist here. See index.html.)
+
+// "Categories: 2 of 15 selected — Nightlife, Music". The count is read from activeCats and CATS on every call, so it is always the live selection.
+// Display-only context (name with its category colour); no extra controls. Nothing narrowed (all selected) is stated in words.
+function updateCatSummary(){
+  const box = document.getElementById('catSummary');
+  if(!box) return;
+  const total = Object.keys(CATS).length, keys = Object.keys(CATS).filter(k=>activeCats.has(k));
+  box.innerHTML = '';
+  const line = document.createElement('p');
+  line.className = 'cat-summary-line';
+  const strong = document.createElement('strong');
+  strong.textContent = 'Categories:';
+  line.appendChild(strong);
+  line.appendChild(document.createTextNode(` ${keys.length} of ${total} selected`));
+  if(keys.length === total){
+    line.appendChild(document.createTextNode(' \u2014 all categories'));
+  } else if(keys.length){
+    line.appendChild(document.createTextNode(' \u2014 '));
+    keys.forEach((k, i)=>{
+      if(i) line.appendChild(document.createTextNode(' '));
+      // Display-only: the category's own colour dot and name. Selecting and deselecting stays with the category chips above.
+      const c = document.createElement('span');
+      c.className = 'cat-name';
+      const d = document.createElement('span'); d.className = 'dot'; d.setAttribute('aria-hidden', 'true'); d.style.background = CATS[k].color;
+      c.appendChild(d); c.appendChild(document.createTextNode(CATS[k].label));
+      line.appendChild(c);
+    });
+  }
+  box.appendChild(line);
+}
 
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
@@ -1478,6 +1531,16 @@ function buildFilterBar(){
   header.appendChild(headerClose);
   bar.appendChild(header);
 
+  // Selected-categories summary (Jody 2026-11-04): count out of the total, then every selected name as its own removable button, plus clear all.
+  const catSummary = document.createElement('div');
+  catSummary.id = 'catSummary';
+  catSummary.className = 'cat-summary';
+  catSummary.tabIndex = -1;
+  catSummary.setAttribute('role', 'status');
+  catSummary.setAttribute('aria-live', 'polite');
+  bar.appendChild(catSummary);
+  updateCatSummary();
+
   // "All types" — a single, explicit way back to the unfiltered Event Type
   // state, distinct from "Reset filters" below (which also clears When,
   // Where, and search). Active whenever every category is currently
@@ -1496,7 +1559,7 @@ function buildFilterBar(){
   // 15 today via migration_007/009b/018/031-032/036-037, each a deliberate,
   // explicit expansion. "gaming" (Gaming & Esports) is the most recent,
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
-  allChip.textContent = 'All types';
+  allChip.textContent = 'All categories';   // Jody 2026-11-04: spelled out; this chip resets the Categories selection (Event Type is separate and unchanged)
   allChip.onclick = ()=>{
     activeCats = new Set(Object.keys(CATS));
     buildFilterBar();
@@ -1594,6 +1657,7 @@ function clearAllFilters(){
 // when narrowed below the full set (showing all 11 active chips twice, once
 // in the category bar and again here, would just be noise).
 function renderActiveFilters(){
+  updateCatSummary();
   const tray = document.getElementById('activeFilters');
   const chips = [];
 
@@ -1692,8 +1756,7 @@ function renderMonth(){
   // UTC-4/-5, so from evening through midnight local time, the UTC date has
   // already rolled to the next day while it's still "today" here. This
   // matches whatever timezone the visitor's own browser/device is set to.
-  const _now = new Date();
-  const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+  const todayISO = getTodayISO();
 
   for(let i=0;i<totalCells;i++){
     const cell = document.createElement('div');
@@ -1808,6 +1871,13 @@ function venueUrl(e){
 // Only allow http(s) links into href attributes. Blocks javascript: URLs and
 // similar schemes that would otherwise let a submitted "ticket link" execute
 // code on click instead of just navigating.
+// Which link(s) an event card offers: one rule for every page, see event-links.js (a bare venue homepage is never the main button).
+function eventLinksHtml(e){
+  const L = EventLinks.resolve(e);
+  const a = (l) => { const u = safeUrl(l.url); return u ? `<a class="evt-link" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  return [L.primary, L.event, L.venue].filter(Boolean).map(a).join('');
+}
+
 function safeUrl(url) {
   if (!url) return '';
   try {
@@ -1816,6 +1886,18 @@ function safeUrl(url) {
   } catch {
     return '';
   }
+}
+
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
 }
 
 // Real pricing only — never fabricated or inferred (approved: existing
@@ -1856,7 +1938,7 @@ function showDayPanel(iso){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
+                  ${Categories.tagHtml(e.cat)}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -1864,8 +1946,7 @@ function showDayPanel(iso){
                 ${streetLineHtml(e)}
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+          ${eventLinksHtml(e)}
                 ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
@@ -1911,7 +1992,7 @@ function renderList(dateList){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
+                  ${Categories.tagHtml(e.cat)}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -1919,8 +2000,7 @@ function renderList(dateList){
                 ${streetLineHtml(e)}
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+          ${eventLinksHtml(e)}
                 ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
@@ -2011,44 +2091,19 @@ function buildPlaces(){
 }
 
 let leafletMap = null;
+let mapCtl = null;
 let markersByKey = new Map();
 let selectedPlaceKey = null;
 let mapInitTried = false;
 
-// See map.html's own CARTO_API_KEY comment for the full story: CARTO's
-// free anonymous basemap tiles stopped working late August 2026 and now
-// watermark every tile "API KEY REQUIRED" instead of failing outright,
-// which is why the try/catch fallback below never caught it. Fixed
-// 2026-09-05 with the free key CARTO emailed Jody back — kept as a
-// separate constant from map.html's copy since this file duplicates its
-// own full page (no shared JS module between pages on this site). Param
-// is `key`, not `api_key` (corrected from the original guess once CARTO's
-// email confirmed the actual name).
-const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
+// Tile provider, key and attribution: /map-foundation.js (single config for every map).
 
 function initLeaflet(){
   mapInitTried = true;
-  // See map.html's own initLeaflet() for why this is wrapped: a blocked
-  // CDN (ad blocker, offline, network policy) shouldn't be able to take the
-  // whole page down with it — the city rail and every filter are plain data
-  // rendering with no Leaflet dependency and should keep working either way.
-  try{
-    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
-    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
-    L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    }).addTo(leafletMap);
-    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
-    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
-  } catch(err){
-    leafletMap = null;
-    const el = document.getElementById('leafletMap');
-    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
-  }
+  // Basemap, tiles, attribution, scroll rule and the "tiles didn't load" message all live in /map-foundation.js (one provider
+  // config for every map). A failed Leaflet load leaves an inert controller: the city rail and every filter keep working.
+  mapCtl = MapFoundation.create(document.getElementById('leafletMap'), { popupMaxHeight: 320 });
+  leafletMap = mapCtl.ready ? mapCtl.map : null;
 }
 
 function placePopupHtml(place){
@@ -2063,7 +2118,7 @@ function placePopupHtml(place){
   const rows = place.events.map(e => `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
-      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${EventDates.scheduleState(e) === 'unverified' ? ' · Time not confirmed' : e.time ? ' · '+escapeHtml(e.time) : ''}</div>
     </div>
   `).join('');
   const jump = place.events.length > 1
@@ -2095,31 +2150,18 @@ function jumpToPlaceList(key){
 
 function renderMap(places){
   if(!leafletMap) return;
-  markersByKey.forEach(m => leafletMap.removeLayer(m));
-  markersByKey = new Map();
+  // Adapt this page's places (events grouped by location) into the foundation's common place format; pin look and popup
+  // sizing are the foundation's. Popup wording and what selecting a pin does stay page-specific.
+  const list = [];
   places.forEach(place=>{
-    const count = place.events.length;
-    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
-    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
-    const marker = L.circleMarker([place.lat, place.lng], {
-      radius: r,
-      color: hex,
-      weight: place.precise ? 2 : 1.5,
-      dashArray: place.precise ? null : '3,3',
-      fillColor: hex,
-      fillOpacity: place.precise ? 0.6 : 0.35,
-    }).addTo(leafletMap);
-    // maxHeight caps a many-event place's popup so it scrolls internally
-    // (Leaflet's own CSS adds the scrollbar once this is set) instead of
-    // growing taller than the map and spilling off the top/bottom of the
-    // window with no way to see the rest of it — a real bug hit on the
-    // live site (2026-08-30) with a 40-event cluster near Rochester.
-    // autoPanPadding gives real breathing room from the window edge (the
-    // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: 320, autoPanPadding: [24, 24], keepInView: true});
-    marker.on('click', ()=> selectPlace(place.key));
-    markersByKey.set(place.key, marker);
+    list.push({
+      key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
+      hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
+      popupHtml: placePopupHtml(place),
+    });
   });
+  mapCtl.setPlaces(list, key => selectPlace(key));
+  markersByKey = mapCtl.markers;
 }
 
 function renderCityRail(places){
@@ -2146,11 +2188,11 @@ function renderCityRail(places){
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(e=>`
           <div class="evt-row">
-            <div class="evt-time">${escapeHtml(e.time)||''}</div>
+            <div class="evt-time">${EventDates.scheduleState(e) === 'unverified' ? '<small class="evt-time-unconfirmed">Time not confirmed</small>' : escapeHtml(e.time)||''}</div>
             <div class="evt-main">
               <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
               <div class="evt-meta">
-                ${Categories.tagHtml(e.cat, {fill:'pill'})}
+                ${Categories.tagHtml(e.cat)}
                 ${priceTag(e)}
                 <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
               </div>
@@ -2232,11 +2274,11 @@ function renderUnconfirmedResults(){
     ? `${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u2013 ${new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
   el.innerHTML = `<div class="list-day-group"><div class="list-day-heading">Dates not confirmed</div>` + hits.map(e=>`
     <div class="evt-row">
-      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-time"><small class="evt-time-unconfirmed">Time not confirmed</small></div>
       <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          ${Categories.tagHtml(e.cat, {fill:'pill'})}
+          ${Categories.tagHtml(e.cat)}
           <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
         </div>
         ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
@@ -2685,10 +2727,10 @@ function updateMobileTriggers(){
   const filterSub = document.getElementById('filterTriggerSub');
   const totalCats = Object.keys(CATS).length;
   const parts = [];
-  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
+  if(activeCats.size < totalCats) parts.push(`${activeCats.size} of ${totalCats} categories`);
   if(freeOnly) parts.push('Free');
   if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
-  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
@@ -2942,12 +2984,12 @@ function mapSupabaseRow(row) {
     time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink); keeping this
     // field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
   };
@@ -2966,8 +3008,11 @@ const TICKET_STATUS_NOTES = {
   registration_required: 'Registration required — check with the organizer for how to sign up.',
 };
 function ticketStatusNoteHtml(e){
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(typeof EventLinks !== 'undefined' && EventLinks.hasEventLink){ if(EventLinks.hasEventLink(e)) return ''; }
+  else {
+    if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+    if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  }
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
@@ -3045,5 +3090,6 @@ async function loadSupabaseEvents() {
 }
 loadSupabaseEvents();
 </script>
+<script src="/social-links.js" defer></script>
 </body>
 </html>
