@@ -19,7 +19,8 @@ const pad = (n) => String(n).padStart(5, "0");
 const others = Array.from({ length: 1700 }, (_, i) => ({ id: "oth-" + pad(i), status: "approved", source: "Other", title: i === 1650 ? "Already On The Calendar" : "Filler " + i, start_date: "2099-06-15" }));
 
 async function run(options) {
-  const db = makeMockPostgrest({ events: others.map((e) => ({ ...e })), venues: [] }, options);
+  const tables = { events: others.map((e) => ({ ...e })), venues: [] };
+  const db = makeMockPostgrest(tables, options);
   const reads = [];
   global.fetch = async (url, init) => {
     url = String(url);
@@ -31,15 +32,19 @@ async function run(options) {
   const res = { statusCode: 0, status(c) { res.statusCode = c; return res; }, json(b) { res.body = b; return res; }, setHeader() {} };
   const warns = []; const w = console.warn; console.warn = (...a) => warns.push(a.join(" "));
   try { await require("../api/cron-visitdetroit.js")({ method: "GET", headers: { authorization: "Bearer cron-fixture" }, query: {} }, res); } finally { console.warn = w; }
-  return { res, reads, warns };
+  return { res, reads, warns, tables };
 }
 
 (async () => {
   // 1. at the production cap and a smaller one, the duplicate past row 1,000 is found
   for (const cap of [1000, 500]) {
-    const { res, reads } = await run({ cap });
+    const { res, reads, tables } = await run({ cap });
     assert.ok(res.body && !res.body.error, "cron errored at cap " + cap + ": " + JSON.stringify(res.body).slice(0, 300));
     assert.strictEqual(res.body.skippedAsDuplicate, 1, "the duplicate past row 1,000 is skipped at cap " + cap + " (got " + res.body.skippedAsDuplicate + ")");
+    // the brand-new, non-duplicate row is still inserted; the duplicate is not
+    assert.strictEqual(res.body.upserted, 1, "exactly the one new row is written at cap " + cap + " (got " + res.body.upserted + ")");
+    const vd = tables.events.filter((e) => e.source === "VisitDetroit").map((e) => e.external_id);
+    assert.deepStrictEqual(vd, ["vd-2"], "only the new VisitDetroit row (vd-2) is stored, not the duplicate (vd-1); got " + JSON.stringify(vd));
     const lookups = reads.filter((u) => /source=neq\./.test(u));
     assert.ok(lookups.length >= 2, "the lookup is paged");
     for (const u of lookups) assert.ok(/order=[^&]*id\.asc/.test(u) && /[?&]offset=\d+/.test(u) && Number((u.match(/[?&]limit=(\d+)/) || [])[1]) <= 1000, "bad page url " + u);
