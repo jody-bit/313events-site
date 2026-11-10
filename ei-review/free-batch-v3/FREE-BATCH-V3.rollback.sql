@@ -1,4 +1,4 @@
--- 313.events FREE correction batch v3 (36 adds, no removals). PROPOSAL ONLY. NOT EXECUTED. Needs exact owner GO + P1.
+-- 313.events FREE correction batch v4 (35 adds, no removals). PROPOSAL ONLY. NOT EXECUTED. Needs exact owner GO + P1.
 -- ROLLBACK: exact inverse with the same guard.
 -- Guard: scripts/owner-supplied-row.js pattern; one DO block = one transaction; any row_count <> 1 raises and rolls back everything.
 DO $$
@@ -8,10 +8,6 @@ BEGIN
     AND COALESCE(internal_note,'') !~* '(OWNER-CORRECTION|EDITORIAL[-_ ]HOLD)' AND lower(btrim(coalesce(source,''))) <> 'manual';
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n <> 1 THEN RAISE EXCEPTION 'row % hit % rows (expected 1): stale or owner-locked', '09c66613-6dce-4b36-a40f-879e395bd05d', n; END IF;
-  UPDATE events SET is_free = false WHERE id = '1f5d6e64-63ea-43ca-a6e8-c7b9a4fe8d09' AND is_free = true
-    AND COALESCE(internal_note,'') !~* '(OWNER-CORRECTION|EDITORIAL[-_ ]HOLD)' AND lower(btrim(coalesce(source,''))) <> 'manual';
-  GET DIAGNOSTICS n = ROW_COUNT;
-  IF n <> 1 THEN RAISE EXCEPTION 'row % hit % rows (expected 1): stale or owner-locked', '1f5d6e64-63ea-43ca-a6e8-c7b9a4fe8d09', n; END IF;
   UPDATE events SET is_free = false WHERE id = 'bbef84eb-9c66-490b-91c8-fcdb75f5b8ff' AND is_free = true
     AND COALESCE(internal_note,'') !~* '(OWNER-CORRECTION|EDITORIAL[-_ ]HOLD)' AND lower(btrim(coalesce(source,''))) <> 'manual';
   GET DIAGNOSTICS n = ROW_COUNT;

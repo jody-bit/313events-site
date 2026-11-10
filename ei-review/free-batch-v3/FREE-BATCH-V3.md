@@ -1,10 +1,11 @@
-# FREE correction batch v3 — PROPOSAL, NOT EXECUTED (2026-11-09)
+# FREE correction batch v4 (35 rows; file names unchanged) — PROPOSAL, NOT EXECUTED (2026-11-09)
 Supersedes nothing: the four-row set (f1f2aaa4…) stays reviewed and held. Its rows 0852e6f9, 798f068d and b033a1b9 are Localist and #412 (merged 17:56Z) should self-correct them on the next cron-localist run; 09c66613 (Windsor) is NOT Localist and is INCLUDED here.
-SQL: FREE-BATCH-V3.sql  sha256 df5afda452711df41da8befa14506bb53b30453a3f8d1dc844a7fcb7c8577313
-Rollback: FREE-BATCH-V3.rollback.sql  sha256 ea780083f9118a54807191bc1305efa6c23e34e20b6d5b22c0d46e63b065b54c
-36 rows, all is_free false -> true, preimage false, only is_free written, owner-lock guard per row, DO block aborts the whole batch on any row_count <> 1.
+SQL: FREE-BATCH-V3.sql  sha256 cf445a013e8f9eaf6b1b17feb324121997db5fcd57a384a61cda713136de9e66
+Rollback: FREE-BATCH-V3.rollback.sql  sha256 c43c82dbbc177a6720bd219e24a9910931defb6ca861654cc5694d3794de7d87
+35 rows, all is_free false -> true, preimage false, only is_free written, owner-lock guard per row, DO block aborts the whole batch on any row_count <> 1.
 
 ## Excluded on purpose
+- OWNER-LOCKED, added after Codex's 2026-11-10 00:24Z current-preimage read: 1f5d6e64-63ea-43ca-a6e8-c7b9a4fe8d09 (Canton Faces of Service, 2026-11-11) carries an internal_note OWNER-CORRECTION (Nov 5, venue_name_raw). Removed from forward and rollback; guards unchanged. The earlier 36-row version (md 5e1aeda3…, sql df5afda4…, rollback ea780083…) is superseded; its source evidence for this row stays valid but the row is not to be written.
 - Localist rows (BGSU, Macomb), self-correcting after #412: 0d34b180, 74501fc6, 8d963a8b and the other BGSU/Macomb adds and keeps, plus 0852e6f9, 798f068d, b033a1b9, df88c213 (conditional, remove). Check after the next Localist run; write only residuals.
 - Held: fc700f14 (Buy Tickets target is an Eventbrite register page; price not visible), 00c5062a (dates conflict), a0513984 and 12 Manchester trivia rows (only "free trivia"), ee191894 (RA price hidden), ea1f45a7 and 8a6409af (Belle Isle, no cost on page).
 - Limited/registration group, D2 held: 536f6ff8 (FREE, registration required), a93fbdcc and 58b98cd6 (Free car seat checks, appointment required), 923c0729 (no fees, registration, Macomb County companies only), 51b4cb18 (free for food businesses).
@@ -15,7 +16,6 @@ Durability: feed connectors for these non-Localist rows were not re-audited; Win
 | Full id | Title | Occurrence | Source | Source URL | Evidence (checked 2026-11-09) |
 |---|---|---|---|---|---|
 | 09c66613-6dce-4b36-a40f-879e395bd05d | Phongheads comedy showcase | 2026-11-10 | Downtown Windsor BIA | https://www.downtownwindsor.ca/event/phongheads-comedy-showcase/2026-11-10/ | Cost Free / FREE entry (Windsor, Codex+EI) |
-| 1f5d6e64-63ea-43ca-a6e8-c7b9a4fe8d09 | Faces of Service Event & Exhibit | 2026-11-11 | Canton Township Communit | https://www.cantonmi.gov/calendar.aspx?EID=4886 | 'this free community event' |
 | bbef84eb-9c66-490b-91c8-fcdb75f5b8ff | The Gateway Within: An 11/11 PCP Mindset Retreat E | 2026-11-11 | The Congregation | https://thecongregationdetroit.com/publicevents/the-gateway-within-an-11-11-pcp-mindset-retreat-experience/ | 'free to attend' (reg optional) |
 | 2d5f74f8-cf80-4970-895a-4d9a3e0a40ce | Free Admission 5-8pm | 2026-11-12 | VisitDetroit | https://visitdetroit.com/events/free-admission-5-8pm-2/ | Admission FREE, no conditions |
 | 062e4d6b-1b7a-45d9-8ab9-511a98ed411c | Pop Up Art Stop - by Linkage Community | 2026-11-14 | VisitDetroit | https://visitdetroit.com/events/pop-up-art-stop-by-linkage-community/ | Admission $0; chip in optional |
