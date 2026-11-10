@@ -11,7 +11,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 
 const lines = fs.readFileSync(path.join(root, ".vercelignore"), "utf8").split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
-for (const need of ["/*.md", "/project/", "/test/", "/ra-sync/", "/supabase/"]) {
+for (const need of ["/*.md", "/assets/**/*.md", "/project/", "/test/", "/ra-sync/", "/supabase/"]) {
   assert(lines.includes(need), `.vercelignore must list ${need}`);
 }
 // Runtime dependencies of the functions stay deployed (vercel.json includeFiles and api/_lib requires).
@@ -27,5 +27,16 @@ for (const f of files) {
   const m = fs.readFileSync(path.join(root, f), "utf8").match(BRAND);
   if (m) bad.push(`${f}: ${m[0]}`);
 }
+// Text files under assets/ are deployed too (images are skipped); Markdown there is ignored by .vercelignore.
+(function walk(dir) {
+  for (const e of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
+    const rel = dir + "/" + e.name;
+    if (e.isDirectory()) walk(rel);
+    else if (/\.(html|js|css|json|svg|txt|xml|webmanifest)$/.test(e.name)) {
+      const m = fs.readFileSync(path.join(root, rel), "utf8").match(BRAND);
+      if (m) bad.push(`${rel}: ${m[0]}`);
+    }
+  }
+})("assets");
 assert.deepStrictEqual(bad, [], "development-tool branding on delivered files: " + bad.join("; "));
 console.log("ok (public delivery: " + files.length + " delivered files checked)");
