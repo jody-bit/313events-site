@@ -84,6 +84,8 @@ const ALLOWED = [
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
   "api/cron-antonartcenter.js", "api/cron-bagleycommunity.js", "api/cron-belle-isle-nature-center.js", "api/cron-bigtimebingo.js", "api/cron-cinema-detroit.js", "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-dossin.js", "api/cron-editorial.js", "api/cron-enrichment.js", "api/cron-eventbrite.js", "api/cron-feeds.js", "api/cron-gottagacha.js", "api/cron-halo.js", "api/cron-healthcheck.js", "api/cron-lagerhouse.js", "api/cron-localist.js", "api/cron-metrotimes.js", "api/cron-motorcitywine.js", "api/cron-oldmiami.js", "api/cron-outerlimitslounge.js", "api/cron-planetanttheatre.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-post-to-facebook.js", "api/cron-ra.js", "api/cron-redford-theatre.js", "api/cron-ticketmaster.js", "api/cron-trinosophes.js", "api/cron-visitdetroit.js", "api/cron-wdet.js",
+  // Walkerville Brewery connector (draft PR #343, owner research authorization 2026-11-06): not scheduled in vercel.json, inert until Jody activates the source.
+  "api/cron-walkervillebrewery.js", "api/_lib/walkerville-rows.js", "api/_lib/source-slugs.js",
   // Package 1: these handlers export through withRunLog (truthful source_runs rows).
   "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.

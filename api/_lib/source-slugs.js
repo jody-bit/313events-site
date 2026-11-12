@@ -114,6 +114,8 @@ const SOURCE_SLUGS = Object.freeze([
   // Two public sources behind one slug: the /exhibits blog posts and the
   // Events Calendar widget's public JSON -- see api/cron-antonartcenter.js.
   { slug: "antonartcenter", file: "cron-antonartcenter.js", label: "Anton Art Center" },
+  // Added 2026-11-06 -- Walkerville Brewery (Windsor, ON). DRAFT connector, not scheduled in vercel.json.
+  { slug: "walkervillebrewery", file: "cron-walkervillebrewery.js", label: "Walkerville Brewery" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human
