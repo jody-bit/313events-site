@@ -1,0 +1,26 @@
+-- PROPOSED (not applied anywhere in production). Supabase advisor ERROR: security_definer_view on public.events_public.
+-- Production drift: the view has no reloptions (owner rights, postgres). Staging already has security_invoker=true, as
+-- migrations/20261006000003_sz01_public_access_boundary.sql intended.
+--
+-- Why this is safe (read-only checks, 2026-10-18 ~05:40Z):
+--   * production events has the RLS policy "public read approved events" (status = 'approved') for role public;
+--     venues and neighborhoods have "using (true)" read policies.
+--   * anon already holds column-level SELECT on every events/venues/neighborhoods column the view reads
+--     (including date_semantics and occurrence_dates), so an invoker view returns the same rows and columns.
+--   * staging (invoker view): `set local role anon; select count(*) from events_public` returned 466 rows, 367 upcoming.
+--   * `authenticated` has NO events column grants in production and is not used by the site (anon key only); under an
+--     invoker view it would read nothing, where today it reads through the owner. Confirm no caller uses a signed-in session.
+--
+-- Interaction with the time-confidence change: that migration also replaces events_public. `create or replace view` keeps
+-- reloptions, but a drop + create loses them. Whoever lands second must keep `security_invoker = true` (or re-run line 1).
+--
+-- Order: staging, then R&Q PASS, then Jody's GO for production. Needs no code change.
+alter view public.events_public set (security_invoker = true);
+
+-- Verify (read-only), as anon:
+--   begin; set local role anon; select count(*) from public.events_public; rollback;   -- must equal the pre-change count
+--   select reloptions from pg_class where oid = 'public.events_public'::regclass;       -- {security_invoker=true}
+--   re-run get_advisors(security): security_definer_view must be gone.
+--
+-- Rollback (restores owner rights exactly):
+--   alter view public.events_public set (security_invoker = false);
