@@ -93,3 +93,20 @@ handoffs can go stale between being written and being read.
 ## Definition of Done
 
 Every work package must meet `project/DEFINITION_OF_DONE.md` (automated tests, CI, deployed-environment smoke tests, read-only production smoke, release evidence, R&Q acceptance). R&Q enforces it.
+
+## Delivery rules (owner instruction, 2026-11-09)
+
+Finish the smallest useful change:
+
+1. Define the outcome and at most three observable acceptance checks before starting. Use existing requirements; do not invent new ones.
+2. Assign one implementation owner and one canonical branch per problem. Other threads review that branch. Do not create a parallel implementation or integration branch.
+3. Use the smallest change that meets the checks. No unsolicited frameworks, audits, migrations, documentation packages, research rounds or policy changes.
+4. Passing required checks ends preparation. Optional nits and adjacent issues never block delivery; put them in the existing backlog once.
+5. Repeat a check only after a relevant change, a failure, or new contradictory evidence. Say what invalidated the earlier result. Reuse unaffected evidence.
+6. Before requesting approval, reconcile current state, existing authorization and explicit holds. Ask once for the exact ready action; execute an existing approval without asking again.
+7. Every new task must advance a named existing backlog item. Busy threads are not the objective. When no useful authorized work remains, record the specific dependency and wait; do not manufacture work.
+8. After completion, record one short result and choose the next existing priority. Preserve branches and all explicit release, SQL, security, spending and publication holds.
+9. A reviewer must identify a failed acceptance check or concrete defect for every requested blocking change. Preference, hypothetical risk and broader improvement are not blockers.
+10. If scope, acceptance checks or required reviews grow, stop the expansion and return to the original outcome. Present a concrete scope change only when needed to fulfill that outcome.
+
+Decision rule: required check failing -> fix; ready and authorized -> deliver; ready but explicit approval missing -> ask once; genuinely dependent -> wait; otherwise -> advance the next existing backlog item.
