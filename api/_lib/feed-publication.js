@@ -57,6 +57,18 @@ const POLICIES = [
         || /\b(?:tax(?:es)? (?:due|payment|bills?)|payment due|bills? due|deadline|tax day for)\b/i.test(t);
     },
   },
+  {
+    id: "events-harvest",
+    // The owner-curated "313.events Events Harvest" calendar. Matched on the feed row's venue_name ONLY, anchored and
+    // case-insensitive: never on the URL (the calendar address can be a secret and is never read or stored here), and
+    // never a bare "harvest" (the paused Royal Oak Farmers Market row mentions the word in its notes). Renaming the
+    // row silently drops this policy, so the name must be set before the row is submitted.
+    matches: (feed) => /^\s*313\.events events harvest\s*$/i.test(String(feed.venue_name || "")),
+    // Contents and ordering of the calendar are unseen and it is multi-venue and mixed-genre, so nothing in it
+    // separates a publishable event from a note. Every NEW row is created pending_review for a person in admin.html
+    // until the first batch has been reviewed. No skipEvent: nothing is discarded.
+    reviewAll: "the 313.events Events Harvest calendar is owner-curated and mixed-genre; every new row is reviewed before publishing",
+  },
 ];
 
 function policyFor(feedSource) {
