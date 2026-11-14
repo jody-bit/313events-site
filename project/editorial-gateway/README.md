@@ -45,6 +45,11 @@ Not built (next, only after the image workflow passes Preview and production): `
   (what `editorial.html` and an iOS Shortcut use). Details go in the query string, the credential only in the header.
 - Phone page: `/editorial.html` (noindex). Sign in once with the token, search, pick a photo, Check (dry run), Apply, and see the verify results.
 
+- `create_event` (Release B): new events only after find_event shows no match. Needs title, date, category and a source note; unknown
+  facts stay empty (no invented time/venue). Uses the shared event rules; possible duplicates (same day, similar title or same venue,
+  any status) are refused and listed; deterministic `external_id` makes retries idempotent; created `pending_review` unless
+  `publish:true` and the rules find nothing to review. Dry run by default. Phone page has an "Add a new event" form.
+
 ## Client matrix (documented from vendor pages on 2026-10-26; NOTHING below is tested on the owner's accounts yet)
 
 | | Claude | ChatGPT |
