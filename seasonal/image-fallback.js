@@ -35,11 +35,24 @@
   function handleFailure(img, replacePlaceholder) {
     var cur = img.getAttribute("src");
     if (cur) failed[cur] = true;
-    // Any failure hides the linked-image credit and shows the "Illustrative image" badge (CSS: .sc-fell-back).
+    // A failed source hides its credit. Only an explicitly illustrative cover gets an illustration badge.
     if (img.parentNode && img.parentNode.classList) img.parentNode.classList.add("sc-fell-back");
+    var card = img.closest ? img.closest(".sc-card") : null;
+    if (card && card.classList) card.classList.add("sc-fell-back");
     var chain = img.__chain || (img.__chain = chainOf(img.getAttribute("data-src0") || cur, img.getAttribute("data-fb")));
     var n = nextSource(chain, failed);
-    if (n && n !== cur) { img.setAttribute("src", n); return "next"; }
+    if (n && n !== cur) {
+      var source = n === img.getAttribute("data-remote-src") ? "remote" : n === img.getAttribute("data-cover-src") ? "cover" : "unknown";
+      var noPhoto = /\/assets\/placeholders\//.test(n) || (img.getAttribute("data-cover-src") !== null && source === "unknown");
+      if (img.parentNode && img.parentNode.classList) {
+        if (noPhoto) img.parentNode.classList.add("sc-no-photo");
+        else if (img.parentNode.classList.remove) img.parentNode.classList.remove("sc-no-photo");
+        if (img.parentNode.setAttribute) img.parentNode.setAttribute("data-image-source", source);
+      }
+      if (card && card.setAttribute) card.setAttribute("data-image-source", source);
+      img.setAttribute("src", n); return "next";
+    }
+    if (img.parentNode && img.parentNode.classList) img.parentNode.classList.add("sc-no-photo");
     replacePlaceholder(img);
     return "placeholder";
   }

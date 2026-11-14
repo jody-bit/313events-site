@@ -146,3 +146,23 @@ a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 .sc-near-help{flex-basis:100%;margin:0;font-size:12px;color:var(--ink-soft)}
 .sc-catsum{margin:8px 0 0;font-size:14px}
 .sc-catsum-line{margin:0;line-height:1.6}
+
+/* Missing artwork is an honest text treatment, not a substitute event photo. */
+.sc-no-photo img,.sc-no-photo .sc-ph{visibility:hidden}
+.sc-no-photo{background:var(--panel-alt)}
+.sc-no-photo::after{content:"Event photo unavailable";position:absolute;inset:0;display:grid;place-content:center;padding:20px;text-align:center;color:var(--ink-soft);font:12px/1.5 var(--font-data);letter-spacing:.04em}
+.sc-no-photo .sc-illus,.sc-no-photo .sc-hist{display:none}
+.sc-no-photo .sc-pending{z-index:1}
+
+.sc-cover-credit{display:none}
+.sc-fell-back[data-image-source="cover"] .sc-cover-credit{display:block}
+.sc-card:has(.sc-no-photo) .sc-credit{display:none}
+
+.sc-remote-credit{display:none}
+.sc-fell-back[data-image-source="remote"] .sc-remote-credit{display:block}
+.sc-card:has(.sc-card-media[data-image-source="remote"]) .sc-illus-fb{display:none}
+.sc-card-media.sc-no-photo{aspect-ratio:auto;min-height:48px;padding:14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;border-bottom:1px solid var(--line)}
+.sc-no-photo img,.sc-no-photo .sc-ph{display:none}
+.sc-no-photo::after{position:static;display:block;padding:0;text-align:left}
+.sc-no-photo .sc-pending{position:static}
+.sc-no-photo:has(.sc-pending)::after{display:none}

@@ -4400,6 +4400,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
+<script src="/description-format.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
 <script src="/place-list.js"></script>
@@ -6148,7 +6149,7 @@ function streamRowHtml(e, dayIso, ctx){
           <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
           <div class="evt-main">
             <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+            ${e.description && !(typeof DescriptionFormat !== 'undefined' && DescriptionFormat.isMetadataSummary(e.description, e))?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
             ${editorialLinkHtml(e)}
           </div>

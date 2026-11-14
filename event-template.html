@@ -912,7 +912,7 @@ function renderEvent(e){
   }
 
   // ---- description / note / source ----
-  if(e.description){
+  if(e.description && !(typeof DescriptionFormat !== 'undefined' && DescriptionFormat.isMetadataSummary(e.description, e))){
     const d = document.getElementById('evtDesc');
     // Readable blocks from the stored text (description-format.js): source breaks, lists and lineups kept, links checked, never innerHTML.
     const body = document.createElement('div');
