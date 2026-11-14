@@ -200,10 +200,63 @@ async function run() {
     assert.strictEqual(res._status, 200);
     assert.ok(Array.isArray(upsertedRows) && upsertedRows.length === 1);
     const row = upsertedRows[0];
-    assert.strictEqual(row.ticket_url, null);
-    assert.strictEqual(row.event_url, null);
+    assert.ok(!Object.hasOwn(row, "ticket_url"), "absent ticket link omitted so stored link survives");
+    assert.ok(!Object.hasOwn(row, "event_url"), "absent event link omitted so stored link survives");
     assert.strictEqual(row.ticket_status, "door", "no action link at all must default to ticket_status='door', not null");
   }
+
+  // --- 2026-10-19 (owner): a door event with no link is filled with HALO's own website, but ONLY into an empty event_url (R&Q #235).
+  // The fill is a PATCH filtered by event_url=is.null, so a stored event-specific link is never replaced; a failed fill is non-fatal. ---
+  {
+    const SOURCE_URL = "https://www.thehalodetroit.com/currentevents";
+    process.env.SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+    delete process.env.CRON_SECRET;
+    const html = [
+      "<div>Sun, Aug 23</div>", "<div>Curtain Call Cabaret /</div>", "<div>HALO DETROIT - Bar and Lounge</div>", "<div>[Buy Tickets]</div>", "<div>Aug 23, 2026, 7:00 PM – 11:00 PM</div>",
+      "<div>Sat, Oct 10</div>", "<div>Hot Ash Cigar Social /</div>", "<div>HALO DETROIT - Bar and Lounge</div>", '<a href="/events/hot-ash-cigar-pipe-social-7">RSVP</a>', "<div>Oct 10, 2026, 6:00 PM – 9:00 PM</div>",
+    ].join("");
+    const run1 = async (patchOk, storedLinks) => {
+      const calls = { post: null, patches: [], stored: [] };
+      global.fetch = async (url, opts = {}) => {
+        if (url === SOURCE_URL) return { ok: true, status: 200, text: async () => html };
+        if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
+        if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
+        if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return { ok: true, status: 204, json: async () => ({}) };
+        if (url.includes("/rest/v1/events") && opts.method === "PATCH") { calls.patches.push({ url, body: JSON.parse(opts.body) }); return patchOk ? { ok: true, status: 200, json: async () => [{ id: "x" }], text: async () => "" } : { ok: false, status: 500, text: async () => "boom" }; }
+        // The guarded fill reads the door rows it may fill (id, links, note, version) before it writes: answer that read from what was upserted.
+        if (url.includes("/rest/v1/events") && url.includes("select=id,external_id,status,source,event_url")) return { ok: true, status: 200, json: async () => calls.stored.map((r) => ({ ...r })) };
+        if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
+        if (url.includes("/rest/v1/events") && opts.method === "POST") { const incoming = JSON.parse(opts.body); calls.post = [...(calls.post || []), ...incoming]; calls.stored = calls.post.map((r) => ({ id: "id-" + r.external_id, event_url: null, ticket_url: null, internal_note: null, updated_at: "2026-11-01T00:00:00+00:00", ...(r.ticket_status === "door" ? storedLinks || {} : {}), ...r, status: "approved" })); return strictWriteResponse(url, opts); }
+        throw new Error("unmocked URL in test: " + url);
+      };
+      const res = { _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } };
+      await freshHalo()({ headers: {} }, res);
+      return { calls, res };
+    };
+    const ok = await run1(true);
+    assert.strictEqual(ok.res._status, 200);
+    const byTitle = Object.fromEntries(ok.calls.post.map((r) => [r.title, r]));
+    assert.strictEqual(byTitle["Hot Ash Cigar Social"].event_url, "https://www.thehalodetroit.com/events/hot-ash-cigar-pipe-social-7", "the event-specific link is kept");
+    assert.strictEqual(ok.calls.patches.length, 1, "exactly one fill PATCH");
+    const p = ok.calls.patches[0];
+    assert.ok(p.url.includes("event_url=is.null"), "the fill only touches rows whose event_url is empty");
+    assert.ok(p.url.includes("id=eq.id-" + byTitle["Curtain Call Cabaret"].external_id), "the door event with no link is in the fill");
+    assert.deepStrictEqual(p.body, { event_url: "https://www.thehalodetroit.com/currentevents" }, "body is only the venue website, nothing else");
+    assert.ok(!p.url.includes(byTitle["Hot Ash Cigar Social"].external_id), "events that carry a link are not in the fill");
+    assert.ok(p.url.includes("status=eq.approved") && p.url.includes("updated_at=eq."), "the fill is conditional on the row just read");
+    for (const storedLinks of [{ event_url: "https://www.thehalodetroit.com/events/existing-specific" }, { ticket_url: "https://tickets.example/existing" }]) {
+      const kept = await run1(true, storedLinks);
+      const door = kept.calls.stored.find((r) => r.ticket_status === "door");
+      for (const [field, value] of Object.entries(storedLinks)) assert.strictEqual(door[field], value, "full handler preserves stored " + field + " before fallback read");
+      assert.strictEqual(kept.calls.patches.length, 0, "existing link never replaced by generic venue link");
+    }
+    const bad = await run1(false);
+    assert.strictEqual(bad.res._status, 200, "a failed fill does not fail the run");
+    assert.strictEqual(bad.res._body.venueWebsiteFill.ok, false);
+  }
+  console.log("PASS: venue website is filled only into an empty event_url; an event-specific link is never replaced; a failed fill is non-fatal");
+
   console.log("PASS: a listing with no action link at all defaults to ticket_status='door' (confirmed HALO site-wide pay-at-the-door characteristic)");
 
   console.log("\ncron-halo-ticket-status.test.js: all assertions passed");
