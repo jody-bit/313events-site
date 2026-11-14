@@ -1,0 +1,54 @@
+name: Independent backup
+
+# Encrypted off-site backup independent of Supabase's managed backups. See ops/backup/RUNBOOK.md.
+#
+# STATE: NOT ACTIVE. There is deliberately no `schedule:` trigger. Per the owner's direction
+# (2026-10-24) scheduled production exports stay off until the security and storage
+# arrangements are reviewed and approved. To activate, an owner-approved change adds the cron
+# lines below and the repository secrets listed in the runbook.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build and encrypt only; skip upload'
+        type: boolean
+        default: true
+  # schedule:
+  #   - cron: '15 8 * * *'    # backup (daily)  -- DO NOT ENABLE without owner approval
+  #   - cron: '45 14 * * *'   # verify.sh dead-man's switch (separate job below)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: independent-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    if: github.repository == 'jody-bit/313events-site'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL 17 client, age, rclone
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsS -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17 age rclone jq
+      - name: Backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.BACKUP_DB_URL }}
+          SUPABASE_URL: ${{ secrets.BACKUP_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BACKUP_STORAGE_KEY }}
+          AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          RCLONE_CONFIG_OFFSITE_TYPE: s3
+          RCLONE_CONFIG_OFFSITE_PROVIDER: ${{ secrets.BACKUP_S3_PROVIDER }}
+          RCLONE_CONFIG_OFFSITE_ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}
+          RCLONE_CONFIG_OFFSITE_ACCESS_KEY_ID: ${{ secrets.BACKUP_S3_KEY_ID }}
+          RCLONE_CONFIG_OFFSITE_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_S3_SECRET }}
+          RCLONE_REMOTE: offsite:${{ secrets.BACKUP_S3_BUCKET }}
+          ALERT_WEBHOOK_URL: ${{ secrets.BACKUP_ALERT_WEBHOOK }}
+          BACKUP_DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: ops/backup/backup.sh
