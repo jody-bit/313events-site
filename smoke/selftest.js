@@ -12,22 +12,22 @@ const mock = require("./mock-site");
 // Async spawn on purpose: the mock site runs in this process, so a blocking spawnSync would starve its event loop.
 function run(scenario, project) {
   return mock.create({ scenario }).then((site) => new Promise((resolve) => {
-    const env = { ...process.env, SMOKE_BASE_URL: site.url, SMOKE_MODE: "mock", SMOKE_REPORT: path.join(__dirname, "smoke-report-" + scenario + "-" + project + ".json") };
-    const child = spawn(path.join(__dirname, "node_modules/.bin/playwright"), ["test", "--project=" + project, "--reporter=line", "--timeout=25000"], { cwd: __dirname, env });
+    const env = { ...process.env, SMOKE_BASE_URL: site.url, SMOKE_MODE: scenario === "production-target" ? "deployed" : "mock", SMOKE_REPORT: path.join(__dirname, "smoke-report-" + scenario + "-" + project + ".json") };
+    const child = spawn(path.join(__dirname, "node_modules/.bin/playwright"), ["test", "--project=" + project, "--reporter=line", "--timeout=25000", ...(scenario === "empty" || scenario === "broken-api" ? ["--max-failures=1"] : [])], { cwd: __dirname, env });
     let out = "";
     child.stdout.on("data", (d) => { out += d; });
     child.stderr.on("data", (d) => { out += d; });
-    child.on("close", (status) => site.close().then(() => resolve({ scenario, project, status, out })));
+    child.on("close", (status) => site.close().then(() => resolve({ scenario, project, status, out, requests: site.requests })));
   }));
 }
 
 (async () => {
-  const expect = { good: 0, empty: 1, "broken-api": 1 };
+  const expect = { good: 0, empty: 1, "broken-api": 1, "production-target": 1 };
   let bad = 0;
   // Both viewports: the phone-width project has its own layout path, so it needs its own proof that it can fail.
   for (const project of ["desktop", "mobile-375"]) for (const sc of Object.keys(expect)) {
     const r = await run(sc, project);
-    const ok = expect[sc] === 0 ? r.status === 0 : r.status !== 0;
+    const ok = (expect[sc] === 0 ? r.status === 0 : r.status !== 0) && (sc !== "production-target" || (r.out.includes("PRODUCTION database") && r.requests.every((p) => p === "/config.js")));
     console.log((ok ? "ok   " : "FAIL ") + "scenario " + sc + " @" + project + " (exit " + r.status + ", expected " + (expect[sc] === 0 ? "pass" : "fail") + ")");
     if (!ok) { bad++; console.log(r.out.split("\n").slice(-25).join("\n")); }
   }

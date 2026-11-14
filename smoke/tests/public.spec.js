@@ -54,7 +54,7 @@ test("calendar shows the API's upcoming events in their own month", async ({ pag
   const [y, m] = first.split("-").map(Number);
   const steps = (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth());
   expect(Math.abs(steps), "first upcoming event is outside the calendar's navigable range").toBeLessThanOrEqual(12);
-  await page.goto("/calendar");
+  await page.goto("/calendar.html");
   await expect(page.locator("#calGrid")).toBeAttached();
   for (let i = 0; i < Math.abs(steps); i++) await page.locator(steps > 0 ? "#nextBtn" : "#prevBtn").click();
   const pills = page.locator("#calGrid .pill .t");
@@ -67,7 +67,7 @@ test("calendar shows the API's upcoming events in their own month", async ({ pag
 });
 
 test("map loads, reports complete, and plots markers", async ({ page }) => {
-  await page.goto("/map");
+  await page.goto("/map.html");
   await expect.poll(() => page.evaluate(() => (window.__313MapLoad || {}).state), { timeout: 30000 }).toBe("ready");
   const st = await page.evaluate(() => window.__313MapLoad);
   expect(st.complete).toBe(true);
@@ -89,7 +89,7 @@ test("event detail page renders the event's title, date and venue", async ({ pag
 test("submit form blocks an empty submission without sending anything", async ({ page }) => {
   const posts = [];
   page.on("request", (r) => { if (r.method() === "POST" && /\/api\/submit/.test(r.url())) posts.push(r.url()); });
-  await page.goto("/submit");
+  await page.goto("/submit.html");
   await page.locator("#eventForm button[type=submit]").click();
   await expect(page.locator("#formError")).toBeVisible();
   expect(posts).toEqual([]);

@@ -9,3 +9,6 @@
 /ra-sync/
 /supabase/
 /_to_delete/
+
+# Browser smoke tooling and session helpers are test-only, never part of the site.
+/smoke/

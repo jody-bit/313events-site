@@ -40,12 +40,14 @@ function create(opts) {
   const scenario = opts.scenario || "good";
   const data = fixtures();
   let port = 0;
+  const requests = [];
   const server = http.createServer((req, res) => {
     const u = new URL(req.url, "http://x");
     const p = u.pathname;
+    requests.push(p);
     if (p === "/config.js") {
       res.writeHead(200, { "Content-Type": MIME[".js"] });
-      return res.end("window.__313_CONFIG = " + JSON.stringify({ environment: "preview", supabaseUrl: "http://127.0.0.1:" + port + "/mock-supabase", supabaseAnonKey: "mock-anon" }) + ";");
+      return res.end("window.__313_CONFIG = " + JSON.stringify({ environment: scenario === "production-target" ? "production" : "preview", supabaseUrl: scenario === "production-target" ? "https://afvyfjfqukptnfmgshzn.supabase.co" : "http://127.0.0.1:" + port + "/mock-supabase", supabaseAnonKey: "mock-anon" }) + ";");
     }
     if (p.startsWith("/mock-supabase/rest/v1/")) {
       res.setHeader("Access-Control-Allow-Origin", "*");
@@ -84,7 +86,7 @@ function create(opts) {
   return new Promise((resolve) => {
     server.listen(opts.port || 0, "127.0.0.1", () => {
       port = server.address().port;
-      resolve({ url: "http://127.0.0.1:" + port, close: () => new Promise((r) => server.close(r)), data });
+      resolve({ url: "http://127.0.0.1:" + port, close: () => new Promise((r) => server.close(r)), data, requests });
     });
   });
 }

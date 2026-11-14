@@ -73,7 +73,7 @@ async function upcomingFromApi(cfg, limit) {
 }
 
 const test = base.extend({
-  cfg: [async ({ baseURL }, use) => { const cfg = await readConfig(baseURL); assertTarget(cfg, baseURL); await use(cfg); }, { scope: "test" }],
+  cfg: [async ({ baseURL }, use) => { const cfg = await readConfig(baseURL); assertTarget(cfg, baseURL); await use(cfg); }, { scope: "test", auto: true }],
   errors: async ({ page }, use) => {
     const errs = [];
     page.on("pageerror", (e) => errs.push("pageerror: " + e.message));
