@@ -310,7 +310,7 @@ async function rejects(promise, code) {
   assert.ok(/credit: Photo: Jane Doe/.test(lockNote), "credit is kept in the internal note");
   const prot = contractMod.protectOwnerCorrections([{ external_id: "x1", image_url: "https://feed.example/new.jpg", title: "T" }], new Map([["x1", { internal_note: lockNote, image_url: w.events.get(EVENT).image_url }]]));
   assert.strictEqual(prot.rows[0].image_url, w.events.get(EVENT).image_url, "a feed refresh cannot replace the approved image");
-  assert.deepStrictEqual(contractMod.ownerCorrectionView({ internal_note: lockNote }).owner_corrected, [], "the admin correction view is unchanged by the image lock");
+  assert.deepStrictEqual(contractMod.ownerCorrectionView({ internal_note: lockNote }).owner_corrected, ["image_url"], "the admin correction view reports the image lock (main lists lock-only fields)");
   console.log("PASS: applied images are locked against feed refreshes, credit recorded internally, no orphan objects after failures");
 
   // --- verify_event
