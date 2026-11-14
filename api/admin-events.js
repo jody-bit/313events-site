@@ -603,7 +603,8 @@ module.exports = async (req, res) => {
           }
         }
         if (!Object.keys(patch).length) {
-          res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
+          const { internal_note: _hiddenNote, ...publicCurrent } = current;
+          res.status(200).json({ ok: true, event: publicCurrent, note: "Nothing to fill in — every requested field already had a value." });
           return;
         }
         // A person's fill is a correction like any other: it is recorded as an OWNER-CORRECTION line, which is also the
@@ -614,7 +615,8 @@ module.exports = async (req, res) => {
         const changes = Object.keys(patch).map((field) => ({ field, before: current[field] == null ? null : current[field], after: patch[field] }));
         const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes, note: "follow-up fill" });
         const guarded = { ...patch, internal_note: contract.appendNoteLine(current.internal_note, line), updated_at: now };
-        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "";
+        // Always conditional on the version just read; a row with no version is guarded as "still has none" (never an unguarded write).
+        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "&updated_at=is.null";
         const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}${versionGuard}`, {
           method: "PATCH",
           headers: { ...sbHeaders, Prefer: "return=representation" },
