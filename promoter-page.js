@@ -11,7 +11,7 @@
     organizer: {
       view: "organizers_public",
       id: "id", slug: "slug", name: "name", type: "type", bio: "bio", description: "description",
-      website: "website", instagram: "instagram", heroImage: "hero_image_url", socialLinks: "social_links",
+      heroImage: "hero_image_url", socialLinks: "social_links",
       upcomingCount: "upcoming_count", nextEventDate: "next_event_date"
     },
     contact: {
@@ -52,12 +52,8 @@
       });
     }
     // The view lists ACTIVE organizers only (status is filtered inside it, not a column), so a returned row is active.
-    // Optional website and Instagram (existing organizers columns) join the labelled links; a bare handle is turned into
-    // a profile URL only when it is a plain handle, nothing else is guessed.
-    var web = safeUrl(row[c.website]);
-    if (web) links.push({ label: "Website", url: web });
-    var ig = str(row[c.instagram]), igUrl = /^https?:\/\//i.test(ig) ? safeUrl(ig) : (/^@?[A-Za-z0-9._]{1,30}$/.test(ig) ? "https://www.instagram.com/" + ig.replace(/^@/, "") + "/" : "");
-    if (igUrl) links.push({ label: "Instagram", url: igUrl });
+    // Legacy organizers.website / organizers.instagram are NOT shown: their provenance is unverified (owner decision,
+    // 2026-11-14). Only the labelled social_links list renders. Re-enable the mapping once provenance is verified.
     return {
       id: row[c.id], slug: str(row[c.slug]), name: str(row[c.name]), type: str(row[c.type]), bio: str(row[c.bio]) || str(row[c.description]),
       status: "active", heroImage: safeUrl(row[c.heroImage]), socialLinks: links,

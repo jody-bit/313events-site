@@ -18,9 +18,9 @@ assert.ok(!/(upcoming_count|hero_image_url|social_links|organizer_id|verified_at
 // Organizer mapping: unknown fields stay empty; unsafe or unlabeled social links are dropped.
 const p = PP.mapOrganizer({ id: "o1", slug: "fleatroit", name: " Fleatroit ", type: "collective", bio: "", description: "Short bio.", website: "https://fleatroit.example", instagram: "@fleatroit", hero_image_url: "javascript:alert(1)", social_links: [{ label: "Instagram", url: "https://instagram.com/x" }, { label: "Bad", url: "javascript:alert(1)" }, { url: "https://nolabel.example" }], upcoming_count: 2, next_event_date: "2026-12-05" });
 assert.strictEqual(p.name, "Fleatroit"); assert.strictEqual(p.heroImage, ""); assert.strictEqual(p.bio, "Short bio.", "description is the fallback when there is no long bio");
-assert.deepStrictEqual(p.socialLinks, [{ label: "Instagram", url: "https://instagram.com/x" }, { label: "Website", url: "https://fleatroit.example/" }, { label: "Instagram", url: "https://www.instagram.com/fleatroit/" }]);
+assert.deepStrictEqual(p.socialLinks, [{ label: "Instagram", url: "https://instagram.com/x" }], "legacy organizers.website and organizers.instagram are not shown until provenance is verified");
 assert.strictEqual(p.status, "active", "the view lists active organizers only");
-assert.deepStrictEqual(PP.mapOrganizer({ name: "X", instagram: "not a handle!" }).socialLinks, []);
+assert.deepStrictEqual(PP.mapOrganizer({ name: "X", instagram: "@x", website: "https://x.example" }).socialLinks, []);
 
 // Contacts: public AND verified only; private, unverified and malformed never render.
 const contacts = PP.publicContacts([
