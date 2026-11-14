@@ -127,7 +127,30 @@
     return blocks.length;
   }
 
-  var api = { parse: parse, render: render, toText: toText };
+  // Nov 13 quality correction: the deterministic enrichment sentence repeats the visible event facts.
+  // Suppress only a whole metadata-only description; any additional source sentence is retained.
+  function isMetadataSummary(input, event) {
+    if (!event || typeof event !== "object") return false;
+    var text = toText(input).replace(/\s+/g, " "), name = toText(event.title);
+    var venue = toText(event.venue || event.venue_name_raw || "");
+    var date = /^(\d{4})-(\d{2})-(\d{2})$/.exec(event.date || event.start_date || "");
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var time = toText(event.time || event.time_display || "");
+    if (!name) return false;
+    var sentence = name + " takes place", hasFacts = false;
+    if (venue && venue.toLowerCase() !== "venue tba") { sentence += " at " + venue; hasFacts = true; }
+    if (date && months[+date[2] - 1]) { sentence += " on " + months[+date[2] - 1] + " " + (+date[3]); hasFacts = true; }
+    if (time && !event.is_all_day) { sentence += " at " + time; hasFacts = true; }
+    sentence = (sentence + ".").replace(/\s+/g, " ");
+    if (!hasFacts || !text.startsWith(sentence)) return false;
+    var suffix = text.slice(sentence.length);
+    if (!suffix) return true;
+    if (suffix === " Free admission.") return event.free === true || event.is_free === true;
+    var price = event.priceFrom != null ? event.priceFrom : event.price_from;
+    return typeof price === "number" && Number.isFinite(price) && price > 0 && suffix === " Tickets from $" + price + ".";
+  }
+
+  var api = { parse: parse, render: render, toText: toText, isMetadataSummary: isMetadataSummary };
   if (typeof module !== "undefined" && module.exports) module.exports = { DescriptionFormat: api };
   else (typeof window !== "undefined" ? window : globalThis).DescriptionFormat = api;
 })(this);

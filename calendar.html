@@ -673,6 +673,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
+<script src="/description-format.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
@@ -1899,7 +1900,7 @@ function showDayPanel(iso){
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.description && !(typeof DescriptionFormat !== 'undefined' && DescriptionFormat.isMetadataSummary(e.description, e))?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
           ${eventLinksHtml(e)}
                 ${affiliateDisclosureHtml(e)}
@@ -1953,7 +1954,7 @@ function renderList(dateList){
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.description && !(typeof DescriptionFormat !== 'undefined' && DescriptionFormat.isMetadataSummary(e.description, e))?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
           ${eventLinksHtml(e)}
                 ${affiliateDisclosureHtml(e)}
