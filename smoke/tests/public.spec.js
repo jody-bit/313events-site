@@ -1,7 +1,7 @@
 // Public-site browser smoke (REL-1 W1). Every test asserts RENDERED DATA that is cross-checked against the same
 // public API the pages read, not just a 200. Read-only: GETs and typing into search boxes. No form is submitted.
 "use strict";
-const { test, expect, stubExternals, applyBypass, upcomingFromApi } = require("./helpers");
+const { test, expect, stubExternals, applyBypass, upcomingFromApi, eventFromApi } = require("./helpers");
 
 test.beforeEach(async ({ page, baseURL }) => { await applyBypass(page, baseURL); await stubExternals(page); });
 
@@ -18,16 +18,16 @@ test("API oracle: the staging database has upcoming events to render", async ({ 
 });
 
 test("homepage renders event inventory from the database", async ({ page, cfg, errors }) => {
-  const api = await upcomingFromApi(cfg, 5);
   await page.goto("/");
-  const links = page.locator("a.evt-title-link");
-  await expect(links.first()).toBeVisible();
-  expect(await links.count()).toBeGreaterThan(0);
-  const shown = (await links.allInnerTexts()).map((t) => t.trim().toLowerCase());
-  // The page's own list must overlap what the API says is upcoming (the page may show a different subset/order).
-  const apiTitles = api.rows.map((r) => String(r.title).trim().toLowerCase());
-  const overlap = apiTitles.filter((t) => shown.includes(t));
-  expect(overlap.length, "none of the API's first upcoming events appear on the homepage list").toBeGreaterThan(0);
+  const link = page.locator("a.evt-title-link").first();
+  await expect(link).toBeVisible();
+  const href = await link.getAttribute("href");
+  const id = new URL(href, page.url()).searchParams.get("id");
+  expect(id, "displayed event has a canonical ID").toBeTruthy();
+  const api = await eventFromApi(cfg, id);
+  expect(api.ok, "displayed event lookup failed").toBeTruthy();
+  expect(api.rows.length, "displayed event is absent from the public API").toBe(1);
+  expect((await link.innerText()).trim()).toBe(String(api.rows[0].title).trim());
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
@@ -46,7 +46,7 @@ test("homepage search returns the matching event and a nonsense query returns no
 test("calendar shows the API's upcoming events in their own month", async ({ page, cfg, errors }) => {
   // Cross-check against the API: page to the month of the first upcoming event (which may not be the current month)
   // and require that month's grid to contain at least one of that month's API events by title.
-  const api = await upcomingFromApi(cfg, 40);
+  const api = await upcomingFromApi(cfg, 40, true);
   expect(api.rows.length).toBeGreaterThan(0);
   const first = api.rows[0].start_date.slice(0, 7);
   const sameMonth = api.rows.filter((r) => r.start_date.slice(0, 7) === first).map((r) => String(r.title).trim());

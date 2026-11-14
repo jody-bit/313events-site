@@ -62,14 +62,23 @@ function assertTarget(cfg, baseURL) {
 }
 
 // Independent oracle: ask the same public REST endpoint the pages use (anon key, read-only GET) for upcoming events.
-async function upcomingFromApi(cfg, limit) {
+async function upcomingFromApi(cfg, limit, futureStartsOnly) {
   const ctx = await request.newContext();
   const today = new Date().toISOString().slice(0, 10);
-  const url = cfg.supabaseUrl + "/rest/v1/events_public?or=(start_date.gte." + today + ",end_date.gte." + today + ")&select=id,title,start_date&order=start_date.asc,id.asc&limit=" + (limit || 10);
+  const dateFilter = futureStartsOnly ? "start_date=gte." + today : "or=(start_date.gte." + today + ",end_date.gte." + today + ")";
+  const url = cfg.supabaseUrl + "/rest/v1/events_public?" + dateFilter + "&select=id,title,start_date&order=start_date.asc,id.asc&limit=" + (limit || 10);
   const resp = await ctx.get(url, { headers: { apikey: cfg.supabaseAnonKey, Authorization: "Bearer " + cfg.supabaseAnonKey } });
   const rows = resp.ok() ? await resp.json() : [];
   await ctx.dispose();
   return { ok: resp.ok(), status: resp.status(), rows };
+}
+
+async function eventFromApi(cfg, id) {
+  const ctx = await request.newContext();
+  try {
+    const resp = await ctx.get(cfg.supabaseUrl + "/rest/v1/events_public?id=eq." + encodeURIComponent(id) + "&select=id,title&limit=1", { headers: { apikey: cfg.supabaseAnonKey, Authorization: "Bearer " + cfg.supabaseAnonKey } });
+    return { ok: resp.ok(), rows: resp.ok() ? await resp.json() : [] };
+  } finally { await ctx.dispose(); }
 }
 
 const test = base.extend({
@@ -81,4 +90,4 @@ const test = base.extend({
   },
 });
 
-module.exports = { test, expect, stubExternals, applyBypass, assertTarget, upcomingFromApi, MODE };
+module.exports = { test, expect, stubExternals, applyBypass, assertTarget, upcomingFromApi, eventFromApi, MODE };
