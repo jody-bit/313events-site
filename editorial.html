@@ -96,8 +96,6 @@
       <button id="nCheck" class="secondary">Check it</button>
       <div id="nOut" role="status" aria-live="polite"></div>
       <button id="nCreate" hidden>Add event (held for review)</button>
-      <button id="nPublish" class="secondary" hidden>Add and publish now</button>
-      <p id="nPublishHint" class="mut" hidden>Publishes only if every check passes. Otherwise it is held for review and you are told why.</p>
     </section>
 
     <section id="pickSec" hidden aria-labelledby="s2">
@@ -240,16 +238,15 @@
       + '<dl class="plan">' + rows.map(function (x) { return "<dt>" + esc(x[0]) + "</dt><dd>" + esc(x[1]) + "</dd>"; }).join("") + "</dl>"
       + (issues.length
         ? '<p class="note warn"><b>It will be held for review.</b> An editor must look at: ' + esc(issues.join(", ").replace(/_/g, " ")) + ".</p>"
-        : '<p class="note"><b>Every check passed.</b> Add it held for review, or publish it now.</p>');
+        : '<p class="note"><b>Every check passed.</b> Add it held for review; an editor approves it before it goes live.</p>');
   }
-  function newArgs(dry, publish) {
+  function newArgs(dry) {
     var a = { title: $("nTitle").value, start_date: $("nDate").value, category: $("nCat").value, venue_name: $("nVenue").value, venue_city: $("nCity").value,
       time_display: $("nTime").value, source_note: $("nSrc").value, client: "phone-editor", dry_run: dry };
     if ($("nLink").value.trim()) a.ticket_url = $("nLink").value.trim();
-    if (publish) a.publish = true;
     return a;
   }
-  function resetCreateButtons() { $("nCreate").hidden = true; $("nPublish").hidden = true; $("nPublishHint").hidden = true; }
+  function resetCreateButtons() { $("nCreate").hidden = true; }
   // Any edit after a check invalidates it: the buttons only ever apply what was just checked.
   ["nTitle", "nDate", "nTime", "nVenue", "nCity", "nCat", "nLink", "nSrc"].forEach(function (id) { $(id).addEventListener("input", resetCreateButtons); });
 
@@ -266,26 +263,23 @@
       var issues = r.review_issues || [];
       $("nOut").innerHTML = planHtml(r);
       $("nCreate").hidden = false;
-      $("nPublish").hidden = issues.length > 0; $("nPublishHint").hidden = issues.length > 0;
     }).catch(function (e) { if (e.body && e.body.code === "possible_duplicate") showDuplicates(e); else $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
   };
 
-  function create(publish) {
-    $("nCreate").disabled = true; $("nPublish").disabled = true;
-    rest("create_event", newArgs(false, publish)).then(function (r) {
+  function create() {
+    $("nCreate").disabled = true;
+    rest("create_event", newArgs(false)).then(function (r) {
       selected = r.event; madeStatus = r.status || (r.event && r.event.status);
-      var live = madeStatus === "approved";
-      $("nOut").innerHTML = '<p class="ok">' + (live ? "Added and published." : "Added and held for review.") + "</p>"
-        + (publish && !live ? '<p class="note warn">Publishing was requested but the checks held it for review.</p>' : "")
+      var live = false; // every new gateway event is held for editor review
+      $("nOut").innerHTML = '<p class="ok">' + "Added and held for review." + "</p>"
         + '<p class="mut">Now add its flyer below, or open the event page.</p>';
       resetCreateButtons();
       $("chosen").textContent = selected.title + " — " + selected.start_date; $("pickSec").hidden = false;
       linkSection(selected.id, live);
     }).catch(function (e) { if (e.body && e.body.code === "possible_duplicate") showDuplicates(e); else $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; })
-      .then(function () { $("nCreate").disabled = false; $("nPublish").disabled = false; });
+      .then(function () { $("nCreate").disabled = false; });
   }
-  $("nCreate").onclick = function () { create(false); };
-  $("nPublish").onclick = function () { create(true); };
+  $("nCreate").onclick = function () { create(); };
 
   function linkSection(id, live) {
     $("linkUrl").textContent = liveUrl(id);
