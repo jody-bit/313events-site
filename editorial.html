@@ -49,26 +49,6 @@
       <div id="results"></div>
     </section>
 
-    <section id="newSec" hidden>
-      <b>Not listed? Add a new event</b>
-      <p class="mut">Only what the flyer or ticket page says. Leave unknowns blank. It is held for review before it goes live.</p>
-      <label for="nTitle">Title</label><input id="nTitle">
-      <label for="nDate">Date</label><input id="nDate" type="date">
-      <label for="nTime">Time as printed (optional)</label><input id="nTime" placeholder="9 PM">
-      <label for="nVenue">Venue</label><input id="nVenue">
-      <label for="nCity">City</label><input id="nCity">
-      <label for="nCat">Type</label>
-      <select id="nCat" style="width:100%;padding:13px;border-radius:10px;background:#000;color:#f2f2f2;border:1px solid #333;font:inherit">
-        <option value="music">Music</option><option value="nightlife">Nightlife</option><option value="arts">Arts</option><option value="theater">Theater</option>
-        <option value="comedy">Comedy</option><option value="dance">Dance</option><option value="fest">Festival</option><option value="vendor">Market</option>
-        <option value="sports">Sports</option><option value="food-event">Food</option></select>
-      <label for="nLink">Ticket or event link (optional)</label><input id="nLink" type="url" autocapitalize="off">
-      <label for="nSrc">Where this came from</label><input id="nSrc" placeholder="e.g. flyer from the organizer">
-      <button id="nCheck" class="secondary">Check it</button>
-      <div id="nOut"></div>
-      <button id="nCreate" hidden>Add event (held for review)</button>
-    </section>
-
     <section id="pickSec" hidden>
       <b>2. Choose the flyer</b>
       <p class="mut" id="chosen"></p>
@@ -135,8 +115,7 @@
     $("results").innerHTML = '<p class="mut">Searching…</p>';
     rest("find_event", { query: q }).then(function (r) {
       var list = r.events || [];
-      if (!list.length) { $("results").innerHTML = '<p class="mut">No matching events.</p>'; $("newSec").hidden = false; return; }
-      $("newSec").hidden = false;
+      if (!list.length) { $("results").innerHTML = '<p class="mut">No matching events. Nothing is created from this page.</p>'; return; }
       $("results").innerHTML = list.map(function (e, i) {
         return '<div class="ev" data-i="' + i + '">' + esc(e.title) + '<small>' + esc(e.start_date) + ' · ' + esc(e.venue || e.venue_name_raw || "") + ' · ' + esc(e.status) + (e.has_image || e.image_url ? ' · has image' : '') + '</small></div>';
       }).join("");
@@ -150,27 +129,6 @@
         };
       });
     }).catch(function (e) { $("results").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
-  };
-
-  function newArgs(dry) {
-    var a = { title: $("nTitle").value, start_date: $("nDate").value, category: $("nCat").value, venue_name: $("nVenue").value, venue_city: $("nCity").value,
-      time_display: $("nTime").value, source_note: $("nSrc").value, client: "phone-editor", dry_run: dry };
-    if ($("nLink").value.trim()) a.ticket_url = $("nLink").value.trim();
-    return a;
-  }
-  $("nCheck").onclick = function () {
-    $("nOut").innerHTML = '<p class="mut">Checking…</p>'; $("nCreate").hidden = true;
-    rest("create_event", newArgs(true)).then(function (r) {
-      $("nOut").innerHTML = '<p class="ok">Looks good. No duplicate found. Nothing saved yet.</p>' + (r.review_issues.length ? '<p class="mut">Editor will review: ' + esc(r.review_issues.join(", ")) + "</p>" : "");
-      $("nCreate").hidden = false;
-    }).catch(function (e) { $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
-  };
-  $("nCreate").onclick = function () {
-    $("nCreate").disabled = true;
-    rest("create_event", newArgs(false)).then(function (r) {
-      selected = r.event; $("nOut").innerHTML = '<p class="ok">Added and held for review. Now add its flyer below.</p>'; $("nCreate").hidden = true;
-      $("chosen").textContent = selected.title + " — " + selected.start_date; $("pickSec").hidden = false;
-    }).catch(function (e) { $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; }).then(function () { $("nCreate").disabled = false; });
   };
 
   $("file").onchange = function () {

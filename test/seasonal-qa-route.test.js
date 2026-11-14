@@ -94,7 +94,7 @@ const PRIVATE = ["candidates.json", "candidate-images.json", "photo-library.json
 for (const f of served) assert.ok(!PRIVATE.includes(path.basename(f)), "private seasonal file is statically served: " + f);
 for (const f of PRIVATE) assert.ok(tracked.includes("api/_lib/seasonal-editorial/" + f), f + " lives in api/_lib/seasonal-editorial");
 assert.ok(!served.some((f) => /^seasonal\/.*(qa|candidate|linked|library|coverage|manifest|fixture|handoff|review)/i.test(f)), "no registry-like, manifest, fixture or review file left in seasonal/");
-assert.deepStrictEqual(served.filter((f) => /^seasonal\//.test(f)).sort(), ["seasonal/collections.js", "seasonal/image-fallback.js", "seasonal/page.js", "seasonal/published-entries.js", "seasonal/render.js", "seasonal/seasonal.css"],
+assert.deepStrictEqual(served.filter((f) => /^seasonal\//.test(f)).sort(), ["seasonal/collections.js", "seasonal/image-fallback.js", "seasonal/map-view.js", "seasonal/orbit-cities.js", "seasonal/page.js", "seasonal/published-entries.js", "seasonal/render.js", "seasonal/seasonal.css"],
   "the public seasonal folder holds only the renderer, the gate, the published projection and styles");
 // no unpublished destination name appears in any statically served seasonal file or page
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));

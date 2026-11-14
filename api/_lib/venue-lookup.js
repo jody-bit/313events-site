@@ -44,10 +44,21 @@ function normalizeAddressCity(address, city) {
   return `${a}|${c}`;
 }
 
+const { fetchAllPagedRows } = require("./paged-rows"); // read EVERY venue: Supabase caps one request at 1,000 rows with a 200
+
+// Every venue row, or null when the read did not complete: the lookups below keep their old fail-soft contract (an empty map on a
+// failed read, never a partial one). A plain read stopped at 1,000 rows; paged here with the id tiebreak.
+async function readAllVenues(SUPABASE_URL, headers, select) {
+  const r = await fetchAllPagedRows(`${SUPABASE_URL}/rest/v1/venues?select=${select}&order=id.asc`, headers, { stopWhenNoNewRows: true });
+  return r.ok ? r.rows : null;
+}
+
 // Fetches every venue once per cron run and returns a Map of normalized
 // name -> venue id. Only 83 venues today (bounded, growing slowly by
-// hand-reviewed research, not per-event) — a single unpaged fetch is fine
-// and avoids a per-row network round trip. Returns an empty Map (never
+// hand-reviewed research, not per-event), so this is a handful of requests
+// per run, not one per row. It IS paged (readAllVenues above): Supabase caps
+// a single request at 1,000 rows, so a plain read would silently stop there
+// once the table grew past that. Returns an empty Map (never
 // throws) on any fetch failure, so a lookup outage degrades to "no venue_id
 // this run" rather than failing the whole cron — same fail-soft convention
 // as the rest of this project's crons.
@@ -55,12 +66,8 @@ async function buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) {
   const map = new Map();
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return map;
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name&limit=1000`, {
-      headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
-    });
-    if (!resp.ok) return map;
-    const rows = await resp.json();
-    if (!Array.isArray(rows)) return map;
+    const rows = await readAllVenues(SUPABASE_URL, { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }, "id,name");
+    if (!rows) return map;
     for (const v of rows) {
       const key = normalizeVenueName(v.name);
       if (key) map.set(key, v.id);
@@ -141,8 +148,8 @@ function isBlank(v) {
   return v === null || v === undefined || (typeof v === "string" && v.trim() === "");
 }
 
-// Fetches every venue once per run (same bounded, unpaged-fetch reasoning
-// as buildVenueNameToIdMap above) and returns both:
+// Fetches every venue once per run (paged, same as buildVenueNameToIdMap
+// above) and returns both:
 //   byName: Map<normalized venue name, { id, address, city } | AMBIGUOUS_VENUE_NAME>
 //   byId:   Map<venue id, { id, address, city }>
 // Fails soft to two empty Maps on any problem, same convention as every
@@ -153,12 +160,8 @@ async function buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) {
   const byAddress = new Map(); // added 2026-09-23 for SH.1's reverse (address -> venue) tier — see resolveVenueNameFromAddressRepair below
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return { byName, byId, byAddress };
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,website,facebook_url&limit=1000`, {
-      headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
-    });
-    if (!resp.ok) return { byName, byId, byAddress };
-    const rows = await resp.json();
-    if (!Array.isArray(rows)) return { byName, byId, byAddress };
+    const rows = await readAllVenues(SUPABASE_URL, { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }, "id,name,address,city,website,facebook_url");
+    if (!rows) return { byName, byId, byAddress };
     for (const v of rows) {
       if (!v || !v.id) continue;
       // `name`/`website`/`facebook_url` added 2026-09-23 (generic enrichment:
@@ -235,11 +238,8 @@ async function buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_RO
   }
   let venues = [];
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city&limit=1000`, { headers });
-    if (resp.ok) {
-      const rows = await resp.json();
-      if (Array.isArray(rows)) venues = rows;
-    }
+    const rows = await readAllVenues(SUPABASE_URL, headers, "id,name,address,city");
+    if (rows) venues = rows;
   } catch {
     // Without the canonical list, knowledge is still built from the events alone.
   }

@@ -476,73 +476,6 @@ async function uploadEventImage(ctx, input) {
   return Object.assign({ outcome: "applied", changed: true, object_created: stored.created, locked_against_feed_refresh: true, event_after: summarize(updated[0]) }, plan);
 }
 
-// ----------------------------------------------------------------------------- create_event
-// The smallest event-creation path: it reuses the shared contract (api/_lib/event-contract.js evaluateEvent) and never
-// publishes on its own judgement. Unknown facts stay empty. Possible duplicates are listed and block creation. The row is
-// created as pending_review unless the caller passes publish:true (the owner said publish) AND the contract finds no issue.
-const CREATE_CATEGORIES = new Set(["music", "fest", "dance", "nightlife", "vendor", "sports", "arts", "theater", "comedy", "food-event"]);
-const normTitle = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-const txt = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, max) : "");
-const httpUrl = (v) => { try { const u = new URL(v); return (u.protocol === "https:" || u.protocol === "http:") ? u.toString() : ""; } catch (_) { return ""; } };
-
-async function createEvent(ctx, input) {
-  const a = input || {};
-  const title = txt(a.title, 200);
-  const start = typeof a.start_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.start_date) ? a.start_date : "";
-  if (title.length < 3) throw new GatewayError("bad_request", "title is required (3 to 200 characters).");
-  if (!start) throw new GatewayError("bad_request", "start_date is required (YYYY-MM-DD). Do not guess a date.");
-  if (!CREATE_CATEGORIES.has(a.category)) throw new GatewayError("bad_request", `category must be one of: ${Array.from(CREATE_CATEGORIES).join(", ")}.`);
-  const evidence = txt(a.source_note, 400);
-  if (!evidence) throw new GatewayError("bad_request", "source_note is required: say where the facts came from (flyer, organizer link, ticket page).");
-  const ticket = a.ticket_url ? httpUrl(a.ticket_url) : null;
-  const eventUrl = a.event_url ? httpUrl(a.event_url) : null;
-  if ((a.ticket_url && !ticket) || (a.event_url && !eventUrl)) throw new GatewayError("bad_request", "ticket_url and event_url must be http(s) links.");
-
-  const row = {
-    title, start_date: start, end_date: a.end_date && /^\d{4}-\d{2}-\d{2}$/.test(a.end_date) ? a.end_date : null,
-    time_display: txt(a.time_display, 100) || null, category: a.category,
-    venue_name_raw: txt(a.venue_name, 200) || null, venue_address_raw: txt(a.venue_address, 300) || null, venue_city_raw: txt(a.venue_city, 120) || null,
-    ticket_url: ticket, event_url: eventUrl, description: txt(a.description, 5000) || null, source: "Manual", price_from: null,
-  };
-  const key = crypto.createHash("sha256").update([normTitle(title), start, normTitle(row.venue_name_raw || "")].join("|")).digest("hex").slice(0, 12);
-  row.external_id = `editorial-gateway-${start}-${key}`;
-  const verdict = contract.evaluateEvent(row, { now: ctx.now ? ctx.now() : new Date() });
-  if (verdict.decision === "skip" || verdict.decision === "reject") {
-    throw new GatewayError("not_eligible", "The shared event rules refuse this event.", 422, { issues: verdict.issues });
-  }
-
-  // Duplicates: same day (and the day after, for overnight events), any status, similar title or same venue.
-  const nextDay = new Date(Date.parse(start + "T00:00:00Z") + 86400000).toISOString().slice(0, 10);
-  const same = await sbGet(ctx, `events?start_date=gte.${start}&start_date=lte.${nextDay}&select=${EVENT_COLUMNS}&limit=200`);
-  const me = normTitle(title), venue = normTitle(row.venue_name_raw || "");
-  const matches = (Array.isArray(same) ? same : []).filter((e) => {
-    if (e.external_id === row.external_id) return true;
-    const t = normTitle(e.title);
-    return (t && me && (t.includes(me) || me.includes(t))) || (venue && normTitle(e.venue_name_raw || "") === venue && e.start_date === start);
-  }).map(summarize);
-  const exact = matches.find((m) => m.external_id === row.external_id);
-  if (exact) return { outcome: "already_exists", changed: false, event: exact };
-  if (matches.length) throw new GatewayError("possible_duplicate", "Events that may be the same already exist. Use one of them (upload_event_image / ask the owner) instead of creating another.", 409, { matches });
-
-  const wantsPublish = a.publish === true;
-  const status = wantsPublish && verdict.decision === "publish" ? "approved" : "pending_review";
-  const stamp = (ctx.now ? ctx.now() : new Date()).toISOString();
-  row.status = status;
-  row.internal_note = `[editorial-gateway ${stamp}] created by ${safeLabel(a.client || "ai-client", 40)}; source: ${evidence}${wantsPublish && status !== "approved" ? "; publish requested but held for review: " + verdict.issues.map((i) => i.code).join(",") : ""}`;
-  const plan = { event_preview: Object.assign({}, row, { internal_note: undefined }), status, review_issues: verdict.issues.map((i) => i.code), publish_requested: wantsPublish };
-  if (a.dry_run !== false) return Object.assign({ outcome: "dry_run", changed: false, note: "Nothing was written. Call again with dry_run:false to create." }, plan);
-
-  const fetchFn = ctx.fetchFn || fetch;
-  const resp = await fetchFn(`${ctx.supabaseUrl}/rest/v1/events?select=${EVENT_COLUMNS}`, {
-    method: "POST", headers: sbHeaders(ctx, { "Content-Type": "application/json", Prefer: "return=representation" }), body: JSON.stringify(row),
-  });
-  if (!resp.ok) throw new GatewayError("database_error", `Database insert failed (HTTP ${resp.status}).`, resp.status === 409 ? 409 : 502);
-  const made = await resp.json();
-  if (!Array.isArray(made) || made.length !== 1) throw new GatewayError("database_error", "Database insert returned no row.", 502);
-  return Object.assign({ outcome: "created", changed: true, event: summarize(made[0]), live_url: status === "approved" && ctx.siteUrl ? `${ctx.siteUrl}/event.html?id=${made[0].id}` : null,
-    next: status === "approved" ? "Upload the flyer, then run verify_event." : "Held as pending_review: an editor approves it in the admin queue; then upload the flyer and verify." }, { status });
-}
-
 // ----------------------------------------------------------------------------- verify_event
 
 async function verifyEvent(ctx, input) {
@@ -584,7 +517,7 @@ async function verifyEvent(ctx, input) {
 
 // ----------------------------------------------------------------------------- dispatch
 
-const OPERATIONS = { find_event: findEvent, create_event: createEvent, upload_event_image: uploadEventImage, verify_event: verifyEvent };
+const OPERATIONS = { find_event: findEvent, upload_event_image: uploadEventImage, verify_event: verifyEvent };
 
 async function run(ctx, op, input) {
   const fn = Object.prototype.hasOwnProperty.call(OPERATIONS, op) ? OPERATIONS[op] : null;
@@ -592,4 +525,4 @@ async function run(ctx, op, input) {
   return fn(ctx, input);
 }
 
-module.exports = { GatewayError, OPERATIONS, run, createSession, checkSession, callerKind, SESSION_MAX_SECONDS, authorized, authFailureReason, tokenStatus, normalizeToken, findEvent, createEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };
+module.exports = { GatewayError, OPERATIONS, run, createSession, checkSession, callerKind, SESSION_MAX_SECONDS, authorized, authFailureReason, tokenStatus, normalizeToken, findEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };

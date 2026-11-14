@@ -39,6 +39,7 @@
 //   node scripts/redford-metadata-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   parseRedfordEvents,
   extractEventUrls,
@@ -82,7 +83,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&or=(description.is.null,ticket_url.is.null,event_url.is.null)` +
-    `&select=id,external_id,description,ticket_url,event_url,start_date,status` +
+    `&select=id,external_id,description,ticket_url,event_url,start_date,status,source,internal_note` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch Redford repair candidates: HTTP ${resp.status}`);
@@ -148,6 +149,8 @@ async function repairRedfordMetadata({
   counts.totalConsidered = candidates.length;
 
   for (const event of candidates) {
+    // Owner-supplied / editorial-hold rows are never changed by automation, even to fill a blank.
+    if (isOwnerSuppliedRow(event)) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
     // Defensive re-check: never touch a field that isn't ACTUALLY blank on
     // this row right now, regardless of why the candidate query returned
     // it (it only needs ONE of the three fields blank to appear at all).

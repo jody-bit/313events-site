@@ -171,6 +171,12 @@ async function cmdSubmit(
   if (action === "complete" && (typeof data.runId !== "string" || !Array.isArray(data.events))) {
     throw new Error(`submit complete: ${jsonFilePath} needs "runId" (string) and "events" (array)`);
   }
+  if (action === "complete" && data.detail !== undefined) {
+    // Optional device telemetry {attempted, blocked, blockedIds}; wrong shape is
+    // dropped (the bridge sanitises too) rather than failing the submit.
+    const d = data.detail;
+    if (!d || typeof d !== "object" || Array.isArray(d)) delete data.detail;
+  }
   // "promote" needs nothing at all -- {} is a perfectly valid payload
   // (dryRun defaults false server-side); see .github/scripts/ra-sync-
   // bridge.js's own "promote" branch for the one optional field it does

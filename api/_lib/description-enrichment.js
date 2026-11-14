@@ -36,6 +36,8 @@
 // parking, ticket availability, venue characteristics, or promotional
 // claims, matching the Product Owner's explicit "safe vs. unsafe" example.
 
+const { displayTime } = require("../../event-dates"); // shared public time rule (placeholder end times)
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -86,7 +88,7 @@ function buildFactualDescription(event) {
   const timeText =
     event.is_all_day
       ? null // an all-day/no-single-start-time listing — never print a time_display that isn't there
-      : (typeof event.time_display === "string" && event.time_display.trim() ? event.time_display.trim() : null);
+      : (typeof event.time_display === "string" && event.time_display.trim() ? displayTime(event.time_display.trim()) : null); // shared rule: a placeholder "11:59 PM" end is never baked into stored text
 
   if (!venueName && !dateText && !timeText) return null; // title alone isn't a sentence worth writing
 

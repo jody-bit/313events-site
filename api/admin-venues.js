@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { fetchAllPagedRows } = require("./_lib/paged-rows"); // read EVERY venue: Supabase caps one request at 1,000 rows with a 200
 // Vercel serverless function powering admin.html's venue autofill (2026-09-04)
 // — Jody asked for a way to speed up filling in Venue/Street address/City on
 // the "create event from article" form, since the same handful of venues
@@ -80,21 +81,16 @@ module.exports = async (req, res) => {
     const byName = new Map(); // lowercased name -> { name, address, city }
 
     // Source 1: the curated venues table — checked first so it wins ties.
-    const venuesResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/venues?select=name,address,city&limit=1000`,
-      { headers: sbHeaders }
-    );
-    if (venuesResp.ok) {
-      const rows = await venuesResp.json();
-      if (Array.isArray(rows)) {
-        rows.forEach((v) => {
-          if (!v.name) return;
-          const key = v.name.trim().toLowerCase();
-          if (!key) return;
-          byName.set(key, { name: v.name.trim(), address: v.address || null, city: v.city || null });
-        });
-      }
-    }
+    // Paged in full (a plain read stops at 1,000 rows). Fail-soft as before: a partial read still fills the list with the rows it got,
+    // and is never silent.
+    const venuesRead = await fetchAllPagedRows(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city&order=id.asc`, sbHeaders);
+    if (!venuesRead.ok) console.warn(`[admin-venues] venues read incomplete (${venuesRead.rows.length} rows): ${venuesRead.error}`);
+    venuesRead.rows.forEach((v) => {
+      if (!v.name) return;
+      const key = v.name.trim().toLowerCase();
+      if (!key) return;
+      byName.set(key, { name: v.name.trim(), address: v.address || null, city: v.city || null });
+    });
 
     // Source 2: real events that already carry a street address — most
     // recently updated first, so a later correction to an address wins over

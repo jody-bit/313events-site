@@ -227,7 +227,7 @@ module.exports = async (req, res) => {
         end_date: endDate,
         time_display: formatTime(startParts.hour, startParts.minute),
         is_all_day: false,
-        is_free: false, // no price signal in this feed — never guessed true, see header comment
+        // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
         price_from: null,
         ticket_url: item.fullUrl ? `${SITE_ORIGIN}${item.fullUrl}` : null,
         image_url: null, // no reliable per-event flyer in this feed — see header comment

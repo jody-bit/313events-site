@@ -618,7 +618,7 @@ module.exports = async (req, res) => {
       end_date: e.endDate,
       time_display: e.time,
       is_all_day: e.isAllDay,
-      is_free: false,
+      // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
       event_url: href,
       ...detailFields,
       source: SOURCE_NAME,

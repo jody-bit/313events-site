@@ -174,6 +174,7 @@ function makeDocument(seed) {
     body,
     listeners: {},
     createElement: (tag) => new FakeElement(tag, doc),
+    createTextNode: (t) => { const n = new FakeElement("#text", doc); n.textContent = t; return n; },
     getElementById(id) {
       // An element the script itself built and gave this id wins…
       const built = body._descendants([]).find((el) => el.id === id && !el._standIn);
