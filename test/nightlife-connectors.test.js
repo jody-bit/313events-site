@@ -33,6 +33,7 @@ async function gottagacha() {
   const events = [
     gg("corridor", "Corridor Cyberpunk Rave", "Corridor Cyberpunk Rave takes place at GottaGacha on December 5 at 9:00 PM – 11:00 PM.", "2026-12-05", "21:00:00", "23:00:00"),
     gg("glotaku", "Glotaku New Year Rave", "Glotaku New Year Rave takes place at GottaGacha on December 31.", "2026-12-31", "22:00:00", "02:00:00"),
+    gg("rejectedrave", "Rejected Warehouse Rave", "", "2026-11-15", "22:00:00", "02:00:00"),
     gg("newrave", "Neon Warehouse Rave", "", "2026-11-14", "22:00:00", "02:00:00"),
     gg("youmacon", "Youmacon After Party", "Youmacon After Party takes place at GottaGacha on October 29 at 7:00 PM – 2:00 AM.", "2026-10-29", "19:00:00", "02:00:00"),
     gg("karaoke", "Karaoke Night [OPEN]", "Karaoke Night [OPEN] takes place at GottaGacha.", "2026-10-21", "18:00:00", "23:59:00"),
@@ -42,8 +43,9 @@ async function gottagacha() {
   ];
   const existing = [
     { external_id: "gottagacha-corridor-2026-12-05", status: "pending_review" },
-    { external_id: "gottagacha-glotaku-2026-12-31", status: "approved" },
+    { external_id: "gottagacha-glotaku-2026-12-31", status: "approved", category: "nightlife" },
   ];
+  existing.push({ external_id: "gottagacha-rejectedrave-2026-11-15", status: "rejected", category: "music" });
   const calls = [];
   global.fetch = async (url, opts = {}) => {
     calls.push({ url, opts, body: opts.body ? (() => { try { return JSON.parse(opts.body); } catch { return null; } })() : null });
@@ -66,8 +68,14 @@ async function gottagacha() {
   assert.strictEqual(corridor.status, "pending_review", "Corridor keeps its pending_review status (owner hold preserved, never approved)");
 
   const glotaku = by("glotaku");
-  assert.strictEqual(glotaku.category, "community", "an APPROVED row keeps the catch-all category: no silent reclassification");
+  assert.ok(!Object.hasOwn(glotaku, "category"), "approved row omits category rather than overwriting stored nightlife");
+  assert.strictEqual({ ...existing[1], ...glotaku }.category, "nightlife", "stored approved nightlife survives the refresh");
   assert.strictEqual(glotaku.status, "approved", "its status is untouched");
+
+  const rejected = by("rejectedrave");
+  assert.ok(!Object.hasOwn(rejected, "category"), "rejected row omits category");
+  assert.strictEqual({ ...existing[2], ...rejected }.category, "music", "stored rejected custom category survives");
+  assert.strictEqual(rejected.status, "rejected");
 
   const newrave = by("newrave");
   assert.strictEqual(newrave.category, "nightlife", "a NEW advertised rave is classified Nightlife");
@@ -103,6 +111,36 @@ function eventbrite() {
   console.log("PASS: Eventbrite — advertised rave classified Nightlife and pending; family context and ordinary events unchanged");
 }
 
+async function eventbritePreservesModeratedCategory() {
+  process.env.EVENTBRITE_TOKEN_FLORIANEAST = "test-organizer-token";
+  const handler = fresh("api/cron-eventbrite.js");
+  const stored = [
+    { external_id: "eventbrite-approved-rave", status: "approved", category: "nightlife" },
+    { external_id: "eventbrite-rejected-rave", status: "rejected", category: "music" },
+  ];
+  const events = stored.map((r) => ({ id: r.external_id.replace("eventbrite-", ""), name: { text: "Warehouse Techno Rave" }, description: { text: "" }, start: { local: "2026-11-14T22:00:00" }, end: { local: "2026-11-15T03:00:00" }, venue: { name: "Eastern Warehouse" }, is_free: false }));
+  const written = [];
+  global.fetch = async (url, opts = {}) => {
+    if (url.includes("eventbriteapi.com")) return { ok: true, status: 200, json: async () => ({ events, pagination: { has_more_items: false } }) };
+    if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
+    if (url.includes("/rest/v1/source_runs")) return { ok: true, status: 201, json: async () => [{ id: "run-eb" }] };
+    if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => stored };
+    if (url.includes("/rest/v1/events") && opts.method === "POST") { written.push(...JSON.parse(opts.body)); return strictWriteResponse(url, opts); }
+    throw new Error("unmocked Eventbrite URL: " + url);
+  };
+  const res = makeRes();
+  try { await handler({ headers: {} }, res); } finally { delete process.env.EVENTBRITE_TOKEN_FLORIANEAST; }
+  assert.strictEqual(res._status, 200);
+  assert.strictEqual(written.length, 2);
+  for (const before of stored) {
+    const incoming = written.find((r) => r.external_id === before.external_id);
+    assert.ok(incoming && !Object.hasOwn(incoming, "category"), "moderated Eventbrite category omitted");
+    assert.strictEqual({ ...before, ...incoming }.category, before.category);
+    assert.strictEqual(incoming.status, before.status);
+  }
+  console.log("PASS: Eventbrite approved nightlife and rejected custom category survive refresh");
+}
+
 function localist() {
   const L = fresh("api/_lib/localist-rows.js");
   const { event, instance, PLACES } = require("./fixtures/localist-api.js");
@@ -128,5 +166,6 @@ function localist() {
 (async () => {
   await gottagacha();
   eventbrite();
+  await eventbritePreservesModeratedCategory();
   localist();
 })().catch((e) => { console.error(e); process.exit(1); });

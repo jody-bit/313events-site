@@ -473,8 +473,8 @@ module.exports = async (req, res) => {
     }
     const rowsWithStatus = rows.map((row) => {
       const { _defaultStatusForRow, _nightlifeClassified, ...rest } = row;
-      // #177: Nightlife only on a row that is new or still pending_review; an approved or rejected row keeps the catch-all.
-      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) rest.category = AMBIGUOUS_CATEGORY;
+      // #177: Nightlife only on a row that is new or still pending_review; an approved or rejected row omits category so its stored value survives.
+      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) delete rest.category;
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.

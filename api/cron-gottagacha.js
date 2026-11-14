@@ -497,9 +497,9 @@ module.exports = async (req, res) => {
     const existingEventUrlByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.event_url]));
     const rowsWithStatus = rows.map((row) => {
       const { _defaultStatusForRow, _nightlifeClassified, ...rest } = row;
-      // #177: Nightlife is written only on a row that is new or still pending_review. An approved or rejected row keeps
-      // the catch-all category this connector has always sent for it (no silent reclassification).
-      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) rest.category = AMBIGUOUS_CATEGORY;
+      // #177: Nightlife is written only on a row that is new or still pending_review. An approved or rejected row omits
+      // category so PostgREST preserves its stored value (no silent reclassification).
+      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) delete rest.category;
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.
