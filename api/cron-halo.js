@@ -294,14 +294,14 @@ const haloHandler = async (req, res) => {
   // review of #235, and the #234 rule that a stored valid link is never overwritten). ticket_url stays NULL on purpose.
   function ticketFieldsFor(e) {
     const url = resolveHaloUrl(e.actionHref);
-    if (!url) return { ticket_url: null, event_url: null, ticket_status: "door" };
+    if (!url) return { ticket_status: "door" }; // Omit absent links: preserve existing links on refresh; new rows use database defaults.
     if (e.actionLabel === "buy tickets" || e.actionLabel === "get tickets") {
       return { ticket_url: url, event_url: null, ticket_status: null };
     }
     if (e.actionLabel === "rsvp" || e.actionLabel === "details") {
       return { ticket_url: null, event_url: url, ticket_status: "rsvp_no_advance_sale" };
     }
-    return { ticket_url: null, event_url: null, ticket_status: "door" };
+    return { ticket_status: "door" }; // Omit absent links: preserve existing links on refresh; new rows use database defaults.
   }
 
   // A closed rental the venue lists on its own calendar ("NACD: PRIVATE CLOSED EVENT") is not an event the public can attend
