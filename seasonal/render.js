@@ -88,6 +88,8 @@
   }
   function chainOf(img) {
     var r = linkedOf(img), list = [];
+    // The linked event's own image (events.image_url, set by seasonal/page.js from event-image.js) leads; the collection cover below is the fallback.
+    if (/^https?:\/\//.test(img.canonical || "")) list.push(img.canonical);
     if (r) list.push(r.src);
     list.push(img.src);
     (img.alternates || []).forEach(function (u) { list.push(u); });
@@ -105,9 +107,14 @@
   // or "313.events archive") shows no visible credit; it is kept in a data attribute here and in the content metadata (entries.json,
   // published-entries.js). A credit that a license or a linked image requires is a small muted line in the card's text area, with its link.
   var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
+  function coverCredit(img, fallback) {
+    if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
+    return '<p class="sc-credit' + (fallback ? ' sc-cover-credit' : '') + '">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
+  }
   function creditLine(e) {
     var img = e.image, r = linkedOf(img);
-    if (r && pickSrc(img) === r.src) return !r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
+    if (img.canonical && pickSrc(img) === img.canonical) return (r && r.credit ? '<p class="sc-credit sc-remote-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>' : "") + coverCredit(img, true);
+    if (r && pickSrc(img) === r.src) return (!r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>') + coverCredit(img, true);
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
   }
@@ -117,11 +124,15 @@
   function isGenericPlaceholder(src) { return !src || /\/assets\/placeholders\//.test(String(src)); }
   function media(e, col) {
     var chain = chainOf(e.image), r = linkedOf(e.image), first = pickSrc(e.image);
-    var viaLink = !!r && first === r.src;
+    var viaCanon = !!e.image.canonical && first === e.image.canonical;
+    var viaLink = !!r && first === r.src && !viaCanon;
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
-    var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
-    var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
-    if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
+    var owner = !viaLink && !viaCanon && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
+    var unknownCover = first !== e.image.src && !viaCanon && !viaLink;
+    var html = '<div class="sc-card-media' + (isGenericPlaceholder(first) || unknownCover ? ' sc-no-photo' : '') + '"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' data-cover-src="' + esc(e.image.src || '') + '" data-remote-src="' + esc(r ? r.src : '') + '" alt="" loading="lazy" width="640" height="427">';
+    // Canonical event image showing: no label. But if it fails and the cover is the generic placeholder, the card must say "Photo pending" (hidden until the card falls back).
+    if (viaCanon) return html + (e.image.illustrative ? '<span class="sc-illus sc-illus-fb">Illustrative image</span>' : '') + (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image.src) && !e.image.illustrative ? '<span class="sc-pending sc-pending-fb">Photo pending</span>' : "") + '</div>';
+    if (viaLink) return html + (e.image.illustrative ? '<span class="sc-illus sc-illus-fb">Illustrative image</span>' : '') + '</div>';
     if (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image && e.image.src) && !e.image.illustrative) return html + '<span class="sc-pending">Photo pending</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
@@ -149,9 +160,14 @@
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
+    // An entry with no official website of its own (owner-supplied flyer only) links to its first-party event page by eventPageId; nothing is invented.
+    // eventPageId only links: unlike eventId it does not swap the card cover for the event's image.
+    var eventPage = !e.website && typeof e.eventPageId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.eventPageId) ? "/event.html?id=" + e.eventPageId : "";
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
-      : esc(e.name);
+      : eventPage
+        ? '<a class="sc-card-link" href="' + esc(eventPage) + '">' + esc(e.name) + '<span class="sc-sr"> (313.events event page)</span></a>'
+        : esc(e.name);
     // Shared mobile word-breaking rule (every seasonal page, same code path): a card title whose longest word (split at spaces and hyphens) has 10+ letters
     // carries its length, so the 2-column mobile grid can set the title just small enough for that word to fit instead of breaking it mid-word.
     // The CSS only ever shrinks a title that would not fit; every other title keeps the approved 21px.
@@ -166,7 +182,7 @@
       lastDayLine(e) + distanceLine(e, opts.state) + ontarioLine(e) +
       checkLine(e) +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
-      (e.website ? arrow : "") + '</li>';
+      (e.website || eventPage ? arrow : "") + '</li>';
   }
 
   // Presentation only: "Categories: 1 of 7 selected \u2014 Music" (or "0 of 7 selected \u2014 showing all destinations"). Read-only text, no extra controls;
@@ -241,7 +257,7 @@
   }
   function footer() {
     return '<footer class="sc-footer"><a class="sc-brand" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="22"></a>' +
-      '<p class="sc-footer-tag">The city is on.</p><p class="sc-footer-links"><a href="/about">About</a> &middot; <a href="/accessibility">Accessibility</a> &middot; <a href="/editorial-policy">Editorial Policy</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/copyright">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>' +
+      '<p class="sc-footer-tag">The city is on.</p><p class="sc-footer-links"><a href="/about">About</a> &middot; <a href="/accessibility">Accessibility</a> &middot; <a href="/editorial-policy">Editorial Policy</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/copyright">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>' +
       '<p class="sc-footer-note">Always confirm dates, hours, and admission with the destination before making plans.</p></footer>';
   }
 

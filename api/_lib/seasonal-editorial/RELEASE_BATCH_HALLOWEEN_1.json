@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 32,
-  "eligiblePublished": 12,
+  "ownerApproved": 27,
+  "eligiblePublished": 7,
   "held": 20,
-  "excluded": 20,
+  "excluded": 25,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -63,37 +63,25 @@
    "inventoryNo": "2",
    "name": "Eloise Asylum",
    "city": "Westland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "eloise-asylum",
-    "name": "Eloise Asylum",
-    "city": "Westland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
-    "website": "https://eloiseasylum.com/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-1.webp",
-      "/assets/seasonal/halloween-card-4.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "313.events archive"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Eloise removal from The Dark Is On 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "Removed from The Dark Is On after the haunt season (the operator's page lists no closing date; a secondary article reported the haunt through Nov 1). Eloise Asylum remains a year-round destination and its destination page is unchanged. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "halloween-greenfield-village",
@@ -200,37 +188,25 @@
    "inventoryNo": "3",
    "name": "Hush Haunted Attraction",
    "city": "Westland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "hush-haunted-attraction",
-    "name": "Hush Haunted Attraction",
-    "city": "Westland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Multiple haunted houses",
-    "website": "https://hushhauntedattractions.com/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-4.webp",
-      "/assets/seasonal/halloween-card-5.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © Hush Haunted Attractions"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "azra-chamber-of-horrors",
@@ -417,108 +393,75 @@
    "inventoryNo": "11",
    "name": "Deranged Haunt",
    "city": "Romulus",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "deranged-haunt",
-    "name": "Deranged Haunt",
-    "city": "Romulus",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted woods",
-    "website": "https://derangedhauntedattraction.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-4.webp",
-      "/assets/seasonal/halloween-card-5.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The latest 2026 date on the operator's page was the 18-and-up Adults Only Night on Nov 1, 2026; every stated date has passed and no later date is listed (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "slaughterhouse-adventure",
    "inventoryNo": "12",
    "name": "Slaughterhouse Adventure",
    "city": "Fowlerville",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "slaughterhouse-adventure",
-    "name": "Slaughterhouse Adventure",
-    "city": "Fowlerville",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and corn maze",
-    "website": "https://slaughterhouseadventure.net/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"Friday 10/30: last night to experience the haunted slaughterhouse\"; the corn maze and escape rooms were open Halloween night, Oct 31 (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "full-moon-manor-at-bonadeo-farms",
    "inventoryNo": "13",
    "name": "Full Moon Haunted House at Bonadeo Farms",
    "city": "Highland",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "full-moon-manor-at-bonadeo-farms",
-    "name": "Full Moon Haunted House at Bonadeo Farms",
-    "city": "Highland",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions",
-     "serious-scares"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
-    "website": "https://fullmoonhauntedhouse.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-4.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-7.webp",
-      "/assets/seasonal/halloween-card-1.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), expiry direction for three expired haunt listings 2026-11-04 (cmsg_0139NVW4pFWSu54bJXVBHDMbE9kR3GC72jc598Sw1cyaKE); applied by editor",
+    "recordedAt": "2026-11-04",
+    "type": "ended",
+    "reason": "The operator's page stated: \"We are closed for the season\" (read 2026-11-04). Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "exit-13-haunted-house",

@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('assert');const {report,startMinute}=require('../scripts/public-content-quality');
+const base={status:'approved',title:'A concert',venue_id:'v1',venue_name_raw:'Hall',start_date:'2026-11-14',date_semantics:'single',time_display:'9:00 PM–2:00 AM',image_url:'https://example.org/photo.jpg',event_url:'https://example.org/concert',description:'A string quartet performs works by local composers.'};
+assert.equal(startMinute({...base,time_display:'9pm–2am'}),1260);
+assert.equal(startMinute({...base,time_display:'21:00–02:00'}),1260);
+assert.equal(startMinute({...base,time_display:'9–2am'}),null);
+const a={...base,id:'a'},b={...base,id:'b',title:'Completely different title',source:'Second feed'},c={...base,id:'c',time_display:'7:00 PM'},d={...base,id:'d',status:'pending_review'};
+const r=report([a,b,c,d],'2026-11-14');
+assert.equal(r.current_records,3);
+assert.equal(r.counts.same_venue_same_start_review,1,'different titles still collide; separate showtime does not');
+assert.equal(r.counts.same_event_link_collision,1);
+assert.ok(!r.findings.some(f=>f.events.some(e=>e.id==='d')),'pending stays private');
+assert.equal(report([a,{...b,venue_id:'v2'}],'2026-11-14').counts.same_venue_same_start_review,undefined);
+assert.equal(report([a,{...b,time_display:null}],'2026-11-14').counts.same_venue_time_unresolved,1);
+const original=JSON.stringify([a,b]);report([a,b],'2026-11-14');assert.equal(JSON.stringify([a,b]),original,'no data mutation');
+assert.deepEqual(report([a,b,c],'2026-11-14',r).delta.new,[],'unchanged flags do not become new alerts');
+assert.equal(report([a,b],'2026-11-15',r).delta,null,'different date scopes are not claimed fixed');
+const recurring={...base,id:'rec',date_semantics:'recurring',start_date:'2026-11-13',end_date:'2026-11-20',occurrence_dates:['2026-11-15']};
+assert.equal(report([a,recurring],'2026-11-14').counts.same_venue_same_start_review,undefined,'different explicit occurrences stay separate');
+assert.throws(()=>report([],'2026-02-31'));
+console.log('PASS: venue/time flags ignore title, preserve distinct showtimes/status/occurrences and never mutate records; deltas use matching scope.');
+
+const recNoEnd={...base,id:'no-end',start_date:'2026-11-01',end_date:null,date_semantics:'recurring',occurrence_dates:['2026-11-14']};
+assert.equal(report([a,recNoEnd],'2026-11-14').counts.same_venue_same_start_review,1,'future explicit recurrence is retained without end_date');
+const ticketOnly={...base,id:'ticket',event_url:null,ticket_url:'https://example.org/ticket',venue_id:'different'};
+assert.equal(report([{...a,event_url:'https://example.org/ticket'},ticketOnly],'2026-11-14').counts.same_event_link_collision,1,'cross-field shared event/ticket link detected');
+assert.equal(report([{...a,event_url:null,ticket_url:'https://example.org/ticket'},ticketOnly],'2026-11-14').counts.same_event_link_collision,1,'shared ticket-only link detected');

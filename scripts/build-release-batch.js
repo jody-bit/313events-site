@@ -72,11 +72,15 @@ for (const col of ["fall", "fall-color"]) {
     if (e.approval) {
       // Applied batch: the approval must be the authorized one and the record must now be public.
       if (!(e.approval.by === AUTH.by && e.approval.at === AUTH.at)) problems.push(id + ": approval is not the authorized one");
-      if (rv.state !== "PUBLISHED" || !C.isPublic(e)) problems.push(id + ": approved but not public (state " + rv.state + ")");
+      // An applied record may since have ENDED (verified season end + unpublish decision, #260): it was public when released and is now private.
+      if (rv.state === "ENDED") { /* ok: approved, then ended */ }
+      else if (rv.state !== "PUBLISHED" || !C.isPublic(e)) problems.push(id + ": approved but not public (state " + rv.state + ")");
     } else if (rv.state !== "READY_FOR_REVIEW") problems.push(id + ": state " + rv.state);
     if (!e.editorialAccepted) problems.push(id + ": no editorial acceptance");
     // approval simulated in memory only
     const sim = JSON.parse(JSON.stringify(e)); if (!e.approval) { sim.status = "PUBLISHED"; sim.approval = { by: "(approver)", at: "2026-01-01" }; }
+    // An ENDED record is checked as it stood when released: PUBLISHED, before the season fields and the unpublish decision.
+    if (e.status === "ENDED") { sim.status = "PUBLISHED"; delete sim.season; delete sim.expiryDisposition; }
     if (!C.isPublic(sim)) problems.push(id + ": would not pass the gate once approved");
     const card = ED.publicEntry(sim);
     records.push({ collection: col, id, name: e.name, original15: L1[col].includes(id), currentStatus: e.status, gate: rv.state, imageRoute: rv.imageRoute,

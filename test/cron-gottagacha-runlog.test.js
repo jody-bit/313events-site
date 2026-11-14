@@ -254,9 +254,9 @@ async function run() {
   {
     const parsed = parseEvent(apiEvent());
     assert.strictEqual(parsed.price_from, null);
-    assert.strictEqual(parsed.is_free, false, "absence of a price field is never treated as evidence of 'free'");
+    assert.ok(!("is_free" in parsed), "absence of a price field is never treated as evidence of 'free' (and is not sent as paid either)");
   }
-  console.log("PASS: missing price stays null and is_free stays false -- never inferred");
+  console.log("PASS: missing price stays null and is_free is not sent -- never inferred");
 
   // --- 15. root-site URL does not become event_url ---
   // (Admin Hardening slice 1, 2026-10-08: event_url is now the source's own
@@ -321,6 +321,30 @@ async function run() {
     assert.strictEqual(patches[0].body.outcome, "blocked", "a 403 from the upstream is blocked, not a generic failure");
   }
   console.log("PASS: an upstream 403 logs outcome=blocked, not failed");
+
+  // Required INSERT fields must survive an upsert of a moderated nightlife candidate.
+  for (const status of ["approved", "rejected"]) {
+    const handler = freshHandler();
+    const external_id = "gottagacha-reviewed-rave-2026-10-06";
+    const { fetchFn, calls } = makeMockFetch({
+      source: () => ({ ok: true, status: 200, json: async () => ({ events: [apiEvent({ id: "reviewed-rave", title: "Corridor Cyberpunk Rave", description: "A rave with DJs and dancing." })] }) }),
+      statusLookup: () => ({ ok: true, status: 200, json: async () => [{ external_id, status, category: "community" }] }),
+    });
+    global.fetch = async (url, opts = {}) => {
+      if (url.includes("/rest/v1/events") && opts.method === "POST") {
+        const rows = JSON.parse(opts.body);
+        if (rows.some(r => !r.category)) return { ok: false, status: 400, text: async () => '{"code":"23502","message":"category violates not-null constraint"}' };
+      }
+      return fetchFn(url, opts);
+    };
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    assert.strictEqual(res._status, 200);
+    const sent = upsertCalls(calls).flatMap(c => c.body).find(r => r.external_id === external_id);
+    assert.strictEqual(sent.category, "community", "reviewed category survives instead of being omitted or reclassified");
+    assert.strictEqual(sent.status, status);
+  }
+  console.log("PASS: approved/rejected nightlife candidates resend stored required category");
 
   // --- 18. existing approved/rejected status is preserved on re-ingestion ---
   {

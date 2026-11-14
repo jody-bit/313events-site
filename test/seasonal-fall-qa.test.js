@@ -47,7 +47,7 @@ for (const slug of ["fall", "fall-color"]) {
     }
     // an owner-photo record defaults to its photo
     if (e && e.image.ownerPhoto) assert.strictEqual(r.image_options[0].id, e.image.ownerPhoto.photoId);
-    assert.strictEqual(r.publication.gate.approval, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": approval only if authorized");
+    assert.strictEqual(r.publication.gate.approval, AUTHZ.authorized(ED).has(slug + "/" + r.id) || AUTHZ.ENDED_AFTER_RELEASE.includes(slug + "/" + r.id), r.id + ": approval only if authorized");
   }
   // the client renders every record and a selection switches the primary image
   const html = QA.results(col, d.records, { category: "all", query: "", view: "grid" }, {});

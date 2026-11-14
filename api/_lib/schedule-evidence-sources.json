@@ -1,0 +1,7 @@
+{
+  "_comment": "Allow-list for the schedule-evidence pass (Stage 1, read-only). A source is added only by a reviewed change. tier: official | city_or_venue | media | directory. Entries here are starting points, not verified facts; a page is used only after robots.txt allows it (api/_lib/robots.js, Platform).",
+  "sources": [
+    { "id": "wxyz-haunted-2026", "url": "https://www.wxyz.com/news/heres-when-haunted-houses-open-across-metro-detroit-for-2026", "tier": "media", "applies_to": ["haunted-attractions"] },
+    { "id": "scarefactor-mi-2026", "url": "https://www.thescarefactor.com/10-must-see-haunted-attractions-in-michigan-for-2026/", "tier": "media", "applies_to": ["haunted-attractions"] }
+  ]
+}

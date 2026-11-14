@@ -1,0 +1,853 @@
+{
+  "runToken": "20261106-130907-383e56",
+  "action": "start",
+  "candidateIds": [
+    "ra-2500295",
+    "ra-2569634",
+    "ra-2520031",
+    "ra-2567199",
+    "ra-2558364",
+    "ra-2577612",
+    "ra-2578841",
+    "ra-2576073",
+    "ra-2559396",
+    "ra-2574995",
+    "ra-2573623",
+    "ra-2567797",
+    "ra-2578595",
+    "ra-2576115",
+    "ra-2569631",
+    "ra-2540047",
+    "ra-2542519",
+    "ra-2570111",
+    "ra-2576083",
+    "ra-2562939",
+    "ra-2532432",
+    "ra-2577748",
+    "ra-2576650",
+    "ra-2528913",
+    "ra-2554535",
+    "ra-2568795",
+    "ra-2576078",
+    "ra-2577865",
+    "ra-2578387",
+    "ra-2578590",
+    "ra-2578586",
+    "ra-2576076",
+    "ra-2574999",
+    "ra-2573149",
+    "ra-2578764",
+    "ra-2570880",
+    "ra-2572313",
+    "ra-2577792",
+    "ra-2578629",
+    "ra-2572180",
+    "ra-2573158",
+    "ra-2569973",
+    "ra-2570850",
+    "ra-2571134",
+    "ra-2576605",
+    "ra-2576698",
+    "ra-2575361",
+    "ra-2578548",
+    "ra-2574682",
+    "ra-2570901",
+    "ra-2573171",
+    "ra-2563281",
+    "ra-2525360",
+    "ra-2562771",
+    "ra-2567236",
+    "ra-2559455",
+    "ra-2555144",
+    "ra-2564140",
+    "ra-2523760",
+    "ra-2572171",
+    "ra-2565122",
+    "ra-2578746",
+    "ra-2500122",
+    "ra-2541676",
+    "ra-2572699",
+    "ra-2563844",
+    "ra-2567948",
+    "ra-2560389",
+    "ra-2532152",
+    "ra-2576273",
+    "ra-2562615",
+    "ra-2518092",
+    "ra-2503651",
+    "ra-2561822",
+    "ra-2574397",
+    "ra-2578129",
+    "ra-2558090",
+    "ra-2479791",
+    "ra-2545591",
+    "ra-2571712",
+    "ra-2524562",
+    "ra-2571059",
+    "ra-2575446",
+    "ra-2561698",
+    "ra-2575388",
+    "ra-2573673",
+    "ra-2550062",
+    "ra-2576631",
+    "ra-2578535",
+    "ra-2577406",
+    "ra-2578440",
+    "ra-2564910",
+    "ra-2578479",
+    "ra-2576728",
+    "ra-2551935",
+    "ra-2528932",
+    "ra-2562938",
+    "ra-2561782",
+    "ra-2551189",
+    "ra-2561584",
+    "ra-2568140",
+    "ra-2577862",
+    "ra-2576305",
+    "ra-2568232",
+    "ra-2461133",
+    "ra-2527755",
+    "ra-2578600",
+    "ra-2569753",
+    "ra-2577429",
+    "ra-2578456",
+    "ra-2533807",
+    "ra-2516198",
+    "ra-2534490",
+    "ra-2559416",
+    "ra-2578529",
+    "ra-2570982",
+    "ra-2563254",
+    "ra-2464396",
+    "ra-2466618",
+    "ra-2466647",
+    "ra-2578790",
+    "ra-2541658"
+  ],
+  "listingMetadata": {
+    "ra-2500295": {
+      "title": "Steve Aoki: Dim Mak 30 Tour",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2500295",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2569634": {
+      "title": "HIPHOP NIGHT: DJBJ 3525 & DJ DONO (OPEN FORMAT CLUB HITS)",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2569634",
+      "venueName": "Big Pink"
+    },
+    "ra-2520031": {
+      "title": "Texture with Pariah b2b Verraco",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2520031",
+      "venueName": "Marble Bar"
+    },
+    "ra-2567199": {
+      "title": "Mark Broom, Sard (live), Zoe Talley",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2567199",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2558364": {
+      "title": "DIE SYSTEMS SHOWCASE (DEEP GLENS, OTO DOJO, SEAN AND DIEGO)",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2558364",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2577612": {
+      "title": "DISKO",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2577612",
+      "venueName": "Spkrbox"
+    },
+    "ra-2578841": {
+      "title": "FAMILY EMERGENCY",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2578841",
+      "venueName": "SOS"
+    },
+    "ra-2576073": {
+      "title": "In The Mezzanine",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2576073",
+      "venueName": "Spkrbox"
+    },
+    "ra-2559396": {
+      "title": "OPEN THE PIT",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2559396",
+      "venueName": "Elektricity"
+    },
+    "ra-2574995": {
+      "title": "The Outpost: Ryan Spencer",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2574995",
+      "venueName": "Traverse City Whiskey Co. Outpost"
+    },
+    "ra-2573623": {
+      "title": "G.E.D. 3: Ghettotech, Electro and Drum'N'Bass",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2573623",
+      "venueName": "Ashley Street Social"
+    },
+    "ra-2567797": {
+      "title": "Jason Leech & Honeycomb",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2567797",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2578595": {
+      "title": "Boombox",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2578595",
+      "venueName": "Tigris"
+    },
+    "ra-2576115": {
+      "title": "RAVECLUB: Indie Sleaze",
+      "date": "FRI, 6 NOV",
+      "url": "https://ra.co/events/2576115",
+      "venueName": "Orchid Theatre"
+    },
+    "ra-2569631": {
+      "title": "CUFFING SZN: DJ MOCHI & COMPLETD (R&B + DANCE MUSIC)",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2569631",
+      "venueName": "Big Pink"
+    },
+    "ra-2540047": {
+      "title": "TV • Further • Charivari Detroit • UMA",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2540047",
+      "venueName": "TV Lounge"
+    },
+    "ra-2542519": {
+      "title": "ART 8 HOUSE",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2542519",
+      "venueName": "Andy Arts"
+    },
+    "ra-2570111": {
+      "title": "Interference x Ennate: Matrixxman, Developer, Nick Dagher and Emil Siman",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2570111",
+      "venueName": "Hizz Lounge"
+    },
+    "ra-2576083": {
+      "title": "SPECTRO 006",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2576083",
+      "venueName": "Marble Bar"
+    },
+    "ra-2562939": {
+      "title": "RADIANT",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2562939",
+      "venueName": "HALO DETROIT"
+    },
+    "ra-2532432": {
+      "title": "Skream - Open to Close Tour",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2532432",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2577748": {
+      "title": "Amtrac [live] with A Jaske",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2577748",
+      "venueName": "Marble Bar"
+    },
+    "ra-2576650": {
+      "title": "Todd Modes & Ryan Spencer: Coastlines Album Release Party",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2576650",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2528913": {
+      "title": "Mary Droppinz with Casey Club - 360° DJ EXPERIENCE",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2528913",
+      "venueName": "Elektricity"
+    },
+    "ra-2554535": {
+      "title": "Dance Against Fascism",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2554535",
+      "venueName": "The High Dive"
+    },
+    "ra-2568795": {
+      "title": "EUR HAUS",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2568795",
+      "venueName": "Temple Bar"
+    },
+    "ra-2576078": {
+      "title": "SPKR PEOPLE",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2576078",
+      "venueName": "Spkrbox"
+    },
+    "ra-2577865": {
+      "title": "HI FRUCTOSE",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2577865",
+      "venueName": "SOS"
+    },
+    "ra-2578387": {
+      "title": "_SOULCITY",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2578387",
+      "venueName": "Corktown Tavern"
+    },
+    "ra-2578590": {
+      "title": "DJ Moppy & Radius",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2578590",
+      "venueName": "Tigris"
+    },
+    "ra-2578586": {
+      "title": "Tamper Evident",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2578586",
+      "venueName": "Tigris"
+    },
+    "ra-2576076": {
+      "title": "Detroit Disco Sessions",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2576076",
+      "venueName": "Spkrbox"
+    },
+    "ra-2574999": {
+      "title": "The Outpost: Joshua Adams",
+      "date": "SAT, 7 NOV",
+      "url": "https://ra.co/events/2574999",
+      "venueName": "Traverse City Whiskey Co. Outpost"
+    },
+    "ra-2573149": {
+      "title": "NO SKIPS: HIPHOP & R&B (SUNDAY NIGHT) - BLAKITO",
+      "date": "SUN, 8 NOV",
+      "url": "https://ra.co/events/2573149",
+      "venueName": "Big Pink"
+    },
+    "ra-2578764": {
+      "title": "minimal detroit",
+      "date": "SUN, 8 NOV",
+      "url": "https://ra.co/events/2578764",
+      "venueName": "Well Done Goods"
+    },
+    "ra-2570880": {
+      "title": "The Art of Noise: A Performance and Q&A Series",
+      "date": "SUN, 8 NOV",
+      "url": "https://ra.co/events/2570880",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2572313": {
+      "title": "Requiem For A Machine Soul: AbuQadim Haqq Graphic Novel Release Event",
+      "date": "WED, 11 NOV",
+      "url": "https://ra.co/events/2572313",
+      "venueName": "The Stone House Bar"
+    },
+    "ra-2577792": {
+      "title": "OPEN DECKS",
+      "date": "WED, 11 NOV",
+      "url": "https://ra.co/events/2577792",
+      "venueName": "SOS"
+    },
+    "ra-2578629": {
+      "title": "XTRA",
+      "date": "THU, 12 NOV",
+      "url": "https://ra.co/events/2578629",
+      "venueName": "Spkrbox"
+    },
+    "ra-2572180": {
+      "title": "Alternative School presents: Open Enrollment (Open Decks)",
+      "date": "THU, 12 NOV",
+      "url": "https://ra.co/events/2572180",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2573158": {
+      "title": "GIRLY POP PINK PARTY: PROBLEMATICBLACKHOTTIE (WEAR PINK = FREE ENTRY)",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2573158",
+      "venueName": "Big Pink"
+    },
+    "ra-2569973": {
+      "title": "Hoochie Palace x DickAppointment x Blueprint (DETROIT): SKY JETTA + more",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2569973",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2570850": {
+      "title": "Mathew Jonson, Shaun Reeves, Nicolas Matar, Ataxia + Mister Joshooa",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2570850",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2571134": {
+      "title": "LAÍRE NIGHT XI",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2571134",
+      "venueName": "SOS"
+    },
+    "ra-2576605": {
+      "title": "GHETTOTECHTOPIA",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2576605",
+      "venueName": "Marble Bar"
+    },
+    "ra-2576698": {
+      "title": "Bad Luck Club",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2576698"
+    },
+    "ra-2575361": {
+      "title": "klub brief",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2575361",
+      "venueName": "The Eagle of Detroit"
+    },
+    "ra-2578548": {
+      "title": "What Sounds I'm Sitting On",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2578548",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2574682": {
+      "title": "Beauty & the Bass",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2574682",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2570901": {
+      "title": "RAY VOLPE - VOLPETRON ETERNAL TOUR",
+      "date": "FRI, 13 NOV",
+      "url": "https://ra.co/events/2570901",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2573171": {
+      "title": "HIPHOP NIGHT: DJ MARATHON B2B DJ CARTER (OPEN FORMAT CLUB HITS)",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2573171",
+      "venueName": "Big Pink"
+    },
+    "ra-2563281": {
+      "title": "Decliner: CUT RATE RELEASE SHOW",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2563281",
+      "venueName": "The Strays"
+    },
+    "ra-2525360": {
+      "title": "Dasha Rush - Luke Hess - Lincoln Factory",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2525360",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2562771": {
+      "title": "Alternative School presents: Musicology with Glenn Underground, ameera & Turtle Bugg",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2562771",
+      "venueName": "Northern Lights Lounge"
+    },
+    "ra-2567236": {
+      "title": "XOXR4YR",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2567236",
+      "venueName": "Marble Bar"
+    },
+    "ra-2559455": {
+      "title": "MEMCO presents: IMPULSE 2100",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2559455"
+    },
+    "ra-2555144": {
+      "title": "Paradise Lost: An Industrial Apocalypse",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2555144"
+    },
+    "ra-2564140": {
+      "title": "Siren Pres: Christian Girl Autumn",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2564140",
+      "venueName": "Paris Bar"
+    },
+    "ra-2523760": {
+      "title": "Layton Giordani presents MADMINDS",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2523760",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2572171": {
+      "title": "BerettaMusic and Friends - DJ Cent, Ryan Sadorus, Marcus Harris",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2572171",
+      "venueName": "Spkrbox"
+    },
+    "ra-2565122": {
+      "title": "THROB",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2565122",
+      "venueName": "Pronto Royal Oak"
+    },
+    "ra-2578746": {
+      "title": "HI FRUCTOSE",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2578746",
+      "venueName": "The Eagle of Detroit"
+    },
+    "ra-2500122": {
+      "title": "Steller",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2500122",
+      "venueName": "Elektricity"
+    },
+    "ra-2541676": {
+      "title": "V.V. Lightbody with John Krautner & Rachele Eve",
+      "date": "SAT, 14 NOV",
+      "url": "https://ra.co/events/2541676",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2572699": {
+      "title": "EarDrugs",
+      "date": "THU, 19 NOV",
+      "url": "https://ra.co/events/2572699",
+      "venueName": "Per Ankh Detroit Entheogenic Church"
+    },
+    "ra-2563844": {
+      "title": "STUDIO 215: Disco All Night Long feat. Dynamique (Vegas)",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2563844",
+      "venueName": "215 W"
+    },
+    "ra-2567948": {
+      "title": "ORBIT 002: Noncompliant, Flange, sina, AIDEL, Adri, Duck Trash",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2567948",
+      "venueName": "Marble Bar"
+    },
+    "ra-2560389": {
+      "title": "Industrial Detroit - The Treasury, Hexx Head, Mission to the Sun, Deadlines",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2560389",
+      "venueName": "Outer Limits Lounge"
+    },
+    "ra-2532152": {
+      "title": "it's murph - Fade Into Nothing Tour",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2532152",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2576273": {
+      "title": "Clubhouse Sessions",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2576273",
+      "venueName": "The Clubhouse Detroit"
+    },
+    "ra-2562615": {
+      "title": "Hairitage",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2562615",
+      "venueName": "Amplify"
+    },
+    "ra-2518092": {
+      "title": "SODOWN: SCENES OF CONSCIOUSNESS",
+      "date": "FRI, 20 NOV",
+      "url": "https://ra.co/events/2518092",
+      "venueName": "Elektricity"
+    },
+    "ra-2503651": {
+      "title": "Fadi Mohem by Urban Pulse",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2503651",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2561822": {
+      "title": "S T R Ʌ T Ø S",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2561822",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2574397": {
+      "title": "Liqud Dancehall presents Joe Nice and Antithesis",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2574397"
+    },
+    "ra-2578129": {
+      "title": "12 Hour Party feat. John Acquaviva",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2578129",
+      "venueName": "Marble Bar"
+    },
+    "ra-2558090": {
+      "title": "Eli Escobar - Extended Set",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2558090",
+      "venueName": "TV Lounge"
+    },
+    "ra-2479791": {
+      "title": "WHALES: DANGEROUS WATERS TOUR",
+      "date": "SAT, 21 NOV",
+      "url": "https://ra.co/events/2479791",
+      "venueName": "Elektricity"
+    },
+    "ra-2545591": {
+      "title": "City Of Machines",
+      "date": "WED, 25 NOV",
+      "url": "https://ra.co/events/2545591",
+      "venueName": "HALO DETROIT"
+    },
+    "ra-2571712": {
+      "title": "Burgers & Bangers - Inside Edition",
+      "date": "WED, 25 NOV",
+      "url": "https://ra.co/events/2571712",
+      "venueName": "Per Ankh Detroit Entheogenic Church"
+    },
+    "ra-2524562": {
+      "title": "Amplify Grand Opening",
+      "date": "WED, 25 NOV",
+      "url": "https://ra.co/events/2524562"
+    },
+    "ra-2571059": {
+      "title": "Adam X - Craig Gonzalez b2b Francois Dillinger - + more - Marble Bar",
+      "date": "FRI, 27 NOV",
+      "url": "https://ra.co/events/2571059",
+      "venueName": "Marble Bar"
+    },
+    "ra-2575446": {
+      "title": "House Nation",
+      "date": "FRI, 27 NOV",
+      "url": "https://ra.co/events/2575446",
+      "venueName": "The Music Hall"
+    },
+    "ra-2561698": {
+      "title": "DEEP DARK BASS",
+      "date": "FRI, 27 NOV",
+      "url": "https://ra.co/events/2561698",
+      "venueName": "Elektricity"
+    },
+    "ra-2575388": {
+      "title": "VINDICATE 008 - Hard Techno, Schranz & Groove",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2575388",
+      "venueName": "The Vault 313"
+    },
+    "ra-2573673": {
+      "title": "Sanctuary: Offering - 1 Year Anniversary",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2573673",
+      "venueName": "Menjo's"
+    },
+    "ra-2550062": {
+      "title": "Detroit Love - Carl Craig b2b Seth Troxler",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2550062",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2576631": {
+      "title": "Deep Field ft. Arucal",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2576631"
+    },
+    "ra-2578535": {
+      "title": "All In",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2578535",
+      "venueName": "TBA"
+    },
+    "ra-2577406": {
+      "title": "WRIDDIM WRESTLEMANIA",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2577406",
+      "venueName": "Elektricity"
+    },
+    "ra-2578440": {
+      "title": "THANKSGIVING",
+      "date": "SAT, 28 NOV",
+      "url": "https://ra.co/events/2578440",
+      "venueName": "TV Lounge"
+    },
+    "ra-2564910": {
+      "title": "Day/Care",
+      "date": "SUN, 29 NOV",
+      "url": "https://ra.co/events/2564910"
+    },
+    "ra-2578479": {
+      "title": "GOSPEL HOUSE 313 presented by THILL Radio",
+      "date": "SUN, 29 NOV",
+      "url": "https://ra.co/events/2578479",
+      "venueName": "TV Lounge"
+    },
+    "ra-2576728": {
+      "title": "Minimal Detroit presents: GAS TAX",
+      "date": "FRI, 4 DEC",
+      "url": "https://ra.co/events/2576728",
+      "venueName": "Moondog Cafe"
+    },
+    "ra-2551935": {
+      "title": "SIDEPIECE",
+      "date": "FRI, 4 DEC",
+      "url": "https://ra.co/events/2551935",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2528932": {
+      "title": "LAYZ with KOZMOZ",
+      "date": "FRI, 4 DEC",
+      "url": "https://ra.co/events/2528932",
+      "venueName": "Elektricity"
+    },
+    "ra-2562938": {
+      "title": "Toribio • sillygirlcarmen • BROOKLYN, DETROIT AND EVERYWHERE THE GROOVE TAKES YOU",
+      "date": "SAT, 5 DEC",
+      "url": "https://ra.co/events/2562938",
+      "venueName": "TV Lounge"
+    },
+    "ra-2561782": {
+      "title": "VØRA: Saytek*LIVE with minimal detroit",
+      "date": "SAT, 5 DEC",
+      "url": "https://ra.co/events/2561782"
+    },
+    "ra-2551189": {
+      "title": "Mija - USA Fall Tour",
+      "date": "SAT, 5 DEC",
+      "url": "https://ra.co/events/2551189",
+      "venueName": "Lincoln Factory"
+    },
+    "ra-2561584": {
+      "title": "CODD DUBZ X HE$H: THRASHED TOUR",
+      "date": "SAT, 5 DEC",
+      "url": "https://ra.co/events/2561584",
+      "venueName": "Elektricity"
+    },
+    "ra-2568140": {
+      "title": "The Occasional Thursday Party with S.P.Y and Friends",
+      "date": "THU, 10 DEC",
+      "url": "https://ra.co/events/2568140",
+      "venueName": "Marble Bar"
+    },
+    "ra-2577862": {
+      "title": "DnB vs Dubstep Showdown",
+      "date": "FRI, 11 DEC",
+      "url": "https://ra.co/events/2577862",
+      "venueName": "Amplify"
+    },
+    "ra-2576305": {
+      "title": "Jacques Greene - jg North American Tour",
+      "date": "SAT, 12 DEC",
+      "url": "https://ra.co/events/2576305",
+      "venueName": "TV Lounge"
+    },
+    "ra-2568232": {
+      "title": "KICK Invites",
+      "date": "SAT, 12 DEC",
+      "url": "https://ra.co/events/2568232",
+      "venueName": "TBA"
+    },
+    "ra-2461133": {
+      "title": "RIOT: THE MACHINE WORLD TOUR",
+      "date": "SAT, 12 DEC",
+      "url": "https://ra.co/events/2461133",
+      "venueName": "Elektricity"
+    },
+    "ra-2527755": {
+      "title": "KRAMPUS NIGHT III",
+      "date": "SAT, 26 DEC",
+      "url": "https://ra.co/events/2527755",
+      "venueName": "Olympus Theater"
+    },
+    "ra-2578600": {
+      "title": "Jantsen",
+      "date": "SAT, 26 DEC",
+      "url": "https://ra.co/events/2578600",
+      "venueName": "Elektricity"
+    },
+    "ra-2569753": {
+      "title": "An Interdimensional New Years",
+      "date": "THU, 31 DEC",
+      "url": "https://ra.co/events/2569753",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2577429": {
+      "title": "New Year's Eve with Reptant (live), Pearson Sound, Roman Flugel, DJ Pierre,",
+      "date": "THU, 31 DEC",
+      "url": "https://ra.co/events/2577429",
+      "venueName": "Marble Bar"
+    },
+    "ra-2578456": {
+      "title": "TV NYE",
+      "date": "THU, 31 DEC",
+      "url": "https://ra.co/events/2578456",
+      "venueName": "TV Lounge"
+    },
+    "ra-2533807": {
+      "title": "ZERO HOUR: NEW YEARS EVE 2027",
+      "date": "THU, 31 DEC",
+      "url": "https://ra.co/events/2533807",
+      "venueName": "Elektricity"
+    },
+    "ra-2516198": {
+      "title": "Sera J & ANNĒ",
+      "date": "FRI, 8 JAN",
+      "url": "https://ra.co/events/2516198",
+      "venueName": "Tangent Gallery"
+    },
+    "ra-2534490": {
+      "title": "KREWELLA",
+      "date": "SAT, 16 JAN",
+      "url": "https://ra.co/events/2534490",
+      "venueName": "Elektricity"
+    },
+    "ra-2559416": {
+      "title": "AYYBO",
+      "date": "FRI, 22 JAN",
+      "url": "https://ra.co/events/2559416",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2578529": {
+      "title": "Hi I'm Ghost: SPOOKY RIDDIM RETURNS",
+      "date": "SAT, 23 JAN",
+      "url": "https://ra.co/events/2578529",
+      "venueName": "Elektricity"
+    },
+    "ra-2570982": {
+      "title": "ZINGARA: THE ALIENS ARE MAKING SOUNDS TOUR",
+      "date": "SAT, 30 JAN",
+      "url": "https://ra.co/events/2570982",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2563254": {
+      "title": "Swimming Paul - NORTH AMERICAN TOUR",
+      "date": "FRI, 26 FEB",
+      "url": "https://ra.co/events/2563254",
+      "venueName": "Russell Industrial Center"
+    },
+    "ra-2464396": {
+      "title": "DETROITS INFERNO IV",
+      "date": "FRI, 9 APR",
+      "url": "https://ra.co/events/2464396",
+      "venueName": "Elektricity"
+    },
+    "ra-2466618": {
+      "title": "DETROITS INFERNO IV",
+      "date": "SAT, 10 APR",
+      "url": "https://ra.co/events/2466618",
+      "venueName": "Elektricity"
+    },
+    "ra-2466647": {
+      "title": "100% LIVE Techno – ALL HARDWARE SETS / Movement Opening Party",
+      "date": "FRI, 28 MAY",
+      "url": "https://ra.co/events/2466647",
+      "venueName": "TBA"
+    },
+    "ra-2578790": {
+      "title": "Art of Techno (Detroit Edition 2)",
+      "date": "SAT, 29 MAY",
+      "url": "https://ra.co/events/2578790",
+      "venueName": "TBA"
+    },
+    "ra-2541658": {
+      "title": "TEC-TROIT ELECTRONIC MUSIC FESTIVAL",
+      "date": "FRI, 25 JUN",
+      "url": "https://ra.co/events/2541658"
+    }
+  }
+}

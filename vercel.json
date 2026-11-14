@@ -115,6 +115,9 @@
     }
   ],
   "functions": {
+    "api/admin-events.js": {
+      "maxDuration": 300
+    },
     "api/event-meta.js": {
       "includeFiles": "event-template.html"
     },
@@ -169,6 +172,9 @@
     "api/seasonal-qa.js": {
       "includeFiles": "api/_lib/seasonal-editorial/**"
     },
+    "api/cron-link-check.js": {
+      "maxDuration": 60
+    },
     "api/seasonal-preview.js": {
       "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
     },
@@ -222,6 +228,10 @@
       "destination": "/about.html"
     },
     {
+      "source": "/media",
+      "destination": "/media.html"
+    },
+    {
       "source": "/terms",
       "destination": "/terms.html"
     },
@@ -232,6 +242,10 @@
     {
       "source": "/copyright",
       "destination": "/copyright.html"
+    },
+    {
+      "source": "/photo-credits",
+      "destination": "/photo-credits.html"
     },
     {
       "source": "/editorial-policy",

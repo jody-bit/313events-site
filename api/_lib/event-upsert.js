@@ -82,8 +82,11 @@
 "use strict";
 
 const { fillBlankOrganizerEventUrls } = require("./organizer-links");
+const { fillBlankSourceCalendarLinks } = require("./source-calendar-links");
 const { OWNER_CORRECTION_MARKER, OWNER_LOCKABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
 const { normalizeRowLinks } = require("./link-field");
+const { sanitizeRowText } = require("./text-sanitize");
+const { applyVenueCategoryPolicy } = require("./venue-category-policy");
 
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
@@ -194,7 +197,7 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
 
   if (table === DEFAULT_TABLE) {
     // Q17: only an absolute http(s) event page is stored in a link field (api/_lib/link-field.js).
-    rows = Array.from(rows).map(normalizeRowLinks);
+    rows = Array.from(rows).map(normalizeRowLinks).map(sanitizeRowText).map(applyVenueCategoryPolicy);
     try {
       rows = protectOwnerCorrections(Array.from(rows), await loadOwnerCorrections(supabaseUrl, serviceRoleKey)).rows;
     } catch (err) {
@@ -309,6 +312,10 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   // Known-organizer source link (api/_lib/organizer-links.js): blank event_url
   // only, never ticket_url; a no-op unless a written row matches an organizer.
   if (table === DEFAULT_TABLE && written > 0) await fillBlankOrganizerEventUrls(supabaseUrl, serviceRoleKey, rows);
+
+  // Source calendar-page fallback (api/_lib/source-calendar-links.js): blank-only, event_url only; a no-op unless a written
+  // row belongs to a single-venue connector with a registered calendar page.
+  if (table === DEFAULT_TABLE && written > 0) await fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows);
 
   const failed = groups.filter((g) => !g.ok);
   const ok = failed.length === 0;

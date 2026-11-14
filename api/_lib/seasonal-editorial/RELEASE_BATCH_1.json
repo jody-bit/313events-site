@@ -2471,8 +2471,8 @@
    "id": "holiday-beach-conservation-area",
    "name": "Holiday Beach Conservation Area",
    "original15": false,
-   "currentStatus": "PUBLISHED",
-   "gate": "PUBLISHED",
+   "currentStatus": "ENDED",
+   "gate": "ENDED",
    "imageRoute": "illustration",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
