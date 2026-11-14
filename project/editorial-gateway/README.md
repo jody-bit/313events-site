@@ -47,8 +47,8 @@ Not built (next, only after the image workflow passes Preview and production): `
 
 - `create_event` (Release B): new events only after find_event shows no match. Needs title, date, category and a source note; unknown
   facts stay empty (no invented time/venue). Uses the shared event rules; possible duplicates (same day, similar title or same venue,
-  any status) are refused and listed; deterministic `external_id` makes retries idempotent; created `pending_review` unless
-  `publish:true` and the rules find nothing to review. Dry run by default. Phone page has an "Add a new event" form.
+  any status) are refused and listed; deterministic `external_id` makes retries idempotent; always created `pending_review` (an editor approves
+  every gateway-created event; there is no publish option). Dry run by default. Phone page has an "Add a new event" form.
 
 ## Client matrix (documented from vendor pages on 2026-10-26; NOTHING below is tested on the owner's accounts yet)
 

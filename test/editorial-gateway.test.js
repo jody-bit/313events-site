@@ -402,8 +402,9 @@ async function rejects(promise, code) {
   await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { start_date: "soon" })), "bad_request");
   await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { ticket_url: "javascript:alert(1)" })), "bad_request");
   c = await gw.run(cctx, "create_event", Object.assign({}, evInput, { title: "Nico Bones + Glow Highway Stallions", start_date: "2026-11-07", venue_name: "Paris Bar", venue_city: "Hamtramck", time_display: "9 PM", publish: true, dry_run: false }));
-  assert.ok(["approved", "pending_review"].includes(c.event.status));
-  console.log("PASS: create_event dry-runs by default, never invents a time, holds for review unless publish is requested and eligible, refuses duplicates and bad input, and is idempotent");
+  assert.strictEqual(c.event.status, "pending_review", "publish:true is ignored: every gateway-created event is held for review");
+  assert.ok(!("publish" in handler.TOOLS.find((t) => t.name === "create_event").inputSchema.properties), "the tool schema offers no publish option");
+  console.log("PASS: create_event dry-runs by default, never invents a time, always holds for review (publish is ignored), refuses duplicates and bad input, and is idempotent");
 
   // --- device sessions
   const T = "t".repeat(40);
