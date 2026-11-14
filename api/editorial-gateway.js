@@ -11,6 +11,7 @@
 // The work is in api/_lib/editorial-gateway.js; read project/editorial-gateway/README.md for the rules and the client matrix.
 
 const gateway = require("./_lib/editorial-gateway");
+const oauthFront = require("./_lib/oauth-front");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 // Non-production deployments must never use the production database (api/_lib/environment.js).
@@ -84,6 +85,8 @@ const TOOLS = [
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   },
 ];
+// Tool-level auth for OAuth-capable clients (ChatGPT Apps SDK style; field name to be confirmed on a Preview).
+for (const t of TOOLS) t.securitySchemes = oauthFront.SECURITY_SCHEMES;
 
 function makeCtx(req) {
   const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0];
@@ -154,6 +157,8 @@ module.exports = async (req, res) => {
   if (!caller) {
     // One line per refusal: a reason word and facts about the server's token (state, length class, stray whitespace), never a value.
     console.log(JSON.stringify({ gateway_auth: "refused", reason: gateway.authFailureReason(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN), configured: gateway.tokenStatus(process.env.EDITORIAL_GATEWAY_TOKEN), method: req.method, vercel_env: process.env.VERCEL_ENV || null }));
+    // Lets an OAuth-capable client (Claude, ChatGPT connector) discover the sign-in front (api/editorial-oauth.js).
+    res.setHeader("WWW-Authenticate", oauthFront.challenge(oauthFront.issuerFor(req.headers)));
     res.status(401).json({ error: { code: "unauthorized", message: "Unauthorized." } });
     return;
   }
