@@ -16,7 +16,7 @@ const EXPECTED = [
   ["/privacy", "Privacy"],
   ["/terms", "Terms"],
   ["/copyright", "Copyright / DMCA"],
-  ["/copyright#photo-credits", "Photo Credits"],
+  ["/photo-credits", "Photo Credits"],
   ["mailto:" + BUSINESS, "Contact"],
 ];
 

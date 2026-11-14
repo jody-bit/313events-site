@@ -78,6 +78,7 @@
 
 const path = require("path");
 const fs = require("fs");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const { parseIsoLocal, deriveTimeDisplayAndEndDate, deriveEventUrl, deriveTicketUrl } = require(path.join(__dirname, "ra-sync"));
 
 const SOURCE_NAME = "Resident Advisor";
@@ -109,7 +110,7 @@ async function fetchRaRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, 
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&time_display=is.null` +
-    `&select=id,external_id,title,start_date,end_date,time_display,event_url,ticket_url` +
+    `&select=id,external_id,title,start_date,end_date,time_display,event_url,ticket_url,source,internal_note` +
     `&limit=1000`;
   const resp = await fetchImpl(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch RA time-backfill candidates: HTTP ${resp.status}`);
@@ -211,6 +212,7 @@ async function repairRaTimes({
     sourceHasNoTimeIds: [],
     repaired: 0,
     skippedConcurrentChange: 0,
+    ownerProtected: 0,
     written: 0,
     fieldsWritten: 0,
     writtenIds: [],
@@ -229,6 +231,8 @@ async function repairRaTimes({
   counts.totalConsidered = candidates.length;
 
   for (const event of candidates) {
+    // Owner-supplied / editorially held rows are never filled by automation (a blank time may be deliberate).
+    if (isOwnerSuppliedRow(event)) { counts.ownerProtected++; continue; }
     const detail = detailByExternalId.get(event.external_id);
     if (!detail) {
       counts.noDetailDataProvided++;

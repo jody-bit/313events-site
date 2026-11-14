@@ -28,7 +28,8 @@ function createBudget({ budgetMs, now = Date.now }) {
   };
 }
 
-// fetchText(url, fetchOptions, { timeoutMs, budget }) -> { ok, status, text }
+// fetchText(url, fetchOptions, { timeoutMs, budget }) -> { ok, status, text, headers }
+// headers is the response's Headers object (callers read a few non-secret names from it for diagnostics only).
 // Rejects with an Error whose code is REQUEST_TIMED_OUT on timeout; any other
 // rejection is the underlying network error, unchanged.
 async function fetchText(url, fetchOptions, { timeoutMs, budget }) {
@@ -46,7 +47,7 @@ async function fetchText(url, fetchOptions, { timeoutMs, budget }) {
   const work = (async () => {
     const r = await fetch(url, { ...(fetchOptions || {}), signal: controller.signal });
     const text = r.ok ? await r.text() : "";
-    return { ok: r.ok, status: r.status, text };
+    return { ok: r.ok, status: r.status, text, headers: r.headers };
   })();
   work.catch(() => {}); // the loser of the race must never become an unhandled rejection
   try {

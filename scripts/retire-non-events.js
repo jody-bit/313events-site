@@ -41,8 +41,9 @@ const MAX_PER_RUN = 100;
 const NOTE_TAG = "NON_EVENT_RETIRED | v1";
 // Rows that exist because a person wrote them and a person approved them.
 const HUMAN_SOURCES = new Set(["Manual", "Venue Submission", "Editorial Review"]);
+const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const isOn = (value) => /^(?:true|1|yes|on)$/i.test(String(value || "").trim());
-const SELECT = "id,title,start_date,end_date,source,status,internal_note";
+const SELECT = "id,title,start_date,end_date,source,status,internal_note";   // internal_note is read so an OWNER-CORRECTION / EDITORIAL-HOLD row is never retired by automation
 
 function todayIso() {
   return new Date().toLocaleDateString("en-CA", { timeZone: "America/Detroit" });
@@ -70,6 +71,7 @@ function planRetirement(rows) {
   for (const row of Array.isArray(rows) ? rows : []) {
     if (!row || row.status !== "approved" || HUMAN_SOURCES.has(row.source)) continue;
     if (String(row.internal_note || "").includes(NOTE_TAG)) continue; // restored by a reviewer
+    if (isOwnerSuppliedRow(row, { includeManualSource: false })) continue; // owner correction / editorial hold: never retired by automation (Manual source is already a human source above)
     const rule = nonEventRule(row.title);
     if (rule) plan.push({ row, rule });
   }

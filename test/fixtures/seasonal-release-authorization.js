@@ -20,25 +20,29 @@ const AUTH_HALLOWEEN = { by: "Jody Tyree", at: "2026-10-11" };
 // approval): the first five (the original seven less Greenfield Village and Zoo Boo, ended 2026-10-25: owner photos, or linked images on the owner's risk acceptance) plus the 16 content-verified records
 // that took the owner's established "Illustrative image" route (owner direction 2026-10-12). Pinned by id, independent of the data.
 const HALLOWEEN_PUBLISHED = [
-  "azra-chamber-of-horrors", "blakes-haunted-attractions", "deranged-haunt", "distracted-haunted-house", "eloise-asylum", "erebus", "full-moon-manor-at-bonadeo-farms", "hush-haunted-attraction",
+  "azra-chamber-of-horrors", "blakes-haunted-attractions", "distracted-haunted-house", "erebus",
   "ooky-spooky-light-show", "scarefest-scream-park",
-  "slaughterhouse-adventure", "the-howling-haunted-trail-and-party"
+  "the-howling-haunted-trail-and-party"
 ];
 // The 16 that publish on the labelled-illustration route (generated artwork, "Illustrative image" label, never a photograph of the destination).
 const HALLOWEEN_ILLUSTRATED = [
-  "blakes-haunted-attractions", "deranged-haunt", "distracted-haunted-house", "erebus", "full-moon-manor-at-bonadeo-farms", "ooky-spooky-light-show", "scarefest-scream-park",
-  "slaughterhouse-adventure", "the-howling-haunted-trail-and-party"];
+  "blakes-haunted-attractions", "distracted-haunted-house", "erebus", "ooky-spooky-light-show", "scarefest-scream-park",
+  "the-howling-haunted-trail-and-party"];
 // The eleven Halloween records resolved as duplicate, closed or ended (kept in the inventory, never shown).
 // Four more ended attractions were excluded by the owner's direction of 2026-10-18 and four more (Fort Meigs, Halloween Stroll, Greenfield Village, Zoo Boo) by the owner's expiry approval of 2026-10-22 (disposition "ended", approval retired).
 const HALLOWEEN_EXCLUDED = { "exit-13-haunted-house": "closed", "scarehouse-windsor-immersive-dinner": "duplicate", "windsor-essex-yard-haunt-map": "duplicate",
   "sanilac-museums-haunted-village": "ended", "spooky-janes-walk": "ended", "sandwich-town-ghost-tour": "ended", "dearborn-haunted-trail": "ended",
   "fort-meigs-garrison-ghost-walk": "ended", "halloween-stroll": "ended",
-  "halloween-greenfield-village": "ended", "zoo-boo": "ended", "crossroads-ghosts-goodies": "ended", "halloween-stroll-at-canterbury-village": "ended", "brick-or-treat-at-legoland-discovery-center": "ended", "field-of-fear": "ended", "hallowglow-at-treerunner": "ended", "laser-halloween": "ended", "spooky-trails": "ended", "wildwood-manor-house": "ended", "glenlore-carnevil-2": "ended" };
+  "halloween-greenfield-village": "ended", "zoo-boo": "ended", "crossroads-ghosts-goodies": "ended", "halloween-stroll-at-canterbury-village": "ended", "brick-or-treat-at-legoland-discovery-center": "ended", "field-of-fear": "ended", "hallowglow-at-treerunner": "ended", "laser-halloween": "ended", "spooky-trails": "ended", "wildwood-manor-house": "ended", "glenlore-carnevil-2": "ended", "slaughterhouse-adventure": "ended", "full-moon-manor-at-bonadeo-farms": "ended", "deranged-haunt": "ended", "eloise-asylum": "ended", "hush-haunted-attraction": "ended" };
 // The 76 records of the closed Fall batch.
 function batch76(ED) { return new Set(ED.read("RELEASE_BATCH_1.json").records.map((r) => r.collection + "/" + r.id)); }
-// Every record that may be PUBLIC: the 76 plus the pinned Halloween 21.
+// Batch-1 records released and approved, then ENDED at the end of their verified season (#260 ENDED, private). They keep the batch-1
+// approval (batch76) but are no longer public. #244: Holiday Beach, ERCA day use ended 2026-10-31 (PROPOSED, NOT OWNER-APPROVED).
+const ENDED_AFTER_RELEASE = ["fall-color/holiday-beach-conservation-area"];
+// Every record that may be PUBLIC: the 76 (less any ENDED after release) plus the pinned Halloween records.
 function authorized(ED) {
   const s = batch76(ED);
+  ENDED_AFTER_RELEASE.forEach((k) => s.delete(k));
   BATCH2.forEach((k) => s.add(k));
   HALLOWEEN_PUBLISHED.forEach((id) => s.add("halloween/" + id));
   return s;
@@ -54,7 +58,7 @@ function checkApproval(assert, slug, e, set) {
     return;
   }
   if (BATCH2.includes(key)) assert.deepStrictEqual(e.approval, AUTH_BATCH2, key + ": carries exactly the batch-2 approval");
-  else if (set.has(key)) assert.deepStrictEqual(e.approval, AUTH, key + ": carries exactly the authorized approval");
+  else if (set.has(key) || ENDED_AFTER_RELEASE.includes(key)) assert.deepStrictEqual(e.approval, AUTH, key + ": carries exactly the authorized approval");
   else assert.ok(!e.approval, key + ": no approval outside the authorized batch");
 }
-module.exports = { AUTH, AUTH_BATCH2, BATCH2, AUTH_HALLOWEEN, HALLOWEEN_PUBLISHED, HALLOWEEN_ILLUSTRATED, HALLOWEEN_EXCLUDED, batch76, authorized, halloweenApproved, checkApproval };
+module.exports = { AUTH, AUTH_BATCH2, BATCH2, AUTH_HALLOWEEN, HALLOWEEN_PUBLISHED, HALLOWEEN_ILLUSTRATED, HALLOWEEN_EXCLUDED, ENDED_AFTER_RELEASE, batch76, authorized, halloweenApproved, checkApproval };

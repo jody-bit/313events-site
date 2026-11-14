@@ -18534,10 +18534,10 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": true,
+   "public": false,
    "publication": {
-    "declared_status": "PUBLISHED",
-    "state": "PUBLISHED",
+    "declared_status": "ENDED",
+    "state": "ENDED",
     "gate": {
      "official": true,
      "relevance": true,

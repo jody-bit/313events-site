@@ -1,4 +1,5 @@
 "use strict";
+const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 
 // scripts/venues-from-stated-places.js — A PLACE THE SOURCES KEEP NAMING, AT
 // AN ADDRESS THEY KEEP STATING, BECOMES A CANONICAL VENUE.
@@ -139,6 +140,7 @@ function planVenueRecords(events, venues, options = {}) {
   for (const event of events || []) {
     if (!event || event.venue_id || isBlank(event.venue_name_raw)) continue;
     if (event.status && event.status !== "approved") continue; // only what a person has let the public see
+    if (isOwnerSuppliedRow(event, { includeManualSource: false })) continue; // an owner-corrected or editorially held row keeps the venue link the owner left it with
     const key = normalizeVenueName(event.venue_name_raw);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(event);
@@ -247,7 +249,7 @@ async function createVenuesFromStatedPlaces({
   }
   const sbHeaders = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
   const venues = await readAll(SUPABASE_URL, sbHeaders, fetchFn, "venues?select=id,name,address,city&order=id.asc", "venues");
-  const events = await readAll(SUPABASE_URL, sbHeaders, fetchFn, "events?venue_id=is.null&status=eq.approved&venue_name_raw=not.is.null&select=id,source,status,start_date,venue_name_raw,venue_address_raw,venue_city_raw&order=id.asc", "events without a venue");
+  const events = await readAll(SUPABASE_URL, sbHeaders, fetchFn, "events?venue_id=is.null&status=eq.approved&venue_name_raw=not.is.null&select=id,source,status,start_date,venue_name_raw,venue_address_raw,venue_city_raw,internal_note&order=id.asc", "events without a venue");
   counts.eventsWithoutVenue = events.length;
   // Where each existing venue is, by what its own linked public events state.
   const linked = await readAll(SUPABASE_URL, sbHeaders, fetchFn, "events?venue_id=not.is.null&status=eq.approved&venue_address_raw=not.is.null&select=venue_id,venue_address_raw&order=id.asc", "the venues' events");

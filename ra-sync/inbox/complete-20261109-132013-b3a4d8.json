@@ -1,0 +1,139 @@
+{
+  "runToken": "20261109-132013-b3a4d8",
+  "action": "complete",
+  "runId": "03803aef-0236-4a4f-b415-cc6fbb9d0d63",
+  "events": [
+    {
+      "id": "ra-2580114",
+      "title": "Slow Jams",
+      "description": null,
+      "startDate": "2026-11-09T22:00:00.000",
+      "endDate": "2026-11-10T02:00:00.000",
+      "venueName": "Woodbridge Pub",
+      "address": "5169 Trumbull Avenue, Detroit, MI 48208; United States",
+      "image": "https://images.ra.co/092d30a51064872b9f66369f718f6e67575d3c10.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580044",
+      "title": "Locomotion",
+      "description": null,
+      "startDate": "2026-11-10T22:00:00.000",
+      "endDate": "2026-11-11T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/1b3bc2b6a3c231f6723d190fbb8123324e9fce75.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2580125",
+      "title": "Open Decks",
+      "description": "All Vinyl. Hosted by McKinley.",
+      "startDate": "2026-11-10T19:00:00.000",
+      "endDate": "2026-11-10T23:59:00.000",
+      "venueName": "Garden Bowl",
+      "address": "4140 Woodward Ave, Detroit, MI 48201",
+      "image": "https://images.ra.co/0d3784960bf927fca1c0cd1547b9cdd0ffca433f.png",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580045",
+      "title": "Nightcap Detroit",
+      "description": null,
+      "startDate": "2026-11-11T23:00:00.000",
+      "endDate": "2026-11-12T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/0f0ce694c9904dd2606d59a809d447e2b5e5a661.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580112",
+      "title": "Crate Digga",
+      "description": null,
+      "startDate": "2026-11-12T20:00:00.000",
+      "endDate": "2026-11-13T01:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": "https://images.ra.co/2fb128718d29ecb533d269580fb9500d3df8cccc.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580053",
+      "title": "Three Dimensions",
+      "description": null,
+      "startDate": "2026-11-13T22:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/1a7f1ec07be29f14c44aeebd1e51060a8665fb66.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2580124",
+      "title": "William Basinski + Purelink + Windy & Carl",
+      "description": "AGE OF REFLECTIONS presents composer William Basinski (joined onstage by ambient legends Windy & Carl) in a live laptop performance of his most iconic work: The Disintegration Loops. Assembled from decayed tape recordings in September 2001, it’s an elegy for the lost, shrouded in time and mystery. Electronic trio Purelink opens. We’ll hold the ceremony in a magnificent cathedral, bathed in a projection-mapped light show, transforming the space ― and ourselves.",
+      "startDate": "2026-11-13T19:00:00.000",
+      "endDate": "2026-11-13T22:00:00.000",
+      "venueName": "TBA - Cathedral Church of St. Paul",
+      "address": null,
+      "image": "https://images.ra.co/fc1457b858d49ec6ea462fb9fa98ef035611e325.png",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580023",
+      "title": "2016 NIGHT: CLUB THROWBACKS (DJ KDIRTY + CELEX THE DJ)",
+      "description": "2016 CLUB THROWBACKS\n\nWE'RE GOING BACK TO 2016!! When Drake had us dancing to One Dance, Rae Sremmurd had everyone doing the Mannequin Challenge & Rihanna was telling us to WORK WORK WORK. We're talking Future, Travis Scott, The Weeknd, Justin Bieber & ALL the bangers you forgot you loved.\n\nPull out your old Snapchat filters, grab your squad & get ready to scream every lyric like it's summer 2016. We're bringing back the music, the memories & the ENERGY for one night only. YUHHHHH!!\n\n21+\n\nMessage @bigpinklovesyou on instagram with any questions",
+      "startDate": "2026-11-20T22:00:00.000",
+      "endDate": "2026-11-21T02:00:00.000",
+      "venueName": "Big Pink",
+      "address": "6440 Wight St, Detroit, MI 48207, USA",
+      "image": null,
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580032",
+      "title": "HIPHOP NIGHT: DJ MOBEATZ + MORE (OPEN FORMAT CLUB HITS)",
+      "description": "HIPHOP NIGHT WITH DJ MO BEATZ\n\nYour favorite hiphop party is BACK at Big Pink! This time we've got DJ MOBEATZ taking over the dance floor with all your favorite hiphop club bangers. We're talking Drake, Future, Lil Baby, Travis Scott, Babyface Ray & everything in between. If you love hiphop, this one's for YOU!!!\n\nNo bottle service, no VIP, just good music & a room full of people ready to DANCE. Anytime we have hiphop night on a saturday, it's a guaranteed banger. Grab your friends & we'll see you on the dance floor!\n\n21+\n\nMessage @bigpinklovesyou on instagram with any questions",
+      "startDate": "2026-11-21T22:00:00.000",
+      "endDate": "2026-11-22T02:00:00.000",
+      "venueName": "Big Pink",
+      "address": "6440 Wight St, Detroit, MI 48207, USA",
+      "image": "https://images.ra.co/27e9762ea260b13dba43210a55fc6e118049f9d0.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580119",
+      "title": "Make Art! Not War.",
+      "description": "Feeling optimistic?\n\nCome join @detroitantiwar at @thehighdivehamtramck spinning 90s gothic bangers and make some prints!\n\nStarts at 8, and it’s a pay what u can with a recommended donation of between 5-10$\n\nAll proceeds go to the Sameer Project (per the website) :\n\n“The Sameer Project (TSP) is a rapid-response mutual aid initiative that supports the most vulnerable communities in Gaza. Founded in April 2024 by three Palestinians in exile, the project was a response to the gap between “intention” and actual delivery of necessary aid in a way that preserves the dignity of displaced families in Gaza.\nWe prioritise communities that were disenfranchised even before the genocide; encampments and areas with little to no access to outside advocacy. Through our large network of teams in Gaza, we listen to what these communities need and provide urgent support so they can continue to resist the genocide and strive for liberation.”\n",
+      "startDate": "2026-11-27T22:00:00.000",
+      "endDate": "2026-11-28T02:00:00.000",
+      "venueName": "The High Dive",
+      "address": "11474 Joseph Campau St, Hamtramck, MI 48212-3041",
+      "image": "https://images.ra.co/96ac71b056ea499eeb0f3e98df5a7fdc6749ce29.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2578535",
+      "title": "All In",
+      "description": "all in is a new event in eastern market \n",
+      "startDate": "2026-11-28T20:00:00.000",
+      "endDate": "2026-11-29T02:00:00.000",
+      "venueName": "TBA",
+      "address": null,
+      "image": "https://images.ra.co/a53096c990bbb63ec1b0c595bb11e4c185a9e954.png",
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

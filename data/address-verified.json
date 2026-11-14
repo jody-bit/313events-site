@@ -1,0 +1,4 @@
+{
+  "_readme": "Verified public street addresses for events whose venue NAME is a placeholder (\"Venue TBA\", \"TBA - ...\"). An entry lets the event page show a Get directions link for that event ONLY while the event's own resolved street and city still equal the recorded ones (so a later address change in the source silently drops the link until it is re-verified). One entry per event: {eventId, street, city, verifiedAt (YYYY-MM-DD), verifiedBy, source (the official page that prints the address)}. Added only by an owner/R&Q-verified step, in a reviewed change; never inferred. Secrecy markers (secret, RSVP-for-address, location shared later) still block Directions regardless of an entry. Empty = no event is rescued.",
+  "entries": []
+}

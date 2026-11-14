@@ -45,6 +45,7 @@
 //   node scripts/outerlimits-description-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   fetchDescriptionsByExternalId,
   SOURCE_NAME,
@@ -61,7 +62,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&description=is.null` +
-    `&select=id,external_id,description,start_date,status` +
+    `&select=id,external_id,description,start_date,status,source,internal_note` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch Outer Limits description repair candidates: HTTP ${resp.status}`);
@@ -126,6 +127,8 @@ async function repairOuterLimitsDescriptions({
   counts.totalConsidered = candidates.length;
 
   for (const event of candidates) {
+    // Owner-supplied / editorial-hold rows are never changed by automation, even to fill a blank.
+    if (isOwnerSuppliedRow(event)) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
     // Defensive re-check: fetchCandidates() already filters
     // description=is.null at the query level, but never trust that alone
     // -- an event with any nonblank description reaching here (stale
