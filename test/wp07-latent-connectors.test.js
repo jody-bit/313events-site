@@ -139,7 +139,7 @@ async function run() {
   {
     const gcal = (dates, location) => `<html><body><a href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;dates=${dates}${location ? `&amp;location=${encodeURIComponent(location)}` : ""}">Add to calendar</a></body></html>`;
     const list = [
-      { id: 501, link: "https://playgrounddetroit.com/events/opening/", title: { rendered: "Opening Reception" }, excerpt: { rendered: "<p>Free opening reception for the fall show.</p>" }, mec_category: [7],
+      { id: 501, link: "https://playgrounddetroit.com/events/opening/", title: { rendered: "Opening Reception" }, excerpt: { rendered: "<p>Free admission to the opening reception for the fall show.</p>" }, mec_category: [7],
         _embedded: { "wp:featuredmedia": [{ source_url: "https://playgrounddetroit.com/wp-content/uploads/opening.jpg" }] } },
       { id: 502, link: "https://playgrounddetroit.com/events/fall-show/", title: { rendered: "Fall Show" }, excerpt: { rendered: "" }, mec_category: [] },
       { id: 503, link: "https://playgrounddetroit.com/events/artist-talk/", title: { rendered: "Artist Talk" }, excerpt: { rendered: "<p>In conversation.</p>" }, mec_category: [] },

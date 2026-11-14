@@ -1,0 +1,29 @@
+{
+ "_note": "Scheduled removal of a record from its collection placement only (owner direction 2026-11-04, Jody Tyree). removeAt is an ISO instant in America/Detroit; the public page drops the card from that moment. Destination records, images and history are not touched. lastDay (optional) is shown on the card.",
+ "placements": {
+  "diehls-orchard-and-cider-mill": {
+   "removeAt": "2026-11-23T00:00:00-05:00",
+   "lastDay": "2026-11-22",
+   "collection": "fall",
+   "source": "Official site hours: Nov 1 to 22, last operating day Nov 22 (read 2026-11-04).",
+   "recordedBy": "Jody Tyree (owner) cider-mill placement expiry direction 2026-11-04; applied by editor",
+   "recordedAt": "2026-11-04"
+  },
+  "parmenters-northville-cider-mill": {
+   "removeAt": "2026-11-23T00:00:00-05:00",
+   "lastDay": "2026-11-22",
+   "collection": "fall",
+   "source": "Official homepage states the 2026 closing day is November 22 (https://www.northvillecider.com/, supplied by owner 2026-11-04); removal Nov 23 12:00 a.m. per owner direction.",
+   "recordedBy": "Jody Tyree (owner) cider-mill placement expiry direction 2026-11-04; applied by editor",
+   "recordedAt": "2026-11-04"
+  },
+  "franklin-cider-mill": {
+   "removeAt": "2026-11-30T00:00:00-05:00",
+   "lastDay": "2026-11-29",
+   "collection": "fall",
+   "source": "Official site: 2026 season ends Sunday, November 29, 2026 (read 2026-11-04).",
+   "recordedBy": "Jody Tyree (owner) cider-mill placement expiry direction 2026-11-04; applied by editor",
+   "recordedAt": "2026-11-04"
+  }
+ }
+}

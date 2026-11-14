@@ -88,9 +88,7 @@
       <label for="nCity">City</label><input id="nCity" autocapitalize="words" enterkeyhint="next">
       <label for="nCat">Type</label>
       <select id="nCat">
-        <option value="music">Music</option><option value="nightlife">Nightlife</option><option value="arts">Arts</option><option value="theater">Theater</option>
-        <option value="comedy">Comedy</option><option value="dance">Dance</option><option value="fest">Festival</option><option value="vendor">Market</option>
-        <option value="sports">Sports</option><option value="food-event">Food</option></select>
+        <option value="music">Music</option><option value="theatre">Theatre &amp; Comedy</option><option value="dance">Dance &amp; Opera</option><option value="visual">Visual Arts</option><option value="museum">Museums &amp; History</option><option value="family">Family</option><option value="fest">Festivals &amp; Parades</option><option value="food">Food &amp; Markets</option><option value="film">Film</option><option value="nightlife">Nightlife &amp; Club</option><option value="sports">Sports</option><option value="community">Community</option><option value="vendor">Vendor Markets</option><option value="training">Classes &amp; Training</option><option value="gaming">Gaming &amp; Esports</option></select>
       <label for="nLink">Ticket or event link (optional)</label><input id="nLink" type="url" inputmode="url" autocapitalize="off" autocorrect="off" enterkeyhint="next">
       <label for="nSrc">Where this came from</label><input id="nSrc" placeholder="e.g. flyer from the organizer" enterkeyhint="done">
       <button id="nCheck" class="secondary">Check it</button>
@@ -230,7 +228,7 @@
   };
   ["nTitle", "nDate", "nTime", "nLink"].forEach(function (id) { $(id).addEventListener("input", function () { $(id).classList.remove("filled"); }); });
 
-  var CAT_LABEL = { music: "Music", nightlife: "Nightlife", arts: "Arts", theater: "Theater", comedy: "Comedy", dance: "Dance", fest: "Festival", vendor: "Market", sports: "Sports", "food-event": "Food" };
+  var CAT_LABEL = { music: "Music", theatre: "Theatre & Comedy", dance: "Dance & Opera", visual: "Visual Arts", museum: "Museums & History", family: "Family", fest: "Festivals & Parades", food: "Food & Markets", film: "Film", nightlife: "Nightlife & Club", sports: "Sports", community: "Community", vendor: "Vendor Markets", training: "Classes & Training", gaming: "Gaming & Esports" };
   function planHtml(r) {
     var ev = r.event_preview || {}, issues = r.review_issues || [];
     var rows = [["Title", ev.title], ["Date", ev.start_date], ["Time", ev.time_display || "not given"], ["Venue", ev.venue_name_raw || "not given"], ["City", ev.venue_city_raw || "not given"], ["Type", CAT_LABEL[ev.category] || ev.category], ["Link", ev.ticket_url || "none"]];

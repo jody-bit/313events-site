@@ -207,7 +207,8 @@ function deriveCats(col, note) {
 function launchFor(col, e, rv, prim, batch) {
   // A proposed record is READY_FOR_REVIEW with no approval, or PUBLISHED with the approver's recorded approval (never one without the other).
   const approved = !!rv.gate.approval;
-  if (approved ? !(e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e)) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
+  // An approved record may since have ENDED (#260): released, then unpublished at the end of its verified season. Use the DERIVED state (rv.state), not the declared status.
+  if (approved ? !(rv.state === "ENDED" || (e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e))) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
   const route = rv.gate.imageRoute;
   return { batch: batch || proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
     image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "acquired-file" && prim.type === "licensed_third_party" ? "Image: openly licensed photograph (" + prim.rights_status.split(" (")[0] + ", Wikimedia Commons)" : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };

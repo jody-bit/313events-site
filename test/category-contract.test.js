@@ -61,6 +61,19 @@ const labels = new Map(categoryRows.map((r) => [r.slug, r.label]));
 for (const c of Categories.list)
   assert.strictEqual(c.label, labels.get(c.key), `categories.js label for "${c.key}" differs from categories table`);
 
+// ---- 2b. the Editorial Gateway create_event list (api, tool schema, phone dropdown) ----------------------
+{
+  const gw = read("api/_lib/editorial-gateway.js").match(/CREATE_CATEGORIES\s*=\s*new Set\(\[([^\]]*)\]\)/);
+  assert(gw, "api/_lib/editorial-gateway.js: CREATE_CATEGORIES not found");
+  only("api/_lib/editorial-gateway.js CREATE_CATEGORIES", [...gw[1].matchAll(/"(\w+)"/g)].map((m) => m[1]), taxonomy);
+  const tool = read("api/editorial-gateway.js").match(/category:\s*\{[^}]*enum:\s*\[([^\]]*)\]/);
+  assert(tool, "api/editorial-gateway.js: create_event category enum not found");
+  only("api/editorial-gateway.js create_event category enum", [...tool[1].matchAll(/"(\w+)"/g)].map((m) => m[1]), taxonomy);
+  const page = read("editorial.html"), sel = page.match(/<select id="nCat"[^>]*>([\s\S]*?)<\/select>/);
+  assert(sel, "editorial.html: nCat dropdown not found");
+  only("editorial.html new-event category dropdown", [...sel[1].matchAll(/<option value="(\w+)"/g)].map((m) => m[1]), taxonomy);
+}
+
 // ---- 3. categories the connectors can emit ---------------------------------
 const emitted = new Map(); // value -> files
 const note = (v, f) => emitted.set(v, [...(emitted.get(v) || []), f]);

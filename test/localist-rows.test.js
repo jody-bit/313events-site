@@ -567,3 +567,20 @@ async function section8() {
   assert.strictEqual(mk("   "), null);
   console.log("PASS: description_text entities (&amp; &quot; &#39;) decoded once; plain text and empty untouched");
 }
+
+// --- Title rules: recitals / ensembles / faculty series are music; ambiguous titles stay unmapped ---
+{
+  const none = () => null;
+  const cat = (title, types) => L.categorize({ title, filters: { event_types: types || [] } }, none);
+  for (const t of [
+    "Student Recital: Matthew Graves, percussion",
+    "Student Recital: Morgan Thompson, clarinet",
+    "Student Recital: Lainey Luginbill, soprano",
+    "Faculty Artist Series: Caroline Chin, violin",
+    "Chamber Jazz Ensembles",
+    "Percussion Ensemble",
+  ]) assert.strictEqual(cat(t), "music", t);
+  for (const t of ["BGSU Public Skate", "Campus reStore Open", "Macomb CC Bowling Fundraiser"]) assert.strictEqual(cat(t), null, t);
+  assert.strictEqual(cat("BGSU Public Skate", [{ name: "Sporting Events" }]), "sports", "type still wins");
+  console.log("PASS: Localist title rules map recitals/ensembles to music; ambiguous titles stay unmapped");
+}

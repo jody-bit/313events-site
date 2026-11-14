@@ -29,6 +29,13 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
+function sanitizeDetail(d) {
+  if (!d || typeof d !== "object") return null;
+  const n = (v) => (Number.isInteger(v) && v >= 0 && v <= 100000 ? v : null);
+  const ids = Array.isArray(d.blockedIds) ? d.blockedIds.filter((x) => typeof x === "string" && /^ra-\d+$/.test(x)).slice(0, 200) : [];
+  return { attempted: n(d.attempted), blocked: n(d.blocked), blockedIds: ids };
+}
+
 const INBOX_FILE_RE = /^ra-sync\/inbox\/(start|complete|promote)-([A-Za-z0-9._-]+)\.json$/;
 
 // ---------------------------------------------------------------------
@@ -144,7 +151,14 @@ function parsePayloadFile(entry, rawContent) {
     return {
       action: "complete",
       runToken: entry.runToken,
-      requestBody: { action: "complete", runId: data.runId, events: data.events },
+      requestBody: {
+        action: "complete",
+        runId: data.runId,
+        events: data.events,
+        // Optional device telemetry {attempted, blocked, blockedIds}; sanitised
+        // here and again server-side. Omitted entirely when absent/invalid.
+        ...(sanitizeDetail(data.detail) ? { detail: sanitizeDetail(data.detail) } : {}),
+      },
     };
   }
 

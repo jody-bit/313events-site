@@ -28,6 +28,25 @@ async function run() {
   }
   console.log("PASS: matches the Product Owner's exact safe example verbatim");
 
+  // --- 1b. A placeholder "11:59 PM" end is never baked into the stored sentence; a real end is kept. ---
+  {
+    const base = { title: "Show", venue_name_raw: "The Hall", start_date: "2026-11-20" };
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 11:59 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM.");
+    assert.strictEqual(buildFactualDescription({ ...base, time_display: "5:00 PM – 9:00 PM" }), "Show takes place at The Hall on November 20 at 5:00 PM – 9:00 PM.");
+  }
+  console.log("PASS: placeholder 11:59 PM end is dropped from the stored description; a real end is kept");
+  // --- 1c. Conditional 23:59 (shared displayTime rule from #396): dropped only after a real AM/PM start; otherwise kept as stored. ---
+  {
+    const base = { title: "Show", venue_name_raw: "The Hall", start_date: "2026-11-20" };
+    const at = (t) => buildFactualDescription({ ...base, time_display: t });
+    assert.strictEqual(at("6:00 PM – 23:59"), "Show takes place at The Hall on November 20 at 6:00 PM.");
+    assert.strictEqual(at("6:00 PM – 11:59 p.m."), "Show takes place at The Hall on November 20 at 6:00 PM.");
+    assert.strictEqual(at("23:59"), "Show takes place at The Hall on November 20 at 23:59.");
+    assert.strictEqual(at("18:00 – 23:59"), "Show takes place at The Hall on November 20 at 18:00 – 23:59.");
+    assert.strictEqual(at("10:00 PM – 11:58 PM"), "Show takes place at The Hall on November 20 at 10:00 PM – 11:58 PM.");
+  }
+  console.log("PASS: 23:59 / dotted filler dropped only after a real AM/PM start; bare 23:59, 24-hour ranges and real ends kept");
+
   // --- 2. Never invents anything beyond the given fields — no genre, no
   //     promotional language, no adjectives of any kind. ---
   {

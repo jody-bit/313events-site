@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { fetchAllPagedRows } = require("./_lib/paged-rows"); // read EVERY matching row: Supabase caps one request at 1,000 rows with a 200
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { createBudget, fetchText: boundedFetchText, isTimeout, rotate } = require("./_lib/run-budget");
 const path = require("path");
@@ -527,10 +528,12 @@ async function retryUnmatchedArticles(sbHeaders) {
     // api/admin-events.js's includePending search already makes: a real
     // match still sitting in the submission queue is exactly what this pass
     // is for, not just already-live events.
-    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${toISO(floor)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)`;
-    const r = await fetch(evUrl, { headers: sbHeaders });
-    wideCandidates = await r.json();
-    if (!Array.isArray(wideCandidates)) throw new Error("Unexpected response shape loading candidate events");
+    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${toISO(floor)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)&order=start_date.asc,id.asc`;
+    // Paged: a plain read stops at 1,000 rows, and a partial list would leave real matches unmatched and age the articles into auto-dismissal.
+    // A partial read is an error here, never a smaller candidate list.
+    const paged = await fetchAllPagedRows(evUrl, sbHeaders);
+    if (!paged.ok) throw new Error("candidate events read incomplete: " + paged.error);
+    wideCandidates = paged.rows;
   } catch (err) {
     return { checked: unmatched.length, matched: 0, error: "Failed to load candidate events: " + err.message };
   }
@@ -608,10 +611,10 @@ module.exports = async (req, res) => {
 
   let candidateEvents;
   try {
-    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${toISO(floor)}&start_date=lte.${toISO(ceiling)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)`;
-    const r = await fetch(evUrl, { headers: sbHeaders });
-    candidateEvents = await r.json();
-    if (!Array.isArray(candidateEvents)) throw new Error("Unexpected response shape loading candidate events");
+    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${toISO(floor)}&start_date=lte.${toISO(ceiling)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)&order=start_date.asc,id.asc`;
+    const paged = await fetchAllPagedRows(evUrl, sbHeaders);
+    if (!paged.ok) throw new Error("candidate events read incomplete: " + paged.error);
+    candidateEvents = paged.rows;
   } catch (err) {
     res.status(200).json({ upserted: 0, error: "Failed to load candidate events: " + err.message });
     return;

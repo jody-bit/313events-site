@@ -480,7 +480,8 @@ async function uploadEventImage(ctx, input) {
 // The smallest event-creation path: it reuses the shared contract (api/_lib/event-contract.js evaluateEvent) and never
 // publishes on its own judgement. Unknown facts stay empty. Possible duplicates are listed and block creation. The row is
 // created as pending_review unless the caller passes publish:true (the owner said publish) AND the contract finds no issue.
-const CREATE_CATEGORIES = new Set(["music", "fest", "dance", "nightlife", "vendor", "sports", "arts", "theater", "comedy", "food-event"]);
+// Exactly the database event_category enum (test/category-contract.test.js keeps this equal to it); comedy is part of "theatre".
+const CREATE_CATEGORIES = new Set(["music", "theatre", "dance", "visual", "museum", "family", "fest", "food", "film", "nightlife", "sports", "community", "vendor", "training", "gaming"]);
 const normTitle = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const txt = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, max) : "");
 const httpUrl = (v) => { try { const u = new URL(v); return (u.protocol === "https:" || u.protocol === "http:") ? u.toString() : ""; } catch (_) { return ""; } };

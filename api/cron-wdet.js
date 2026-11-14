@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { zeroWriteReasons } = require("./_lib/zero-write-reasons");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
@@ -183,6 +184,7 @@ module.exports = async (req, res) => {
   // guesses a fuzzy one.
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const dropped = { venue_city_not_allowed: 0, category_unmapped: 0, no_start_date: 0 };
   const rows = events
     .map((e) => {
       const venue = e.venue && e.venue.venue ? e.venue : null; // Tribe nests venue fields inside e.venue
@@ -192,12 +194,12 @@ module.exports = async (req, res) => {
       // Travel packages and any other event with no real Detroit-area venue
       // are excluded here — this is the main filter that keeps international
       // trips and other non-local content off the calendar.
-      if (!venueName || !ALLOWED_CITIES.includes(venueCity)) return null;
+      if (!venueName || !ALLOWED_CITIES.includes(venueCity)) { dropped.venue_city_not_allowed++; return null; }
 
       const cat = mapCategory(e.categories);
-      if (!cat) return null;
+      if (!cat) { dropped.category_unmapped++; return null; }
 
-      if (!e.start_date) return null;
+      if (!e.start_date) { dropped.no_start_date++; return null; }
       const startDate = e.start_date.slice(0, 10); // "YYYY-MM-DD HH:MM:SS" -> date part
 
       const rowVenueName = decodeEntities(venueName);
@@ -219,7 +221,7 @@ module.exports = async (req, res) => {
         venue_city_raw: venue.city ? decodeEntities(venue.city) : undefined,
         start_date: startDate,
         time_display: formatTimeRange(e.start_date, e.end_date),
-        is_free: /free/i.test(e.cost || "") || !e.cost,
+        is_free: /free/i.test(e.cost || "") ? true : undefined, // a missing cost is "not stated", never FREE; omitted so a stored value stands
         price_from: null,
         ticket_url: e.url || null,
         image_url: pickTribeImage(e.image),
@@ -234,6 +236,7 @@ module.exports = async (req, res) => {
       records_fetched: events.length,
       records_parsed: rows.length,
       records_written: 0,
+      session_data: zeroWriteReasons(events.length, dropped),
     });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
