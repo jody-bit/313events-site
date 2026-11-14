@@ -55,7 +55,7 @@ const TOOLS = [
       properties: {
         title: { type: "string" }, start_date: { type: "string", description: "YYYY-MM-DD" }, end_date: { type: "string" },
         time_display: { type: "string", description: "As printed, e.g. 9 PM. Omit if the source gives none." },
-        category: { type: "string", enum: ["music", "fest", "dance", "nightlife", "vendor", "sports", "arts", "theater", "comedy", "food-event"] },
+        category: { type: "string", enum: ["music", "theatre", "dance", "visual", "museum", "family", "fest", "food", "film", "nightlife", "sports", "community", "vendor", "training", "gaming"] },
         venue_name: { type: "string" }, venue_address: { type: "string" }, venue_city: { type: "string" },
         ticket_url: { type: "string" }, event_url: { type: "string" }, description: { type: "string", description: "Readable and event-specific; only supported facts." },
         source_note: { type: "string", description: "Where the facts came from (required)." },
