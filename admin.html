@@ -1394,16 +1394,24 @@ function renderHealthcheck(data) {
   const banner = document.getElementById('healthBanner');
   const { latest, streakOk } = data;
   const checkedAt = new Date(latest.run_at).toLocaleString();
-  const failing = (latest.checks || []).filter(c => !c.ok);
+  // Checks the run skipped (level 'not_run', e.g. read-only mode) are not executed: they never count as passing or
+  // failing, and are listed separately so a skipped check is never read as healthy.
+  const allChecks = latest.checks || [];
+  const skipped = allChecks.filter(c => c.level === 'not_run');
+  const executed = allChecks.filter(c => c.level !== 'not_run');
+  const failing = executed.filter(c => !c.ok);
+  const skippedNote = skipped.length
+    ? ` <span class="checked-at">— ${skipped.length} NOT RUN: ${skipped.map(c => escapeHtml(c.name)).join(', ')}</span>`
+    : '';
   setTabBadge('health', failing.length);
 
   if (latest.overall === 'ok') {
     banner.className = 'health-banner ok';
-    banner.innerHTML = `✓ <b>All ${latest.checks.length} smoke checks passing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>`;
+    banner.innerHTML = `✓ <b>All ${executed.length} ${skipped.length ? 'executed ' : ''}smoke checks passing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>${skippedNote}`;
   } else {
     banner.className = 'health-banner fail';
     banner.innerHTML = `
-      ✗ <b>${failing.length} of ${latest.checks.length} smoke check${latest.checks.length === 1 ? '' : 's'} failing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>
+      ✗ <b>${failing.length} of ${executed.length} ${skipped.length ? 'executed ' : ''}smoke check${executed.length === 1 ? '' : 's'} failing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>${skippedNote}
       <ul class="fail-list">
         ${failing.map(c => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.detail || '')}</li>`).join('')}
       </ul>

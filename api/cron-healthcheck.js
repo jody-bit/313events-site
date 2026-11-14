@@ -154,6 +154,13 @@ async function runCheck(name, fn) {
   }
 }
 
+// Read-only mode (?read_only=1, same cron auth): the check that writes (a real Storage upload plus its delete) is
+// recorded as NOT RUN, never ok/healthy. level "not_run" is the marker: readers (the admin banner) must leave it out of
+// the executed/passing/failing counts and list it separately. ok:true only keeps it from failing the overall verdict.
+function notRunCheck(name, why) {
+  return { name, ok: true, level: "not_run", detail: `NOT RUN (read-only mode): ${why}`, ms: 0 };
+}
+
 async function checkPage(path) {
   const resp = await fetch(BASE_URL + path, { headers: { "User-Agent": "313events-healthcheck" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -697,6 +704,7 @@ module.exports = async (req, res) => {
     checkSourceOutputs(),
     new Promise((resolve) => setTimeout(() => resolve([{ name: "source output checks", ok: false, detail: `no answer within the ${Math.round(CHECK_BUDGET_MS / 1000)} s run budget`, ms: CHECK_BUDGET_MS }]), CHECK_BUDGET_MS)),
   ]);
+  const readOnly = /^(1|true)$/i.test(String((req.query && req.query.read_only) || ""));
   const baseChecks = await Promise.all([
     ...PAGES.map((p) => runCheck(`page: ${p}`, () => checkPage(p))),
     runCheck("supabase: approved events reachable", checkSupabaseData),
@@ -711,7 +719,9 @@ module.exports = async (req, res) => {
     runCheck("submit validation", () => checkJsonValidation("/api/submit")),
     runCheck("submit-feed validation", () => checkJsonValidation("/api/submit-feed")),
     runCheck("upload-image validation", checkUploadImageValidation),
-    runCheck("upload-image: real upload succeeds", checkUploadImageSuccess),
+    readOnly
+      ? Promise.resolve(notRunCheck("upload-image: real upload succeeds", "it uploads a real file to Storage and deletes it"))
+      : runCheck("upload-image: real upload succeeds", checkUploadImageSuccess),
     runCheck("sitemap.xml", checkSitemap),
   ]);
   const checks = baseChecks.concat(await sourceOutputChecks);
@@ -739,9 +749,9 @@ module.exports = async (req, res) => {
     return;
   }
 
-  await pruneOldRows(sbHeaders);
+  if (!readOnly) await pruneOldRows(sbHeaders); // the prune is a DELETE; read-only mode skips it
 
-  res.status(200).json({ overall, duration_ms: durationMs, failing: checks.filter((c) => !c.ok).map((c) => c.name) });
+  res.status(200).json({ overall, read_only: readOnly, duration_ms: durationMs, failing: checks.filter((c) => !c.ok).map((c) => c.name), not_run: checks.filter((c) => c.level === "not_run").map((c) => c.name) });
 };
 
 // Exposed for test/cron-healthcheck-source-health.test.js only.
