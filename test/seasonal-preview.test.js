@@ -90,6 +90,6 @@ console.log("seasonal-preview: ok");
     es.forEach((e) => { assert.ok(/^https:\/\/[^/]+\.[^/]+/.test(e.checkUrl), slug + "/" + e.id + " has an https official link"); });
   });
   assert.ok(COUNTS["fall"] >= 15, "fall carries the check line on entries with unconfirmed 2026 details");
-  assert.ok(COUNTS["outside-the-ordinary"] >= 4, "Outside the Ordinary carries it for Holiday Beach, Point Pelee, Ojibway and Cranbrook");
+  assert.ok(COUNTS["outside-the-ordinary"] >= 3, "Outside the Ordinary carries it for Point Pelee, Ojibway and Cranbrook (Holiday Beach ENDED 2026-10-31, #244 draft)");
   assert.ok(P.html("outside-the-ordinary").indexOf("Check with the venue before you go") >= 0 || /checkUrl/.test(P.html("outside-the-ordinary")), "the page carries the check data");
 }

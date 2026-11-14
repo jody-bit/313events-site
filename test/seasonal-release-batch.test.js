@@ -20,17 +20,18 @@ assert.strictEqual(new Set(B.records.map((r) => r.collection + "/" + r.id)).size
 
 const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 79, "Fall approvals only on the 76 batch records + the 3 batch-2 records");
-assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 79, "only batches 1 and 2 are declared PUBLISHED");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 79, "only batches 1 and 2 are public");
+assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 78, "only batches 1 and 2 are declared PUBLISHED (less Holiday Beach, ENDED after release, #244)");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 78, "only batches 1 and 2 are public (less Holiday Beach, ENDED after release, #244)");
 assert.strictEqual(E.halloween.filter((e) => e.status === "PUBLISHED").length, 7, "Halloween: the 7 gate-passing records");
 for (const r of B.records) assert.deepStrictEqual(E[r.collection].find((x) => x.id === r.id).approval, AUTHZ.AUTH, r.id + ": the authorized approval, nothing else");
 
 let advisories = 0;
 for (const r of B.records) {
   const e = E[r.collection].find((x) => x.id === r.id);
-  assert.strictEqual(ED.review(e).state, "PUBLISHED", r.id);
+  assert.strictEqual(ED.review(e).state, AUTHZ.ENDED_AFTER_RELEASE.includes(r.collection + "/" + r.id) ? "ENDED" : "PUBLISHED", r.id);
   assert.ok(e.editorialAccepted, r.id + ": editorially accepted");
   const sim = JSON.parse(JSON.stringify(e));
+  if (sim.status === "ENDED") { sim.status = "PUBLISHED"; delete sim.season; delete sim.expiryDisposition; } // as released, before #244 ENDED
   assert.ok(ED.COLLECTIONS.isPublic(sim), r.id + ": passes the gate with its approval");
   const card = ED.publicEntry(sim);
   assert.deepStrictEqual(card, r.publicCard, r.id + ": the batch shows the exact card");
@@ -60,7 +61,7 @@ for (const e of [E["fall-color"].find((x) => x.id === hines.id), E["fall-color"]
     const html = fs.readFileSync(path.join(root, f), "utf8");
     const cards = [...html.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]);
     const unique = [...new Set(cards)].sort();
-    const want = B.records.filter((r) => r.collection === slug).map((r) => r.id)
+    const want = B.records.filter((r) => r.collection === slug && !AUTHZ.ENDED_AFTER_RELEASE.includes(slug + "/" + r.id)).map((r) => r.id)
       .concat(AUTHZ.BATCH2.filter((k) => k.startsWith(slug + "/")).map((k) => k.split("/")[1])).sort(); // batch 1 (frozen, 76) + batch 2 (pinned, 3)
     assert.deepStrictEqual(unique, want, f + ": built page shows exactly the authorized records");
     assert.strictEqual(cards.length, want.length + FEATURED[slug].length, f + ": plus the Don't Miss rail");

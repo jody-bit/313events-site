@@ -5,6 +5,8 @@
 
 const { requireCronAuth } = require("./_lib/cron-auth");
 const { run } = require("./_lib/link-check-run");
+const { fetchAllPagedRows } = require("./_lib/paged-rows");
+const EventDates = require("../event-dates.js");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
@@ -16,12 +18,16 @@ const headers = () => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-T
 
 // source: events.source filter (ilike), for a targeted run such as the 36 never-checked VisitDetroit URLs.
 async function loadRows(source) {
-  const today = new Date().toISOString().slice(0, 10);
-  const url = `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date,ticket_url,event_url,link_check_status,link_checked_at` +
-    `&status=eq.approved&start_date=gte.${today}${source ? `&source=ilike.${encodeURIComponent(`*${source}*`)}` : ""}&order=start_date.asc&limit=5000`;
-  const r = await fetch(url, { headers: headers() });
-  if (!r.ok) throw new Error(`events read failed: HTTP ${r.status}`);
-  return r.json();
+  // Detroit's date (not UTC, which is already tomorrow after 7-8 PM) and the shared upcoming rule: a still-running exhibition or a
+  // series with a later occurrence is checked too. Only the candidate pool widens; selection (LINK_CHECK_LIMIT) and writes are unchanged.
+  const today = EventDates.detroitClock().iso;
+  const url = `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date,end_date,date_semantics,occurrence_dates,ticket_url,event_url,link_check_status,link_checked_at` +
+    `&status=eq.approved&or=(start_date.gte.${today},end_date.gte.${today})${source ? `&source=ilike.${encodeURIComponent(`*${source}*`)}` : ""}&order=start_date.asc,id.asc`;
+  // Paged in full: the server caps every request at 1,000 rows whatever limit= asks for, so the old limit=5000 read only
+  // checked the first 1,000 upcoming rows. A partial read throws (the handler reports it) rather than silently shrinking the pool.
+  const result = await fetchAllPagedRows(url, headers());
+  if (!result.ok) throw new Error(`events read failed after ${result.rows.length} rows: ${result.error}`);
+  return result.rows.filter((r) => EventDates.isUpcoming(r, today));
 }
 
 // Race-safe: only writes if the row still holds the URL that was checked.

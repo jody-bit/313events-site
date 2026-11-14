@@ -17,9 +17,16 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   const sd = sessionData || {};
   const c = complete || {};
-  const newIds = arr(sd.newIds);
+  const allFetchIds = arr(sd.newIds); // new ids AND retry ids ride in sd.newIds (scripts/ra-sync.js start)
+  const retryIds = arr(sd.retryIds);
+  const newIds = allFetchIds.filter((id) => !retryIds.includes(id));
   const importedIds = arr(c.importedIds);
   const imported = Number.isFinite(c.imported) ? c.imported : importedIds.length;
+  // A retry id already has a pending_review row; complete() only fills its blank
+  // fields and preserves status, so it is NEVER newly public. Only the rest of
+  // importedIds are inserted approved.
+  const retryFilledIds = importedIds.filter((id) => retryIds.includes(id));
+  const publicIds = importedIds.filter((id) => !retryIds.includes(id));
 
   const d = detail || sd.detailReport || {};
   const detailAttempted = Number.isFinite(d.attempted) ? d.attempted : null;
@@ -36,9 +43,10 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   const created = p && !dryRun ? num(p.written) : 0;
   const createdIds = p && !dryRun ? writtenIds : [];
 
-  const perCandidate = newIds.map((id) => {
+  const perCandidate = allFetchIds.map((id) => {
     let status = "never_attempted";
-    if (importedIds.includes(id)) status = "imported_public";
+    if (retryFilledIds.includes(id)) status = "retry_filled_pending_review";
+    else if (importedIds.includes(id)) status = "imported_public";
     else if (createdIds.includes(id)) status = "promoted_pending_review";
     else if (deferredIds.includes(id)) status = "deferred_by_cap";
     else if (blockedIds.includes(id)) status = "blocked";
@@ -53,7 +61,8 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
     listing: {
       candidates: num(sd.candidateCount),
       known: num(sd.knownCount),
-      new: newIds.length || num(sd.allNewCount),
+      new: allFetchIds.length ? newIds.length : num(sd.allNewCount),
+      retry: retryIds.length,
     },
     detail: {
       attempted: detailAttempted, // null = device did not report
@@ -70,12 +79,13 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
       dryRun,
       error: promotion && promotion.error ? promotion.error : null,
     },
-    publications: { public: imported, publicIds: importedIds },
+    retry: { selected: retryIds.length, filled: retryFilledIds.length, filledIds: retryFilledIds },
+    publications: { public: publicIds.length, publicIds },
   };
 
   const parts = [];
   parts.push(
-    `Listing showed ${plural(counts.listing.candidates, "candidate", "candidates")}, ${counts.listing.new} new to us.`
+    `Listing showed ${plural(counts.listing.candidates, "candidate", "candidates")}, ${counts.listing.new} new to us${retryIds.length ? `, plus ${retryIds.length} retried from earlier listing-only rows` : ""}.`
   );
   if (!detailReported) {
     parts.push(`Detail fetch result was not reported by the device (${plural(imported, "event", "events")} imported from submitted details).`);
@@ -96,9 +106,12 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
   if (deferredIds.length) {
     parts.push(`${plural(deferredIds.length, "candidate was", "candidates were")} deferred by the per-run cap (${deferredIds.join(", ")}) and carry over to the next run.`);
   }
+  if (retryIds.length) {
+    parts.push(`Retries: ${retryFilledIds.length} of ${retryIds.length} retried rows were filled in; they stay pending_review (hidden) until approved.`);
+  }
   parts.push(
-    imported > 0
-      ? `Public site: ${plural(imported, "event", "events")} published.`
+    publicIds.length > 0
+      ? `Public site: ${plural(publicIds.length, "event", "events")} published.`
       : `Public site: 0 events published by this run.`
   );
 
@@ -109,7 +122,7 @@ function buildRaRunSummary({ sessionData, complete, promotion, detail } = {}) {
 // display-safe object. Anything not persisted stays null = UNKNOWN; it is
 // never coerced to 0 or "success". Runs from before this change have none of
 // these fields => { known: false }.
-const KNOWN_STATUS = new Set(["imported_public", "promoted_pending_review", "deferred_by_cap", "blocked", "never_attempted"]);
+const KNOWN_STATUS = new Set(["imported_public", "retry_filled_pending_review", "promoted_pending_review", "deferred_by_cap", "blocked", "never_attempted"]);
 
 function readRaTelemetry({ summary, summaryText, perCandidate } = {}) {
   const sm = summary && typeof summary === "object" ? summary : null;
@@ -120,6 +133,8 @@ function readRaTelemetry({ summary, summaryText, perCandidate } = {}) {
   const counts = {
     listingCandidates: g(sm && sm.listing, "candidates"),
     listingNew: g(sm && sm.listing, "new"),
+    retrySelected: g(sm && sm.retry, "selected"),
+    retryFilled: g(sm && sm.retry, "filled"),
     detailAttempted: g(sm && sm.detail, "attempted"), // null = device did not report
     detailBlocked: g(sm && sm.detail, "blocked"),
     detailSucceeded: g(sm && sm.detail, "succeeded"),

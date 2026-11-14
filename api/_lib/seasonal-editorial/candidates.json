@@ -4798,9 +4798,9 @@
    "name": "Holiday Beach Conservation Area",
    "location": "Amherstburg, ON",
    "inventory_note": "Wetlands / migratory birds",
-   "status": "PUBLISHED",
+   "status": "ENDED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state ENDED. All gate items recorded.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],

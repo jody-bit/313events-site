@@ -120,6 +120,7 @@ const { filterPendingQueue } = require("./_lib/pending-queue");
 const { classifyRows } = require("./_lib/pending-classifier");
 const { annotateQueue } = require("./_lib/submission-provenance");
 const { evaluateSources } = require("./_lib/source-health");
+const { venueLocationGate } = require("./_lib/venue-location-gate");
 
 async function buildProvenance(rows, headers) {
   let feeds = [];
@@ -525,6 +526,8 @@ module.exports = async (req, res) => {
             approveBlock.blocked = { failed_gate: "not_pending", codes: [], why: "Only events waiting for review can be approved here. Use Restore for a rejected or hidden event." };
           } else if (row.source === "Resident Advisor" && !row.time_display && body.acknowledgeMissingTime !== true) {
             approveBlock.blocked = { failed_gate: "missing_time", codes: ["MISSING_START_TIME"], why: "This Resident Advisor event has no verified start time. Add the time, or approve it without one on purpose." };
+          } else if (!venueLocationGate(row, { acknowledged: body.acknowledgeMissingLocation === true }).ok) {
+            approveBlock.blocked = { failed_gate: "missing_location", codes: ["MISSING_VENUE_LOCATION"], why: "This submission is not linked to a venue and has no city. Add the venue or city, or approve it on purpose." };
           } else {
             // The same publication gate ingestion uses. Identity and source codes describe how a row arrived, not whether
             // it is fit to publish, so a hand-submitted row (no external_id) is not blocked by them.
@@ -534,7 +537,7 @@ module.exports = async (req, res) => {
               approveBlock.blocked = { failed_gate: "publication_gate", codes: blockers.map((i) => i.code), why: blockers.map((i) => i.message || i.code).join("; ") };
             } else {
               const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.pending_review`, {
-                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved" }),
+                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved", ...(venueLocationGate(row, { acknowledged: body.acknowledgeMissingLocation === true }).patch || {}) }),
               });
               const approved = await a.json().catch(() => null);
               if (a.ok && Array.isArray(approved) && approved[0]) {
@@ -600,7 +603,8 @@ module.exports = async (req, res) => {
           }
         }
         if (!Object.keys(patch).length) {
-          res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
+          const { internal_note: _hiddenNote, ...publicCurrent } = current;
+          res.status(200).json({ ok: true, event: publicCurrent, note: "Nothing to fill in — every requested field already had a value." });
           return;
         }
         // A person's fill is a correction like any other: it is recorded as an OWNER-CORRECTION line, which is also the
@@ -611,7 +615,8 @@ module.exports = async (req, res) => {
         const changes = Object.keys(patch).map((field) => ({ field, before: current[field] == null ? null : current[field], after: patch[field] }));
         const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes, note: "follow-up fill" });
         const guarded = { ...patch, internal_note: contract.appendNoteLine(current.internal_note, line), updated_at: now };
-        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "";
+        // Always conditional on the version just read; a row with no version is guarded as "still has none" (never an unguarded write).
+        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "&updated_at=is.null";
         const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}${versionGuard}`, {
           method: "PATCH",
           headers: { ...sbHeaders, Prefer: "return=representation" },
@@ -781,6 +786,21 @@ module.exports = async (req, res) => {
       // confirmed by hand that RA genuinely has no time for this one
       // (e.g. an all-day/date-only listing) can still approve it; this
       // only blocks the SILENT case the defect actually was.
+      let approvePatch = {};
+      if (action === "approve") {
+        // Venue Submission with no venue link and no city (P1 audit EXPORT-2): refuse, or fill the city its own address states.
+        const locResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,status,venue_id,venue_city_raw,venue_address_raw,no_fixed_venue`,
+          { headers: sbHeaders }
+        );
+        const locRows = locResp.ok ? await locResp.json() : [];
+        const gate = venueLocationGate(locRows[0], { acknowledged: body.acknowledgeMissingLocation === true });
+        if (!gate.ok) {
+          res.status(409).json({ error: gate.code, message: gate.why, id });
+          return;
+        }
+        if (gate.patch) approvePatch = gate.patch;
+      }
       if (action === "approve" && !acknowledgeMissingTime) {
         const checkResp = await fetch(
           `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,time_display`,
@@ -802,7 +822,7 @@ module.exports = async (req, res) => {
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { ...sbHeaders, Prefer: "return=representation" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, ...approvePatch }),
       });
       const rows = await resp.json();
       if (resp.ok && action === "approve" && rows[0]) {
