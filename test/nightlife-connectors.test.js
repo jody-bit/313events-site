@@ -68,12 +68,12 @@ async function gottagacha() {
   assert.strictEqual(corridor.status, "pending_review", "Corridor keeps its pending_review status (owner hold preserved, never approved)");
 
   const glotaku = by("glotaku");
-  assert.ok(!Object.hasOwn(glotaku, "category"), "approved row omits category rather than overwriting stored nightlife");
+  assert.strictEqual(glotaku.category, "nightlife", "approved row resends the stored required category");
   assert.strictEqual({ ...existing[1], ...glotaku }.category, "nightlife", "stored approved nightlife survives the refresh");
   assert.strictEqual(glotaku.status, "approved", "its status is untouched");
 
   const rejected = by("rejectedrave");
-  assert.ok(!Object.hasOwn(rejected, "category"), "rejected row omits category");
+  assert.strictEqual(rejected.category, "music", "rejected row resends the stored required category");
   assert.strictEqual({ ...existing[2], ...rejected }.category, "music", "stored rejected custom category survives");
   assert.strictEqual(rejected.status, "rejected");
 

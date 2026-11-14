@@ -322,6 +322,30 @@ async function run() {
   }
   console.log("PASS: an upstream 403 logs outcome=blocked, not failed");
 
+  // Required INSERT fields must survive an upsert of a moderated nightlife candidate.
+  for (const status of ["approved", "rejected"]) {
+    const handler = freshHandler();
+    const external_id = "gottagacha-reviewed-rave-2026-10-06";
+    const { fetchFn, calls } = makeMockFetch({
+      source: () => ({ ok: true, status: 200, json: async () => ({ events: [apiEvent({ id: "reviewed-rave", title: "Corridor Cyberpunk Rave", description: "A rave with DJs and dancing." })] }) }),
+      statusLookup: () => ({ ok: true, status: 200, json: async () => [{ external_id, status, category: "community" }] }),
+    });
+    global.fetch = async (url, opts = {}) => {
+      if (url.includes("/rest/v1/events") && opts.method === "POST") {
+        const rows = JSON.parse(opts.body);
+        if (rows.some(r => !r.category)) return { ok: false, status: 400, text: async () => '{"code":"23502","message":"category violates not-null constraint"}' };
+      }
+      return fetchFn(url, opts);
+    };
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    assert.strictEqual(res._status, 200);
+    const sent = upsertCalls(calls).flatMap(c => c.body).find(r => r.external_id === external_id);
+    assert.strictEqual(sent.category, "community", "reviewed category survives instead of being omitted or reclassified");
+    assert.strictEqual(sent.status, status);
+  }
+  console.log("PASS: approved/rejected nightlife candidates resend stored required category");
+
   // --- 18. existing approved/rejected status is preserved on re-ingestion ---
   {
     const handler = freshHandler();

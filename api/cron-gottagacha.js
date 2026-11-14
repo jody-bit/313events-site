@@ -482,7 +482,7 @@ module.exports = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,event_url,description,description_source,title" }
+        { select: "external_id,status,event_url,description,description_source,title,category" }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
@@ -497,9 +497,13 @@ module.exports = async (req, res) => {
     const existingEventUrlByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.event_url]));
     const rowsWithStatus = rows.map((row) => {
       const { _defaultStatusForRow, _nightlifeClassified, ...rest } = row;
-      // #177: Nightlife is written only on a row that is new or still pending_review. An approved or rejected row omits
-      // category so PostgREST preserves its stored value (no silent reclassification).
-      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) delete rest.category;
+      // Preserve a moderator's category. INSERT validates required columns before
+      // ON CONFLICT updates: omitting category rejects even an existing row.
+      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) {
+        const storedCategory = existingRows.get(row.external_id)?.category;
+        if (typeof storedCategory !== "string" || !storedCategory.trim()) throw new Error("Reviewed event category unavailable; refusing reclassification");
+        rest.category = storedCategory;
+      }
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.
