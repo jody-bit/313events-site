@@ -204,6 +204,10 @@
       "destination": "/about.html"
     },
     {
+      "source": "/media",
+      "destination": "/media.html"
+    },
+    {
       "source": "/terms",
       "destination": "/terms.html"
     },
@@ -214,6 +218,10 @@
     {
       "source": "/copyright",
       "destination": "/copyright.html"
+    },
+    {
+      "source": "/photo-credits",
+      "destination": "/photo-credits.html"
     },
     {
       "source": "/editorial-policy",

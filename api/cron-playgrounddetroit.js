@@ -3,6 +3,34 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { createBudget, fetchText, isTimeout, rotate } = require("./_lib/run-budget"); // bounded fetching, see that file
+// FREE only when the source states unconditional free ADMISSION/ENTRY. A bare "free" ("free parking", "free tour with
+// admission"), a conditional one ("for members", "before 5 pm", "$15 after") or a negated one ("not free to attend") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// column default.
+const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
+const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
+const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
+// A negation that FOLLOWS the phrase within a few plain words ("is not available", "will not be offered", "won't be
+// offered", "does not / doesn't apply", "cannot / can't be offered", "no longer"). A comma or other punctuation ends the window.
+const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|no longer|\w+n't)\b/i;
+// The same negation set off by punctuation ("Free admission, not available." / ": not available" / "(not available)" /
+// ". Not available.") only when the negator is followed by an availability word, so "Free admission, not to be missed!"
+// stays FREE; and end-of-offer wording ("has been discontinued", "has ended", "is over", "is suspended", "replaced by",
+// "was offered last year but not this year"). Over-rejecting is the safe direction.
+const FREE_PUNCT = "[\\s,:;.()\\-–—]*";
+const FREE_NEGATED_ACROSS = new RegExp("^" + FREE_PUNCT + "(?:not|cannot|no longer|never|\\w+n't)\\s+(?:\\w+\\s+){0,2}?(?:available|offered|provided|included|applicable|possible|valid|this year|anymore)\\b", "i");
+const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:discontinued\\b|(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
+function statesFreeAdmission(text) {
+  const s = String(text || "");
+  for (const m of s.matchAll(FREE_ADMISSION)) {
+    const before = s.slice(Math.max(0, m.index - 30), m.index);
+    const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    const afterLong = s.slice(m.index + m[0].length, m.index + m[0].length + 70);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after) || FREE_NEGATED_AFTER.test(after) || FREE_NEGATED_ACROSS.test(afterLong) || FREE_OFFER_ENDED.test(afterLong)) continue;
+    return true;
+  }
+  return false;
+}
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -125,8 +153,26 @@ const VENUE_NAME = "PLAYGROUND DETROIT";
 const DEFAULT_CATEGORY = "visual"; // this venue's own core identity — an art gallery
 const DEFAULT_STATUS = "approved"; // the gallery's own official listings, same trust tier as cron-dossin.js/cron-halo.js
 const CRAWL_DELAY_MS = 3000; // this site's robots.txt Crawl-delay — see header comment
-const RETRY_STATUSES = new Set([429, 502, 503, 504]);
-const MAX_FETCH_ATTEMPTS = 4;
+// Reliability limits (#256 / Old Miami pattern, api/_lib/run-budget.js). vercel.json gives
+// this function 120 s; the crawl stops starting new pages at 95 s so the venue lookup,
+// status lookup and chunked upsert that follow still have room. Every request gets 10 s,
+// and three timeouts in a row mean the source is down, so the rest is deferred instead
+// of burning the budget. Nothing is retried within a run: the next scheduled run picks up
+// whatever was deferred (writes are idempotent upserts keyed on external_id).
+const RUN_BUDGET_MS = 95000;
+const REQUEST_TIMEOUT_MS = 10000;
+const MAX_CONSECUTIVE_TIMEOUTS = 3;
+const MIN_START_MS = 1500;
+// Test-only overrides (unset in production), same convention as cron-oldmiami.js.
+function limits() {
+  const n = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: n(process.env.PLAYGROUND_RUN_BUDGET_MS, RUN_BUDGET_MS),
+    requestMs: n(process.env.PLAYGROUND_REQUEST_TIMEOUT_MS, REQUEST_TIMEOUT_MS),
+    minStartMs: n(process.env.PLAYGROUND_MIN_START_MS, MIN_START_MS),
+    delayMs: n(process.env.PLAYGROUND_CRAWL_DELAY_MS, CRAWL_DELAY_MS),
+  };
+}
 const SUPABASE_BATCH_SIZE = 75;
 const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313.events event calendar)" };
 
@@ -134,19 +180,10 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Same retry-with-backoff helper as cron-detroitmonthofdesign.js — no
-// evidence yet that this site rate-limits the way Wix did (a handful of
-// manual checks all came back clean), but this is cheap insurance and
-// keeps the two scrapers' request-handling identical.
-async function fetchWithRetry(url, options, attempts = MAX_FETCH_ATTEMPTS) {
-  let lastResponse;
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    const r = await fetch(url, options);
-    if (r.ok || !RETRY_STATUSES.has(r.status) || attempt === attempts) return r;
-    lastResponse = r;
-    await sleep(400 * attempt);
-  }
-  return lastResponse;
+// One bounded request: it settles within min(requestMs, remaining run budget) and is not
+// retried (see the limits above). Returns { ok, status, text, headers }.
+function fetchBounded(url, cfg, budget) {
+  return fetchText(url, { headers: REQUEST_HEADERS }, { timeoutMs: cfg.requestMs, budget });
 }
 
 function chunk(items, size) {
@@ -193,17 +230,17 @@ function mapCategory(tagNames) {
 // REST cap should this source ever grow that large (24 today — this is
 // headroom, not a current need). _embed=1 pulls the featured image inline
 // so a separate per-event media fetch isn't needed.
-async function fetchEventList() {
+async function fetchEventList(cfg, budget) {
   const events = [];
   let page = 1;
   for (;;) {
     const url = `${EVENTS_LIST_URL}?per_page=100&_embed=1&page=${page}`;
-    const r = await fetchWithRetry(url, { headers: REQUEST_HEADERS });
+    const r = await fetchBounded(url, cfg, budget);
     if (!r.ok) {
       if (page === 1) throw new Error(`Event list fetch failed: HTTP ${r.status}`);
       break; // later page failed (e.g. past the real last page) — keep what we already have
     }
-    const body = await r.json();
+    const body = JSON.parse(r.text);
     if (!Array.isArray(body) || !body.length) break;
     events.push(...body);
     const totalPages = parseInt(r.headers.get("x-wp-totalpages") || "1", 10);
@@ -216,11 +253,11 @@ async function fetchEventList() {
 // Non-fatal by design: if this fails, mapCategory() just gets an empty
 // tag-name list for every event and everything falls back to
 // DEFAULT_CATEGORY, same as if the source had no category signal at all.
-async function fetchCategoryNames() {
+async function fetchCategoryNames(cfg, budget) {
   try {
-    const r = await fetchWithRetry(CATEGORY_TAXONOMY_URL, { headers: REQUEST_HEADERS });
+    const r = await fetchBounded(CATEGORY_TAXONOMY_URL, cfg, budget);
     if (!r.ok) return new Map();
-    const terms = await r.json();
+    const terms = JSON.parse(r.text);
     if (!Array.isArray(terms)) return new Map();
     return new Map(terms.map((t) => [t.id, t.name]));
   } catch {
@@ -285,10 +322,10 @@ function extractGCalParams(html) {
   return { dates: params.get("dates"), location: params.get("location") };
 }
 
-async function fetchEventDetail(ev, categoryNames) {
-  const r = await fetchWithRetry(ev.link, { headers: REQUEST_HEADERS });
+async function fetchEventDetail(ev, categoryNames, cfg, budget) {
+  const r = await fetchBounded(ev.link, cfg, budget);
   if (!r.ok) return null;
-  const html = await r.text();
+  const html = r.text;
 
   const gcal = extractGCalParams(html);
   if (!gcal || !gcal.dates) return null; // no export link found — skip, don't guess
@@ -330,7 +367,7 @@ async function fetchEventDetail(ev, categoryNames) {
     start_date: start.date,
     end_date: end && end.date !== start.date ? end.date : undefined,
     time_display: timeDisplay || undefined,
-    is_free: !!(description && /\bfree\b/i.test(description)),
+    is_free: description && statesFreeAdmission(description) ? true : undefined,
     source: "PLAYGROUND DETROIT",
     image_url: imageUrl,
     ticket_url: ev.link,
@@ -345,9 +382,11 @@ const handleRequest = async (req, res) => {
     return;
   }
 
+  const cfg = limits();
+  const budget = createBudget({ budgetMs: cfg.budgetMs });
   let events;
   try {
-    events = await fetchEventList();
+    events = await fetchEventList(cfg, budget);
   } catch (err) {
     res.status(200).json({ upserted: 0, error: "Event list fetch failed: " + err.message });
     return;
@@ -357,26 +396,59 @@ const handleRequest = async (req, res) => {
     return;
   }
 
-  const categoryNames = await fetchCategoryNames();
+  const categoryNames = await fetchCategoryNames(cfg, budget);
 
   // Strictly sequential with an awaited pause between every request — see
   // the header comment's CRAWL-DELAY section for why this isn't the usual
   // mapWithConcurrency() pattern other multi-page crons here use.
   const parsedResults = [];
-  for (let i = 0; i < events.length; i++) {
+  const timedOut = [];
+  const deferred = [];
+  let consecutiveTimeouts = 0;
+  let fetchedAny = false;
+  // Rotated by UTC day so a persistently slow head item cannot starve the tail
+  // (same helper Old Miami uses; no persisted state, writes are idempotent upserts).
+  const ordered = rotate(events, Math.floor(Date.now() / 86400000));
+  for (const ev of ordered) {
+    // The 3 s crawl-delay is kept before every request after the first; an event
+    // that cannot start (and finish its pause) inside the budget is deferred.
+    if (consecutiveTimeouts >= MAX_CONSECUTIVE_TIMEOUTS || budget.remaining() < cfg.minStartMs + (fetchedAny ? cfg.delayMs : 0)) {
+      deferred.push(ev.id);
+      continue;
+    }
+    if (fetchedAny) await sleep(cfg.delayMs);
+    fetchedAny = true;
     try {
-      parsedResults.push(await fetchEventDetail(events[i], categoryNames));
-    } catch {
+      parsedResults.push(await fetchEventDetail(ev, categoryNames, cfg, budget));
+      consecutiveTimeouts = 0;
+    } catch (err) {
+      if (isTimeout(err)) {
+        consecutiveTimeouts++;
+        timedOut.push(ev.id);
+      } else {
+        consecutiveTimeouts = 0;
+      }
       parsedResults.push(null); // one bad page never aborts the whole run
     }
-    if (i < events.length - 1) await sleep(CRAWL_DELAY_MS);
   }
+  // Accurate partial-run reporting: a run that did not read every event page says so.
+  // Events that were not read are neither written nor touched.
+  const runReport = {
+    attempted: events.length - deferred.length,
+    total: events.length,
+    timedOut,
+    deferred,
+    complete: !timedOut.length && !deferred.length,
+    budgetMs: cfg.budgetMs,
+    elapsedMs: budget.elapsed(),
+  };
+  runReport.partial = !runReport.complete;
 
   const todayISO = new Date().toISOString().slice(0, 10);
   const parsed = parsedResults.filter(Boolean).filter((e) => e.start_date >= todayISO || (e.end_date && e.end_date >= todayISO));
 
   if (!parsed.length) {
-    res.status(200).json({ upserted: 0, note: "No current/upcoming PLAYGROUND DETROIT events parsed.", checkedCount: events.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: 0, note: "No current/upcoming PLAYGROUND DETROIT events parsed.", checkedCount: events.length, ...runReport, fetchedAt: new Date().toISOString() });
     return;
   }
 
@@ -436,12 +508,12 @@ const handleRequest = async (req, res) => {
     }
 
     if (chunkErrors.length) {
-      res.status(502).json({ upserted, upsertErrors: chunkErrors, checkedCount: events.length, fetchedAt: new Date().toISOString() });
+      res.status(502).json({ upserted, upsertErrors: chunkErrors, checkedCount: events.length, ...runReport, fetchedAt: new Date().toISOString() });
       return;
     }
-    res.status(200).json({ upserted, checkedCount: events.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted, checkedCount: events.length, ...runReport, fetchedAt: new Date().toISOString() });
   } catch (err) {
-    res.status(500).json({ upserted: 0, error: err.message });
+    res.status(500).json({ upserted: 0, ...runReport, error: err.message });
   }
 };
 module.exports = withRunLog("playgrounddetroit", handleRequest);

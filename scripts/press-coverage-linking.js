@@ -93,6 +93,7 @@
 // Requires SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the environment.
 
 const path = require("path");
+const { fetchAllPagedRows } = require(path.join(__dirname, "..", "api", "_lib", "paged-rows")); // read EVERY row; one request is capped at 1,000
 // DQ-004: links are written hidden (candidate) unless the shared auto rule verifies them; an event
 // created from an article's own text is verified by construction; rejected pairs are never re-created.
 const { evaluateAutoLink, sameTitleCounts, newLinkRow, eventForEvaluation, CREATED_FROM_ARTICLE } = require(path.join(__dirname, "..", "api", "_lib", "editorial-verification"));
@@ -924,12 +925,12 @@ async function fetchQueueDefault(SUPABASE_URL, sbHeaders) {
 async function fetchCandidateEventsDefault(SUPABASE_URL, sbHeaders) {
   const floor = new Date(); floor.setDate(floor.getDate() - 30);
   const floorIso = floor.toISOString().slice(0, 10);
-  const url = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${floorIso}&select=id,title,venue_name_raw,venue_id,venue_city_raw,start_date,venues(name,city)&limit=2000`;
-  const resp = await fetch(url, { headers: sbHeaders });
-  if (!resp.ok) throw new Error(`Failed to fetch candidate events: HTTP ${resp.status}`);
-  const rows = await resp.json();
-  if (!Array.isArray(rows)) throw new Error("Unexpected response shape fetching candidate events");
-  return rows;
+  const url = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${floorIso}&select=id,title,venue_name_raw,venue_id,venue_city_raw,start_date,venues(name,city)&order=start_date.asc,id.asc`;
+  // Paged: this read used limit=2000, but Supabase returns at most 1,000 rows per request with a 200, so events after row 1,000 were never
+  // candidates for a match. A failed or incomplete read throws (as a failed request already did), never a smaller list: nothing is linked or created.
+  const paged = await fetchAllPagedRows(url, sbHeaders);
+  if (!paged.ok) throw new Error(`Failed to fetch candidate events: ${paged.error || "incomplete read"}`);
+  return paged.rows;
 }
 
 // Same is.null-guarded PATCH + on_conflict join upsert as

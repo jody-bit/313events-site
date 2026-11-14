@@ -12,7 +12,7 @@ const fs = require("fs");
 const vm = require("vm");
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const html = fs.readFileSync(`${REPO_DIR}/index.html`, "utf8");
-const { Discovery } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const EventDates = require(`${REPO_DIR}/event-dates.js`);
 global.EventDates = EventDates;
 const m = html.match(/function streamRows\(ctx\)\{[\s\S]*?\n\}\n/);
@@ -59,11 +59,48 @@ const tomorrowRows = run(stateFor({ when: "tomorrow" }));
 assert.ok(tomorrowRows.includes("null|Planet 9 Film Fest") && tomorrowRows.includes("null|Starts tomorrow only"), "Tomorrow lists ranges covering Nov 8");
 assert.ok(!tomorrowRows.includes("null|Ended last day"));
 
-// Windows that need a verified day or evening do not get the group: nothing is inferred.
-["tonight", "weekend", "next7", "week"].forEach((mode) => {
-  assert.ok(!Discovery.unconfirmedOn(EVENTS[0], stateFor({ when: mode }), ctx), `${mode}: no unconfirmed group`);
+// P0 2026-11-09 (approved events missing from a picked date): a picked date or range (like Today / Tomorrow) offers a range
+// covering it under "Dates not confirmed".
+assert.ok(!Discovery.unconfirmedOn(EVENTS[0], stateFor({ when: "tonight" }), ctx), "tonight: no unconfirmed group (needs a verified evening)");
+["weekend", "next7", "week"].forEach((mode) => {
+  assert.ok(Discovery.unconfirmedOn(EVENTS[0], stateFor({ when: mode }), ctx), `${mode}: range overlapping the window is offered`);
+  assert.ok(!Discovery.unconfirmedOn(EVENTS[6], stateFor({ when: mode }), ctx), `${mode}: a range already over is not`);
+  assert.ok(!Discovery.matches(EVENTS[0], stateFor({ when: mode }), ctx), `${mode}: still never counted as confirmed`);
 });
-assert.ok(!Discovery.unconfirmedOn(EVENTS[0], stateFor({ when: { mode: "dates", from: "2026-11-07", to: "2026-11-07" } }), ctx), "picked date: no unconfirmed group");
+// Kent Myers shape (null semantics, Sat Nov 14 -> Jan 6, 7 PM, Ferndale, visual): in every Saturday view, filters and search apply.
+const KENT = ev({ title: "The Worst of Kent Myers", cat: "visual", start: "2026-11-14", end: "2027-01-06", time: "7:00 PM", venue: "Flip Salon", city: "Ferndale" });
+const SAT = { now: new Date("2026-11-09T18:00:00Z") };
+["weekend", "next7", "week"].forEach((mode) => {
+  const st = (patch) => Discovery.change(Discovery.defaults(), Object.assign({ when: mode }, patch));
+  const inRange = mode !== "week"; // Mon Nov 9 week ends Sun Nov 15: Nov 14 is inside; weekend Nov 13-15 too; next7 ends Nov 15
+  assert.ok(Discovery.unconfirmedOn(KENT, st({}), SAT) === true, `${mode}: Kent Myers offered`);
+  assert.ok(Discovery.unconfirmedOn(KENT, st({ what: { only: "visual" } }), SAT), `${mode}: Visual filter keeps it`);
+  assert.ok(!Discovery.unconfirmedOn(KENT, st({ what: { only: "music" } }), SAT), `${mode}: Music filter drops it`);
+  assert.ok(Discovery.unconfirmedOn(KENT, st({ q: "kent myers" }), SAT), `${mode}: search finds it`);
+  assert.ok(Discovery.unconfirmedOn(KENT, st({ q: "ferndale" }), SAT), `${mode}: search by city finds it`);
+});
+// Unlinked venue / null category_id: the page reads events_public (category enum, venue_name = coalesce(venue, venue_name_raw)); nothing here depends on either link.
+const UNLINKED = ev({ title: "Unlinked venue run", cat: "visual", start: "2026-11-14", end: "2026-12-20", venueId: null, venue: "Raw Venue Name" });
+assert.ok(Discovery.unconfirmedOn(UNLINKED, Discovery.change(Discovery.defaults(), { when: { mode: "dates", from: "2026-11-14", to: "2026-11-14" } }), SAT), "unlinked venue is offered on a picked date");
+// Radius with an unplaced row ("Show them"): the unconfirmed group follows the same includeUnplaced rule as matches().
+const UNPLACED = ev({ title: "No city run", cat: "visual", start: "2026-11-14", end: "2026-12-20", venue: "Somewhere", city: "Zzzville" });
+const radiusState = Discovery.change(Discovery.defaults(), { when: { mode: "dates", from: "2026-11-14", to: "2026-11-14" }, where: { place: "Detroit", radius: 10 } });
+assert.ok(!Discovery.unconfirmedOn(UNPLACED, radiusState, SAT), "radius set, unplaced row hidden by default");
+assert.ok(Discovery.unconfirmedOn(UNPLACED, radiusState, Object.assign({ includeUnplaced: true }, SAT)), "radius set + Show them: unplaced row offered (ctx passed through)");
+// Cancellation: discovery.js and the client have no cancellation model (events_public has no such column), so there is nothing to test or invent.
+const picked = (from, to) => stateFor({ when: { mode: "dates", from, to } });
+assert.ok(Discovery.unconfirmedOn(EVENTS[0], picked("2026-11-07", "2026-11-07"), ctx), "picked date inside the range is offered");
+assert.ok(Discovery.unconfirmedOn(EVENTS[1], picked("2026-11-14", "2026-11-14"), ctx), "picked future date inside a long run is offered");
+assert.ok(Discovery.unconfirmedOn(EVENTS[0], picked("2026-11-08", "2026-11-20"), ctx), "picked range overlapping the run is offered");
+assert.ok(!Discovery.unconfirmedOn(EVENTS[0], picked("2026-11-09", "2026-11-09"), ctx), "picked date after the run: not offered");
+assert.ok(!Discovery.unconfirmedOn(EVENTS[7], picked("2026-11-07", "2026-11-07"), ctx), "picked date before the run starts: not offered");
+assert.ok(!Discovery.matches(EVENTS[1], picked("2026-11-14", "2026-11-14"), ctx), "picked date: matches() still false, never counted");
+assert.strictEqual(Discovery.count(EVENTS, picked("2026-11-14", "2026-11-14"), ctx), 1, "picked date count = confirmed only (Glenn Barr)");
+const pickedRows = run(picked("2026-11-14", "2026-11-14"));
+assert.deepStrictEqual(pickedRows.filter((r) => r.startsWith("null|")), ["null|The World of Anna Sui"], "picked date lists the unconfirmed run in its own group");
+assert.deepStrictEqual(run(Object.assign(picked("2026-11-14", "2026-11-14"), {})).filter((r) => !r.startsWith("null|")), ["2026-11-14|Glenn Barr"]);
+const visualPicked = run(stateFor({ when: { mode: "dates", from: "2026-11-14", to: "2026-11-14" }, what: { only: "visual" } }));
+assert.deepStrictEqual(visualPicked.sort(), ["2026-11-14|Glenn Barr", "null|The World of Anna Sui"].sort(), "Visual + picked date: confirmed plus unconfirmed, nothing silently dropped");
 
 // Filters still apply.
 const filmOnly = run(stateFor({ when: "today", what: { only: "film" } }));
@@ -77,7 +114,7 @@ assert.ok(Discovery.unconfirmedOn(EVENTS[5], today, { now: new Date("2026-11-07T
 // Default view unchanged: each exactly once.
 const all = run(Discovery.defaults());
 assert.strictEqual(all.filter((r) => r.endsWith("Planet 9 Film Fest")).length, 1);
-console.log("PASS: Today/Tomorrow offer unclassified ranges as 'Dates not confirmed'; counts, filters and other windows unchanged");
+console.log("PASS: Today/Tomorrow offer unclassified ranges as 'Dates not confirmed'; counts and filters unchanged; picked dates and other day windows included");
 
 // FOLLOW-UP (owner decision 2026-11-08): a row listed under "Dates not confirmed" (dayIso === null) never exposes its
 // start time; it says "Time not confirmed". Dated rows keep their time. The published range is untouched.

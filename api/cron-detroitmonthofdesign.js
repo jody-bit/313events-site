@@ -3,6 +3,33 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+// FREE only when the source states unconditional free ADMISSION/ENTRY. A bare "free" ("free parking", "free tour with
+// admission"), a conditional one ("for members", "before 5 pm", "$15 after") or a negated one ("not free to attend") is not that. Otherwise "not stated": is_free is omitted, so a stored value stands and a new row gets the
+// column default.
+const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
+const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
+const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
+// A negation that FOLLOWS the phrase within a few plain words ("is not available", "will not be offered", "won't be
+// offered", "does not / doesn't apply", "cannot / can't be offered", "no longer"). A comma or other punctuation ends the window.
+const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|no longer|\w+n't)\b/i;
+// The same negation set off by punctuation ("Free admission, not available." / ": not available" / "(not available)" /
+// ". Not available.") only when the negator is followed by an availability word, so "Free admission, not to be missed!"
+// stays FREE; and end-of-offer wording ("has been discontinued", "has ended", "is over", "is suspended", "replaced by",
+// "was offered last year but not this year"). Over-rejecting is the safe direction.
+const FREE_PUNCT = "[\\s,:;.()\\-–—]*";
+const FREE_NEGATED_ACROSS = new RegExp("^" + FREE_PUNCT + "(?:not|cannot|no longer|never|\\w+n't)\\s+(?:\\w+\\s+){0,2}?(?:available|offered|provided|included|applicable|possible|valid|this year|anymore)\\b", "i");
+const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:discontinued\\b|(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
+function statesFreeAdmission(text) {
+  const s = String(text || "");
+  for (const m of s.matchAll(FREE_ADMISSION)) {
+    const before = s.slice(Math.max(0, m.index - 30), m.index);
+    const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    const afterLong = s.slice(m.index + m[0].length, m.index + m[0].length + 70);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after) || FREE_NEGATED_AFTER.test(after) || FREE_NEGATED_ACROSS.test(afterLong) || FREE_OFFER_ENDED.test(afterLong)) continue;
+    return true;
+  }
+  return false;
+}
 // Vercel Cron job — pulls the full Detroit Month of Design festival program
 // (September 2026) from detroitmonthofdesign.org. Added 2026-09-02 at
 // Jody's request ("let's add this calendar feed to the database").
@@ -238,7 +265,7 @@ async function fetchEventFromDetailPage(url, stats) {
     start_date: startDatePortion,
     end_date: endDatePortion !== startDatePortion ? endDatePortion : undefined,
     time_display: timeDisplay || undefined,
-    is_free: !!(ld.description && /\bfree\b/i.test(ld.description)),
+    is_free: ld.isAccessibleForFree === true || (ld.description && statesFreeAdmission(ld.description)) ? true : undefined,
     source: "Detroit Month of Design",
     image_url: ld.image && ld.image.url ? ld.image.url : undefined,
     ticket_url: url,

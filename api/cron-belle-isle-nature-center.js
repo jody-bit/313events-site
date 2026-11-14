@@ -184,7 +184,7 @@ module.exports = async (req, res) => {
       venue_id: venueId,
       start_date: e.start_date.slice(0, 10),
       time_display: formatTimeRange(e.start_date, e.end_date),
-      is_free: !e.cost || /free/i.test(e.cost),
+      ...(e.cost && /free/i.test(e.cost) ? { is_free: true } : {}), // a missing cost is "not stated", never FREE; key omitted so a stored value stands
       ticket_url: e.url || null,
       image_url: pickTribeImage(e.image),
       source: "Belle Isle Nature Center",

@@ -17,6 +17,12 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // City stated by a street address (P1 audit EXPORT-2): shared by api/submit.js and scripts/ra-sync.js.
+  "api/_lib/address-city.js",
+  // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
+  "api/_lib/venue-location-gate.js",
+  // Public submit form stores the city its address states (P1 audit EXPORT-2).
+  "api/submit.js",
   // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
   "api/_lib/ics-location.js",
   // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
@@ -90,6 +96,14 @@ const ALLOWED = [
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   // Decision 7: rotating link check (dry by default).
   "api/_lib/link-check-run.js", "api/cron-link-check.js",
+  // Server-side paging (draft 2026-11-09, held): sitemap and link-check read every row past the 1,000-row server cap.
+  "api/_lib/paged-rows.js", "api/sitemap.js",
+  // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
+  "api/admin-venues.js", "api/_lib/venue-lookup.js",
+  // Owner-approved 2026-11-09 (#399): description enrichment drops the filler end time conditionally (single entry; no write or schedule change).
+  "api/_lib/description-enrichment.js",
+  // Owner-approved 2026-11-09 (#70): read-only Ticketmaster report module; no writes, keys or schedules.
+  "api/_lib/ticketmaster-report.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",

@@ -283,6 +283,26 @@ function formatIcsTime(hour, minute) {
 // there is genuinely no per-event location signal to fall back on.
 const VENUE_TBA = "Venue TBA";
 
+// A LOCATION that names no place at all, though it has text: a bare country
+// ("Canada", "USA") or a generic placeholder ("Various Locations", "TBD", "See description"). P1 audit
+// EXPORT-2 found Tourism Windsor Essex rows published with the venue "ON" and
+// "Various Locations". A bare state or province ("ON", "MI") is already
+// handled upstream (parseIcsLocation region_only), so it is not repeated here. Such text is not a venue: the row takes the project's
+// existing "Venue TBA" and, having no city, stays with the people who review
+// location gaps. Nothing is invented and no city is guessed. A LOCATION that
+// is any other text, readable or not ("Online", "Caesars Windsor, Windsor ON"),
+// is still kept whole as before.
+const NON_PLACE_LOCATION = new Set([
+  "canada", "usa", "us", "united states",
+  "various", "various locations", "various location", "multiple locations", "multiple location", "multiple venues",
+  "location varies", "locations vary", "varies", "tbd", "tba", "to be determined", "to be announced",
+  "n/a", "na", "none", "see description", "see details", "see event description",
+]);
+function isNonPlaceLocation(text) {
+  const t = String(text || "").toLowerCase().replace(/[.!]/g, "").replace(/\s+/g, " ").trim();
+  return NON_PLACE_LOCATION.has(t);
+}
+
 // Resolves ONE VEVENT's own venue fields for a feed_source flagged
 // location_per_event (migration_043) — added 2026-09-29 for the Phase 6
 // per-event venue-resolution shared infrastructure (see
@@ -333,6 +353,9 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     // <ST> <ZIP>" the city is kept (api/_lib/ics-location.js,
     // findTrailingCity). Before this, the city was discarded with the rest
     // and the event could not be placed.
+    if (isNonPlaceLocation(parsed.rawText)) {
+      return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+    }
     return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: parsed.trailingCity || null };
   }
 
@@ -1032,6 +1055,7 @@ const handleRequest = async (req, res) => {
   const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const runDay = new Date(runStartedAt).toISOString().slice(0, 10); // UTC date this run started (first-seen date of a block)
   const preambleMs = Date.now() - runStartedAt; // feed list, stalled-run close and venue lookups, before the first feed
   for (const feedSource of orderedFeeds) {
     const previousResult = feedSource.last_poll_result;
@@ -1061,7 +1085,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           const rssItems = parseRssItems(text);
@@ -1091,7 +1115,7 @@ const handleRequest = async (req, res) => {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         }, { timeoutMs: limits.requestTimeoutMs, budget });
         if (!r.ok) {
-          pollResult = `Fetch failed: HTTP ${r.status}`;
+          pollResult = health.blockedResult(r.status, r.headers, previousResult, runDay);
         } else {
           const text = r.text;
           // A 200 whose body is not a calendar (HTML, a challenge page, a truncated file) is a failed fetch, not an
@@ -1133,7 +1157,7 @@ const handleRequest = async (req, res) => {
   }
 
   linkLog.flush();
-  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
+  const runHealth = health.summarizeRun(results, { today: runDay, stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
   health.logAlerts(runHealth.alerts);
   res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, resume, preambleMs, perFeed: health.compactResults(results), results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };

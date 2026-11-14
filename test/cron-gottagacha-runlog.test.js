@@ -254,9 +254,9 @@ async function run() {
   {
     const parsed = parseEvent(apiEvent());
     assert.strictEqual(parsed.price_from, null);
-    assert.strictEqual(parsed.is_free, false, "absence of a price field is never treated as evidence of 'free'");
+    assert.ok(!("is_free" in parsed), "absence of a price field is never treated as evidence of 'free' (and is not sent as paid either)");
   }
-  console.log("PASS: missing price stays null and is_free stays false -- never inferred");
+  console.log("PASS: missing price stays null and is_free is not sent -- never inferred");
 
   // --- 15. root-site URL does not become event_url ---
   // (Admin Hardening slice 1, 2026-10-08: event_url is now the source's own

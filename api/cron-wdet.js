@@ -221,7 +221,7 @@ module.exports = async (req, res) => {
         venue_city_raw: venue.city ? decodeEntities(venue.city) : undefined,
         start_date: startDate,
         time_display: formatTimeRange(e.start_date, e.end_date),
-        is_free: /free/i.test(e.cost || "") || !e.cost,
+        is_free: /free/i.test(e.cost || "") ? true : undefined, // a missing cost is "not stated", never FREE; omitted so a stored value stands
         price_from: null,
         ticket_url: e.url || null,
         image_url: pickTribeImage(e.image),

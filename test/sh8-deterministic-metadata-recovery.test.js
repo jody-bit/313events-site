@@ -282,7 +282,7 @@ async function run() {
     assert.strictEqual(row.title, "Trivia Night Screening");
     assert.strictEqual(row.venue_name_raw, "Cinema Detroit");
     assert.strictEqual(row.category, "film");
-    assert.strictEqual(row.is_free, false);
+    assert.ok(!("is_free" in row), "no price stated: is_free is not sent");
     assert.strictEqual(row.source, "Cinema Detroit");
     assert.strictEqual(row.start_date, "2026-12-05");
     assert.strictEqual(row.time_display, "3:30 p.m.");

@@ -3572,6 +3572,7 @@
     font-family:var(--font-data);font-weight:700;font-size:13px;line-height:1;
     color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
+  .hero-proof-free .hps-num{color:#3fbf6a;}
   .hps-label{
     font-family:var(--font-data);font-size:12px;line-height:1.3;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);
@@ -3599,11 +3600,17 @@
   /* Narrow phones: the three figures sit in three columns, number over
      label, instead of a dotted line that wraps and strands a separator. */
   @media (max-width:460px){
-    .hero-proof-stats{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.45fr);gap:0 12px;}
+    .hero-proof-stats{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,.95fr) minmax(0,.6fr) minmax(0,1.3fr);gap:0 8px;}
     .hero-proof-stat{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:0;}
     .hero-proof-stat + .hero-proof-stat::before{content:none;}
     .hps-num{font-size:15px;}
     .hps-label{font-size:12px;letter-spacing:.05em;}
+  }
+  /* 320px phones: four figures no longer fit one row (ACTIVE NEIGHBORHOODS
+     clipped at the right edge), so they sit two by two. */
+  @media (max-width:360px){
+    .hero-proof-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;}
+    .hps-label{overflow-wrap:anywhere;}
   }
 
   /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ----
@@ -4119,6 +4126,7 @@
   .evt-act{grid-area:act;min-width:0;}
   .evt-where{grid-area:where;min-width:0;padding-top:1px;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.35;}
+  .unmapped-tag{display:inline-block;margin-left:4px;padding:0 6px;border:1px dashed var(--ink-dim,#8a8a8a);font-family:var(--font-data,'Space Mono',monospace);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;}
   .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
   .evt-place{
     display:flex;flex-wrap:wrap;gap:2px 0;margin-top:3px;
@@ -4132,7 +4140,7 @@
   .evt-meta:empty{display:none;}
   /* The event-type label is the shared .cat-tag from /categories.js (Option A, approved colours); no local rule. */
   .evt-price{font-family:var(--font-data);font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
-  .evt-price.free{color:var(--ink);}
+  .evt-price.free{color:#3fbf6a;}
   .evt-run{white-space:nowrap;}
   .evt-go{grid-area:go;text-align:right;padding-top:1px;}
   .evt-go a{font-family:var(--font-data);font-size:16px;color:var(--accent);text-decoration:none;}
@@ -4394,6 +4402,8 @@
 <script src="/event-dates.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
+<script src="/place-list.js"></script>
+<script src="/blocked-names.js"></script>
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/event-links.js"></script>
@@ -4698,7 +4708,7 @@
   </main>
 <footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
-    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="/media">Media</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
     <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
     <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
@@ -5081,7 +5091,36 @@ function discoveryCtx(){
     now: new Date(),
     defaultWhen: 'all',
     coverage: editorialByEvent,
+    includeUnplaced: showUnplaced,
   };
+}
+// Events whose city is not in the city table are left out once a place or
+// radius is chosen (never guessed at). The visitor can ask to see them, and
+// then they are labelled as NOT confirmed inside the chosen area.
+let showUnplaced = false, unplacedPlaceKey = '';
+// Once "Show them" is on, each such card says so itself: it is not confirmed inside the chosen area.
+function unmappedTagHtml(e){
+  return (showUnplaced && state.where.radius !== null && !Discovery.matches(e, state, Object.assign({}, discoveryCtx(), {includeUnplaced: false}))) ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
+}
+function toggleUnplaced(on){
+  showUnplaced = !!on; renderList();
+  const b = document.getElementById('unplacedToggle'); if(b) b.focus();
+}
+// A different place or radius starts again with them hidden. Runs before the list is built.
+function syncUnplacedKey(){
+  const key = state.where.radius === null ? '' : [state.where.place, state.where.here ? 'here' : '', state.where.radius].join('|');
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
+function unplacedNoteHtml(){
+  if(state.where.radius === null) return '';
+  const base = Object.assign({}, discoveryCtx(), {includeUnplaced: false});
+  const m = Discovery.facets(EVENTS, state, base, 'placement').get('unplaced') || 0;
+  if(!m) return '';
+  const n = m.toLocaleString('en-US');
+  const btn = (on, label) => `<button type="button" id="unplacedToggle" class="es-action" aria-expanded="${!on}" onclick="toggleUnplaced(${on})">${label}</button>`;
+  return showUnplaced
+    ? `. <span class="unplaced-note">Includes ${n} ${m===1?'event':'events'} with ${m===1?'a location':'locations'} we haven't mapped yet, so we can't confirm ${m===1?'it is':'they are'} inside this area.</span> ${btn(false,'Hide them')}`
+    : `. <span class="unplaced-note">${n} more ${m===1?'event has a location':'events have locations'} we haven't mapped yet.</span> ${btn(true,'Show them')}`;
 }
 // The site's current + upcoming inventory, whatever the visitor has
 // filtered: used by the cards that are meant to be a constant pulse of the
@@ -6123,7 +6162,7 @@ function streamRowHtml(e, dayIso, ctx){
             ${ticketStatusNoteHtml(e)}
           </div>
           <div class="evt-where">
-            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</div>
             <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
           </div>
           <div class="evt-side"><div class="evt-meta">${cat?Categories.tagHtml(e.cat):''}${priceTag(e)}</div></div>
@@ -6282,6 +6321,7 @@ document.getElementById('listView').addEventListener('click', (e)=>{
 function renderList(){
   const first = document.getElementById('listView');
   const more = document.getElementById('listMore');
+  syncUnplacedKey();
   const meta = currentListMeta();
   const ctx = discoveryCtx();
   const rows = streamRows(ctx);
@@ -6298,15 +6338,15 @@ function renderList(){
   const headHtml = (countLine) => `<div class="stream-head"><div class="sec-head"><h2 class="sec-title">What's Happening</h2>${countLine}<a class="sec-link" href="${escapeHtml(calHref)}">View full calendar &rarr;</a></div>${dayStripHtml()}</div>`;
 
   if(!rows.length){
-    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
     more.innerHTML = '';
     more.style.display = 'none';
     return;
   }
 
   const total = rows.length;
-  // On Today / Tomorrow the heading counts confirmed events only; the unconfirmed ones are named beside it.
-  const dayMode = (m => m === 'today' || m === 'tomorrow')(Discovery.window(state, ctx).mode);
+  // On Today / Tomorrow / a picked date or range the heading counts confirmed events only; the unconfirmed ones are named beside it.
+  const dayMode = (m => m === 'today' || m === 'tomorrow' || m === 'dates' || m === 'weekend' || m === 'week' || m === 'next7')(Discovery.window(state, ctx).mode);
   const unconfirmedN = dayMode ? rows.filter(r => r.day === null).length : 0;
   const headTotal = total - unconfirmedN;
   const unconfirmedNote = unconfirmedN ? ` &middot; plus ${unconfirmedN.toLocaleString('en-US')} with dates not confirmed, below` : '';
@@ -6317,7 +6357,7 @@ function renderList(){
 
   const filtered = Discovery.describe(state).length > 0;
   const head = (meta.countLabel || filtered)
-    ? headHtml(`<p class="list-count-heading">Showing ${headTotal.toLocaleString('en-US')} event${headTotal===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unconfirmedNote}</p>`)
+    ? headHtml(`<p class="list-count-heading">Showing ${headTotal.toLocaleString('en-US')} event${headTotal===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unconfirmedNote}${unplacedNoteHtml()}</p>`)
     : headHtml(`<p class="sec-sub">${total.toLocaleString('en-US')} current + upcoming event${total===1?'':'s'}, in date order.</p>`);
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
@@ -6431,12 +6471,16 @@ function animateHeroCount(el, from, to){
 }
 
 const NEXT7_STATE = Discovery.change(Discovery.defaults(), {when: 'next7'});
+// STORY-013: the hero's FREE entry counts what the existing free-only filter
+// shows (is_free === true only; unknown never counts as free).
+const FREE_STATE = Discovery.change(Discovery.defaults(), {free: true});
 function heroFigures(){
   const ctx = inventoryCtx();
   return {
     total: orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx),
     today: Discovery.count(EVENTS, TODAY_STATE, ctx),
     next7: Discovery.count(EVENTS, NEXT7_STATE, ctx),
+    free: Discovery.count(EVENTS, FREE_STATE, ctx),
     neighborhoods: computeNeighborhoodCounts().length,
   };
 }
@@ -6460,6 +6504,7 @@ function renderHeroToday(){
       <div class="hero-proof-stats">
         <button type="button" class="hero-proof-stat" onclick="viewEverything('today')"><span class="hps-num" id="heroStatToday">${n(f.today)}</span><span class="hps-label">Today</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewEverything('next7')"><span class="hps-num" id="heroStatNext7">${n(f.next7)}</span><span class="hps-label">Next 7 days</span></button>
+        <button type="button" class="hero-proof-stat hero-proof-free" onclick="viewFree()" title="Show only free events"><span class="hps-num" id="heroStatFree">${n(f.free)}</span><span class="hps-label">Free</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
       </div>
     `;
@@ -6471,6 +6516,7 @@ function renderHeroToday(){
   document.getElementById('heroStatCaption').textContent = 'Current + upcoming events';
   document.getElementById('heroStatToday').textContent = n(f.today);
   document.getElementById('heroStatNext7').textContent = n(f.next7);
+  document.getElementById('heroStatFree').textContent = n(f.free);
   document.getElementById('heroStatNeighborhoods').textContent = n(f.neighborhoods);
   if(f.total !== heroDisplayedCount){
     // Animate from whatever's actually on screen right now, not just the
@@ -6496,7 +6542,9 @@ function renderHeroToday(){
 //   viewEverything('today')  Today
 //   viewEverything('next7')  Next 7 Days — today plus six days
 function viewEverything(when){
-  setState(when ? {reset: true, when: when} : {reset: true});
+  const onlyFree = when === 'free';
+  if(onlyFree) when = undefined;
+  setState(when ? {reset: true, when: when} : (onlyFree ? {reset: true, free: true} : {reset: true}));
   document.getElementById('search').value = '';
   clearLocation({skipRender: true});
   // A When shortcut blanks the date inputs; the default view shows today as
@@ -6507,6 +6555,9 @@ function viewEverything(when){
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
+
+// Hero "Free" entry: the existing free-only filter, one tap.
+function viewFree(){ viewEverything('free'); }
 
 // "Active neighborhoods" in the hero leads to the neighborhoods themselves:
 // the Explore Neighborhoods rail, on this page.

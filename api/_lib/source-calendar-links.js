@@ -16,18 +16,19 @@
 //     `_calendarUrl`) ONLY if it is itself a calendar or event-listing page by path (looksLikeCalendarPage). A bare homepage
 //     is never filled: "the town's website" is not a link to the event. A value that is not an absolute http(s) page (or is
 //     a calendar-feed endpoint) is ignored. Never guessed.
-//   - rows carrying OWNER-CORRECTION or EDITORIAL-HOLD in internal_note are never filled (database filter).
 //   - approved, non-past rows only (the PATCH filter): a pending or rejected row is not touched, and neither is an event
 //     that is over. Both are checked in the database filter, not in application logic.
 //   - failure is swallowed: the link is an enhancement and must never fail an ingestion run.
 "use strict";
 
 const { normalizeLinkField } = require("./link-field");
+const { fetchAllPagedRows } = require("./paged-rows");
+const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "..", "..", "scripts", "owner-supplied-row")); // the shared owner-supplied rule (trims the source)
 
 // Single-venue connectors: events.source -> the connector's own SOURCE_URL / events page.
 const SOURCE_CALENDAR_PAGES = Object.freeze({
-  // "HALO Detroit" is deliberately NOT listed: a fallback here would switch on the scheduled cron-halo door-row link write,
-  // which is held under its own owner GO (stripped from RC3). Add it only with that GO.
+  "HALO Detroit": "https://www.thehalodetroit.com/currentevents",
   "Trinosophes": "https://trinosophes.com/Events",
   "GottaGacha": "https://www.gottagacha.com/events",
   "Redford Theatre": "https://redfordtheatre.com/events/",
@@ -59,10 +60,6 @@ function looksLikeCalendarPage(value) {
   return segments.some((seg) => CALENDAR_SEGMENT.test(seg));
 }
 
-// Rows a person corrected or held are never touched by automation, not even to fill a blank (scripts/owner-supplied-row.js:
-// OWNER-CORRECTION or EDITORIAL-HOLD / EDITORIAL_HOLD / EDITORIAL HOLD in internal_note). Enforced in the database filter.
-const NOT_OWNER_LOCKED = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL-HOLD*,internal_note.not.ilike.*EDITORIAL_HOLD*,internal_note.not.ilike.*EDITORIAL%20HOLD*))";
-
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
 // -> { by: "feed_source_id" | "source", key, url, label } or null. Pure. `overrides` is injectable for tests.
@@ -92,6 +89,13 @@ function todayDetroit(now) {
 
 // Blank-only back-fill for the sources the written `rows` belong to. One PATCH per source. Returns { patched, bySource }
 // where patched is the number of rows the database actually changed and bySource maps the source label to that number.
+// Parity with scripts/owner-supplied-row.js isOwnerSuppliedRow: a Manual-source row is owner-supplied too. `source.not.ilike.manual` has no wildcard, so it is a
+// case-insensitive equality (Manual / manual / MANUAL); a NULL source passes through the is.null alternative. (isOwnerSuppliedRow also trims the source; an
+// exact-equality filter cannot, so the JS re-check below (isOwnerSuppliedRow, the shared rule) covers padded values.)
+const OWNER_LOCK_FILTER = "or(internal_note.is.null,and(internal_note.not.ilike.*OWNER-CORRECTION*,internal_note.not.ilike.*EDITORIAL_HOLD*)),or(source.is.null,source.not.ilike.manual)";
+
+const PATCH_CHUNK = 100;
+
 async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, fetchImpl, now) {
   const doFetch = fetchImpl || fetch;
   const today = todayDetroit(now);
@@ -103,22 +107,39 @@ async function fillBlankSourceCalendarLinks(supabaseUrl, serviceRoleKey, rows, f
   const bySource = {};
   let patched = 0;
   for (const t of targets.values()) {
+    // A row an owner corrected (OWNER-CORRECTION) or holds (EDITORIAL-HOLD; `_` in ilike matches the dash, space or underscore) is never touched by
+    // automation, even to fill a blank. internal_note NULL must pass, so the not.ilike terms sit behind an is.null alternative.
     // Approved rows only; non-past = starts today or later, or has an end date of today or later (a multi-day run in progress).
-    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}),${NOT_OWNER_LOCKED})`;
+    const filter = `status=eq.approved&and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.${today},end_date.gte.${today}),${OWNER_LOCK_FILTER})`;
+    const scope = `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}`;
+    const headers = { "Content-Type": "application/json", apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` };
     try {
-      const resp = await doFetch(
-        `${supabaseUrl}/rest/v1/events?${t.by}=eq.${encodeURIComponent(t.key)}&${filter}&select=id`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, Prefer: "return=representation" },
-          body: JSON.stringify({ event_url: t.url }),
+      // Step 1 (read): the candidate rows under the SAME database filter. The filter cannot trim a padded source (" manual "), so step 2 re-checks
+      // each candidate in JS with the shared owner-supplied rule (which does trim) and drops every owner-supplied row before any write.
+      // Paged (Supabase caps one request at 1,000 rows); an incomplete read writes nothing for this source.
+      const read = await fetchAllPagedRows(`${scope}&select=id,source,internal_note&order=id.asc`, headers, { fetch: doFetch });
+      if (!read.ok) continue;
+      const ids = read.rows.filter((r) => r && r.id !== undefined && r.id !== null && !isOwnerSuppliedRow(r)).map((r) => r.id);
+      if (!ids.length) continue;
+      // Step 3 (write): blank-only as before. The identical database filter is repeated on the write (race-safe: a link or lock set since the read
+      // still wins), narrowed to the ids that passed the JS check. Payload is event_url alone.
+      // Chunked so the id list never makes the URL too long (a 414 / non-ok would be swallowed as 0).
+      for (let i = 0; i < ids.length; i += PATCH_CHUNK) {
+        const chunk = ids.slice(i, i + PATCH_CHUNK);
+        const resp = await doFetch(
+          `${scope}&id=in.(${chunk.map((id) => encodeURIComponent(id)).join(",")})&select=id`,
+          {
+            method: "PATCH",
+            headers: { ...headers, Prefer: "return=representation" },
+            body: JSON.stringify({ event_url: t.url }),
+          }
+        );
+        if (resp && resp.ok) {
+          const changed = await resp.json();
+          const n = Array.isArray(changed) ? changed.length : 0;
+          patched += n;
+          bySource[t.label] = (bySource[t.label] || 0) + n;
         }
-      );
-      if (resp && resp.ok) {
-        const changed = await resp.json();
-        const n = Array.isArray(changed) ? changed.length : 0;
-        patched += n;
-        bySource[t.label] = (bySource[t.label] || 0) + n;
       }
     } catch {
       /* never fail an ingestion run for a link back-fill */
