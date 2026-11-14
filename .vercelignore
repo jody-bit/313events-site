@@ -1,0 +1,11 @@
+# Files that are never part of the delivered site. The repository root is served as static files, so without this
+# list, internal documents (for example /CLAUDE.md and /ENGINEERING_READINESS_REVIEW.md) were reachable by URL.
+# Keep out: internal Markdown (root and under assets/), project records, tests, the RA sync inbox and SQL notes.
+# Do NOT list scripts/ (api/_lib requires it at runtime), data/, seasonal/, assets/ or the page templates.
+/*.md
+/assets/**/*.md
+/project/
+/test/
+/ra-sync/
+/supabase/
+/_to_delete/

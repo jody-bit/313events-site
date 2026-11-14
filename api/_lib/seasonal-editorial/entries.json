@@ -17241,9 +17241,9 @@
    },
    "expiryDisposition": {
     "action": "unpublish",
-    "by": "PROPOSED, NOT OWNER-APPROVED: draft for owner review (prior owner direction 2026-11-08 20:13Z: expire #244 via the #260 mechanism, no reword)",
-    "at": "2026-11-08",
-    "note": "Draft only. Retained as a non-public record; evidence, image and rights records, and the destination are preserved. Supersedes the 'mid-April to Thanksgiving' reading in #244."
+    "by": "Jody Tyree (owner), explicit ordered closeout GO for #370, 2026-11-13",
+    "at": "2026-11-13",
+    "note": "Owner-approved #370 closeout. Retained as a non-public record; evidence, image and rights records, prior approval, and the destination are preserved. Supersedes #244 wording."
    }
   },
   {

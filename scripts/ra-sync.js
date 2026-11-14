@@ -81,9 +81,10 @@ const {
 } = require("../api/_lib/status-lookup");
 const { startRun, finishRun } = require("../api/_lib/run-log");
 const { SLUGS } = require("../api/_lib/source-slugs");
-const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
+const { deriveRaEventUrl, deriveRaTicketUrl, decideLinkMerge } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
+const { cityFromAddress } = require("../api/_lib/address-city");
 const { isOwnerSuppliedRow } = require("./owner-supplied-row");
 const {
   RA_ID_PATTERN,
@@ -164,7 +165,13 @@ function parseAddressText(addressText) {
   if (typeof addressText !== "string" || !addressText.trim()) return { street: null, city: null };
   const trimmed = addressText.trim();
   const m = /^(.*?),\s*([A-Za-z][A-Za-z .'-]*?),\s*MI\b/.exec(trimmed);
-  if (!m) return { street: trimmed, city: null };
+  if (!m) {
+    // RA also writes "14900 Beck Road Plymouth MI 48170" (no commas). The
+    // city is taken only when it is a known Michigan/Ohio city stated in the
+    // text; "950 West McNichols" (no city at all) stays null.
+    const stated = cityFromAddress(trimmed);
+    return stated ? { street: stated.street, city: stated.city } : { street: trimmed, city: null };
+  }
   return { street: m[1].trim(), city: m[2].trim() };
 }
 
@@ -679,7 +686,7 @@ function parseRaListingDate(dateStr, now = new Date()) {
 function isListingOnlyCandidateNeedingDetail(row) {
   if (!row || row.status !== "pending_review" || row.source !== "Resident Advisor") return false;
   const note = String(row.internal_note || "");
-  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || note.includes("OWNER-CORRECTION")) return false;
+  if (!note.includes("RA_PROVENANCE") || !note.includes("status=unresolved") || isOwnerSuppliedRow(row)) return false;
   const blank = (v) => v === null || v === undefined || v === "";
   return blank(row.time_display) || blank(row.venue_address_raw);
 }
@@ -728,7 +735,7 @@ async function startRaSyncSession(opts) {
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
   // Listing-only candidates (ra-candidate-promotion rows) already have an events row, so the diff above calls
   // them "known" and their detail page was never fetched: time/address stayed blank forever. Re-queue those, and
-  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected rows are skipped.
+  // only those, so complete()'s existing blank-field-only merge can fill them. Owner-corrected and editorial-hold rows (shared isOwnerSuppliedRow) are skipped, so they never use a retry slot.
   // Eligible ids are sorted, then rotated by day, so a row whose detail page never loads (removed, blocked) cannot
   // hold the 10 retry slots forever and starve the rest of the backlog.
   const eligible = parsed.filter((id) => isListingOnlyCandidateNeedingDetail(existingRows.get(id))).sort();
@@ -869,6 +876,7 @@ async function completeRaSyncSession(opts) {
   }
 
   let writeError = null;
+  const linkConflicts = [];
   if (rowsToUpsert.length) {
     try {
       // Same fail-closed status-preserving lookup every other connector
@@ -944,18 +952,37 @@ async function completeRaSyncSession(opts) {
       if (!writeError && toMerge.length) {
         for (const { id, row, existing } of toMerge) {
           const patch = {};
+          const replacedGeneric = {};
           for (const field of MERGE_BLANK_FIELDS) {
             const existingVal = existing[field];
             const existingBlank = existingVal === null || existingVal === undefined || existingVal === "";
             const newVal = row[field];
             const newHasValue = newVal !== null && newVal !== undefined && newVal !== "";
+            if (field === "ticket_url") {
+              // A stored bare homepage is not a real ticket destination: a
+              // specific incoming one may replace it. The reverse never
+              // happens, and two different specific URLs are flagged, not
+              // overwritten (api/_lib/ra-links.js decideLinkMerge).
+              const decision = decideLinkMerge(existingVal, newVal);
+              if (decision.action === "fill") patch[field] = newVal;
+              else if (decision.action === "replace_generic") {
+                patch[field] = newVal;
+                replacedGeneric[field] = existingVal;
+              } else if (decision.action === "flag") {
+                linkConflicts.push({ id, field, stored: existingVal, incoming: newVal });
+              }
+              continue;
+            }
             if (existingBlank && newHasValue) patch[field] = newVal;
           }
           patch.status = existing.status || "approved";
 
           const blankFieldFilters = MERGE_BLANK_FIELDS
             .filter((f) => Object.prototype.hasOwnProperty.call(patch, f))
-            .map((f) => `${f}.is.null`);
+            .map((f) => (Object.prototype.hasOwnProperty.call(replacedGeneric, f)
+              // still the same generic value right now (race-safe)
+              ? `${f}.eq.${encodeURIComponent('"' + String(replacedGeneric[f]).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"')}`
+              : `${f}.is.null`));
           const whereExtra = blankFieldFilters.length ? `&and=(${blankFieldFilters.join(",")})` : "";
 
           try {
@@ -1025,6 +1052,7 @@ async function completeRaSyncSession(opts) {
     duplicateDetail: duplicates.slice(0, 20),
     importedIds: imported.map((x) => x.id),
     ...(detailReport ? { detailReport } : {}),
+    linkConflicts: linkConflicts.slice(0, 20),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, run.id, finalSessionData, fetchFn);
 
@@ -1046,6 +1074,7 @@ async function completeRaSyncSession(opts) {
     duplicateDetail: duplicates,
     importedIds: imported.map((x) => x.id),
     submitted: events.length,
+    linkConflicts,
   };
 }
 
