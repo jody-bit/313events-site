@@ -11,7 +11,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 
 const lines = fs.readFileSync(path.join(root, ".vercelignore"), "utf8").split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
-for (const need of ["/*.md", "/assets/**/*.md", "/project/", "/test/", "/ra-sync/", "/supabase/"]) {
+for (const need of ["/*.md", "/assets/**/*.md", "/project/", "/test/", "/ra-sync/", "/supabase/", "/smoke/"]) {
   assert(lines.includes(need), `.vercelignore must list ${need}`);
 }
 // Runtime dependencies of the functions stay deployed (vercel.json includeFiles and api/_lib requires).
