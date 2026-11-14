@@ -309,6 +309,16 @@ async function run() {
     assert.match(token, /^20260926-123456-[0-9a-f]{6}$/);
   }
 
+  // body.detail: optional device telemetry, sanitised, omitted when absent/garbage.
+  {
+    const entry = { filePath: "ra-sync/inbox/complete-TOK3.json", action: "complete", runToken: "TOK3" };
+    const mk = (detail) => bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK3", action: "complete", runId: "r", events: [], ...(detail === undefined ? {} : { detail }) })).requestBody;
+    assert.deepStrictEqual(mk({ attempted: 1, blocked: 1, blockedIds: ["ra-2578841", "<script>", 5] }).detail, { attempted: 1, blocked: 1, blockedIds: ["ra-2578841"] });
+    assert.ok(!("detail" in mk()), "absent detail stays absent");
+    assert.ok(!("detail" in mk("nope")), "non-object detail dropped");
+    assert.deepStrictEqual(mk({ attempted: -3, blocked: "x" }).detail, { attempted: null, blocked: null, blockedIds: [] });
+  }
+
   console.log("ra-sync-bridge.test.js: all assertions passed");
 }
 

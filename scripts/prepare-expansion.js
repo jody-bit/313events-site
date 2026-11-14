@@ -125,6 +125,8 @@ for (const col of ["fall", "fall-color"]) {
     const item = V[col].find((x) => (x.ledger_name === e.name || x.ledger_name.replace(/[’]/g, "'") === e.name.replace(/[’]/g, "'")) || x.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") === e.id);
     const v = (item && item.verification) || {};
     const rv = ED.review(e);
+    // A released expansion record that has since ENDED (#260) stays a member of its batch, unchanged: it was approved and public.
+    if (rv.state === "ENDED" && e.approval && e.expansionCandidate) { membership[col].push(e.id); continue; }
     let why = reason(col, e, rv, v);
     let desc = null;
     if (!why) { desc = describe(col, e); if (!desc) why = "no reviewed visitor description yet"; }
@@ -156,7 +158,7 @@ for (const col of ["fall", "fall-color"]) {
 // status derivation check: a prepared record must be READY_FOR_REVIEW with no approval
 for (const col of ["fall", "fall-color"]) for (const id of membership[col]) {
   const e = out[col].find((x) => x.id === id), r = ED.COLLECTIONS.readiness(e);
-  if (!(r.state === "READY_FOR_REVIEW" && !e.approval) && !(r.state === "PUBLISHED" && e.approval)) { delete e.expansionCandidate; membership[col] = membership[col].filter((x) => x !== id); held[col][id] = "gate after preparation: " + r.state; e.status = r.state; }
+  if (!(r.state === "READY_FOR_REVIEW" && !e.approval) && !(r.state === "PUBLISHED" && e.approval) && !(r.state === "ENDED" && e.approval)) { delete e.expansionCandidate; membership[col] = membership[col].filter((x) => x !== id); held[col][id] = "gate after preparation: " + r.state; e.status = r.state; }
 }
 const entriesText = JSON.stringify(out, null, 1) + "\n";
 const batch = { batch: "expansion-1", generated: DATE, status: "PROPOSED. Nothing here is approved or published. Publication needs an explicit approval {by, at} written by the approving person (gate item 5).",

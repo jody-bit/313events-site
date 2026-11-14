@@ -25,8 +25,9 @@ for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   assert.ok(e.editorialAccepted && e.editorialAccepted.by && e.editorialAccepted.at === "2026-10-12", id + ": editorial acceptance recorded");
   assert.ok(/not (a )?publication approval/i.test(e.editorialAccepted.scope), id + ": acceptance says it is not approval");
   assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": carries exactly the authorized approval (recorded separately from the editorial acceptance)");
-  assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public once approved");
-  assert.strictEqual(ED.review(e).state, "PUBLISHED", id);
+  const endedAfter = AUTHZ.ENDED_AFTER_RELEASE.includes(col + "/" + id); // released, then ENDED (#244 draft): private, approval kept
+  assert.ok(endedAfter ? !ED.COLLECTIONS.isPublic(e) : ED.COLLECTIONS.isPublic(e), id + ": public once approved (unless ENDED after release)");
+  assert.strictEqual(ED.review(e).state, endedAfter ? "ENDED" : "PUBLISHED", id);
   assert.ok(/^https:\/\//.test(e.website), id + ": retains an https official source URL");
   // A card shows a labelled illustration, the owner-authorized photograph credited to its photographer, or an openly
   // licensed photograph (author, license and license URL recorded; credit names the author, license and Wikimedia Commons).
@@ -48,9 +49,9 @@ for (const col of ["fall", "fall-color"]) {
 }
 const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 79, "Fall approvals only on the 76 batch-1 + 3 batch-2 records");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 79, "only the 79 Fall records (76 + 3) are public");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 78, "only the 78 Fall records (76 + 3, less Holiday Beach ENDED after release, #244 draft) are public");
 // Halloween has its own, later owner approval (2026-10-11): 45 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 45, "45 Halloween approvals");
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 27, "27 Halloween approvals");
 E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id));
 assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 25 Halloween records are public");
 
@@ -94,6 +95,7 @@ for (const e of [hines, mac]) assert.ok(inSet("fall-color").has(e.id) && ED.revi
 // ---- public parity: a record approved in memory publishes exactly the previewed card content, with no QA data
 for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   const e = JSON.parse(JSON.stringify(E[col].find((x) => x.id === id)));
+  if (e.status === "ENDED") { e.status = "PUBLISHED"; delete e.season; delete e.expiryDisposition; } // as released, before the #244 ENDED draft
   assert.ok(ED.COLLECTIONS.isPublic(e), id + ": passes the gate with its recorded approval");
   const pub = ED.publicEntry(e), rec = QA[col].records.find((r) => r.id === id), o = rec.image_options[0];
   assert.deepStrictEqual([pub.name, pub.city, pub.region, pub.summary, pub.website, pub.featured, pub.categories], [rec.name, rec.city, rec.region, rec.summary, rec.website, rec.featured === undefined ? pub.featured : rec.featured, rec.categories], id + ": public card matches the preview record");

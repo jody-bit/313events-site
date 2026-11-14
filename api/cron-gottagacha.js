@@ -6,6 +6,7 @@ const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { decideSourceDescription } = require("./_lib/description-strength");
+const { classifyNightlife, mayClassify, nightlifeNote } = require("./_lib/nightlife-classifier"); // #177: advertised dance-music events, new and pending rows only
 
 // Vercel Cron job — pulls upcoming events from GottaGacha (gottagacha.com),
 // a gaming arcade/TCG venue in Warren, MI. Added 2026-09-22 after a
@@ -266,7 +267,9 @@ function formatTimeDisplay(eventDate, startTime, endTime) {
     };
     if (endTime) {
       const end = new Date(`${eventDate}T${endTime}`);
-      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime()) {
+      // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+      const placeholderEnd = end.getHours() === 23 && end.getMinutes() === 59;
+      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime() && !placeholderEnd) {
         return `${fmt(start)} – ${fmt(end)}`;
       }
     }
@@ -333,25 +336,36 @@ function parseEvent(e) {
 
   const category = mapCategory(e.title, e.description);
   const isAmbiguous = category === null;
+  const timeDisplay = formatTimeDisplay(e.eventDate, e.startTime, e.endTime);
+  // #177 (owner 2026-10-19): only a row the rules above could not map is offered to the Nightlife rule. It changes the
+  // category and the breadcrumb only; the row stays pending_review for a person (the rule never approves).
+  const nightlife = isAmbiguous
+    ? classifyNightlife({ title: e.title, description: e.description, venue_name_raw: typeof e.location === "string" ? e.location : "", time_display: timeDisplay })
+    : null;
+  const isNightlife = !!nightlife && nightlife.decision === "nightlife";
 
   return {
     external_id: buildExternalId(e.id, e.eventDate),
     title: e.title,
     description: e.description && String(e.description).trim() ? String(e.description).trim() : null,
-    category: category || AMBIGUOUS_CATEGORY,
+    category: category || (isNightlife ? "nightlife" : AMBIGUOUS_CATEGORY),
     start_date: e.eventDate,
-    time_display: formatTimeDisplay(e.eventDate, e.startTime, e.endTime),
+    time_display: timeDisplay,
     is_recurring: !!e.recurrenceType,
     is_all_day: false, // see header note -- every demonstrated event is timed
-    is_free: false, // schema default; never inferred from absence of price (explicit instruction)
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     price_from: null, // no structured price field demonstrated
     // ticket_url deliberately omitted (not null) -- see header note.
     event_url: eventSourceUrl(e.id, e.eventDate), // occurrence page, else the official events page -- see eventSourceUrl()
     image_url: null, // VERIFIED UNAVAILABLE -- see header note
     source: "GottaGacha",
     internal_note: isAmbiguous
-      ? `Category not deterministically mapped by GottaGacha's known rules (title: "${e.title}") -- needs manual categorization.`
+      ? isNightlife
+        ? nightlifeNote(nightlife)
+        : `Category not deterministically mapped by GottaGacha's known rules (title: "${e.title}") -- needs manual categorization.` +
+          (nightlife && nightlife.decision === "hold" ? " " + nightlifeNote(nightlife) : "")
       : null,
+    _nightlifeClassified: isNightlife, // consumed by the handler, stripped before upsert
     _rawLocation: typeof e.location === "string" ? e.location : null,
     _defaultStatusForRow: isAmbiguous ? AMBIGUOUS_STATUS : DEFAULT_STATUS,
   };
@@ -482,7 +496,10 @@ module.exports = async (req, res) => {
     const existingStatusByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.status]));
     const existingEventUrlByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.event_url]));
     const rowsWithStatus = rows.map((row) => {
-      const { _defaultStatusForRow, ...rest } = row;
+      const { _defaultStatusForRow, _nightlifeClassified, ...rest } = row;
+      // #177: Nightlife is written only on a row that is new or still pending_review. An approved or rejected row omits
+      // category so PostgREST preserves its stored value (no silent reclassification).
+      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) delete rest.category;
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.

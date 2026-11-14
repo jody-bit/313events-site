@@ -363,6 +363,42 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Discovered Work:** `DEBT-007` (admin label), `DEBT-008` (homepage load window — corrected), `DEBT-009` (homepage rules still outside the shared contract, and decisions they need).
 - **Product Decisions Required:** final approval to merge and deploy (with `STORY-024`). Everything else in the adoption — the behaviour changes above, the interface additions and `DEC-027` — was approved 2026-10-03.
 
+
+### STORY-026 — An explicitly public visitor-information field (provisionally `public_note`)
+
+- **Type:** STORY · **Status:** BACKLOG (requirement captured 2026-10-06, not designed) · **Priority:** Medium
+- **Epic:** EPIC-004 (editorial workflow) / touches EPIC-018 · **Recommended Model:** Opus 5 for the data-model decision, then Sonnet 5 · **Complexity:** Small–Medium
+- **Dependencies:** `BUG-011` hotfix (live); SZ-01 / `TASK-008` (delivered and ACCEPTED 2026-10-06; the new column must join its anonymous allowlist deliberately, never by default); a field-authority rule for who may write it (`DEBT-011`).
+- **Problem/User Need:** `BUG-011` stopped every public surface from using `events.note`, because that column also held editorial commentary on approved events. As a side effect, genuine visitor information stored there ("Doors: 7:00 PM", "Entrance in the rear", "21+", price tiers) no longer appears. The Product Owner accepted that loss temporarily — privacy and editorial integrity come first.
+- **Requirement:** a field that is explicitly classified public, holds only visitor-facing information, and is the only free-text caveat any public surface may render. `public_note` is provisional; use a better name if the data model suggests one (the existing `note` name must NOT be reused, because its history makes it untrustworthy). New values enter only through a deliberate act (Admin edit, or a connector that writes visitor information by definition, e.g. Planet Ant "Entrance in the rear"); nothing is back-filled automatically. Existing `note` values are reviewed by a person before any is copied across; the original data is never deleted or modified.
+- **Out of scope:** implementing it during the `BUG-011` hotfix; re-enabling `note`.
+- **Product Decisions Required:** name; whether connectors may write it; the review route for existing `note` values (the distinct approved values were listed 2026-10-06 and sorted by hand into visitor information and commentary; the list is held by the Product Owner, not reproduced here).
+
+### STORY-028 — Media / Press page and downloadable EPK
+
+- **Type:** STORY · **Status:** BACKLOG (owner action 2026-11-09; copy and asset package prepared, page not built, nothing published) · **Priority:** Unscored
+- **Epic:** EPIC-010 (closest existing; no media/press item existed: `DISCOVERY-010` is the unrelated "On the Radar" naming collision) · **Workstream:** primary `workstream:editorial-products` (copy and asset package), supporting `workstream:experience` (the `/media` page and About/footer links); release gate `workstream:release-quality`
+- **Dependencies:** the #405 responsive fix lands before Experience builds the page; public product screenshots are captured from the live public site (not available in the preparing session).
+- **Problem/User Need:** journalists, partners and organizers have no one place for the approved bio, fact sheet, logos and a downloadable press kit.
+- **Delivered so far (prepared, not live):** `assets/media/` (existing wordmarks unchanged as SVG plus rendered PNGs, signal mark, 2-page tagged press-kit PDF, media-kit ZIP, copy-ready bios and fact sheet); sources and review kit in `project/media-kit/`.
+- **Acceptance Criteria (3):** (1) copy is accurate to existing site pages and the public contact is jody@sentientproductions.com, labelled as the media contact; (2) every download opens and is accessible (valid ZIP and PDF, text alternatives, tagged PDF); (3) the `/media` page is responsive and linked from About and the footer.
+- **Constraints:** no fabricated quotes, launch date, traffic or partnerships; no third-party flyers or licensed photos; screenshots show product screens only; the publication hold applies; no outreach, tracking or spend.
+- **Product Decisions Required:** Jody's read of the long bio before publication; publication GO.
+
+### STORY-027 — Promoter / Organizer Profile Pages (pilot: Fleatroit)
+
+- **Type:** STORY · **Status:** BACKLOG (proposal only, recorded 2026-11-08; NOT approved, NOT started; no schema created) · **Priority:** Unscored
+- **Epic:** EPIC-003 (Entity & Identity Data Buildout) · **Workstream:** primary `workstream:platform`, supporting `workstream:experience` and `workstream:event-intelligence`; release gate `workstream:release-quality` · **Recommended Model:** Opus 5 for the data-model/claim design, Sonnet 5 for the page · **Complexity:** Large overall; each phase below is Small or Medium
+- **Dependencies:** `DEC-005` (source is not organizer; hand-curation only); the organizer population strategy (`PRODUCT DECISION REQUIRED`, EPIC-003); STORY-018 (JSON-LD, for `Organization` markup); the shared event-page and `events_public` surface; for Phase 4, an auth/identity decision (no accounts exist today).
+- **Discovered:** 2026-11-08, from the owner-supplied Fleatroit x Carousel Noel Night flyer. Fleatroit has no official website we can cite, so its identity currently lives only as text in two unrelated event rows (Aug 30 "Fleatroit Junk City", Dec 5 Noel Night pop-up).
+- **Investigation (read-only, production afvyfjfqukptnfmgshzn, 2026-11-08):** `organizers` exists (migration_002: id, name, description, website, instagram, type, image_url, created_at; unique index on lower(name); public-read RLS) and `events.organizer_id` is a nullable FK with `on delete set null`. It holds 0 rows and no event has an `organizer_id`, even though EPIC-003 and `PRODUCT.md` say Paxahau was populated: reconcile that record before building. `organizer_id` is NOT in the `events_public` view, so no public surface can read it yet. `api/_lib/organizer-links.js` is a one-entry organizer-to-event_url fallback list, not an identity system. `events.submitter_org_name` is internal free text (and is hidden from public surfaces by test), so it cannot serve as identity. There is no per-organizer route, sitemap entry or search.
+- **What the existing table already supports:** canonical name (unique, case-insensitive), description, website, Instagram, a `type` text ('promoter', 'collective', ...), one image, and a one-to-many organizer-to-events link. **What it cannot do:** multiple social links beyond one Instagram, aliases ("Fleatroit" vs "Fleatroit x Carousel"), co-promoters (an event has one `organizer_id`; a many-to-many `event_organizers` join with a role is needed), series (no series entity; recurring events are rows or `occurrence_dates`), a slug for a stable public URL, publication status, provenance/evidence for facts, and any claim/verification state.
+- **Proposed capabilities:** (1) canonical promoter identity with slug, aliases and provenance; (2) name, description, artwork, website and social links (structured list, only owner-supplied or verified links, never invented); (3) upcoming and past events from the join, with date-sorted sections; (4) multiple series and venues derived from linked events, with an optional hand-curated series label; (5) co-promoter relationships via the join (role: presenter / co-presenter / host venue partner); (6) promoter discovery and search (an organizer filter and name search in the shared discovery layer); (7) SEO public profile at a canonical route with `Organization` JSON-LD, sitemap entry, and `performer`/`organizer` on event JSON-LD; (8) claim/verification workflow for future self-service (claim request, evidence, owner approval, then limited edit rights; out of scope until accounts exist).
+- **Proposed phases (relative sizes, no calendar estimate):** Phase 0, Small: reconcile the Paxahau/empty-table discrepancy and decide the population and naming rules. Phase 1, Medium: additive migration (slug, status, aliases, social-links jsonb, `event_organizers` join), staging first; expose organizer fields in `events_public` or a new `organizers_public` view; hand-seed Fleatroit and Carousel as the pilot with owner-supplied facts only. Phase 2, Medium: public profile page and route on the existing page architecture (same pattern as `event-template.html` and `venue-template.html`), organizer link on event pages, JSON-LD, sitemap. Phase 3, Small to Medium: promoter search/filter in discovery. Phase 4, Large and separate: claim/verification, which needs an authentication and moderation decision first.
+- **Risks:** fabricating organizer entities from `source` (rejected by `DEC-005`); name collisions and aliases (Carousel, Carouselle in unrelated Ticketmaster titles); publishing a profile for a promoter who has not asked for one (needs the owner's population rule); a migration is a production-SQL item and needs the owner's explicit GO.
+- **Acceptance Criteria (proposed, for Product Owner review):** a promoter profile exists only for a hand-verified real organizer; every fact on it has recorded provenance; Fleatroit shows both the Aug 30 and Dec 5 events as separate rows; no event is linked to an organizer without evidence; the page is mobile-responsive in the Detroit Signal style; all new SQL is applied to staging first with read-back and rollback.
+- **Product Decisions Required:** approve the scope and phase order; the organizer population strategy; whether co-promoters are first-class (join table) in Phase 1; whether the claim workflow is wanted at all and when; slug and route naming (`/promoters/<slug>` versus `/organizers/<slug>`).
+
 ---
 
 ## Tasks
@@ -654,6 +690,18 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
   6. the existing wrong rows have been dealt with or explicitly accepted, so a reopened tier does not build on them.
 - **How to release:** set `WEB_SEARCH_ENRICHMENT_ENABLED=true` for the Production environment in Vercel and redeploy. Removing the variable closes it again.
 - **Product Decisions Required:** the release conditions above; whether search may ever create venues; what happens to the stored wrong descriptions and venues; whether article-derived descriptions should keep the `authoritative` label.
+
+
+---
+
+### BUG-011 — Public pages displayed internal/editorial commentary from `events.note`
+
+- **Type:** BUG (privacy / editorial) · **Status:** REVIEW (hotfix live 2026-10-06; durable fix delivered as SZ-01 / `TASK-008`, ACCEPTED 2026-10-06; acceptance of this bug itself is for the Product Owner to record) · **Priority:** Critical
+- **Epic:** — · **Discovered:** 2026-10-06, Product Owner report of internal editorial commentary visible on the live site (the text is deliberately not quoted here).
+- **Cause:** the text is in `events.note`, a column documented as a visitor-facing caveat that staff and research sessions also used for editorial commentary. Every public surface read it: homepage cards, calendar, map, the event page, the `.ics` description, share text and search matching. It was also readable by anonymous clients from the base table and the `events_public` view. Scope: a material share of approved events had a non-empty `note`, some of it commentary (counts held in the 2026-10-06 audit record, not reproduced here).
+- **Hotfix (live, `dcd4e23`):** public pages no longer select, render, export or search `note`; regression test `test/no-internal-fields-public.test.js`. No data or schema change; the stored text is untouched.
+- **Durable fix:** SZ-01 (`TASK-008`, migration `20261006000003_sz01_public_access_boundary.sql`) — an anonymous column allowlist that excludes `note`, so the database refuses the read. Delivered; see `TASK-008` for its production evidence.
+- **Follow-up:** `STORY-026` (an explicitly public visitor-information field).
 
 ---
 

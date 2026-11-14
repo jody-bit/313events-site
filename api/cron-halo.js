@@ -5,6 +5,7 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Vercel Cron job — scrapes HALO Detroit's own events page
 // (thehalodetroit.com/currentevents). robots.txt for this site places no
 // restrictions on crawling it. The site is built on Wix, has no JSON-LD or
@@ -58,6 +59,8 @@ function timingSafeStringEqual(a, b) {
 const SOURCE_URL = "https://www.thehalodetroit.com/currentevents";
 const SOURCE_SLUG = SLUGS.halo; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "HALO Detroit";
+// HALO's own events page: the page this connector scrapes (robots.txt places no restriction), confirmed live 2026-09-28.
+const HALO_WEBSITE_URL = SOURCE_URL;
 const VENUE_CITY = "Detroit";
 const DEFAULT_STATUS = "approved";
 
@@ -283,19 +286,29 @@ const haloHandler = async (req, res) => {
   // function that's about the VENUE, not about what a specific event's
   // page showed -- every other branch above is still driven purely by
   // that event's own scraped action button, unchanged.
+  //
+  // 2026-10-19 (Jody, site owner): "for halo blank links just send people to their website ... they usually just have a cover
+  // charge at the door and do not sell tickets." A door event with no event-specific link therefore gets HALO's own events page
+  // (HALO_WEBSITE_URL), shown as "Venue website". It is written AFTER the upsert and ONLY into an empty event_url
+  // (fillVenueWebsite below), so an event-specific link that is already stored is never replaced by the generic page (R&Q
+  // review of #235, and the #234 rule that a stored valid link is never overwritten). ticket_url stays NULL on purpose.
   function ticketFieldsFor(e) {
     const url = resolveHaloUrl(e.actionHref);
-    if (!url) return { ticket_url: null, event_url: null, ticket_status: "door" };
+    if (!url) return { ticket_status: "door" }; // Omit absent links: preserve existing links on refresh; new rows use database defaults.
     if (e.actionLabel === "buy tickets" || e.actionLabel === "get tickets") {
       return { ticket_url: url, event_url: null, ticket_status: null };
     }
     if (e.actionLabel === "rsvp" || e.actionLabel === "details") {
       return { ticket_url: null, event_url: url, ticket_status: "rsvp_no_advance_sale" };
     }
-    return { ticket_url: null, event_url: null, ticket_status: "door" };
+    return { ticket_status: "door" }; // Omit absent links: preserve existing links on refresh; new rows use database defaults.
   }
 
-  const rawRows = parsed.map((e) => ({
+  // A closed rental the venue lists on its own calendar ("NACD: PRIVATE CLOSED EVENT") is not an event the public can attend
+  // (owner rule 2026-10-01: skipped altogether). Same shared filter every other connector uses; the skip is counted in the log.
+  const publicParsed = parsed.filter((e) => !isLikelyNotARealEvent({ title: e.title }));
+  if (publicParsed.length !== parsed.length) console.log(`[halo] skipped ${parsed.length - publicParsed.length} non-event listing(s) (private or closed rental)`);
+  const rawRows = publicParsed.map((e) => ({
     external_id: `halo-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "nightlife", // best-effort default — HALO's own page doesn't distinguish cabaret/DJ/social events
@@ -303,7 +316,7 @@ const haloHandler = async (req, res) => {
     venue_id: venueId,
     start_date: e.date,
     time_display: e.time,
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     source: "HALO Detroit",
     ...ticketFieldsFor(e),
   }));
@@ -365,6 +378,13 @@ const haloHandler = async (req, res) => {
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
+    let venueWebsiteFill = { attempted: 0, ok: true };
+    const doorIds = rowsWithStatus.filter((r) => r.ticket_status === "door" && !r.event_url).map((r) => r.external_id);
+    if (doorIds.length) {
+      venueWebsiteFill.attempted = doorIds.length;
+      try { const fillStats = await fillVenueWebsite(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, doorIds); venueWebsiteFill = { ...venueWebsiteFill, ...fillStats, ok: fillStats.failed === 0 }; }
+      catch (fillErr) { venueWebsiteFill = { attempted: doorIds.length, ok: false, error: fillErr.message }; }
+    }
     await finishRun(runHandle, {
       outcome: "success",
       http_status: resp.status,
@@ -372,7 +392,7 @@ const haloHandler = async (req, res) => {
       records_parsed: parsed.length,
       records_written: rowsWithStatus.length,
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, venueWebsiteFill, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
@@ -384,6 +404,54 @@ const haloHandler = async (req, res) => {
   }
 };
 
+// Fills HALO's own events page into door events whose event_url is still empty. Guarded writer (held; needs its own GO):
+//   - READ first (id, status, links, internal_note, updated_at), then write one row at a time;
+//   - approved rows only; a row the owner supplied or protected (OWNER-CORRECTION / EDITORIAL-HOLD in internal_note, or a
+//     Manual source; scripts/owner-supplied-row.js) is never touched, not even to fill a blank;
+//   - fills only a NULL, empty or whitespace-only event_url, and only a door event (ticket_url also blank): a stored link of
+//     either kind is never replaced;
+//   - the PATCH is conditional on the exact state just read (status, updated_at, and the exact event_url preimage), so an edit
+//     made after the read makes the PATCH match nothing (counted as a conflict, never overwritten);
+//   - source-scoped (source=HALO Detroit). Returns counts; a read failure throws (the caller treats it as non-fatal).
+const { isOwnerSuppliedRow } = require("../scripts/owner-supplied-row");
+
+const blankLink = (v) => v === null || v === undefined || (typeof v === "string" && !v.trim());
+
+async function fillVenueWebsite(supabaseUrl, key, externalIds) {
+  const stats = { attempted: externalIds.length, filled: 0, skippedNotApproved: 0, skippedProtected: 0, skippedHasLink: 0, conflicts: 0, failed: 0 };
+  const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
+  for (let i = 0; i < externalIds.length; i += 100) {
+    const chunk = externalIds.slice(i, i + 100);
+    // At most100 unique external_ids per read; external_id is the upsert conflict key. Explicit limit stays below the server cap.
+    // external_ids here are slugs ([a-z0-9-]), the same shape lookupExistingStatuses puts in its in.(...) filter
+    const read = await fetch(
+      `${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&external_id=in.(${chunk.join(",")})&select=id,external_id,status,source,event_url,ticket_url,internal_note,updated_at&limit=100`,
+      { headers }
+    );
+    if (!read.ok) throw new Error("venue website read HTTP " + read.status);
+    const rows = await read.json();
+    if (!Array.isArray(rows)) throw new Error("venue website read: unexpected response");
+    for (const row of rows) {
+      if (row.status !== "approved") { stats.skippedNotApproved++; continue; }
+      if (isOwnerSuppliedRow(row)) { stats.skippedProtected++; continue; }
+      if (!blankLink(row.event_url) || !blankLink(row.ticket_url)) { stats.skippedHasLink++; continue; }
+      const linkFilter = row.event_url === null || row.event_url === undefined ? "event_url=is.null" : `event_url=eq.${encodeURIComponent(row.event_url)}`;
+      const versionFilter = row.updated_at ? `updated_at=eq.${encodeURIComponent(row.updated_at)}` : "updated_at=is.null";
+      const r = await fetch(
+        `${supabaseUrl}/rest/v1/events?id=eq.${encodeURIComponent(row.id)}&source=eq.HALO%20Detroit&status=eq.approved&${linkFilter}&ticket_url=is.null&${versionFilter}`,
+        { method: "PATCH", headers: { ...headers, Prefer: "return=representation" }, body: JSON.stringify({ event_url: HALO_WEBSITE_URL }) }
+      );
+      if (!r.ok) { stats.failed++; continue; }
+      const changed = await r.json().catch(() => null);
+      if (Array.isArray(changed) && changed.length === 1) stats.filled++;
+      else stats.conflicts++; // the row changed after it was read: nothing was written
+    }
+  }
+  return stats;
+}
+
 module.exports = haloHandler;
 module.exports.parseHaloEvents = parseHaloEvents; // exposed for test/cron-halo-ticket-status.test.js only
 module.exports.resolveHaloUrl = resolveHaloUrl;
+module.exports.HALO_WEBSITE_URL = HALO_WEBSITE_URL;
+module.exports.fillVenueWebsite = fillVenueWebsite; // exposed for test/cron-halo-venue-website-writer.test.js only

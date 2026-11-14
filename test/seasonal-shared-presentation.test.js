@@ -17,8 +17,8 @@ const pub = Object.fromEntries(SLUGS.map((s) => [s, DATA.published(DATA.COLLECTI
 
 // 1. release counts are preserved
 assert.strictEqual(pub.fall.length, 38, "FALL IS ON.");
-assert.strictEqual(pub["fall-color"].length, 41, "FALL COLORS.");
-assert.strictEqual(pub.halloween.length, 25, "THE DARK ORBIT.");
+assert.strictEqual(pub["fall-color"].length, 40, "FALL COLORS.");
+assert.strictEqual(pub.halloween.length, 7, "THE DARK ORBIT.");
 
 // 2. one stylesheet, one renderer: the three pages load the identical shared assets and the identical page shell
 const pages = Object.fromEntries(SLUGS.map((s) => [s, read(s + ".html")]));

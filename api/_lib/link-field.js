@@ -52,6 +52,35 @@ function resolveLinkField(value, baseUrl) {
   return { url: null, raw, reason: "not_a_link" };
 }
 
+// An ICS feed whose VEVENT URL is the feed path (CivicPlus) still prints the event's own page in DESCRIPTION text:
+// "https://<same site>/calendar.aspx?EID=<n>", where <n> is the event's UID. Returns that page, or null. It is not a guess:
+// the link must be on the feed's own site (www ignored), be exactly /calendar.aspx with only an EID parameter, occur once
+// in the text, and carry the id the feed gave this event as its UID.
+// -> absolute https URL or null.
+function eventPageFromDescription(description, feedUrl, uid) {
+  if (typeof description !== "string" || typeof feedUrl !== "string" || uid === null || uid === undefined) return null;
+  let feedHost;
+  try { feedHost = new URL(feedUrl).hostname.toLowerCase().replace(/^www\./, ""); } catch { return null; }
+  const idMatch = /(\d+)\s*$/.exec(String(uid));
+  if (!idMatch) return null;
+  const found = new Map(); // eid -> the host the text itself used
+  for (const m of description.matchAll(/https?:\/\/[^\s"'<>)\]]+/gi)) {
+    let u;
+    try { u = new URL(m[0].replace(/[.,;:!?]+$/, "")); } catch { continue; }
+    if (u.hostname.toLowerCase().replace(/^www\./, "") !== feedHost) continue;
+    if (u.pathname.toLowerCase() !== "/calendar.aspx") continue;
+    const keys = [...u.searchParams.keys()];
+    if (keys.length !== 1 || keys[0].toLowerCase() !== "eid") continue;
+    const eid = u.searchParams.get(keys[0]);
+    if (!/^\d+$/.test(eid)) continue;
+    found.set(eid, u.hostname.toLowerCase());
+  }
+  if (found.size !== 1) return null;
+  const [[eid, host]] = found;
+  if (eid !== idMatch[1]) return null;
+  return normalizeLinkField("https://" + host + "/calendar.aspx?EID=" + eid);
+}
+
 // Applies the rule to one row without mutating it. An unusable value is OMITTED from the write for both fields, so a rejected
 // incoming link can never overwrite a valid stored one (merge-duplicates leaves an omitted column alone; a new row gets the
 // column default, null). A field the row does not
@@ -142,4 +171,4 @@ function createRejectionLog({ limit = 20, log = console.log } = {}) {
   };
 }
 
-module.exports = { normalizeLinkField, resolveLinkField, normalizeRowLinks, sanitizeLinkForLog, createRejectionLog, FEED_PATH };
+module.exports = { normalizeLinkField, resolveLinkField, eventPageFromDescription, normalizeRowLinks, sanitizeLinkForLog, createRejectionLog, FEED_PATH };

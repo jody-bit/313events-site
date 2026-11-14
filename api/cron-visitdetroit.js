@@ -1,10 +1,12 @@
 const crypto = require("crypto");
+const { fetchAllPagedRows } = require("./_lib/paged-rows"); // read EVERY matching row: Supabase caps one request at 1,000 rows with a 200
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { preserveRange } = require("./_lib/range-preservation"); // MC-RANGE: a refresh never narrows a range below evidenced dates
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { canonicalVisitDetroitUrl } = require("./_lib/visitdetroit-link-recovery"); // P0 2026-10-16: store the live /events/<slug>/ page
 const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
 
 // Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v3 table (with evidence tiers), loaded lazily. A ZIP
@@ -254,8 +256,15 @@ function deriveDateTimeFields(h) {
   let timeDisplay = null;
   if (!h.isAllDay) {
     timeDisplay = formatTime(startParts.hour, startParts.minute);
+    // 23:59 is VisitDetroit's end-of-day filler, not a published end time
+    // (194 of 194 approved upcoming rows that end at 11:59 PM came from it): an
+    // end shown as "to 11:59 PM" is false on the card and becomes a false
+    // DTEND in "Add to calendar". Keep the start only; the calendar export
+    // then uses its own 2-hour default (project/DECISIONS.md end-time fallback).
+    const placeholderEnd = endParts && endParts.hour === 23 && endParts.minute === 59;
     if (
       endParts &&
+      !placeholderEnd &&
       endParts.date === startParts.date &&
       (endParts.hour !== startParts.hour || endParts.minute !== startParts.minute)
     ) {
@@ -343,9 +352,9 @@ const visitDetroitHandler = async (req, res) => {
         // start time on genuinely all-day listings instead of treating
         // every null time_display as a parsing gap — see migration_028.
         is_all_day: !!h.isAllDay,
-        is_free: false, // no price signal in this index — see header comment, never guessed true
+        // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
         price_from: null,
-        ticket_url: h.uri ? `https://visitdetroit.com${h.uri}` : null,
+        ticket_url: canonicalVisitDetroitUrl(h.uri), // stores /events/<slug>/: the index's bare /<slug>/ path 404s
         image_url: h.primaryImageUrl || null,
         source: SOURCE_NAME,
         note: h.readableRepeatRule
@@ -380,17 +389,15 @@ const visitDetroitHandler = async (req, res) => {
     const dates = mappedRows.map((r) => r.start_date).sort();
     const minDate = dates[0];
     const maxDate = dates[dates.length - 1];
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?select=title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
-        `&start_date=gte.${minDate}&start_date=lte.${maxDate}`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    // Paged in full: a plain read stops at 1,000 rows, and a partial key set would let cross-source duplicates through. Fail-open as
+    // before (a failed page keeps the keys already read and the run proceeds), but never silent.
+    const lookup = await fetchAllPagedRows(
+      `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date&source=neq.${encodeURIComponent(SOURCE_NAME)}` +
+        `&start_date=gte.${minDate}&start_date=lte.${maxDate}&order=start_date.asc,id.asc`,
+      { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }
     );
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingKeys = new Set(existingRows.map((r) => dedupeKey(r.title, r.start_date)));
-      }
-    }
+    if (!lookup.ok) console.warn(`[cron-visitdetroit] cross-source duplicate lookup incomplete (${lookup.rows.length} rows): ${lookup.error}`);
+    existingKeys = new Set(lookup.rows.map((r) => dedupeKey(r.title, r.start_date)));
   } catch {
     // Lookup failed — proceed with an empty exclusion set rather than fail
     // the whole run; worst case this pass over-inserts a few rows that a

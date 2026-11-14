@@ -120,6 +120,7 @@ const { filterPendingQueue } = require("./_lib/pending-queue");
 const { classifyRows } = require("./_lib/pending-classifier");
 const { annotateQueue } = require("./_lib/submission-provenance");
 const { evaluateSources } = require("./_lib/source-health");
+const { venueLocationGate } = require("./_lib/venue-location-gate");
 
 async function buildProvenance(rows, headers) {
   let feeds = [];
@@ -129,7 +130,7 @@ async function buildProvenance(rows, headers) {
     const since = encodeURIComponent(new Date(Date.now() - 30 * 86400000).toISOString());
     const [f, r] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name,feed_format,status,last_polled_at,last_poll_result&limit=1000`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status,resume:session_data->>resume&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
     ]);
     if (f.ok) feeds = await f.json(); else readError = `feed_sources HTTP ${f.status}`;
     if (r.ok) runs = await r.json(); else readError = `${readError ? readError + "; " : ""}source_runs HTTP ${r.status}`;
@@ -301,6 +302,18 @@ module.exports = async (req, res) => {
       }
 
       let url;
+      let searchAnnotate = false;
+      // ?id=<event id>: one event of any status with what a correction needs (row_version, owner_corrected, edits). Read-only.
+      const lookupId = typeof req.query?.id === "string" ? req.query.id.trim() : "";
+      if (lookupId) {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(lookupId)}&select=*`, { headers: sbHeaders });
+        const found = r.ok ? await r.json() : null;
+        if (!r.ok || !Array.isArray(found)) { res.status(502).json({ error: "Could not read the event" }); return; }
+        if (!found[0]) { res.status(404).json({ error: "Event not found" }); return; }
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: [{ ...found[0], row_version: found[0].updated_at || null, ...ownerCorrectionView(found[0]) }] });
+        return;
+      }
       if (incomplete) {
         const todayISO = new Date().toISOString().slice(0, 10);
         // venue_id + the embedded venues(address,city) let admin.html's
@@ -340,10 +353,14 @@ module.exports = async (req, res) => {
         // as-is here, same as the working title=ilike.${encoded} branch below.
         const encoded = encodeURIComponent(`%${search}%`);
         const statusFilter = includePending ? "status=in.(approved,pending_review)" : "status=eq.approved";
-        const matchFilter = includePending
-          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded})`
+        // match=any (Live events editing): title, venue or source, so an editor who knows the venue but not the exact
+        // title can find the event. Opt-in: the takedown search and Press coverage keep their behaviour.
+        const wide = req.query?.match === "any";
+        const matchFilter = includePending || wide
+          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded}${wide ? `,source.ilike.${encoded}` : ""})`
           : `title=ilike.${encoded}`;
         url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
+        searchAnnotate = true;
       } else if (hidden) {
         // Recently hidden/rejected, most recent first — the undo list.
         // 200, not 20: one nightly run can retire sixty rows (duplicates
@@ -375,6 +392,12 @@ module.exports = async (req, res) => {
 
       const resp = await fetch(url, { headers: sbHeaders });
       const rows = await resp.json();
+      if (resp.ok && searchAnnotate && Array.isArray(rows)) {
+        // Additive: the version to send back with a correction, and which fields a person has already corrected.
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        res.status(200).json({ events: rows.map((e) => ({ ...e, row_version: e.updated_at || null, ...ownerCorrectionView(e) })) });
+        return;
+      }
       res.status(resp.ok ? 200 : 502).json(resp.ok ? { events: rows } : { error: rows });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -503,6 +526,8 @@ module.exports = async (req, res) => {
             approveBlock.blocked = { failed_gate: "not_pending", codes: [], why: "Only events waiting for review can be approved here. Use Restore for a rejected or hidden event." };
           } else if (row.source === "Resident Advisor" && !row.time_display && body.acknowledgeMissingTime !== true) {
             approveBlock.blocked = { failed_gate: "missing_time", codes: ["MISSING_START_TIME"], why: "This Resident Advisor event has no verified start time. Add the time, or approve it without one on purpose." };
+          } else if (!venueLocationGate(row, { acknowledged: body.acknowledgeMissingLocation === true }).ok) {
+            approveBlock.blocked = { failed_gate: "missing_location", codes: ["MISSING_VENUE_LOCATION"], why: "This submission is not linked to a venue and has no city. Add the venue or city, or approve it on purpose." };
           } else {
             // The same publication gate ingestion uses. Identity and source codes describe how a row arrived, not whether
             // it is fit to publish, so a hand-submitted row (no external_id) is not blocked by them.
@@ -512,7 +537,7 @@ module.exports = async (req, res) => {
               approveBlock.blocked = { failed_gate: "publication_gate", codes: blockers.map((i) => i.code), why: blockers.map((i) => i.message || i.code).join("; ") };
             } else {
               const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.pending_review`, {
-                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved" }),
+                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved", ...(venueLocationGate(row, { acknowledged: body.acknowledgeMissingLocation === true }).patch || {}) }),
               });
               const approved = await a.json().catch(() => null);
               if (a.ok && Array.isArray(approved) && approved[0]) {
@@ -561,7 +586,7 @@ module.exports = async (req, res) => {
         // (even if that got filled in by another tab, or a cron re-run,
         // between page load and clicking Save).
         const currentResp = await fetch(
-          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")}`,
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")},internal_note,updated_at`,
           { headers: sbHeaders }
         );
         const currentRows = await currentResp.json();
@@ -578,16 +603,32 @@ module.exports = async (req, res) => {
           }
         }
         if (!Object.keys(patch).length) {
-          res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
+          const { internal_note: _hiddenNote, ...publicCurrent } = current;
+          res.status(200).json({ ok: true, event: publicCurrent, note: "Nothing to fill in — every requested field already had a value." });
           return;
         }
-        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+        // A person's fill is a correction like any other: it is recorded as an OWNER-CORRECTION line, which is also the
+        // lock that keeps the next ingestion run from writing over it, and the write is conditional on the version just read.
+        const contract = require("./_lib/event-contract");
+        const now = new Date().toISOString();
+        const editId = `e-${now.replace(/[-:.]/g, "").slice(0, 15)}Z-${crypto.randomBytes(2).toString("hex")}`;
+        const changes = Object.keys(patch).map((field) => ({ field, before: current[field] == null ? null : current[field], after: patch[field] }));
+        const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes, note: "follow-up fill" });
+        const guarded = { ...patch, internal_note: contract.appendNoteLine(current.internal_note, line), updated_at: now };
+        // Always conditional on the version just read; a row with no version is guarded as "still has none" (never an unguarded write).
+        const versionGuard = current.updated_at ? `&updated_at=eq.${encodeURIComponent(current.updated_at)}` : "&updated_at=is.null";
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}${versionGuard}`, {
           method: "PATCH",
           headers: { ...sbHeaders, Prefer: "return=representation" },
-          body: JSON.stringify(patch),
+          body: JSON.stringify(guarded),
         });
         const rows = await resp.json();
-        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
+        if (resp.ok && Array.isArray(rows) && !rows[0]) {
+          res.status(409).json({ error: "row changed", message: "This event changed after it was read. Nothing was saved. Reload it and try again." });
+          return;
+        }
+        const { internal_note: _hidden, ...publicEvent } = (resp.ok && rows[0]) || {};
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: publicEvent, row_version: rows[0].updated_at, edit_id: editId, ...contract.ownerCorrectionView(rows[0]) } : { error: rows });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -705,191 +746,16 @@ module.exports = async (req, res) => {
     // counters alone would double-count that event).
     if (action === "auto_repair_venue") {
       try {
-        const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-        const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-
-        let descriptionCounts = null;
-        let outerLimitsDescriptionError = null;
-        try {
-          const { repairOuterLimitsDescriptions } = require("../scripts/outerlimits-description-repair");
-          descriptionCounts = await repairOuterLimitsDescriptions({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (descErr) {
-          // Never lets a description-repair failure erase Step 1's real,
-          // already-persisted venue-repair results -- surfaced explicitly
-          // instead so it's visible, not masqueraded as a clean success.
-          outerLimitsDescriptionError = descErr.message;
-        }
-
-        let dossinCounts = null;
-        let dossinMetadataError = null;
-        try {
-          const { repairDossinMetadata } = require("../scripts/dossin-metadata-repair");
-          dossinCounts = await repairDossinMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (dossinErr) {
-          // Same isolation as Step 2's own failure handling -- never lets a
-          // Dossin-step failure erase Steps 1/2's real, already-persisted
-          // results.
-          dossinMetadataError = dossinErr.message;
-        }
-
-        let redfordCounts = null;
-        let redfordMetadataError = null;
-        try {
-          const { repairRedfordMetadata } = require("../scripts/redford-metadata-repair");
-          redfordCounts = await repairRedfordMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (redfordErr) {
-          // Same isolation as Steps 2/3's own failure handling -- never
-          // lets a Redford-step failure erase Steps 1/2/3's real,
-          // already-persisted results.
-          redfordMetadataError = redfordErr.message;
-        }
-
-let genericCounts = null;
-        let genericEnrichmentError = null;
-        try {
-          const { repairGenericMetadata } = require("../scripts/generic-metadata-enrichment");
-          genericCounts = await repairGenericMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (genericErr) {
-          // Same isolation as Steps 2/3/4's own failure handling -- never
-          // lets a generic-enrichment failure erase Steps 1-4's real,
-          // already-persisted results.
-          genericEnrichmentError = genericErr.message;
-        }
-
-        // Step 6 (2026-09-28, Needs Follow-up self-healing pass 2):
-        // VisitDetroit dead-event-link self-healing
-        // (scripts/visitdetroit-dead-link-repair.js's
-        // repairVisitDetroitDeadLinks()) -- live-checks every current
-        // VisitDetroit event's stored ticket_url, repairs it via the
-        // known /<slug>/ -> /events/<slug>/ URL-shape migration when a
-        // 404/410 is confirmed AND the replacement page's own text
-        // confirms the same event title (api/_lib/link-health.js +
-        // api/_lib/visitdetroit-link-recovery.js), and marks
-        // link_check_status='dead' (a new, actionable Needs Follow-up
-        // reason -- see admin.html's classifyMissingFields()) when it
-        // can't. A timeout/403/429/5xx check is never treated as evidence
-        // of anything and never writes. Same failure-isolation pattern as
-        // Steps 2-5.
-        //
-        // SCOPE NOTE (per Jody, 2026-09-28): this button step is for
-        // ONGOING drift only -- it re-checks whatever is currently in the
-        // database each time it runs, so it's naturally idempotent and
-        // safe to leave wired in here. It is deliberately NOT how the
-        // initial, systemic 2026-09-28 VisitDetroit cleanup (repairing
-        // every existing future row's time-parsing AND link-migration
-        // fallout in one historical pass) gets done -- that one-time
-        // repair is scripts/visitdetroit-initial-backfill.js, run once by
-        // hand, separately from this button, so the first historical
-        // cleanup is a deliberate, reviewed action rather than a side
-        // effect of clicking Auto-Repair for something unrelated.
-        let visitDetroitLinkCounts = null;
-        let visitDetroitLinkError = null;
-        try {
-          const { repairVisitDetroitDeadLinks } = require("../scripts/visitdetroit-dead-link-repair");
-          visitDetroitLinkCounts = await repairVisitDetroitDeadLinks({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (linkErr) {
-          // Same isolation as Steps 2-5's own failure handling -- never
-          // lets a dead-link-repair failure erase Steps 1-5's real,
-          // already-persisted results.
-          visitDetroitLinkError = linkErr.message;
-        }
-
-        // Step 7 (2026-09-30, "self-healing/enrichment pivot" root-cause
-        // fix -- see NEEDS_FOLLOWUP_ROOT_CAUSE.md): venue raw location
-        // re-parse (scripts/venue-raw-reparse-repair.js's
-        // repairVenueRawReparse()). api/_lib/ics-location.js's per-VEVENT
-        // LOCATION grammars were too narrow for several already-live
-        // multi-venue feeds (a region spelled out in full instead of
-        // abbreviated; a Tribe-style location with no region field at
-        // all) -- real address/city text fell through to the safe
-        // "unparseable" fallback and got written WHOLE into
-        // venue_name_raw instead of being split out. That grammar gap is
-        // now fixed directly in ics-location.js, so every newly-ingested
-        // event benefits automatically; this step gives EVERY event
-        // already stuck with a raw, unsplit location string in
-        // venue_name_raw (venue_id/venue_address_raw/venue_city_raw all
-        // still null) one more chance at the same parser, now that it
-        // recognizes their shape -- literally no new repair logic, just
-        // re-running the (now-fixed) shared parser against evidence
-        // already sitting on the row. Same failure-isolation pattern as
-        // Steps 2-6.
-        let venueRawReparseCounts = null;
-        let venueRawReparseError = null;
-        try {
-          const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
-          venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (reparseErr) {
-          // Same isolation as Steps 2-6's own failure handling -- never
-          // lets this step's failure erase Steps 1-6's real,
-          // already-persisted results.
-          venueRawReparseError = reparseErr.message;
-        }
-
-        // Step 7b (2026-10-05): entries that are not events (closure notices,
-        // suite-rental upsells) leave the public inventory, exactly as in the
-        // nightly run and before the duplicate pass -- see
-        // scripts/retire-non-events.js.
-        let nonEventCounts = null;
-        let nonEventRetirementError = null;
-        try {
-          const { retireNonEvents } = require("../scripts/retire-non-events");
-          nonEventCounts = await retireNonEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (nonEventErr) {
-          nonEventRetirementError = nonEventErr.message;
-        }
-
-        // Step 8 (2026-10-05): deterministic duplicate consolidation, the
-        // same pass the nightly run makes -- see scripts/duplicate-consolidation.js.
-        let duplicateCounts = null;
-        let duplicateConsolidationError = null;
-        try {
-          const { consolidateDuplicates } = require("../scripts/duplicate-consolidation");
-          duplicateCounts = await consolidateDuplicates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        } catch (dupErr) {
-          duplicateConsolidationError = dupErr.message;
-        }
-
-        const venueWrittenIds = venueCounts.writtenIds || [];
-        const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
-        const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
-        const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
-        const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
-        const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
-        const visitDetroitLinkWrittenIds = (visitDetroitLinkCounts && visitDetroitLinkCounts.writtenIds) || [];
-        const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds]);
-        const combinedFieldsWritten =
-          venueCounts.fieldsWritten +
-          ((descriptionCounts && descriptionCounts.written) || 0) +
-          ((dossinCounts && dossinCounts.written) || 0) +
-          ((redfordCounts && redfordCounts.fieldsWritten) || 0) +
-          ((genericCounts && genericCounts.fieldsWritten) || 0) +
-          ((visitDetroitLinkCounts && visitDetroitLinkCounts.fieldsWritten) || 0) +
-          ((venueRawReparseCounts && venueRawReparseCounts.written) || 0);
-
-        res.status(200).json({
-          ok: true,
-          ...venueCounts,
-          written: combinedWrittenIds.size,
-          fieldsWritten: combinedFieldsWritten,
-          venue: venueCounts,
-          outerLimitsDescription: descriptionCounts,
-          outerLimitsDescriptionError,
-          dossinMetadata: dossinCounts,
-          dossinMetadataError,
-          redfordMetadata: redfordCounts,
-          redfordMetadataError,
-          genericEnrichment: genericCounts,
-          genericEnrichmentError,
-          visitDetroitDeadLinks: visitDetroitLinkCounts,
-          visitDetroitLinkError,
-          venueRawReparse: venueRawReparseCounts,
-          venueRawReparseError,
-          nonEventRetirement: nonEventCounts,
-          nonEventRetirementError,
-          duplicateConsolidation: duplicateCounts,
-          duplicateConsolidationError,
-        });
+        // Steps, per-step timeouts and the 270 s overall budget live in
+        // api/_lib/auto-repair-steps.js (#256).
+        const { runAutoRepair } = require("./_lib/auto-repair-steps");
+        const result = await runAutoRepair({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        console.log("[auto_repair_venue]", JSON.stringify({ complete: result.complete, elapsedMs: result.elapsedMs, steps: result.steps.map((s) => `${s.key}:${s.status}:${s.ms}`) }));
+        // Preserved contract: a failed venue step (the primary repair) is an
+        // explicit error response. The other steps still ran in isolation
+        // and their per-step outcomes ride along in the body.
+        if (result.venueError) res.status(500).json({ ...result, ok: false, error: result.venueError });
+        else res.status(200).json(result);
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -920,6 +786,21 @@ let genericCounts = null;
       // confirmed by hand that RA genuinely has no time for this one
       // (e.g. an all-day/date-only listing) can still approve it; this
       // only blocks the SILENT case the defect actually was.
+      let approvePatch = {};
+      if (action === "approve") {
+        // Venue Submission with no venue link and no city (P1 audit EXPORT-2): refuse, or fill the city its own address states.
+        const locResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,status,venue_id,venue_city_raw,venue_address_raw,no_fixed_venue`,
+          { headers: sbHeaders }
+        );
+        const locRows = locResp.ok ? await locResp.json() : [];
+        const gate = venueLocationGate(locRows[0], { acknowledged: body.acknowledgeMissingLocation === true });
+        if (!gate.ok) {
+          res.status(409).json({ error: gate.code, message: gate.why, id });
+          return;
+        }
+        if (gate.patch) approvePatch = gate.patch;
+      }
       if (action === "approve" && !acknowledgeMissingTime) {
         const checkResp = await fetch(
           `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,time_display`,
@@ -941,7 +822,7 @@ let genericCounts = null;
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { ...sbHeaders, Prefer: "return=representation" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, ...approvePatch }),
       });
       const rows = await resp.json();
       if (resp.ok && action === "approve" && rows[0]) {
