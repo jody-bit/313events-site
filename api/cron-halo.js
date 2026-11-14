@@ -422,9 +422,10 @@ async function fillVenueWebsite(supabaseUrl, key, externalIds) {
   const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
   for (let i = 0; i < externalIds.length; i += 100) {
     const chunk = externalIds.slice(i, i + 100);
+    // At most100 unique external_ids per read; external_id is the upsert conflict key. Explicit limit stays below the server cap.
     // external_ids here are slugs ([a-z0-9-]), the same shape lookupExistingStatuses puts in its in.(...) filter
     const read = await fetch(
-      `${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&external_id=in.(${chunk.join(",")})&select=id,external_id,status,source,event_url,ticket_url,internal_note,updated_at`,
+      `${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&external_id=in.(${chunk.join(",")})&select=id,external_id,status,source,event_url,ticket_url,internal_note,updated_at&limit=100`,
       { headers }
     );
     if (!read.ok) throw new Error("venue website read HTTP " + read.status);
