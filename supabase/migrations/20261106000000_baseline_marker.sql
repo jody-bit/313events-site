@@ -1,0 +1,19 @@
+-- BASELINE MARKER. Comment-only: changes no schema, no data, no privileges. Safe to apply twice.
+-- NOT APPLIED and not approved to apply: applying it needs the separate steps in the reconciliation plan.
+--
+-- Purpose: give the native migration history one clean starting line. Everything before this file is captured by the
+-- files in this directory plus the legacy supabase/migration_*.sql / update_*.sql record (history, never replayed).
+-- Existing rows in public.schema_migrations and supabase_migrations.schema_migrations are NOT edited or consolidated.
+--
+-- Core catalog fingerprint (ops fingerprint query, read-only) measured 2026-11-06 ~03:37Z on production
+-- (afvyfjfqukptnfmgshzn) and staging (efxjdlogohcggpuftivm): identical in every group except view_options
+-- (events_public security_invoker, pending its own release):
+--   columns       3ec6fbe9058049a6a4d689c3f396711e   column_grants 66e15377d09cf49a658f7af359d27b25
+--   constraints   bb35e75e853127b97859515a8f8991e8   indexes       cf76539c1812b682b46a9f7e2ad97ea3
+--   policies      15a4a3be95308e1a8ebb759af9e937ff   rls           9f566fa400deb356bf1775ee2a108b6a
+--   table_grants  d154fc884739c1aaf6896347813e38f8   functions     f541620a195ffde3467c28efd5294510
+--   triggers      3158906f24c993c8cf95e9c2f6c42e31   views         4d4f2e8b07728d41a306874cd3458dd5
+--   enums         7cf7e2ee6a70fd56293886f016ceabed
+--   view_options  production 833dfc28859e94ef689a9e908e27b790, staging f00c2ac6597bd2adb4a80b154bf18327
+-- (table_grants d154fc88 uses the ACL-catalog query; the 2026-10-24 information_schema query d05d79c36d4e209a5c048b26b23f51af was re-run today and still returns that value on both projects, so no grants changed.)
+select 1;
