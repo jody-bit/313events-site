@@ -479,7 +479,7 @@ async function uploadEventImage(ctx, input) {
 // ----------------------------------------------------------------------------- create_event
 // The smallest event-creation path: it reuses the shared contract (api/_lib/event-contract.js evaluateEvent) and never
 // publishes on its own judgement. Unknown facts stay empty. Possible duplicates are listed and block creation. The row is
-// created as pending_review unless the caller passes publish:true (the owner said publish) AND the contract finds no issue.
+// ALWAYS created as pending_review: an editor approves every gateway-created event in the admin queue. There is no publish option.
 // Exactly the database event_category enum (test/category-contract.test.js keeps this equal to it); comedy is part of "theatre".
 const CREATE_CATEGORIES = new Set(["music", "theatre", "dance", "visual", "museum", "family", "fest", "food", "film", "nightlife", "sports", "community", "vendor", "training", "gaming"]);
 const normTitle = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -525,12 +525,11 @@ async function createEvent(ctx, input) {
   if (exact) return { outcome: "already_exists", changed: false, event: exact };
   if (matches.length) throw new GatewayError("possible_duplicate", "Events that may be the same already exist. Use one of them (upload_event_image / ask the owner) instead of creating another.", 409, { matches });
 
-  const wantsPublish = a.publish === true;
-  const status = wantsPublish && verdict.decision === "publish" ? "approved" : "pending_review";
+  const status = "pending_review";
   const stamp = (ctx.now ? ctx.now() : new Date()).toISOString();
   row.status = status;
-  row.internal_note = `[editorial-gateway ${stamp}] created by ${safeLabel(a.client || "ai-client", 40)}; source: ${evidence}${wantsPublish && status !== "approved" ? "; publish requested but held for review: " + verdict.issues.map((i) => i.code).join(",") : ""}`;
-  const plan = { event_preview: Object.assign({}, row, { internal_note: undefined }), status, review_issues: verdict.issues.map((i) => i.code), publish_requested: wantsPublish };
+  row.internal_note = `[editorial-gateway ${stamp}] created by ${safeLabel(a.client || "ai-client", 40)}; source: ${evidence}`;
+  const plan = { event_preview: Object.assign({}, row, { internal_note: undefined }), status, review_issues: verdict.issues.map((i) => i.code) };
   if (a.dry_run !== false) return Object.assign({ outcome: "dry_run", changed: false, note: "Nothing was written. Call again with dry_run:false to create." }, plan);
 
   const fetchFn = ctx.fetchFn || fetch;
@@ -540,8 +539,8 @@ async function createEvent(ctx, input) {
   if (!resp.ok) throw new GatewayError("database_error", `Database insert failed (HTTP ${resp.status}).`, resp.status === 409 ? 409 : 502);
   const made = await resp.json();
   if (!Array.isArray(made) || made.length !== 1) throw new GatewayError("database_error", "Database insert returned no row.", 502);
-  return Object.assign({ outcome: "created", changed: true, event: summarize(made[0]), live_url: status === "approved" && ctx.siteUrl ? `${ctx.siteUrl}/event.html?id=${made[0].id}` : null,
-    next: status === "approved" ? "Upload the flyer, then run verify_event." : "Held as pending_review: an editor approves it in the admin queue; then upload the flyer and verify." }, { status });
+  return Object.assign({ outcome: "created", changed: true, event: summarize(made[0]), live_url: null,
+    next: "Held as pending_review: an editor approves it in the admin queue; then upload the flyer and verify." }, { status });
 }
 
 // ----------------------------------------------------------------------------- verify_event

@@ -24,7 +24,7 @@ Status: designed and built; NOT yet exercised on the owner's phone or accounts. 
 | Create / enrich | `create_event` (new) as `pending_review`; existing events are enriched only by the existing admin correction path, never by this tool |
 | Upload artwork | `upload_event_image` / raw route: original bytes, hash-named, no overwrite, read-back verified, locked against feed refresh |
 | Uncertain facts | `pending_review` queue in admin; ambiguous duplicates are refused, not created |
-| Publish | only with `publish:true` AND clean contract, or approval in admin; the owner says publish |
+| Publish | only by an editor approving the held event in admin; the gateway cannot publish |
 | Return URL + verification | `verify_event` and the live link on the page |
 
 ## Not built (decisions, not defects)
