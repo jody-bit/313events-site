@@ -1,0 +1,439 @@
+{
+  "runToken": "20261114-024059-9b416c",
+  "action": "complete",
+  "runId": "d67c41ce-d15b-441e-9297-fcb4fdd9ab10",
+  "events": [
+    {
+      "id": "ra-2578535",
+      "title": "All In",
+      "description": "all in is a new event in eastern market \n",
+      "startDate": "2026-11-28T20:00:00.000",
+      "endDate": "2026-11-29T02:00:00.000",
+      "venueName": "TBA",
+      "address": null,
+      "image": [
+        "https://images.ra.co/a53096c990bbb63ec1b0c595bb11e4c185a9e954.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2580746",
+      "title": "Sound Invaders",
+      "description": "BLACK FRIDAY GROOVES\n\nLive Electronic Hardware \n\nGrooves made live on the spot that make you dance(:\n\n8PM-2AM \n\nACID,TECHNO,BREAKCORE & MANY OTHER GENRES",
+      "startDate": "2026-11-27T20:00:00.000",
+      "endDate": "2026-11-28T02:00:00.000",
+      "venueName": "Amplify",
+      "address": "2932 Caniff St",
+      "image": [
+        "https://images.ra.co/5cd6e1e4f16553a414660b5091588ba7f8d66b4b.jpg"
+      ],
+      "offersPrice": 5,
+      "url": null
+    },
+    {
+      "id": "ra-2580960",
+      "title": "Solo & Group Play",
+      "description": "Stemming from Shigeto and Jared Talaga's improvised electronic performance at Moondog's anniversary show this spring and Shigeto and Josh Dunn's ongoing studio co-concoctions comes Solo & Group Play. On this occasion, they've invited sound artist and Moondog co-conspirator caitlin c. harvey to join the fold.\n\nAt 8pm next Friday, each artist will take turns playing solo electronic sets before converging as a group in ecstatic sonic collaboration.\n",
+      "startDate": "2026-11-20T19:00:00.000",
+      "endDate": "2026-11-20T23:00:00.000",
+      "venueName": "Moondog Cafe",
+      "address": "8045 Linwood St #2, Detroit, MI 48206",
+      "image": [
+        "https://images.ra.co/3e13a704e6dd690a664b02062b2c1ce6f4f8f506.jpg"
+      ],
+      "offersPrice": 17.25,
+      "url": null
+    },
+    {
+      "id": "ra-2581121",
+      "title": "WAX ON WAX OFF",
+      "description": "TV LOUNGE PRESENTS: WAX ON. WAX OFF.\n\nThree selectors. All vinyl. No shortcuts. Just deep grooves, impeccable taste, and the art of working a room one record at a time.\n\nWe're kicking off a brand-new TV Lounge party theme dedicated to the ones who know that the magic is in the wax. Three incredible selectors, three distinct musical journeys, and one dancefloor ready to receive.\n\nEDDIE LOGIX A true Detroit musical polymath. Producer, beatmaker, MC, collaborator, and DJ with a deep-rooted understanding of the sounds that shaped the city and the ones that keep pushing it forward. From soulful house and Detroit rhythms to Chicago flavor, forgotten gems, and unexpected gems yet to be discovered, Eddie brings curiosity, creativity, and serious musical instincts to every set. He doesn't just play records. He connects dots.\n\nTURTLE BUGG aka TREEZY B A selector with roots in the African Diaspora and a passport stamped by the sounds of New Jersey, New York, and Detroit. Raised on funk, jazz, hip-hop, and the rich musical traditions of Black culture, Turtle Bugg brings an uncompromising approach to the decks. His philosophy? \"This thang formerly known as house.\" A true digger with an ear beyond trends, he knows the difference between playing what's cool and playing what's timeless.\n\nAMEERA A living archive of sound, guided by soul, rhythm, and the rich lineage of Detroit's musical DNA. Ameera's selections move across genres and generations, weaving nostalgic frequencies with fresh perspectives. Every set unfolds with intention, warmth, and feeling. For Ameera, music is more than a soundtrack. It's memory, reflection, connection, and care translated through vinyl.\n\nThree incredible selectors. Three unique perspectives. One common language: the vinyl record.\n\nAssemble your crew and bring your good vibes. Come ready to dig deep, move freely, and let the music do what it does best.\n\nWAX ON. WAX OFF.\n\nThis is TV!",
+      "startDate": "2026-11-20T21:00:00.000",
+      "endDate": "2026-11-21T02:00:00.000",
+      "venueName": "TV Lounge",
+      "address": "2548 Grand River Avenue; Detroit, MI; United States",
+      "image": [
+        "https://images.ra.co/682256046e58bbac858ce058e2514b4134768d85.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2581204",
+      "title": "Body Worx",
+      "description": "Enter the labyrinth, slay the Minotaur. Dretraxx enters alone and is out for blood.",
+      "startDate": "2026-11-21T22:00:00.000",
+      "endDate": "2026-11-22T02:00:00.000",
+      "venueName": "Temple Bar",
+      "address": "2906 Cass Avenue. Detroit, MI 48201-2636",
+      "image": [
+        "https://images.ra.co/59254751994af65f5689fefe40aedff17f87be3a.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2581223",
+      "title": "Big A** Party",
+      "description": "",
+      "startDate": "2026-11-20T22:00:00.000",
+      "endDate": "2026-11-21T04:00:00.000",
+      "venueName": "Lincoln Factory",
+      "address": "1331 Holden Street, Detroit, MI 48202, USA",
+      "image": [
+        "https://images.ra.co/4f40b6c6f3fe4d9878f53df964b211e756677c2e.png"
+      ],
+      "offersPrice": 17.25,
+      "url": null
+    },
+    {
+      "id": "ra-2581815",
+      "title": "DJ Amir",
+      "description": "All the way from Berlin, we have the honor of hosting the legendary DJ Amir for the first time at Tigris!\n\nMore than a selector, DJ Amir is a historian, archivist and one of the key voices connecting jazz, soul, hip-hop and deep record culture over the last three decades. Known worldwide as one half of the legendary Kon & Amir partnership, he helped redefine the language of crate digging through the seminal Off Track series on BBE Music. Through his label 180-Proof Records, Amir has been instrumental in restoring and preserving the Strata Records catalogue, bringing one of America's most important independent jazz archives back into circulation. From the early Fat Beats era to Worldwide FM broadcasts and appearances alongside names like Q-Tip and Cut Chemist, Amir's sets move through spiritual jazz, rare groove, soul and leftfield dance music with the depth of someone who genuinely lived the culture.\n\nSound room opens 5pm // DJ set 9pm // Free before 9pm, $10 after",
+      "startDate": "2026-11-14T20:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/ed77afd93e949c5423bf6913a000105442cb71c7.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2581818",
+      "title": "Leja Hazer",
+      "description": "",
+      "startDate": "2026-11-13T20:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/e43d18cebe4a7baad261aa5c7276a3e3d40a8e8a.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2581952",
+      "title": "Blasterjaxx",
+      "description": "BLASTERJAXX\nwith Yours Treuly, TEITH, and Nikkie Nocturnal\nat the Magic Stick\n4120 Woodward Ave.\nDetroit, MI\n\nFriday, November 13th, 2026\n9pm - 2am\nAges 18+",
+      "startDate": "2026-11-13T09:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Magic Stick",
+      "address": "4120-4140 Woodward Avenue; Detroit, MI 48201; United States",
+      "image": [
+        "https://images.ra.co/62bb7c8328ccb96404f7321340d11bb67abbf0b6.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2581955",
+      "title": "Marie Vaunt",
+      "description": "MARIE VAUNT\nat the Magic Stick\n4120 Woodward Ave.\nDetroit, MI\n\nSat. November 14\n9pm - 2am\nAges 18+",
+      "startDate": "2026-11-14T09:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "Magic Stick",
+      "address": "4120-4140 Woodward Avenue; Detroit, MI 48201; United States",
+      "image": [
+        "https://images.ra.co/0526d54d4a1b8bf1d1868d6152f66f6968c316f9.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2581960",
+      "title": "Atonement // Night Market - Nick Burgess 6hr Set",
+      "description": "Atonement returns November 28th for a special edition featuring a gothic night market hosted by Not Ur Amigo and a 6-hour birthday set from resident DJ Nick Burgess. ",
+      "startDate": "2026-11-28T20:00:00.000",
+      "endDate": "2026-11-29T02:00:00.000",
+      "venueName": "The Strays",
+      "address": "8850 Joseph Campau Ave, Hamtramck, MI 48212, USA",
+      "image": [
+        "https://images.ra.co/a6aa2d2ea842db78cb554b2582295437749def74.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582044",
+      "title": "we1sman",
+      "description": "",
+      "startDate": "2026-11-13T22:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Paramita Sound",
+      "address": "1515 Broadway St Suite C, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/f75d567cdac5690682a4fd832401fb674a147fce.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582046",
+      "title": "good company w/ james",
+      "description": "",
+      "startDate": "2026-11-14T22:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "Paramita Sound",
+      "address": "1515 Broadway St Suite C, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/ef41ea17b6cddbe7d2c5b9eacbdb2665fac3a795.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582068",
+      "title": "HOT DOG UNIT",
+      "description": "",
+      "startDate": "2026-11-12T22:00:00.000",
+      "endDate": "2026-11-15T03:00:00.000",
+      "venueName": "Marble Bar",
+      "address": "1501 Holden St, Detroit, MI 48208, USA",
+      "image": [
+        "https://images.ra.co/f19418813befaaecaf0aa5ddcf85b09b22edec20.jpg"
+      ],
+      "offersPrice": 5.5,
+      "url": null
+    },
+    {
+      "id": "ra-2582077",
+      "title": "small talk",
+      "description": "thursday, november 19\n\nwe're excited to welcome dj sphinx and clairvoyant agside resident britty.\n\ndj sphinx is a detroit-based dj & multimedia artist whose work bridges the city's legendary techno lineage with her own symbolic and narrative-driven practice. she has quickly taken the scene by storm, playing notable events such as tec-troit, movement music festival, the great beyond, and return to the source, among many others. her style draws inspiration from themes of mythology, history, intimacy, and expanded consciousness—inviting listeners into spaces of transformation through frequency & movement. in her sets, dj sphinx threads layered percussion, playful acid grooves, & detroit techno's driving pulse into hypnotic, evolving journeys that are as introspective as they are dance-floor focused.\n\nclairvoyant, a detroit transplant from southern california, has shaped her musical taste through soulful roots and the mechanical pith of the motor city's electronic heritage. music has always been her refuge, but spending nearly a decade in detroit has transformed it into a tangible source of comfort. raised on a diverse range of psychedelic funk and alt-punk, she seamlessly blends these influences into an eclectic mix of deep house and minimal techno. clairvoyant's mixes are characterized by moody synths, dramatic drums, and impactful vocals.\n\ncome hangout under the disco skull and experience the night unfold",
+      "startDate": "2026-11-19T22:00:00.000",
+      "endDate": "2026-11-20T03:00:00.000",
+      "venueName": "Marble Bar",
+      "address": "1501 Holden St, Detroit, MI 48208, USA",
+      "image": [
+        "https://images.ra.co/cda6a67ddf681c94e3c217c33f6dda016d9dfd33.png"
+      ],
+      "offersPrice": 5.5,
+      "url": null
+    },
+    {
+      "id": "ra-2582157",
+      "title": "SUNDAZE: HIPHOP & R&B (SUNDAY NIGHT) - BLAKITO",
+      "description": "SUNDAZE is your new favorite Sunday party at Big Pink! Every Sunday, we're bringing you a night filled with R&B, hiphop, line dancing and all your favorite feel-good music. No skips, just good music and a whole lot of dancing!\n\nSounds by Blakito all night long. Come end your weekend with us!\n\n21+ \n\nMessage @bigpinklovesyou on instagram with any questions",
+      "startDate": "2026-11-15T22:00:00.000",
+      "endDate": "2026-11-16T02:00:00.000",
+      "venueName": "Big Pink",
+      "address": "6440 Wight St, Detroit, MI 48207, USA",
+      "image": [
+        "https://images.ra.co/c4710cc01a0307de3d5fc67a0d1e32a446e4223a.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582159",
+      "title": "The Outpost: Simple Cuts",
+      "description": "All Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Etc.\n\nNo Cover\n",
+      "startDate": "2026-11-13T21:00:00.000",
+      "endDate": "2026-11-13T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": [
+        "https://images.ra.co/9844bd2762181984454f8b4b26ddf2418f815fdf.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582161",
+      "title": "The Outpost: Party Boy Lance",
+      "description": "All Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Etc.\n\nNo Cover\n",
+      "startDate": "2026-11-14T21:00:00.000",
+      "endDate": "2026-11-14T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": [
+        "https://images.ra.co/ea6107c11bbf42d9e9387ebcac47b4826157fc99.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582167",
+      "title": "Supernature: A Rocksteady Disco Takeover",
+      "description": "They call it the biggest bar night of the year: it's the night where you forget that all of your drywall-punching cousins are the absolute worst. Drink 10 bottles with your friends so when you show up to Thanksgiving you're too hungover to understand how they feel about immigration policy.\n\nIt's going to be such a good night. Rocksteady Disco is taking over and bringing some serious vibes. We're going to make braised beef sandwiches. Boot scootin' boogie on down and come get the beef juice. It's going to be the best night ever in preparation for an okay time with family.\n\n7 - 2am\nDJ's: 10 - 1am",
+      "startDate": "2026-11-25T22:00:00.000",
+      "endDate": "2026-11-26T01:00:00.000",
+      "venueName": "Vesper Books And Wine",
+      "address": "5001 Grand River Ave, Detroit, MI 48208",
+      "image": [
+        "https://images.ra.co/66ead855893dbe37072d0b4f377790542261a330.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582277",
+      "title": "Ann Arbor Drum & Bass",
+      "description": "A2 D&B - Ann Arbor Drum and Bass: show 1.  We're starting regular D&B + adjacent genres out in Ann Arbor.  Come thru if you're a fan or a musician who wants to get involved.  The three musicians tonight are mad talented + we have an open decks at 730 before the show starts at 8.  \n\nAshley Street Social is a bud lounge under a pysch dispo and next to a cannabis dispo.  ",
+      "startDate": "2026-11-20T19:30:00.000",
+      "endDate": "2026-11-21T00:30:00.000",
+      "venueName": "Ashley Street Social",
+      "address": "336 S Ashley St, Ann Arbor, MI 48104",
+      "image": [
+        "https://images.ra.co/abc4d482f46e324d88e67bc2f210198ae06e51e9.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582829",
+      "title": "Unlucky Rabbit",
+      "description": "Second Saturdays at Temple Bar are now Unlucky Rabbit ! \n\nThis month is an all night trance installment where ALL PROCEEDS will be donated to Motor City Trappers, a cat-rescue nonprofit in Metro Detroit. \n\nLapilli will be joining from Nashville for a night of old skool trance, progressive, and eurodance alongside locals Mr. Twista and Lo Dazz",
+      "startDate": "2026-11-14T22:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "Temple Bar",
+      "address": "2906 Cass Avenue. Detroit, MI 48201-2636",
+      "image": [
+        "https://images.ra.co/6bc44287ee2c0bc53322f4199a24cfea8798f6b4.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2582986",
+      "title": "TOP2BTTM 1 YEAR ANNIVERSARY",
+      "description": "ONE WHOLE YEAR OF TOP2BTTM!\n\n25+ shows, over $3000 raised for the local community, and an ever growing roster of incredible queer talent, TOP2BTTM has grown into a home for club music, ass shaking, and a new kind of space for queer connection in Detroit. \n\nTo celebrate this anniversary we are keeping it in the family.\n\nOur wonderful residents M00N-PI + Sina have become an integral part of our operations, and have both grown into their sound so much over the year, bringing two very different perspectives on dance music into a homogenized queer club experience. \n\nTOP2BTTM also would not be the success it is without jamea. From admin work to bookings, she has stepped up and filled many roles this year, allowing for the T2B experience to elevate and flourish thanks to her adaptability and prowess. She will be joined on the decks for an epic b2b by returning favorite TONIC! \n\nand finally we have our HBIC, the curator and founder of TOP2BTTM - WE1SMAN - will be present in full f*gg*t form, with a set full of ass shaking debauchery. \n\nWE WILL BE COLLECTING CANNED GOODS + NON PERISHABLE FOOD ITEMS TO DONATE TO THE RUTH ELLIS CENTER!! ",
+      "startDate": "2026-11-21T23:00:00.000",
+      "endDate": "2026-11-22T05:00:00.000",
+      "venueName": "The Eagle of Detroit",
+      "address": "950 West McNichols",
+      "image": [
+        "https://images.ra.co/572ec2009eb55f4ca1e5aafa2756c19dcaeb846a.jpg"
+      ],
+      "offersPrice": 10,
+      "url": null
+    },
+    {
+      "id": "ra-2583212",
+      "title": "iNTERFACE aNIMA: fRIENDSHIP tRANSMISSION",
+      "description": "interface:/ a lone signal drifts into orbit from beyond the precipice, do you attune to it? \nanima:/ from what was once a frozen stasis, life springs anew.\n\nApocalypse Rave Culture presents - interface: anima\n\nA night of dance and visuals featuring: DJ GIRL, DJ FLP, DJ catspit, F13ND, Comando Burrito and cdjane3k for the digital monsters\n\nRelease of a new EP by Comando Burrito : PRECONTINGENCY\n\nCommunal showcase and social gathering, engage in connection\n\nCosplay and fursuits encouraged!\n",
+      "startDate": "2026-11-27T20:00:00.000",
+      "endDate": "2026-11-28T02:00:00.000",
+      "venueName": "The Strays",
+      "address": "8850 Joseph Campau Ave, Hamtramck, MI 48212, USA",
+      "image": null,
+      "offersPrice": 10,
+      "url": null
+    },
+    {
+      "id": "ra-2583213",
+      "title": "Bang Box",
+      "description": "",
+      "startDate": "2026-11-17T22:00:00.000",
+      "endDate": "2026-11-18T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/918bc770824faffb6c721b829a096357b8b37d1b.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2584346",
+      "title": "Pretty Island Record Release Party + SIREN",
+      "description": "Pretty Island record release for, \"I Could Love You\" is at Paris Bar Detroit Nov. 27. To celebrate, we're throwing a party with all our friends. Come early to catch Hailey Howe and Rat Paws. Stay late to dance yourself clean with SIREN featuring Auntie Chanel and Sav G!\n\nBonus points if you dress like a sea siren or like you're stranded on a desert island. We can't wait to see you.",
+      "startDate": "2026-11-27T20:00:00.000",
+      "endDate": "2026-11-28T02:00:00.000",
+      "venueName": "Paris Bar",
+      "address": "2961 E McNichols Rd, Hamtramck, MI 48212, United States",
+      "image": [
+        "https://images.ra.co/827084787a8d60fecfa88118afcdeeb74fcfccb3.jpg"
+      ],
+      "offersPrice": 11.3,
+      "url": null
+    },
+    {
+      "id": "ra-2584351",
+      "title": "FRIENDSGIVING: TOP2BTTM x Digging Deep",
+      "description": "THE HOLIDAY SEASON IS UPON US! \n\nTOP2BTTM and Digging Deep residents are coming together on the night before Thanksgiving to bring you \"FRIENDSGIVING\". A night of sonic discovery and celebrating each other. \n\nJoining us from NYC we have the ever iconic Boyfriend Dick + Bounce Kisses, along with local favorites Blood Sisters (Aidel b2b Earlll) and Tylr_ joining us for a fierce and friendship filled night!\n\nResidents: WE1SMAN, Wax Assassin, M00N-PI, Sina",
+      "startDate": "2026-11-25T23:00:00.000",
+      "endDate": "2026-11-26T05:00:00.000",
+      "venueName": "The Eagle of Detroit",
+      "address": "950 West McNichols",
+      "image": [
+        "https://images.ra.co/e9cb1cba5b946bc24b0962e9ff1c491a3612cd84.jpg"
+      ],
+      "offersPrice": 10,
+      "url": null
+    },
+    {
+      "id": "ra-2584355",
+      "title": "T2B Tuesday",
+      "description": "T2B Tuesdays return for the last Tuesday of the month @ SPKRBOX!!\n\nWe are thrilled to welcome special guests Swan Laurent + Action Replay to join us downstairs, with TOP2BTTM residents keeping the vibe going upstairs. \n\nCome get one of the new holiday themed cocktails and hear some of the finest queer talent the city has to offer!",
+      "startDate": "2026-11-24T23:00:00.000",
+      "endDate": "2026-11-25T02:30:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/40885f0457bae2e4a954d8e23775f946e4a6916d.jpg"
+      ],
+      "offersPrice": 10,
+      "url": null
+    },
+    {
+      "id": "ra-2584382",
+      "title": "HOUSE IS HOME : Stacey Hotwaxx Hale, Father Dukes & Dru Allan",
+      "description": "",
+      "startDate": "2026-11-25T21:00:00.000",
+      "endDate": "2026-11-26T03:00:00.000",
+      "venueName": "Northern Lights Lounge",
+      "address": "660 W. Baltimore Street; Detroit, MI 48202; United States",
+      "image": [
+        "https://images.ra.co/84221d3000b00191f16544095b3288c221a78806.png"
+      ],
+      "offersPrice": 12,
+      "url": null
+    },
+    {
+      "id": "ra-2584446",
+      "title": "No Facade Brandon's Birthday Celebration hosted by Deeper Waters wsg Mike 'Agent X' Clark",
+      "description": "Join Deeper Waters for a very special edition of No Facade as we celebrate the birthday of one of our own, resident DJ and Deeper Waters' other half, Brandon Redoute!\n\nAnd what better way to celebrate than bringing a little more family into the mix? We're welcoming Detroit techno legend and longtime friend Mike \"Agent X\" Clark to join us behind the decks for the occasion.\n\nExpect a proper family affair filled with deep grooves, familiar faces, good energy, and the kind of music that reminds us why we fell in love with this scene in the first place.\n\nIt's Friday the 13th, but there's nothing unlucky about this gathering. Just good people, good music, and another night of doing what we do best.\n\nNo Facade. Just a real good time.\n",
+      "startDate": "2026-11-13T21:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Temple Bar",
+      "address": "2906 Cass Avenue. Detroit, MI 48201-2636",
+      "image": [
+        "https://images.ra.co/65bb0351e78cdc1b01c36c1257b50bd880352389.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2584478",
+      "title": "Hip-Hop Nites",
+      "description": "DETROIT HIP-HOP NITES IS BACK\n\nWe're bringing 2000s Hip-Hop ALL NIGHT back to Gilly's Rooftop for one final time this year.\n\nIt's Home for the Holidays Friday, so whether you're back in the city, linking with old friends, or looking for somewhere to turn up after Thanksgiving, this is the move.\n\nThis will be the LAST HIP-HOP NITES OF 2026, so don't miss your chance to close out the year with us.\n\nGet ready for the throwbacks you know word for word, nonstop dancing, and that real club energy all night with indoor vibes + a heated outdoor patio.\n\n- Friday, November 27th\n- 9PM – 1AM\n- Gilly's Rooftop | 1550 Woodward Ave, Detroit, MI 48226\n- 21+\n- Sounds by: Troicasso, Deboi & Summr Nites\n- Secure your tickets early\n- Tables & celebrations available\n\nLast one of the year. Home for the Holidays. Don't miss out.",
+      "startDate": "2026-11-27T21:00:00.000",
+      "endDate": "2026-11-28T01:00:00.000",
+      "venueName": "Gilly's Rooftop Detroit",
+      "address": "1550 Woodward Ave, Detroit, MI 48226",
+      "image": [
+        "https://images.ra.co/1b8cec5c544aa1034802f1a4ea790bdbb9204de6.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2584767",
+      "title": "EBONY + IVORY ALL NIGHT",
+      "description": "Ebony and Ivory takeover SOS for a night of high energy blends and electric selections meant to make you shake something. \n",
+      "startDate": "2026-11-14T21:00:00.000",
+      "endDate": "2026-11-15T03:00:00.000",
+      "venueName": "SOS",
+      "address": "310 W 7 Mile Rd, Detroit, MI 48203",
+      "image": [
+        "https://images.ra.co/ea00442cffabe806f9d3ae4d6300e2799e57e6be.jpg"
+      ],
+      "offersPrice": 10,
+      "url": null
+    }
+  ]
+}
