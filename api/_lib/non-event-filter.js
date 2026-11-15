@@ -154,11 +154,22 @@ const BODY_NAME_ONLY = /^(?:(?:[\p{L}'&]+\s+){1,5}(?:commission|committee|commis
 const BODY_ONLY = /^(?:(?:city|town|village|township|county|[\p{L}]+)\s+){0,3}(?:zoning board(?: of appeals)?|board of (?:trustees|education|review|appeals|commissioners|ethics|zoning appeals)|planning (?:commission|board)|(?:ethics|pension|review|appeals) (?:board|commission|committee)|city council|town council|village council|township board)$/iu;
 // Drop a trailing clock time or "(...)" note, which are not part of the title's meaning.
 const stripTail = (t) => t.replace(/\s*\([^)]*\)\s*$/, "").replace(/\s+(?:at\s+)?\d{1,2}(?::\d{2})?\s*(?:a|p)\.?m\.?$/i, "").replace(/[\s.!:,-]+$/, "").trim();
+// "[Regular|Special|Joint ...] Meeting/Session/Hearing of the <body>" and "Work Session: <body>" forms.
+const MEETING_WORD = "(?:meetings?|hearings?|sessions?|work sessions?|study sessions?)";
+const MEETING_QUALIFIER = "(?:(?:regular|special|joint|annual|emergency|work|study|budget|public|organizational|rescheduled)\\s+)*";
+const OF_FORM = new RegExp(`^${MEETING_QUALIFIER}${MEETING_WORD}\\s+of\\s+(?:the\\s+)?(.+)$`, "i");
+const LEADING_MEETING = new RegExp(`^${MEETING_QUALIFIER}${MEETING_WORD}\\s*[:\\-\\u2013\\u2014]\\s*(.+)$`, "i");
+const TRAILING_STATUS = /\s*[-\u2013\u2014:]\s*(?:cancell?ed|rescheduled|postponed|agenda|minutes|notice|budget|virtual|zoom|livestream|live stream|special|regular)\s*$/i;
 function isGovernanceMeeting(title) {
-  const t = stripTail(title.trim().replace(/^(?:cancell?ed|rescheduled|postponed)\s*[:\-\u2013]\s*/i, ""));
+  let t = stripTail(title.trim().replace(/^(?:cancell?ed|rescheduled|postponed)\s*[:\-\u2013\u2014]\s*/i, ""));
+  for (let i = 0; i < 2; i++) t = stripTail(t.replace(TRAILING_STATUS, ""));
   if (!t || GOV_EVENT_WORDS.test(t) || /^(?:meet|join|visit|about|with|vote|attend|support|tour|learn)\b/i.test(t)) return false;
   if (BARE_HEARING.test(t)) return true;
   if (GENERAL_MEETING.test(t)) return true;
+  const of = OF_FORM.exec(t);
+  if (of && GOV_BODY.test(of[1])) return true;
+  const lead = LEADING_MEETING.exec(t);
+  if (lead && (BODY_ONLY.test(lead[1].trim()) || BODY_NAME_ONLY.test(lead[1].trim()) || (GOV_BODY.test(lead[1]) && MEETING_TAIL.test(lead[1].trim())))) return true;
   if (BODY_ONLY.test(t) || BODY_NAME_ONLY.test(t)) return true;
   return GOV_BODY.test(t) && MEETING_TAIL.test(t);
 }

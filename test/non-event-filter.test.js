@@ -58,6 +58,7 @@ for (const title of [
   // not a governance meeting (owner policy 2026-11-15 excludes those; see the governance block below)
   "Town Hall Meeting", "Annual Meeting and Dinner", "Meet the Board of Trustees",
   "Board Games Cafe Meetup", "Historical Commission Open House", "Trunk or Treat", "The Council - Live at Lager House", "Council of Elders: Concert",
+  "Meeting of the Minds", "Session: Live Jazz", "Work Session: Painting", "Special Meeting of the Rotary Club", "Regular Meeting of the Book Club", "Rotary Club Meeting", "AA Meeting",
   "Authority Zero", "Council House Rat Tour", "The Board", "Council Meeting Night Comedy Show", "Planning Commission Public Forum", "Town Hall with the Mayor",
   // "suite rental" and "closed for private event" inside a real event's title
   "Salon Suite Rental Open House", "Bridal Suite Rental Showcase & Open House", "Luxury Suite Rental Auction Gala", "Win a Suite Rental: Charity Bingo Night",
@@ -88,6 +89,8 @@ for (const title of [
   "Board of Trustees Meeting", "Macomb Township Board of Trustees Meeting", "Clinton Township Board of Trustees Regular Meeting", "Board of Trustees Meeting - 7 PM",
   "Recreation Board Meeting at 7pm", "City Council Meeting", "City Council Regular Meeting", "Planning Commission Meeting", "Zoning Board of Appeals", "Pension Board",
   "Dearborn Ethics Board Meeting", "Board of Review", "Historical Commission Meeting", "Downtown Development Authority Meeting", "Budget Hearing", "Public Hearing: Rezoning on Michigan Ave",
+  "Regular Meeting of the Board of Trustees", "Special Meeting of the City Council", "Special Meeting - City Council", "Joint Meeting of City Council and Planning Commission",
+  "Work Session: City Council", "City Council Meeting: Budget", "Planning Commission Meeting - Cancelled", "Council Meeting - Agenda", "Study Session: Planning Commission",
   "Windsor BIA Board Meeting", "HOA Meeting", "Bagley Community Council General Meeting", "October 2026 General Meeting", "CANCELED: Demolition Board of Appeals", "Committee of the Whole", "Waiver Committee",
 ]) assert.strictEqual(nonEventRule(title), "governance_meeting", title);
 console.log("\nAll non-event-filter.test.js checks passed.");
