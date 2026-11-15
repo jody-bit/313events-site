@@ -21,6 +21,8 @@ const ALLOWED = [
   "api/_lib/address-city.js",
   // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
   "api/_lib/venue-location-gate.js",
+  // Reusable venue resolver, v0: pure, offline, read-only (Discovery, EPIC-006).
+  "api/_lib/venue-resolver.js",
   // Public submit form stores the city its address states (P1 audit EXPORT-2).
   "api/submit.js",
   // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
