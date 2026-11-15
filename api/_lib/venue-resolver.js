@@ -27,7 +27,7 @@ const { normalizeVenueName, normalizeAddressCity, isPlaceholderVenueName, cities
 
 const LOCK_RE = /(OWNER-CORRECTION|EDITORIAL[-_ ]HOLD)/;
 const ONLINE_RE = /^(online|virtual|livestream|live stream|zoom|webinar)\b/i;
-const MOBILE_RE = /\b(food truck|mobile|bus tour|walking tour|ride|parade route|various locations?)\b/i;
+const MOBILE_RE = /\b(food truck|mobile|bus tour|walking tour|parade route|various locations?)\b/i;
 const MULTISITE_RE = /\b(multiple (venues|locations|sites)|citywide|city-wide|throughout|multiple sites)\b/i;
 const FILL_FIELDS = ["address", "city", "zip", "lat", "lng"];
 
@@ -71,6 +71,17 @@ function resolveVenue(input, ctx) {
   const byName = venues.filter((v) => normalizeVenueName(v.name) === key);
   const candidatesFrom = (list) => list.map((v) => ({ venue_id: v.id, score: 1 }));
 
+  const conflict = (m) =>
+    result("conflict", "IDENTITY_CONFLICT", {
+      identity: m ? identityOf(m, null) : null,
+      flags: ["EXISTING_VALUE_CONFLICT"],
+      candidates: m ? candidatesFrom([m]) : [],
+    });
+  // A stored venue_id the directory does not know, or one whose name
+  // contradicts the stated name, is a conflict: never fill from either side.
+  if (!isBlank(inp.venue_id) && !linked) return conflict(byName.length === 1 ? byName[0] : null);
+  if (linked && key && normalizeVenueName(linked.name) !== key) return conflict(linked);
+
   let match = null;
   let how = null;
   if (linked) {
@@ -102,6 +113,14 @@ function resolveVenue(input, ctx) {
       flags: ["EXISTING_VALUE_CONFLICT"],
       candidates: candidatesFrom([match]),
     });
+  }
+
+  // A stated street address that is not this venue's address is a conflict.
+  if (!isBlank(inp.address) && !isBlank(match.address) && how !== "address") {
+    const norm = (a) => normalizeAddressCity(a, "").replace(/\|$/, "").replace(/[.,]/g, "");
+    const stated = norm(inp.address);
+    const known = norm(match.address);
+    if (stated !== known && !stated.includes(known) && !known.includes(stated)) return conflict(match);
   }
 
   const know = knowledge.filter((k) => k.venue_id === match.id);

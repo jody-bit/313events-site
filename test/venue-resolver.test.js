@@ -22,7 +22,7 @@ assert.strictEqual(x.identity.venue_id, "v1");
 assert.deepStrictEqual(Object.keys(x.fill).sort(), ["address", "city", "zip"]);
 assert.strictEqual(x.write, "none");
 
-x = r({ venue_name_raw: "Fillmore Detroit", address: "mine", city: "Detroit" });
+x = r({ venue_name_raw: "Fillmore Detroit", address: "2115 Woodward Ave", city: "Detroit" });
 assert.deepStrictEqual(x.fill, { zip: "48201" }, "never overwrites a stated value");
 
 assert.strictEqual(r({ venue_name_raw: "Small Room" }).status, "proposed");
@@ -43,6 +43,22 @@ x = r({ venue_name_raw: "Fillmore Detroit", internal_note: "OWNER-CORRECTION 202
 assert.strictEqual(x.status, "preserved");
 assert.ok(x.flags.includes("OWNER_LOCKED"));
 assert.strictEqual(r({ venue_name_raw: "Fillmore Detroit", source: "Manual" }).status, "preserved");
+
+// P1 conflict cases: never filled
+const cv = [{ id: "A", name: "Alpha Hall", address: "1 Oak St", city: "Detroit", zip: "48201" },
+  { id: "B", name: "Beta Club", address: "9 Elm St", city: "Detroit", zip: "48202" }];
+for (const i of [
+  { venue_id: "A", venue_name_raw: "Beta Club" },
+  { venue_id: "ZZ", venue_name_raw: "Beta Club" },
+  { venue_name_raw: "Beta Club", address: "500 Other Rd" },
+]) {
+  x = resolveVenue(i, { venues: cv, knowledge: [] });
+  assert.strictEqual(x.status, "conflict", JSON.stringify(i));
+  assert.deepStrictEqual(x.flags, ["EXISTING_VALUE_CONFLICT"]);
+  assert.deepStrictEqual(x.fill, {});
+}
+assert.strictEqual(resolveVenue({ venue_name_raw: "Beta Club", address: "9 Elm St." }, { venues: cv, knowledge: [] }).fill.zip, "48202");
+assert.strictEqual(resolveVenue({ venue_name_raw: "Riders Lounge" }, ctx).flags.length, 0);
 
 // address tier
 assert.strictEqual(r({ venue_name_raw: "The Rock Room", address: "9 C St", city: "Hamtramck" }).identity.venue_id, "v4");
