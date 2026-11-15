@@ -15,6 +15,8 @@ assert.strictEqual(r.queue.length, 0); assert.strictEqual(r.informative.missing_
 // queue status is Platform's; resolved sorts last and is not counted open
 r = q.build([f({ key: "a" }), f({ key: "b", code: "venue_placeholder" })], { statusByKey: { a: "resolved", b: "acknowledged" } });
 assert.strictEqual(r.queue[0].key, "b"); assert.strictEqual(r.open, 1);
-// without EI's contract on the branch the detector reports NOT RUN, never a made-up finding
-const d = q.detect([{ id: 1 }], {}); assert.ok(["not_run", "ok"].includes(d.state)); if (d.state === "not_run") assert.deepStrictEqual(d.findings, []);
+// EI's shared contract is on main: detect returns a plain array of v1 findings; a bad context is a visible error, never a guess
+const d = q.detect([{ id: 1, title: "t", start_date: "2026-12-01", category: "x" }], { today: "2026-11-15" });
+assert.strictEqual(d.state, "ok"); assert.ok(Array.isArray(d.findings) && d.findings.length > 0); assert.strictEqual(d.findings[0].schema_version, 1);
+const bad = q.detect([{ id: 1 }], {}); assert.strictEqual(bad.state, "error"); assert.deepStrictEqual(bad.findings, []);
 console.log("All quality-queue.test.js checks passed.");
