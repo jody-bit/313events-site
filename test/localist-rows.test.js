@@ -265,7 +265,7 @@ console.log("PASS: the place — coordinates first, then a listed city the sourc
     assert.strictEqual(L.eventEligibility({ ...base({}), title }, TENANT).eligible, true, title);
   }
   assert.strictEqual(verdict({ status: "soldout" }).eligible, true, "sold out is still an event");
-  assert.strictEqual(L.eventEligibility({ ...base({}), title: "Board of Trustees Meeting" }, TENANT).eligible, true, "a public body's meeting, listed for the public, is written (pending review): whether it belongs on the site is not a filter's call");
+  assert.strictEqual(L.eventEligibility({ ...base({}), title: "Board of Trustees Meeting" }, TENANT).eligible, false, "a public body's meeting is governance and is excluded (owner policy 2026-11-15)");
   assert.strictEqual(L.eventEligibility({ ...base({}), title: "College Offices Closed" }, TENANT).reason, "non_event");
   assert.strictEqual(verdict(PLACES.SANTA_MONICA).reason, "outside_orbit");
   assert.strictEqual(verdict({ ...PLACES.AWAY_KALAMAZOO, address: "", geo: {} }).reason, "city_not_listed");

@@ -71,9 +71,8 @@ async function run() {
   const vacc = rows.find((r) => /Vaccine Clinic/.test(r.title));
   assert.match(vacc.event_url, /dearborn-public-health-host-vaccine-clinic/, "different title wording, same date and start time");
   assert.match(vacc.note, /category: Important Date/);
-  const traffic = rows.find((r) => /^Traffic Commission$/.test(r.title));
-  assert.match(traffic.event_url, /traffic-commission-meeting/);
-  assert.match(traffic.note, /category: Meeting\./);
+  // Governance meetings are excluded at import (owner policy 2026-11-15), so the Traffic Commission row is never written.
+  assert.strictEqual(rows.find((r) => /^Traffic Commission$/.test(r.title)), undefined);
   const stars = one(rows, /^Symphony Under the Stars$/);
   assert.strictEqual(stars.event_url, undefined, "no card for it: left unlinked, nothing invented");
   assert.ok(!/Source page category/.test(stars.note));

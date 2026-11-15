@@ -6,6 +6,7 @@ const { zeroWriteReasons } = require("./_lib/zero-write-reasons");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter"); // governance meetings are excluded (owner policy 2026-11-15)
 
 // Vercel Cron job — Bagley Community Council (bagleycommunity.org), added
 // 2026-10-01 per explicit Product Owner request ("Add Bagley as a
@@ -438,7 +439,9 @@ module.exports = async (req, res) => {
   const tier1Rows = tier1RowsAll.filter((r) => r.start_date >= todayIso);
   const tier2Rows = tier2RowsAll.filter((r) => r.start_date >= todayIso);
   const excludedAsPast = (tier1RowsAll.length - tier1Rows.length) + (tier2RowsAll.length - tier2Rows.length);
-  const rawRows = [...tier1Rows, ...tier2Rows];
+  // Owner policy 2026-11-15: a community council / association general meeting is governance, not a public event.
+  const governanceExcluded = [...tier1Rows, ...tier2Rows].filter((r) => isLikelyNotARealEvent({ title: r.title }));
+  const rawRows = [...tier1Rows, ...tier2Rows].filter((r) => !isLikelyNotARealEvent({ title: r.title }));
 
   if (!rawRows.length) {
     await finishRun(runHandle, {
@@ -450,6 +453,7 @@ module.exports = async (req, res) => {
       session_data: zeroWriteReasons(recordsFetched, {
         unparsed: recordsFetched - tier1RowsAll.length - tier2RowsAll.length,
         past_date: excludedAsPast,
+        rejected: governanceExcluded.length, // governance meetings, owner policy 2026-11-15
       }),
     });
     res.status(200).json({ upserted: 0, recordsFetched, excludedAsPast, errors: fetchErrors, fetchedAt: new Date().toISOString() });

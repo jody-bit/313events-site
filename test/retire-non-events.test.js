@@ -36,7 +36,7 @@ const future = (days) => new Date(Date.now() + days * 86400000).toLocaleDateStri
     row({ title: "Community Blood Drive", source: "Sterling Heights - Parks and Recreation", start_date: future(8) }),
     row({ title: "Senior Scams with the Macomb County Prosecutor's Office", start_date: future(40) }),
     row({ title: "Holiday Church Tour (Bianco Tours) SOLD OUT (WAIT LIST)", source: "City of Royal Oak", start_date: future(60) }),
-    row({ title: "Recreation Board Meeting at 7pm", source: "Richmond Recreation Calendar", start_date: future(55) }),
+    row({ title: "Recreation Board Game Night at 7pm", source: "Richmond Recreation Calendar", start_date: future(55) }),
     row({ title: "Case Closed: A Murder Mystery Dinner", source: "Ticketmaster", start_date: future(30) }),
     row({ title: "Brand New", source: "Ticketmaster", start_date: future(1) }),
   ];
@@ -44,7 +44,7 @@ const future = (days) => new Date(Date.now() + days * 86400000).toLocaleDateStri
   assert.deepStrictEqual(planRetirement(events).map((p) => [p.row.id, p.rule]), [
     [closedA.id, "closure_notice"], [closedB.id, "closure_notice"], [library.id, "closure_notice"], [township.id, "closure_notice"], [suite.id, "suite_rental"], [running.id, "closure_notice"], [past.id, "closure_notice"],
   ], "(the caller only ever passes upcoming rows; `past` is here to show the plan itself does not look at dates)");
-  assert.deepStrictEqual([nonEventRule("CLOSED FOR PRIVATE EVENT"), nonEventRule("Board of Trustees Meeting"), nonEventRule("Bocce Barn Closing Day"), nonEventRule(null)], ["closed_for_private_event", null, null, null]);
+  assert.deepStrictEqual([nonEventRule("CLOSED FOR PRIVATE EVENT"), nonEventRule("Board of Trustees Meeting"), nonEventRule("Bocce Barn Closing Day"), nonEventRule(null)], ["closed_for_private_event", "governance_meeting", null, null]);
 
   const tables = { events };
   const db = makeMockPostgrest(tables, { schema: { events: eventsSchema() } });
