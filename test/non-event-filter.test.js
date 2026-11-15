@@ -55,9 +55,10 @@ for (const title of [
   // a sentence, not a notice
   "Why Marygrove College Closed", "The Day the Library Closed", "The Year the College Closed", "When the Campus Closed", "How Detroit's Branch Libraries Closed",
   "The Office Closed", "After the Office Closed", "Before the Building Closed",
-  // a public body's own meeting: the Product Owner's decision, not this filter's
-  "Board of Trustees Meeting", "Macomb Township Board of Trustees Meeting", "Clinton Township Board of Trustees Regular Meeting", "Board of Trustees Meeting - 7 PM",
-  "Recreation Board Meeting at 7pm", "City Council Meeting", "Town Hall Meeting", "Annual Meeting and Dinner", "Meet the Board of Trustees",
+  // not a governance meeting (owner policy 2026-11-15 excludes those; see the governance block below)
+  "Town Hall Meeting", "Annual Meeting and Dinner", "Meet the Board of Trustees",
+  "Board Games Cafe Meetup", "Historical Commission Open House", "Trunk or Treat", "The Council - Live at Lager House", "Council of Elders: Concert",
+  "Authority Zero", "Council House Rat Tour", "The Board", "Council Meeting Night Comedy Show", "Planning Commission Public Forum", "Town Hall with the Mayor",
   // "suite rental" and "closed for private event" inside a real event's title
   "Salon Suite Rental Open House", "Bridal Suite Rental Showcase & Open House", "Luxury Suite Rental Auction Gala", "Win a Suite Rental: Charity Bingo Night",
   "Taproom Closed for Private Event; Public Show at 9", "Not Closed for Private Event: Open Mic Returns", "\"Closed for Private Event\" - A Comedy Show", "Closed for Private Event (band) w/ The Hi-Views",
@@ -82,4 +83,11 @@ for (const title of ["Board of Trustees Meeting - " + "1".repeat(40) + "x", "Cit
 assert.strictEqual(nonEventRule("City Hall Closed " + "for Thanksgiving ".repeat(30)), null, "nothing over 200 characters is a notice");
 console.log("PASS: every title is decided at once");
 
+// Governance meetings (Product Owner policy 2026-11-15): excluded, whichever body.
+for (const title of [
+  "Board of Trustees Meeting", "Macomb Township Board of Trustees Meeting", "Clinton Township Board of Trustees Regular Meeting", "Board of Trustees Meeting - 7 PM",
+  "Recreation Board Meeting at 7pm", "City Council Meeting", "City Council Regular Meeting", "Planning Commission Meeting", "Zoning Board of Appeals", "Pension Board",
+  "Dearborn Ethics Board Meeting", "Board of Review", "Historical Commission Meeting", "Downtown Development Authority Meeting", "Budget Hearing", "Public Hearing: Rezoning on Michigan Ave",
+  "Windsor BIA Board Meeting", "HOA Meeting", "Bagley Community Council General Meeting", "October 2026 General Meeting", "CANCELED: Demolition Board of Appeals", "Committee of the Whole", "Waiver Committee",
+]) assert.strictEqual(nonEventRule(title), "governance_meeting", title);
 console.log("\nAll non-event-filter.test.js checks passed.");

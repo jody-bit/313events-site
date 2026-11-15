@@ -64,11 +64,17 @@
 //     is itself nothing but such words ("Memorial Day Parade & Ceremony -
 //     City Hall Closed" is a parade).
 //
-// NOT MATCHED, deliberately: a public body's own meeting ("Board of Trustees
-// Meeting", "Recreation Board Meeting at 7pm", "City Council Meeting"). In
-// Michigan a township's Board of Trustees IS its council; whether such
-// meetings belong on the site is the Product Owner's decision, not a filter's.
-//
+// GOVERNANCE MEETINGS (Product Owner policy, 2026-11-15: "city commission / governance meetings: we do not want
+// them; purge the site of all those types"). Replaces the earlier exemption that left a public body's own meeting to
+// a later owner decision. The rule is title-only and narrow, the same "never hide a real event" posture:
+//   <a public body or association> ... meeting | hearing | session   -- and nothing after that word
+// where the body is a council, commission, committee, board, authority, trustees, zoning/planning/appeals/review,
+// ethics, pension, DDA/BIA, HOA or association. Also a bare "Public/Budget/Zoning/Planning Hearing", and a
+// "General/Membership Meeting" (the title ends there, so "General Meeting Potluck" is not matched).
+// NOT matched: a title that goes on after the meeting word ("Historical Commission Open House", "Council Meeting
+// Night Comedy Show"), any title carrying an event word (concert, festival, tour, party, game, trunk or treat...),
+// and an artist or program named for a body ("The Board - Live at ...", "Council of Elders: Concert"). Whole-site
+// cleanup of rows already stored is NOT done here (the owner's guarded cleanup already ran; never rerun).
 // The two original patterns are now anchored, because since 2026-10-05 a
 // match also RETIRES a stored public row (scripts/retire-non-events.js):
 // "<artist> - Suite Rental" is the tail of a title after a dash (not "Bridal
@@ -137,6 +143,26 @@ function isPrivateLabel(title) {
   return PRIVATE_LABEL_BODY.test(m[2].trim());
 }
 
+// ---- governance meetings ------------------------------------------------------------------------------------------
+const GOV_BODY = /\b(?:council|commissions?|commissioners|committees?|authority|board|trustees|zoning|planning|appeals|ethics|pension|dda|bia|hoa|homeowners|association)\b/i;
+const MEETING_TAIL = /\b(?:meeting|hearing|session)s?(?:\s+(?:agenda|minutes|notice))?$/i;
+const GOV_EVENT_WORDS = /\b(?:concert|festival|fest|tour|party|show|live|music|tickets?|performance|market|fair|parade|trunk|treat|games?|night|dinner|gala|fundrais\w*|open house|workshop|class|camp|tasting|brunch|lunch|potluck|raffle|celebration|ceremony|reception|exhibit\w*|cruise)\b/i;
+const BARE_HEARING = /^(?:(?:public|budget|zoning|planning|tax|millage|special|truth in taxation)\s+)+hearings?(?:\s*[:\-\u2013]\s*.{1,80}|\s+(?:on|for|regarding)\b.{0,60})?$/iu;
+const GENERAL_MEETING = /^(?:(?:[\p{L}\p{N}']+\s+){0,5})?(?:general|membership)\s+meeting$/iu;
+// A bare formal body name as the whole title ("Zoning Board of Appeals", "Planning Commission"); NOT a bare "Council"/"Board".
+const BODY_NAME_ONLY = /^(?:(?:[\p{L}'&]+\s+){1,5}(?:commission|committee|commissioners)|committee of the whole|hearing officer|board of review|(?:library|recreation|parks|school|zoning|planning|housing|water|police|fire|airport|transit|hospital|historic|historical|dda(?: [\p{L}]+)?) board|dda(?: [\p{L}]+)? board)$/iu;
+const BODY_ONLY = /^(?:(?:city|town|village|township|county|[\p{L}]+)\s+){0,3}(?:zoning board(?: of appeals)?|board of (?:trustees|education|review|appeals|commissioners|ethics|zoning appeals)|planning (?:commission|board)|(?:ethics|pension|review|appeals) (?:board|commission|committee)|city council|town council|village council|township board)$/iu;
+// Drop a trailing clock time or "(...)" note, which are not part of the title's meaning.
+const stripTail = (t) => t.replace(/\s*\([^)]*\)\s*$/, "").replace(/\s+(?:at\s+)?\d{1,2}(?::\d{2})?\s*(?:a|p)\.?m\.?$/i, "").replace(/[\s.!:,-]+$/, "").trim();
+function isGovernanceMeeting(title) {
+  const t = stripTail(title.trim().replace(/^(?:cancell?ed|rescheduled|postponed)\s*[:\-\u2013]\s*/i, ""));
+  if (!t || GOV_EVENT_WORDS.test(t) || /^(?:meet|join|visit|about|with|vote|attend|support|tour|learn)\b/i.test(t)) return false;
+  if (BARE_HEARING.test(t)) return true;
+  if (GENERAL_MEETING.test(t)) return true;
+  if (BODY_ONLY.test(t) || BODY_NAME_ONLY.test(t)) return true;
+  return GOV_BODY.test(t) && MEETING_TAIL.test(t);
+}
+
 // Which rule a title matches, or null. The names are what the retirement
 // pass (scripts/retire-non-events.js) writes beside a row it retires.
 function nonEventRule(title) {
@@ -145,6 +171,7 @@ function nonEventRule(title) {
   if (TITLE_PATTERNS[1].test(title)) return "suite_rental";
   if (isPrivateLabel(title)) return "private_event_label";
   if (isClosureNotice(title)) return "closure_notice";
+  if (isGovernanceMeeting(title)) return "governance_meeting";
   return null;
 }
 

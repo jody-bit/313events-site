@@ -53,11 +53,12 @@ async function run() {
   const OTHER = { ...LV, id: "fs-other", venue_name: "City of Test", feed_url: "https://feed.example/cal.ics" };
 
   const lvEvents = [
-    ["UID:meet", "DTSTART:20261019T193000", "DTEND:20261019T210000", "DESCRIPTION:", "LOCATION:", "SUMMARY:City Council - Regular Meeting"],
+    ["UID:meet", "DTSTART:20261019T193000", "DTEND:20261019T210000", "DESCRIPTION:", "LOCATION:", "SUMMARY:Community Open Mic Night"],
+    ["UID:gov", "DTSTART:20261019T193000", "LOCATION:Lathrup Village City Hall - 27400 Southfield Rd  Lathrup Village MI 48076", "SUMMARY:City Council - Regular Meeting"],
     ["UID:closed", "DTSTART;VALUE=DATE:20261012", "DTEND;VALUE=DATE:20261013", "SUMMARY:City Hall - CLOSED"],
     ["UID:closed2", "DTSTART;VALUE=DATE:20261231", "DTEND;VALUE=DATE:20270102", "SUMMARY:City Hall - Closed"],
     ["UID:dinner", "DTSTART:20261112T173000", "DTEND:20261112T193000", "LOCATION:Community Room", "SUMMARY:LVPD - Thanksgiving Dinner"],
-    ["UID:addr", "DTSTART:20261120T120000", "LOCATION:Lathrup Village City Hall - 27400 Southfield Rd  Lathrup Village MI 48076", "SUMMARY:DDA Meeting"],
+    ["UID:addr", "DTSTART:20261120T120000", "LOCATION:Lathrup Village City Hall - 27400 Southfield Rd  Lathrup Village MI 48076", "SUMMARY:DDA Holiday Open House"],
     ["UID:untitled", "DTSTART:20261121T120000", "LOCATION:Lathrup Village City Hall - 27400 Southfield Rd  Lathrup Village MI 48076", "SUMMARY:"],
     ["UID:backwards", "DTSTART:20261122T120000", "DTEND:20261122T100000", "LOCATION:Lathrup Village City Hall - 27400 Southfield Rd  Lathrup Village MI 48076", "SUMMARY:Backwards"],
   ];
@@ -66,7 +67,8 @@ async function run() {
   let rows = await poll({ feed: LV, events: lvEvents });
   assert.strictEqual(byUid(rows, "closed"), undefined, "City Hall - CLOSED is not ingested");
   assert.strictEqual(byUid(rows, "closed2"), undefined, "the closure rule is case-insensitive");
-  assert.ok(byUid(rows, "meet"), "a meeting is ingested with its authoritative UID");
+  assert.strictEqual(byUid(rows, "gov"), undefined, "a governance meeting is excluded (owner policy 2026-11-15)");
+  assert.ok(byUid(rows, "meet"), "an unplaced event is ingested with its authoritative UID");
   assert.strictEqual(byUid(rows, "meet").status, "pending_review");
   assert.match(byUid(rows, "meet").note, /no location stated/);
   assert.strictEqual(byUid(rows, "dinner").status, "pending_review");

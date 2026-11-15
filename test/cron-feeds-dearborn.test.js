@@ -61,11 +61,8 @@ async function run() {
   for (const re of [/Early Voting/, /Thanksgiving \(DISC CLOSED\)/, /LOOSE LEAF/]) assert.strictEqual(byTitle(rows, re).length, 0, `${re} is a notice`);
   console.log("PASS: voting dates, closures and leaf-collection notices are skipped");
 
-  // Government-meeting titles are NOT discarded (owner rule 2026-10-13): held, with an extra reason.
-  const council = byTitle(rows, /City Council Meeting/);
-  assert.strictEqual(council.length, 1);
-  assert.strictEqual(council[0].status, "pending_review");
-  assert.match(council[0].note, /looks like a government meeting; kept for review, not discarded/);
+  // Government-meeting titles ARE excluded (owner policy 2026-11-15, superseding the 2026-10-13 hold-for-review rule).
+  assert.strictEqual(byTitle(rows, /City Council Meeting/).length, 0);
   assert.ok(!/government meeting/.test(byTitle(rows, /Fire Department Open House/)[0].note), "non-meeting rows get no meeting reason");
   console.log("PASS: meeting-type titles are held, never discarded");
 
