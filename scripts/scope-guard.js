@@ -21,6 +21,8 @@ const ALLOWED = [
   "api/_lib/address-city.js",
   // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
   "api/_lib/venue-location-gate.js",
+  // Reusable venue resolver, v0: pure, offline, read-only (Discovery, EPIC-006).
+  "api/_lib/venue-resolver.js",
   // Public submit form stores the city its address states (P1 audit EXPORT-2).
   "api/submit.js",
   // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
@@ -37,6 +39,8 @@ const ALLOWED = [
   "api/_lib/control-tower.js",
   // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
   "api/_lib/non-event-filter.js",
+  // Shared quality finding contract v1 (EI owner #2, owner direction 2026-11-15; P1 PASS 98c5144): pure, report-only, no writes.
+  "api/_lib/quality-contract.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
