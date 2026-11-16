@@ -1,0 +1,39 @@
+name: Health check, read-only (manual)
+
+# PROPOSED, NOT APPLIED. One manual run of the existing daily health suite in read-only mode:
+# GET https://313.events/api/cron-healthcheck?read_only=1 (api/cron-healthcheck.js, #420).
+# Read-only mode skips the real image upload (and its Storage DELETE) and the history prune, and records the
+# upload check as NOT RUN. It still inserts its one diagnostic row into `healthchecks`. No schedule, no inputs.
+# Same default-branch-only pattern as ra-sync-bridge.yml: only reviewed code on main ever holds CRON_SECRET.
+
+on:
+  workflow_dispatch:
+
+permissions: {}   # no repository access at all: no checkout, no token scopes
+
+concurrency:
+  group: healthcheck-read-only
+  cancel-in-progress: false
+
+jobs:
+  health:
+    # A dispatch from any other branch could carry edited code and the secret; refuse unless this is main.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Invoke the read-only health suite
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}   # existing repo secret; never printed, GitHub masks it
+        run: |
+          set +x
+          code=$(curl -sS --max-time 90 -o response.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            'https://313.events/api/cron-healthcheck?read_only=1') || { echo "request failed"; exit 1; }
+          echo "HTTP ${code}"
+          [ "${code}" = "200" ] || { echo "not 200; body not printed"; exit 1; }
+          # Redaction: print only an allow-list of fields, never the raw body, headers or the request.
+          jq -c '{overall, read_only, duration_ms, failing, not_run}' response.json | tee -a "$GITHUB_STEP_SUMMARY"
+          # Safety: if the deployed code ignored read_only (e.g. a revert), the regular suite ran; say so and fail.
+          jq -e '.read_only == true' response.json >/dev/null || { echo "read_only was NOT honored by the deployed code"; exit 1; }
+          rm -f response.json
