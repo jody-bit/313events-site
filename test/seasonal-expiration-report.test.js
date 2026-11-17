@@ -79,7 +79,9 @@ assert.strictEqual(erebus.status, "PUBLISHED");
 for (const day of ["2026-10-20", "2026-11-02", "2026-11-07", "2026-11-09"]) {
   const rr = X.expirationReport(real, day);
   assert.ok(!(one(rr, "erebus") || { states: [] }).states.includes("SEASON_ENDED"), "erebus is not marked ended on " + day + " without a verified season.end");
-  assert.strictEqual(rr.failures.length, 0, "real data never fails today: " + day);
+  // Holiday Beach (#244 draft) is ENDED with a verified season.end of 2026-10-31: before that date the guard correctly flags it as ended too early.
+  if (day > "2026-10-31") assert.strictEqual(rr.failures.length, 0, "real data never fails today: " + day);
+  else assert.ok(rr.failures.length === 1 && /holiday-beach-conservation-area is ENDED but/.test(rr.failures[0]), "before 2026-10-31 only the ENDED-too-early guard fires, for Holiday Beach: " + day);
 }
 // Erebus with a verified end of Nov 7: reported ended only AFTER Nov 7, and only then needs a disposition
 const withEnd = JSON.parse(JSON.stringify(real));
@@ -97,11 +99,11 @@ for (const slug of Object.keys(e0)) {
   const projected = e0[slug].filter(ED.COLLECTIONS.isPublic).map(ED.publicEntry);
   assert.deepStrictEqual(projected, before[slug], slug + ": identical public projection with the new private fields set (ended entries still shown, nothing leaked)");
 }
-assert.deepStrictEqual(counts(before), { fall: 38, halloween: 7, "fall-color": 41 }, "published counts unchanged (38/7/41 on main; halloween was 25 until the Halloween expiry waves, re-pinned 2026-11-08)");
+assert.deepStrictEqual(counts(before), { fall: 38, halloween: 7, "fall-color": 40 }, "published counts unchanged (38/7/40; halloween was 25 until the Halloween expiry waves, re-pinned 2026-11-08; fall-color 41 to 40 when Holiday Beach ENDED, #244 draft)");
 assert.ok(!/"(season|reviewOn|expiryDisposition|schedule)":/.test(fs.readFileSync(path.join(__dirname, "..", "seasonal/published-entries.js"), "utf8")), "private fields absent from the generated public file");
 // the committed data carries no season.end yet, so today the report changes nothing
 const nowReport = X.expirationReport(real, "2026-11-08");
-assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 86); // 38+7+41; was 104 before the Halloween expiry waves, re-pinned 2026-11-08
+assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 85); // 38+7+40 (Holiday Beach ENDED, #244 draft); was 104 before the Halloween expiry waves, re-pinned 2026-11-08
 
 // ---- ENDED status (owner decision 2026-10-20, option A) ----
 {

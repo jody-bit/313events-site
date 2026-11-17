@@ -1,0 +1,31 @@
+{
+  "runToken": "20261115-131157-f3cc97",
+  "action": "complete",
+  "runId": "76570124-b868-4bd8-9f7d-748dc5c5fe35",
+  "events": [
+    {
+      "id": "ra-2578466",
+      "title": "BLAKINETIC",
+      "description": ".:. **LIMITED TIX** .:.\n\nBLAKINETIC is a multiverse powered by high-frequencies sparked from soulful connections, where collective understanding flow through cosmic, sonic release. A realm created for you to expand deeply, freely, and truthfully as rhythm and motion guide us into connection.\n\n\nAt its heart, BLAKINETIC exists to uplift and celebrate the beauty, brilliance, creativity, and expression of Black artists. Through sound, movement, and shared energy, we gather amongst kinfolk to honor Black culture, inspire and relieve each other, and create moments and stories that will resonate across generations.\n\n\nKinetic energy is the power created from motion, that force along with the magic of kinship is the inspiration behind BLAKINETIC. You are personally invited to move, connect, and explore yourself and those around you... whether through meaningful conversation, liberating dance, or simply being present. HOUSE RULES: NO dance floor convos and no phones on the dance floor - don't disturb the groove!\n\n\nOur first 2027 celebration will be musically enchanted by Rick Wilhite, iii (Triniti), John Adams, and our resident, Dej.y.",
+      "startDate": "2027-01-02T20:00:00.000",
+      "endDate": "2027-01-03T02:00:00.000",
+      "venueName": "TBA - Secret Location",
+      "address": null,
+      "image": null,
+      "offersPrice": 20,
+      "url": "https://ra.co/events/2578466"
+    },
+    {
+      "id": "ra-2578535",
+      "title": "All In",
+      "description": "all in is a new event in eastern market \n",
+      "startDate": "2026-11-28T20:00:00.000",
+      "endDate": "2026-11-29T02:00:00.000",
+      "venueName": "TBA",
+      "address": null,
+      "image": "https://images.ra.co/a53096c990bbb63ec1b0c595bb11e4c185a9e954.png",
+      "offersPrice": null,
+      "url": "https://ra.co/events/2578535"
+    }
+  ]
+}

@@ -77,3 +77,25 @@ assert.ok(/typeof DescriptionFormat !== 'undefined'/.test(page), "render is guar
 assert.ok(/p\.textContent = t; body\.appendChild\(p\)/.test(page), "plain-text fallback builds paragraphs from text nodes");
 
 console.log("PASS: event description formatting — structure kept, long text grouped safely, HTML never becomes markup");
+
+// Whole metadata-only summaries are redundant; substantive prose, lineups and extra sentences survive.
+const generated = require("../api/_lib/description-enrichment.js").buildFactualDescription;
+for (const event of [
+ {title:"GHETTOTECHTOPIA",venue_name_raw:"Marble Bar",start_date:"2026-11-13",time_display:"10:00 PM–4:00 AM",price_from:17.25},
+ {title:"A title (with punctuation!)",start_date:"2026-11-14",is_free:true},
+ {title:"Workshop",venue_name_raw:"Studio",time_display:"7:00 PM"}
+]) {
+ const summary=generated(event);
+ assert.strictEqual(DF.isMetadataSummary(summary,event),true,summary);
+ assert.strictEqual(DF.isMetadataSummary(summary+" Doors open an hour earlier.",event),false,"additional source detail preserved");
+}
+assert.strictEqual(DF.isMetadataSummary("A band plays live with three guests.",{title:"A band"}),false);
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio. Bring your own supplies.",{title:"Workshop",venue:"Studio"}),false);
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio.\nLineup: Ada and Bo.",{title:"Workshop",venue:"Studio"}),false);
+assert.strictEqual(DF.isMetadataSummary("Other title takes place at Studio.",{title:"Workshop",venue:"Studio"}),false);
+
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio with a live quartet.",{title:"Workshop",venue:"Studio"}),false,"substantive detail within the first sentence survives");
+
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio. Tickets from $50.",{title:"Workshop",venue:"Studio"}),false,"source-only price survives");
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio. Free admission.",{title:"Workshop",venue:"Studio",is_free:false}),false,"contradictory admission claim survives for factual review");
+assert.strictEqual(DF.isMetadataSummary("Workshop takes place at Studio. Tickets from $50.",{title:"Workshop",venue:"Studio",priceFrom:50}),true,"UI-shaped confirmed price is duplicate metadata");

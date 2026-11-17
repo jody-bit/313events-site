@@ -17,6 +17,14 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // City stated by a street address (P1 audit EXPORT-2): shared by api/submit.js and scripts/ra-sync.js.
+  "api/_lib/address-city.js",
+  // Approve-time venue/city check for Venue Submission (P1 audit EXPORT-2).
+  "api/_lib/venue-location-gate.js",
+  // Reusable venue resolver, v0: pure, offline, read-only (Discovery, EPIC-006).
+  "api/_lib/venue-resolver.js",
+  // Public submit form stores the city its address states (P1 audit EXPORT-2).
+  "api/submit.js",
   // Region-only LOCATION (draft, 2026-11-07): ICS parser treats a bare region as region_only; its own reviewed PR.
   "api/_lib/ics-location.js",
   // Zero-write reasons (draft, 2026-11-07): shared helper + reader for connectors that finish fetched>0 / written=0; its own reviewed PR.
@@ -31,6 +39,8 @@ const ALLOWED = [
   "api/_lib/control-tower.js",
   // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
   "api/_lib/non-event-filter.js",
+  // Shared quality finding contract v1 (EI owner #2, owner direction 2026-11-15; P1 PASS 98c5144): pure, report-only, no writes.
+  "api/_lib/quality-contract.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
@@ -74,6 +84,8 @@ const ALLOWED = [
   "api/_lib/pending-classifier.js",
   // All-caps title proposal (shadow mode, EI 2026-10-19): pure function, nothing calls it yet.
   "api/_lib/title-case.js",
+  "api/_lib/nightlife-classifier.js",
+  // Nightlife rule (#177, owner decision 2026-10-19): classify-only helper, wired into GottaGacha, Eventbrite and Localist catch-all rows.
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
@@ -84,10 +96,20 @@ const ALLOWED = [
   // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
   "api/_lib/localist-rows.js",
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js", "api/_lib/meeting-classifier.js",
+  // Editorial Gateway (owner P1 interruption 2026-10-26): authenticated find / upload image / verify for AI clients; new files only.
+  "api/editorial-gateway.js", "api/editorial-oauth.js", "api/_lib/oauth-front.js", "api/_lib/editorial-gateway.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   // Decision 7: rotating link check (dry by default).
   "api/_lib/link-check-run.js", "api/cron-link-check.js",
+  // Server-side paging (draft 2026-11-09, held): sitemap and link-check read every row past the 1,000-row server cap.
+  "api/_lib/paged-rows.js", "api/sitemap.js",
+  // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
+  "api/admin-venues.js", "api/_lib/venue-lookup.js",
+  // Owner-approved 2026-11-09 (#399): description enrichment drops the filler end time conditionally (single entry; no write or schedule change).
+  "api/_lib/description-enrichment.js",
+  // Owner-approved 2026-11-09 (#70): read-only Ticketmaster report module; no writes, keys or schedules.
+  "api/_lib/ticketmaster-report.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
@@ -126,6 +148,8 @@ const ALLOWED = [
   "api/_lib/feed-publication.js",
   "api/_lib/dearborn-enrichment.js",
   "api/cron-feeds.js",
+  // Fallback event link (draft PR, Platform 2026-10-19): the new blank-only source calendar-page helper. Release needs R&Q + owner word.
+  "api/_lib/source-calendar-links.js",
   // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
   "api/_lib/ingest-eligibility.js",
   // GEO-003 step 2 (owner order 2026-10-16): VisitDetroit stores the feed city only when it agrees with ZIP and _geoloc.

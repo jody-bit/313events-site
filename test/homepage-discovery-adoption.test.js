@@ -45,7 +45,7 @@ const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 global.EventDates = require(`${REPO_DIR}/event-dates.js`); // the page loads /event-dates.js before it asks Discovery; mirror that here (2026-10-16)
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const { makeMockPostgrest } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
 const { loadPage, inlineScript } = require(`${REPO_DIR}/test/fixtures/fake-dom.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
@@ -116,8 +116,8 @@ async function open(url, opts) {
   const page = loadPage({
     url: url || "/", now: opts.now || NOW, seed: SEED, fetch: api.fetch,
     geolocation: opts.geolocation,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("place-list.js"), read("blocked-names.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "place-list.js", "blocked-names.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;
@@ -340,8 +340,8 @@ async function run() {
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "next7" })), "resets search and sets Next 7 Days");
     assert.deepStrictEqual(plain(D.window(v.state, { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "exactly today through the sixth day after it");
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.heading, "Showing 10 events in the next 7 days", "the list is the hero's NEXT 7 DAYS figure (10; was 11 before 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a specific day)");
-    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4].map((n) => heading(day(n))), "nothing past the seventh day (Big Game, on day 20, is not listed); no \"Dates not confirmed\" group in a date-specific view");
+    assert.strictEqual(v.heading, "Showing 10 events in the next 7 days &middot; plus 1 with dates not confirmed, below", "P0 2026-11-09: the confirmed figure stays 10, the unclassified Fall Festival is named beside it. The list is the hero's NEXT 7 DAYS figure (10; was 11 before 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a specific day)");
+    assert.deepStrictEqual(v.days.map((d) => d.day), [...[0, 1, 2, 4].map((n) => heading(day(n))), "Dates not confirmed"], "nothing past the seventh day (Big Game, on day 20, is not listed); the Fall Festival sits in its own Dates not confirmed group");
     assert.deepStrictEqual(v.tray, ["Next 7 Days"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Next 7 Days");
     assert.strictEqual(v.url, "/?when=next7");
@@ -397,8 +397,8 @@ async function run() {
     page.fire("whenDateEndInput", "change", { value: day(7) });
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(4), to: day(7) });
-    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`], "each event once: the continuous exhibition under the range's first day; REWRITTEN 2026-10-16: the unclassified Fall Festival is schedule-unverified and not on a picked range");
-    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10");
+    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, "Dates not confirmed | Fall Festival"], "each event once: the continuous exhibition under the range's first day; REWRITTEN 2026-11-09 (P0): the unclassified Fall Festival overlaps the picked range, so it is offered under Dates not confirmed, never counted");
+    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10 &middot; plus 1 with dates not confirmed, below");
     assert.deepStrictEqual(v.tray, ["Oct 7–Oct 10"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7–Oct 10");
     assert.strictEqual(v.url, `/?when=dates&from=${day(4)}&to=${day(7)}`);
@@ -712,8 +712,9 @@ async function run() {
       assert.deepStrictEqual(plain(D.fromQuery(after)), v.state, `${after} means the same thing`);
       // And the list is exactly what Discovery says for that state.
       const ctx = { now: new Date(NOW), defaultWhen: "all", coverage: { c01: true } }; // the homepage's resting view is everything upcoming
-      const expected = plain(page.get("EVENTS")).filter((e) => D.matches(e, v.state, ctx)).map((e) => e.title);
-      assert.deepStrictEqual(sorted(v.titles), sorted(expected), `${link}: lists exactly the events Discovery matches, once each`);
+      // P0 2026-11-09: plus, on a picked date or range, the unconfirmed runs Discovery offers under "Dates not confirmed".
+      const expected = plain(page.get("EVENTS")).filter((e) => D.matches(e, v.state, ctx) || D.unconfirmedOn(e, v.state, ctx)).map((e) => e.title);
+      assert.deepStrictEqual(sorted(v.titles), sorted(expected), `${link}: lists exactly the events Discovery matches (plus its unconfirmed group), once each`);
     }
     // Controls restored from a link.
     let page = await open(`/?when=range&rangeStart=${day(4)}&rangeEnd=${day(7)}&q=fest&loc=ann%20arbor&radius=25&cats=fest,music&free=1`);

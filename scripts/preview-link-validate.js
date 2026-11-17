@@ -26,6 +26,7 @@
 const fs = require("fs");
 const path = require("path");
 const { checkUrl } = require("../api/_lib/link-health");
+const { fetchAllPagedRows } = require("../api/_lib/paged-rows");
 const { OLD_SHAPE_RE } = require("../api/_lib/visitdetroit-link-recovery");
 
 // event-links.js is a browser file that attaches to window/module; load it the same way the tests do.
@@ -90,9 +91,11 @@ async function fetchSupabaseRows() {
   const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY (or SERVICE_ROLE_KEY) are required for --supabase");
   const today = new Date().toISOString().slice(0, 10);
-  const resp = await fetch(`${url}/rest/v1/events?select=id,title,source,ticket_url,event_url,created_at,updated_at&status=eq.approved&start_date=gte.${today}&order=start_date.asc&limit=2000`, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
-  if (!resp.ok) throw new Error(`events query HTTP ${resp.status}`);
-  return resp.json();
+  // Paged: this read used limit=2000, but Supabase returns at most 1,000 rows per request with a 200, so the validated set (and the Preview stamp's
+  // sampled count and staleness figures) silently covered only the first 1,000 upcoming events. An incomplete read throws, never a smaller set.
+  const paged = await fetchAllPagedRows(`${url}/rest/v1/events?select=id,title,source,ticket_url,event_url,created_at,updated_at&status=eq.approved&start_date=gte.${today}&order=start_date.asc,id.asc`, { apikey: key, Authorization: `Bearer ${key}` });
+  if (!paged.ok) throw new Error(`events query incomplete: ${paged.error || "unknown"}`);
+  return paged.rows;
 }
 
 // Newest finished successful ingestion run. source_runs is service-role only; with the anon key this returns null and the
@@ -144,4 +147,4 @@ async function main() {
 }
 
 if (require.main === module) main().catch((e) => { console.error(e.message); process.exit(2); });
-module.exports = { validateRows, isHomepageLanding, dataParity, previewStamp };
+module.exports = { validateRows, isHomepageLanding, dataParity, previewStamp, fetchSupabaseRows };

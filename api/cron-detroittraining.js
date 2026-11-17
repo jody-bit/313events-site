@@ -250,7 +250,7 @@ const handleRequest = async (req, res) => {
           venue_city_raw: DEFAULT_CITY,
           start_date: d.startISO,
           end_date: d.endISO !== d.startISO ? d.endISO : undefined,
-          is_free: false,
+          // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
           price_from: priceFrom || undefined,
           ticket_url: page.url,
           source: "Detroit Training Center (detroittraining.com)",

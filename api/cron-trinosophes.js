@@ -276,7 +276,7 @@ module.exports = async (req, res) => {
     // start.
     time_display: "7:00 PM",
     note: "Doors ~7:00 PM (sometimes 7:30) — confirm at trinosophes.com or by calling the venue.",
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     source: "Trinosophes",
   }));
 

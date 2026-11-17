@@ -374,6 +374,17 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Out of scope:** implementing it during the `BUG-011` hotfix; re-enabling `note`.
 - **Product Decisions Required:** name; whether connectors may write it; the review route for existing `note` values (the distinct approved values were listed 2026-10-06 and sorted by hand into visitor information and commentary; the list is held by the Product Owner, not reproduced here).
 
+### STORY-028 — Media / Press page and downloadable EPK
+
+- **Type:** STORY · **Status:** BACKLOG (owner action 2026-11-09; copy and asset package prepared, page not built, nothing published) · **Priority:** Unscored
+- **Epic:** EPIC-010 (closest existing; no media/press item existed: `DISCOVERY-010` is the unrelated "On the Radar" naming collision) · **Workstream:** primary `workstream:editorial-products` (copy and asset package), supporting `workstream:experience` (the `/media` page and About/footer links); release gate `workstream:release-quality`
+- **Dependencies:** the #405 responsive fix lands before Experience builds the page; public product screenshots are captured from the live public site (not available in the preparing session).
+- **Problem/User Need:** journalists, partners and organizers have no one place for the approved bio, fact sheet, logos and a downloadable press kit.
+- **Delivered so far (prepared, not live):** `assets/media/` (existing wordmarks unchanged as SVG plus rendered PNGs, signal mark, 2-page tagged press-kit PDF, media-kit ZIP, copy-ready bios and fact sheet); sources and review kit in `project/media-kit/`.
+- **Acceptance Criteria (3):** (1) copy is accurate to existing site pages and the public contact is jody@sentientproductions.com, labelled as the media contact; (2) every download opens and is accessible (valid ZIP and PDF, text alternatives, tagged PDF); (3) the `/media` page is responsive and linked from About and the footer.
+- **Constraints:** no fabricated quotes, launch date, traffic or partnerships; no third-party flyers or licensed photos; screenshots show product screens only; the publication hold applies; no outreach, tracking or spend.
+- **Product Decisions Required:** Jody's read of the long bio before publication; publication GO.
+
 ### STORY-027 — Promoter / Organizer Profile Pages (pilot: Fleatroit)
 
 - **Type:** STORY · **Status:** BACKLOG (proposal only, recorded 2026-11-08; NOT approved, NOT started; no schema created) · **Priority:** Unscored

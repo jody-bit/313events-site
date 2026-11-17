@@ -26,7 +26,7 @@ const assert = require("assert");
 const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const { makeMockPostgrest } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
 const { loadPage, inlineScript } = require(`${REPO_DIR}/test/fixtures/fake-dom.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
@@ -77,8 +77,8 @@ async function open(url, opts) {
   const api = makeMockPostgrest(opts.tables || TABLES, { cap: 1000, failure: opts.failure });
   const page = loadPage({
     url: url || "/", now: NOW, seed: SEED, fetch: api.fetch,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("place-list.js"), read("blocked-names.js"), read("discovery.js"), read("calendar-location.js"), read("event-links.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "place-list.js", "blocked-names.js", "discovery.js", "calendar-location.js", "event-links.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;
@@ -281,17 +281,19 @@ async function run() {
     assert.strictEqual(page.el("search").value, "");
     assert.strictEqual(stream(page).head, "Showing 31 events today");
     assert.strictEqual(page.url(), "/?when=today");
+    page.run("viewFree()");
+    assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { free: true })), "the hero Free entry applies only the existing free-only filter");
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything('next7')");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "next7" })));
     assert.deepStrictEqual(plain(D.window(page.get("state"), { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "today and the six days after it, in Detroit");
     assert.strictEqual(stream(page).head, "Showing 79 events in the next 7 days");
     assert.strictEqual(page.url(), "/?when=next7");
-    assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Active neighborhoods"], "the hero's three supporting figures (This Week is gone)");
+    assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Free", "Active neighborhoods"], "the hero's supporting figures (This Week is gone; Free opens the existing free-only filter)");
     assert.ok(!/viewThisWeek/.test(SCRIPT));
     // Each figure's own button opens the view it counts.
-    const heroButtons = [...SCRIPT.matchAll(/class="hero-proof-stat" onclick="([^"]*)"><span class="hps-num" id="([^"]*)"/g)].map((m) => [m[2], m[1]]);
-    assert.deepStrictEqual(heroButtons, [["heroStatToday", "viewEverything('today')"], ["heroStatNext7", "viewEverything('next7')"], ["heroStatNeighborhoods", "viewNeighborhoodsRail()"]]);
+    const heroButtons = [...SCRIPT.matchAll(/class="hero-proof-stat(?: hero-proof-free)?" onclick="([^"]*)"(?: title="[^"]*")?><span class="hps-num" id="([^"]*)"/g)].map((m) => [m[2], m[1]]);
+    assert.deepStrictEqual(heroButtons, [["heroStatToday", "viewEverything('today')"], ["heroStatNext7", "viewEverything('next7')"], ["heroStatFree", "viewFree()"], ["heroStatNeighborhoods", "viewNeighborhoodsRail()"]]);
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything()");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.defaults()), "the total leads to the whole stream");

@@ -113,5 +113,28 @@ async function call(tables, req) {
     assert.ok(!db.log.some((r) => r.table === "events" && r.method === "PATCH"), "no write");
   }
   console.log("PASS: update_fields stays gap-fill only");
+
+  // 7. (P1 F2) the "nothing to fill" response must not carry internal_note, same as the success path.
+  {
+    const tables = { events: [row({ description: "Already there", internal_note: "private breadcrumb text" })] };
+    const { res } = await call(tables, { method: "POST", body: { id: "evt-1", action: "update_fields", fields: { description: "New" } } });
+    assert.strictEqual(res._status, 200);
+    assert.ok(!("internal_note" in res._body.event), "no internal_note on the nothing-to-fill path");
+    assert.ok(!JSON.stringify(res._body).includes("private breadcrumb text"));
+  }
+  console.log("PASS: the nothing-to-fill response echoes no internal_note");
+
+  // 8. (P1 F3) a row with no updated_at is still written conditionally (updated_at=is.null), never unguarded.
+  {
+    const urls = [];
+    const r0 = row({ updated_at: null });
+    global.fetch = async (url, init) => { urls.push({ url: String(url), method: (init && init.method) || "GET" }); return { ok: true, status: 200, json: async () => [r0], text: async () => "" }; };
+    const res = makeRes();
+    await fresh("api/admin-events.js")({ headers: { "x-admin-secret": process.env.ADMIN_SECRET }, query: {}, method: "POST", body: { id: "evt-1", action: "update_fields", fields: { description: "New" } } }, res);
+    const patch = urls.find((u) => u.method === "PATCH");
+    assert.ok(patch, "a PATCH was sent: " + JSON.stringify(urls));
+    assert.ok(patch.url.includes("updated_at=is.null"), "guarded by the missing version: " + patch.url);
+  }
+  console.log("PASS: a row without updated_at is guarded with updated_at=is.null");
   console.log("admin-events-live-search-api: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });

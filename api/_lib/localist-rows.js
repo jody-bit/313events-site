@@ -82,6 +82,7 @@
 const { milesFromDetroitBorder } = require("./detroit-boundary");
 const { knownCity } = require("./orbit-cities");
 const { isLikelyNotARealEvent } = require("./non-event-filter");
+const { classifyNightlife, nightlifeNote } = require("./nightlife-classifier"); // #177: advertised dance-music events, new rows only here
 
 const HORIZON_DAYS = 90;
 const MIN_RUN_DAYS = 3;
@@ -587,6 +588,49 @@ function needsFullSchedule(instanceWrappers, windowStart, windowEnd) {
   return normalizeInstances(instanceWrappers).some((inst) => inst.date <= windowStart || (farEdge && inst.date >= farEdge));
 }
 
+// ---------------------------------------------------------- admission
+// The source's `free` flag is generic: BGSU/Macomb set it on events whose own ticket_cost says "$5 (Under 12 Free)" or
+// "Free Ticket Claim for Students; General Public starts at $10", and leave it false on "free and open to the public".
+// Decision, most specific first (no price-0 or "free" anywhere inference):
+//   1. ticket_cost states a non-zero dollar amount -> NOT free (an explicit paid cost overrides the flag, including
+//      "Under 12 Free" / student-free qualifiers: the adult/general price is what is stated).
+//   2. ticket_cost is exactly "free" -> free.
+//   3. otherwise the source flag stands, and a false flag is raised to true only when the description states
+//      unconditional free ADMISSION/ENTRY (qualified, negated or ended offers do not count) and no cost contradicts it.
+// The matcher below is the one #407 uses in cron-detroitmonthofdesign/playgrounddetroit (inlined: no new api/_lib file).
+const FREE_ADMISSION = /\b(?:free (?:admission|entry|to attend|to the public|and open to the public|of charge)|admission (?:is )?free)\b/gi;
+const FREE_QUALIFIER = /\b(?:for (?:members?|kids?|children|students?|seniors?|veterans?|residents?|youth|teens?|ticket holders?)|under \d|over \d|ages? \d|before|after|until|with|only|except|on (?:the )?(?:first|second|third|last|every|each)|first|every|each|ticket holders?|members?)\b|\$\d/i;
+const FREE_NEGATION = /\b(?:not|no|never)\s+(?:\w+\s+){0,2}$|n't\s+(?:\w+\s+){0,2}$/i;
+// A negation that FOLLOWS the phrase within a few plain words ("is not available", "will not be offered", "won't be
+// offered", "does not / doesn't apply", "cannot / can't be offered", "no longer"). A comma or other punctuation ends the window.
+const FREE_NEGATED_AFTER = /^\s*(?:\w+\s+){0,3}?(?:not|never|cannot|unavailable|no longer|\w+n't)\b/i;
+// The same negation set off by punctuation ("Free admission, not available." / ": not available" / "(not available)" /
+// ". Not available.") only when the negator is followed by an availability word, so "Free admission, not to be missed!"
+// stays FREE; and end-of-offer wording ("has been discontinued", "has ended", "is over", "is suspended", "replaced by",
+// "was offered last year but not this year"). Over-rejecting is the safe direction.
+const FREE_PUNCT = "[\\s,:;.()\\-–—]*";
+const FREE_NEGATED_ACROSS = new RegExp("^" + FREE_PUNCT + "(?:not|cannot|no longer|never|\\w+n't)\\s+(?:\\w+\\s+){0,2}?(?:available|offered|provided|included|applicable|possible|valid|this year|anymore)\\b", "i");
+const FREE_OFFER_ENDED = new RegExp("^" + FREE_PUNCT + "(?:discontinued\\b|(?:has|have|had)\\s+been\\s+(?:discontinued|cancell?ed|suspended|ended|replaced)|(?:has|have)\\s+ended|(?:is|are|was|will be)\\s+(?:over|suspended|discontinued|cancell?ed|replaced)|replaced by|(?:was|were)\\s+offered\\b[^.!?]{0,40}\\bbut\\s+not\\b)", "i");
+function statesFreeAdmission(text) {
+  const s = String(text || "");
+  for (const m of s.matchAll(FREE_ADMISSION)) {
+    const before = s.slice(Math.max(0, m.index - 30), m.index);
+    const after = s.slice(m.index + m[0].length, m.index + m[0].length + 40);
+    const afterLong = s.slice(m.index + m[0].length, m.index + m[0].length + 70);
+    if (FREE_NEGATION.test(before) || FREE_QUALIFIER.test(after) || FREE_NEGATED_AFTER.test(after) || FREE_NEGATED_ACROSS.test(afterLong) || FREE_OFFER_ENDED.test(afterLong)) continue;
+    return true;
+  }
+  return false;
+}
+const PAID_AMOUNT = /\$\s*(?:0*[1-9]\d*|0*\.\d*[1-9]\d*)/;
+function localistIsFree(e) {
+  const cost = cleanString(e.ticket_cost);
+  if (cost && PAID_AMOUNT.test(cost)) return false;
+  if (cost && /^free\.?$/i.test(cost)) return true;
+  if (e.free === true) return true;
+  return !cost && statesFreeAdmission(e.description_text);
+}
+
 // Rows for one ELIGIBLE event.
 //   instanceWrappers  the event's instances: its full schedule when the
 //                     handler fetched it, otherwise what the listing showed
@@ -604,11 +648,16 @@ function rowsForEvent({ event: e, instanceWrappers, place, tenant, windowStart, 
   for (const unit of units) {
     const lastDay = unit.endDate || unit.startDate;
     if (lastDay < windowStart || unit.startDate > windowEnd) continue;
+    // #177 (owner 2026-10-19): a catch-all row is offered to the Nightlife rule. It changes the category and the breadcrumb of
+    // a NEW row only: mergeWithStored() sends an existing row's stored category back, so nothing already stored is reclassified,
+    // and the status is never touched (the rule never approves).
+    const nightlife = category ? null : classifyNightlife({ title, description, venue_name_raw: place && place.name, time_display: unit.timeDisplay });
+    const isNightlife = !!nightlife && nightlife.decision === "nightlife";
     rows.push({
       external_id: `localist-${tenant.tenantSlug}-${unit.id}`,
       title,
       description,
-      category: category || AMBIGUOUS_CATEGORY,
+      category: category || (isNightlife ? "nightlife" : AMBIGUOUS_CATEGORY),
       start_date: unit.startDate,
       // Sent even when null: a row that used to be a run and is now a single
       // day must lose its end date.
@@ -616,14 +665,19 @@ function rowsForEvent({ event: e, instanceWrappers, place, tenant, windowStart, 
       time_display: unit.timeDisplay,
       is_recurring: units.length > 1,
       is_all_day: unit.allDay,
-      // The source's own flag. false means "not marked free", never "paid".
-      is_free: e.free === true,
+      // The source's flag, corrected by its own ticket_cost / description (localistIsFree). false means "not marked
+      // free", not necessarily "paid".
+      is_free: localistIsFree(e),
       price_from: null, // ticket_cost is free text ("$10-$25 + fees"); not parsed
       ticket_url: cleanString(e.ticket_url),
       event_url: cleanString(e.localist_url),
       image_url: cleanString(e.photo_url),
       source: tenant.source,
-      internal_note: category ? null : `Category not mappable from this tenant's Localist event types or the title (event: "${title}").`,
+      internal_note: category
+        ? null
+        : isNightlife
+          ? nightlifeNote(nightlife)
+          : `Category not mappable from this tenant's Localist event types or the title (event: "${title}").` + (nightlife && nightlife.decision === "hold" ? " " + nightlifeNote(nightlife) : ""),
       _rawVenueName: place.name,
       venue_address_raw: place.street,
       venue_city_raw: place.city,

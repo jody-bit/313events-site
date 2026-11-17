@@ -172,6 +172,7 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "23757ef9fec372e84e107df3f26095a3bea2d3341e882ebed68a333e49443f47", "the 76 approved Fall / Fall Colors records are unchanged");
+  // Re-pinned Nov13 owner GO for #370: replace only Holiday Beach proposed expiry metadata with actual approval; other 75 records unchanged.
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "6d7e883e09f491664e4933543eab9674d5a360efee8d9d36bb22bf56e9b3cf7a", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");

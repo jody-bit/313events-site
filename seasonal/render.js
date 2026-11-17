@@ -107,10 +107,14 @@
   // or "313.events archive") shows no visible credit; it is kept in a data attribute here and in the content metadata (entries.json,
   // published-entries.js). A credit that a license or a linked image requires is a small muted line in the card's text area, with its link.
   var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
+  function coverCredit(img, fallback) {
+    if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
+    return '<p class="sc-credit' + (fallback ? ' sc-cover-credit' : '') + '">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
+  }
   function creditLine(e) {
     var img = e.image, r = linkedOf(img);
-    if (img.canonical && pickSrc(img) === img.canonical) return "";
-    if (r && pickSrc(img) === r.src) return !r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
+    if (img.canonical && pickSrc(img) === img.canonical) return (r && r.credit ? '<p class="sc-credit sc-remote-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>' : "") + coverCredit(img, true);
+    if (r && pickSrc(img) === r.src) return (!r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>') + coverCredit(img, true);
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
   }
@@ -124,10 +128,11 @@
     var viaLink = !!r && first === r.src && !viaCanon;
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
     var owner = !viaLink && !viaCanon && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
-    var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
+    var unknownCover = first !== e.image.src && !viaCanon && !viaLink;
+    var html = '<div class="sc-card-media' + (isGenericPlaceholder(first) || unknownCover ? ' sc-no-photo' : '') + '"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' data-cover-src="' + esc(e.image.src || '') + '" data-remote-src="' + esc(r ? r.src : '') + '" alt="" loading="lazy" width="640" height="427">';
     // Canonical event image showing: no label. But if it fails and the cover is the generic placeholder, the card must say "Photo pending" (hidden until the card falls back).
-    if (viaCanon) return html + (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image.src) && !e.image.illustrative ? '<span class="sc-pending sc-pending-fb">Photo pending</span>' : "") + '</div>';
-    if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
+    if (viaCanon) return html + (e.image.illustrative ? '<span class="sc-illus sc-illus-fb">Illustrative image</span>' : '') + (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image.src) && !e.image.illustrative ? '<span class="sc-pending sc-pending-fb">Photo pending</span>' : "") + '</div>';
+    if (viaLink) return html + (e.image.illustrative ? '<span class="sc-illus sc-illus-fb">Illustrative image</span>' : '') + '</div>';
     if (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image && e.image.src) && !e.image.illustrative) return html + '<span class="sc-pending">Photo pending</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
@@ -252,7 +257,7 @@
   }
   function footer() {
     return '<footer class="sc-footer"><a class="sc-brand" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="22"></a>' +
-      '<p class="sc-footer-tag">The city is on.</p><p class="sc-footer-links"><a href="/about">About</a> &middot; <a href="/accessibility">Accessibility</a> &middot; <a href="/editorial-policy">Editorial Policy</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/copyright">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>' +
+      '<p class="sc-footer-tag">The city is on.</p><p class="sc-footer-links"><a href="/about">About</a> &middot; <a href="/accessibility">Accessibility</a> &middot; <a href="/editorial-policy">Editorial Policy</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/copyright">Copyright / DMCA</a> &middot; <a href="/photo-credits">Photo Credits</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>' +
       '<p class="sc-footer-note">Always confirm dates, hours, and admission with the destination before making plans.</p></footer>';
   }
 

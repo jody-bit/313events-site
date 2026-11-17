@@ -126,6 +126,54 @@ function parsePage(page) {
   };
 }
 
+
+// Tabbed series blocks (Reel Talk, 2026-11-09). Cinema Detroit's home page (WP page "home") lists a series as an
+// et_pb_tabs module: the tab CONTROLS carry the dates ("11.12.26", "12.10", "01.21.27"), the tab CONTENT blocks carry
+// the film for the same position, and a "<day>s at <venue> | <street> | <zip>" line names the real venue (not Cinema
+// Detroit). Read from the raw HTML BEFORE stripToText, which removes the "[series launch]" style brackets.
+// Only controls that state a four-digit-resolvable year ("MM.DD.YY") become events: "12.10" has no year and is
+// rejected, never completed from context. No time is stated, so these rows are held (pending_review), not approved.
+// The heading's link (an Eventbrite trivia page whose title does not match the series) is deliberately ignored.
+const SERIES_VENUE_LINE = /<p[^>]*>\s*[A-Za-z]+s at ([^|<]+?)\s*\|\s*([^|<]+?)\s*\|\s*(\d{5})\s*<\/p>/;
+const SERIES_CONTROL = /<li class="et_pb_tab_(\d+)[^"]*"><a href="#">\s*([^<]*?)\s*<\/a><\/li>/g;
+const SERIES_TAB_CONTENT = /<div class="et_pb_tab et_pb_tab_(\d+)[^"]*">[\s\S]*?<div class="et_pb_tab_content"><p>([^<]*)<\/p>/g;
+const SERIES_HEADING = /Join us for<\/h4>[\s\S]*?<h1 class="et_pb_module_heading">([^<]+)<\/h1>/;
+const SERIES_DATE = /^(\d{2})\.(\d{2})\.(\d{2})$/;
+
+function parseTabbedSeries(page) {
+  const html = page && page.content && page.content.rendered;
+  if (typeof html !== "string" || !html.includes("et_pb_tabs_controls")) return [];
+  const heading = SERIES_HEADING.exec(html);
+  const venue = SERIES_VENUE_LINE.exec(html);
+  if (!heading || !venue) return []; // series name and a real venue are both required; never defaulted
+  const seriesTitle = decodeEntities(heading[1].trim());
+  const films = new Map();
+  for (const m of html.matchAll(SERIES_TAB_CONTENT)) films.set(m[1], decodeEntities(m[2].trim()));
+  const eventUrl = typeof page.link === "string" && page.link.trim() ? page.link.trim() : null;
+  const out = [];
+  for (const m of html.matchAll(SERIES_CONTROL)) {
+    const d = SERIES_DATE.exec(m[2]);
+    if (!d) continue; // "12.10": no year -> rejected, not guessed
+    const year = 2000 + parseInt(d[3], 10);
+    const month = parseInt(d[1], 10);
+    const day = parseInt(d[2], 10);
+    const check = new Date(Date.UTC(year, month - 1, day));
+    if (month < 1 || month > 12 || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) continue;
+    const film = (films.get(m[1]) || "").replace(/^\[[^\]]*\]\s*/, "").trim();
+    out.push({
+      external_id: `cinemadetroit-${page.id}-${year}${String(month).padStart(2, "0")}${String(day).padStart(2, "0")}`,
+      title: film ? `${seriesTitle}: ${film}` : seriesTitle,
+      start_date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+      time_display: null,
+      event_url: eventUrl,
+      venue_name: decodeEntities(venue[1].trim()),
+      venue_address: decodeEntities(venue[2].trim()),
+      hold_for_review: true, // no start time on the page: a required field is missing, so never auto-approved
+    });
+  }
+  return out;
+}
+
 module.exports = async (req, res) => {
   if (!requireCronAuth(req, res)) return;
   // WP 0.5: the run begins here, once the request is confirmed to be a
@@ -173,7 +221,7 @@ module.exports = async (req, res) => {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  const parsedAll = pages.map(parsePage);
+  const parsedAll = pages.flatMap((pg) => [parsePage(pg), ...parseTabbedSeries(pg)]);
   const parsed = parsedAll.filter((e) => e && e.start_date >= today);
 
   if (!parsed.length) {
@@ -207,11 +255,11 @@ module.exports = async (req, res) => {
     external_id: e.external_id,
     title: e.title,
     category: "film",
-    venue_name_raw: VENUE_NAME,
-    venue_id: venueId,
+    venue_name_raw: e.venue_name || VENUE_NAME,
+    venue_id: e.venue_name ? resolveVenueId(venueMap, e.venue_name) : venueId,
     start_date: e.start_date,
     time_display: e.time_display,
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     source: "Cinema Detroit",
     event_url: e.event_url,
   }));
@@ -224,6 +272,7 @@ module.exports = async (req, res) => {
     if (!seen.has(row.external_id)) seen.set(row.external_id, row);
   }
   const rows = Array.from(seen.values());
+  const heldIds = new Set(parsed.filter((e) => e.hold_for_review).map((e) => e.external_id)); // new rows missing a required field start in the review queue
 
   try {
     // Look up each row's current status before writing, so an admin's
@@ -277,7 +326,7 @@ module.exports = async (req, res) => {
     }
     const rowsWithStatus = rows.map((row) => ({
       ...row,
-      status: derivedStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+      status: derivedStatusByExternalId.get(row.external_id) || (heldIds.has(row.external_id) ? "pending_review" : DEFAULT_STATUS),
       // SH.8 -- existing nonblank event_url wins; else this run's parsed
       // page.link value; else null. Never guessed, never geocoded.
       event_url: existingEventUrlByExternalId.get(row.external_id) || row.event_url,
@@ -316,4 +365,5 @@ module.exports = async (req, res) => {
   }
 };
 
+module.exports.parseTabbedSeries = parseTabbedSeries; // exposed for test/cinema-detroit-reeltalk-series.test.js only
 module.exports.parsePage = parsePage; // exposed for test/sh8-deterministic-metadata-recovery.test.js only

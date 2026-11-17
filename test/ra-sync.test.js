@@ -419,11 +419,13 @@ async function run() {
       ["ra-4", cand({ source: "Other" })],
       ["ra-5", cand({ internal_note: "RA_PROVENANCE | status=unresolved\nOWNER-CORRECTION x" })],
       ["ra-6", cand({ time_display: "21:00" })],
+      ["ra-8", cand({ internal_note: "RA_PROVENANCE | status=unresolved\nEDITORIAL-HOLD keep blank" })],
+      ["ra-9", cand({ internal_note: "RA_PROVENANCE | status=unresolved\neditorial_hold x" })],
     ]);
     let sd;
     const result = await lib.startRaSyncSession({
       SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
-      candidateIds: ["ra-1", "ra-2", "ra-3", "ra-4", "ra-5", "ra-6", "ra-7"],
+      candidateIds: ["ra-1", "ra-2", "ra-3", "ra-4", "ra-5", "ra-6", "ra-7", "ra-8", "ra-9"],
       fetchFn: async (u, o) => { sd = JSON.parse(o.body).session_data; return { ok: true, text: async () => "" }; },
       lookupExistingRowsFn: async (u, k, ids) => new Map(ids.filter((i) => rows.has(i)).map((i) => [i, rows.get(i)])),
       lookupKnownSourceIdsFn: async () => new Set(),

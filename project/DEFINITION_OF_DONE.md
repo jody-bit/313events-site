@@ -85,7 +85,7 @@ Exceptions (owner words quoted, or none):
 Detection signal (how we learn this capability stopped working):
 Rollback target and procedure:
 Release approval (owner words quoted, with message reference):
-Production smoke (read-only) result:
+Production smoke (read-only) result (link to the `Production smoke (read-only)` workflow run for the deployed SHA; it runs automatically after each successful Production deployment):
 R&Q verdict (PASS / CHANGES REQUIRED) and verifier:
 ```
 
