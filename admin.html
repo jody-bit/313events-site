@@ -251,6 +251,17 @@
     width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;
     background:var(--panel-alt);color:var(--ink);font-family:inherit;
   }
+
+  /* Formatting pass (2026-11-17): contain overflow inside the element that owns it, never the page. No behaviour change. */
+  .search-row input{min-width:0;}
+  .search-row button{flex:none;white-space:nowrap;}
+  .match-search .search-row{flex-wrap:wrap;}
+  .match-search .search-row input{flex:1 1 100%;}
+  .article-card > *{min-width:0;}
+  .tab-btn{flex:none;}
+  @media (max-width:600px){
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  }
 </style>
 </head>
 <body>
@@ -528,6 +539,7 @@ function setRefreshStatus(state) {
 // as before tabs existed. Switching tabs never re-fetches anything.
 function showTab(key) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+  const activeTab = document.querySelector('.tab-btn.active'); if (activeTab && activeTab.scrollIntoView) activeTab.scrollIntoView({ inline: 'nearest', block: 'nearest' });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tabPanel === key));
 }
 
