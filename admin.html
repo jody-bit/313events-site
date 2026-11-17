@@ -337,6 +337,11 @@
         <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
       </section>
       <section class="block">
+        <h2>Review queue <span class="sub" style="font-weight:normal;">(import and published findings, one queue)</span></h2>
+        <div class="sub" id="towerQueueSummary"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerQueue"></table></div>
+      </section>
+      <section class="block">
         <h2>Venue repairs <span class="sub" style="font-weight:normal;">(location gaps, grouped by venue)</span></h2>
         <div class="sub">What 313.events already knows about each venue, and what that knowledge does for public upcoming events with no street address or no city. <b>Fill</b>: trusted knowledge (the canonical record, two independent sources, or the place's own source on two dates) — filled automatically, with provenance. <b>Confirm</b>: only one source states it — one confirmation at venue level resolves every event there. <b>Conflict</b>: the event and the venue disagree — a person decides; nothing is moved between cities. <b>Excluded</b>: TBA, secret, multiple locations, online, mobile or street-segment names never inherit an address. Read-only: nothing here writes.</div>
         <div class="sub" id="towerVenueSummary" style="margin-top:8px;"></div>
@@ -594,6 +599,16 @@ function renderControlTower(data) {
     ['Stale currency', cur.stale], ['Unknown currency', cur.unknown], ['Unhealthy sources', sys.summary.unhealthy], ['Unexplained anomalies', anomalies.length],
   ];
   document.getElementById('towerTiles').innerHTML = tiles.map(t => '<div class="ct-tile"><div class="n">' + t[1] + '</div><div class="l">' + escapeHtml(t[0]) + '</div></div>').join('');
+  const qz = dec.quality || {};
+  const qInfo = Object.entries(qz.informative || {}).map(e => escapeHtml(e[0].replace(/_/g, ' ')) + ' ' + e[1]).join(' · ');
+  document.getElementById('towerQueueSummary').innerHTML = qz.detector === 'ok'
+    ? '<b>' + (qz.open || 0) + '</b> need a decision' + ((qz.queue || []).length > 50 ? ' (showing the first 50 of ' + qz.queue.length + ')' : '') + '. Health only (not queued): ' + (qInfo || 'none')
+    : (qz.detector === 'error' ? 'Detector error: ' : 'Not run: ') + escapeHtml(qz.detectorNote || 'quality detector unavailable') + '. Nothing is guessed.';
+  document.getElementById('towerQueue').innerHTML = (qz.queue || []).length
+    ? '<tr><th>Status</th><th>Issue</th><th>Owner</th><th>Stage</th><th>Next step</th></tr>' + qz.queue.slice(0, 50).map(it => '<tr>'
+      + '<td>' + escapeHtml(it.status) + '</td>'
+      + '<td style="min-width:140px"><b>' + escapeHtml(it.code.replace(/_/g, ' ')) + '</b><br>' + (it.events || []).slice(0, 3).map(e => escapeHtml(e.title || e.id || '')).join('<br>') + '</td>'
+      + '<td>' + escapeHtml(it.owner) + '</td><td>' + escapeHtml(it.stages.join(' + ')) + '</td><td>' + escapeHtml(it.decision) + '</td></tr>').join('') : '';
   document.getElementById('towerClasses').innerHTML = '<tr><th>State</th><th>Problem</th><th>Affected</th><th>Where</th><th></th></tr>'
     + dec.classes.map((k, i) => '<tr>'
       + '<td>' + towerChip(k.state) + '</td>'
