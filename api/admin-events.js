@@ -561,6 +561,25 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // upload_image: attach artwork to ONE live/pending event from the admin editor, under the same x-admin-secret as every
+    // other action here. It calls the gateway's existing, tested uploadEventImage (byte sniffing, 4 MB cap, write-once object,
+    // read-back, locked against feed refresh) and never replaces: replace is fixed false, so an event that already has an image
+    // is refused. Default is a dry run (preview); only apply:true writes. No new route, schema, secret or bucket.
+    if (action === "upload_image") {
+      const gw = require("./_lib/editorial-gateway");
+      try {
+        const out = await gw.uploadEventImage(
+          { supabaseUrl: SUPABASE_URL, serviceKey: SUPABASE_SERVICE_ROLE_KEY, fetchFn: fetch },
+          { event_id: id, image_base64: body.image_base64, expected_sha256: body.expected_sha256, dry_run: body.apply !== true, replace: false, client: "admin-portal", source_note: body.source_note, credit: body.credit }
+        );
+        res.status(200).json(out);
+      } catch (err) {
+        if (err instanceof gw.GatewayError) { res.status(err.status || 400).json(Object.assign({ error: err.message, code: err.code }, err.extra)); return; }
+        res.status(500).json({ error: "Image upload failed." });
+      }
+      return;
+    }
+
     if (action === "update_fields") {
       const EDITABLE_FIELDS = ["description", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display"];
       const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
