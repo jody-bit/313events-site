@@ -2769,11 +2769,65 @@ function livePanelHtml(e) {
     + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
     + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
   return '<div class="sub-edit-panel" role="group" aria-label="Edit live event" onkeydown="if(event.key===\'Escape\'){liveEditClose(\'' + id + '\');}">'
-    + groups + evidence
+    + groups + liveArtHtml(e) + evidence
     + '<div class="sub-edit-diff" id="liveeditdiff-' + id + '" aria-live="polite"></div>'
     + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="liveeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
     + '<div class="actions"><button type="button" class="btn-approve" id="liveeditsave-' + id + '" onclick="liveEditSave(\'' + id + '\')">Save correction</button>'
     + '<button type="button" class="sub-edit-btn" onclick="liveEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+// Artwork for a live event: same admin sign-in, one exact event, preview first, never replaces an existing image
+// (the server fixes replace:false). Files are limited to 3 MB so the base64 body stays under the platform request cap.
+const LIVE_ART = {};   // id -> { b64, sha256 }
+function liveArtHtml(e) {
+  const id = escapeAttr(e.id);
+  if (e.image_url) return '<fieldset><legend>Artwork</legend>Current image (kept; this form cannot replace it):<br><img src="' + escapeAttr(e.image_url) + '" alt="Current artwork" style="max-width:100%;max-height:200px"></fieldset>';
+  return '<fieldset><legend>Artwork</legend><label for="liveart-' + id + '">Add artwork (JPG, PNG, WEBP or GIF, up to 3 MB)</label>'
+    + '<input type="file" id="liveart-' + id + '" accept="image/jpeg,image/png,image/webp,image/gif" onchange="liveArtPick(\'' + id + '\')">'
+    + '<img id="liveartprev-' + id + '" alt="Preview of the chosen artwork" hidden style="max-width:100%;max-height:240px">'
+    + '<div class="sub-edit-msg" id="liveartmsg-' + id + '" role="status" aria-live="polite"></div>'
+    + '<button type="button" class="btn-approve" id="liveartapply-' + id + '" disabled onclick="liveArtApply(\'' + id + '\')">Upload artwork</button></fieldset>';
+}
+function liveArtMsg(id, text, kind) { const m = document.getElementById('liveartmsg-' + id); if (m) { m.textContent = text; m.className = 'sub-edit-msg ' + (kind || ''); } }
+async function liveArtCall(id, apply) {
+  const art = LIVE_ART[id];
+  const resp = await fetch('/api/admin-events', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+    body: JSON.stringify({ id: id, action: 'upload_image', image_base64: art.b64, expected_sha256: art.sha256, apply: apply === true, source_note: 'admin portal upload' }),
+  });
+  return { resp: resp, data: await resp.json().catch(() => ({})) };
+}
+async function liveArtPick(id) {
+  const input = document.getElementById('liveart-' + id), btn = document.getElementById('liveartapply-' + id), prev = document.getElementById('liveartprev-' + id);
+  delete LIVE_ART[id]; if (btn) btn.disabled = true; if (prev) prev.hidden = true;
+  const f = input && input.files && input.files[0]; if (!f) return;
+  if (f.size > 3 * 1024 * 1024) { liveArtMsg(id, 'That file is over 3 MB. Nothing was uploaded.', 'err'); return; }
+  const buf = await f.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  const sha = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+  let bin = ''; const u8 = new Uint8Array(buf); for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  LIVE_ART[id] = { b64: btoa(bin), sha256: sha };
+  if (prev) { prev.src = URL.createObjectURL(f); prev.hidden = false; }
+  liveArtMsg(id, 'Checking the file...', '');
+  try {
+    const r = await liveArtCall(id, false);
+    if (!r.resp.ok) { liveArtMsg(id, (r.data.error || 'Check failed') + ' Nothing was uploaded.', 'err'); return; }
+    const im = r.data.image || {};
+    liveArtMsg(id, 'Ready: ' + im.type + ', ' + im.width + 'x' + im.height + ', ' + im.bytes + ' bytes. Nothing is uploaded until you press Upload artwork.', 'ok');
+    if (btn) btn.disabled = false;
+  } catch (err) { liveArtMsg(id, 'Check failed: ' + err.message + '. Nothing was uploaded.', 'err'); }
+}
+async function liveArtApply(id) {
+  if (!LIVE_ART[id]) return;
+  const btn = document.getElementById('liveartapply-' + id); if (btn) btn.disabled = true;
+  try {
+    const r = await liveArtCall(id, true);
+    if (!r.resp.ok) { liveArtMsg(id, (r.data.error || 'Upload failed') + ' Nothing was changed.', 'err'); return; }
+    const url = r.data.image && r.data.image.url;
+    LIVE_ROWS = LIVE_ROWS.map(x => x.id === id ? Object.assign({}, x, { image_url: url }) : x);
+    delete LIVE_ART[id];
+    LIVE_EDIT[id] = Object.assign(LIVE_EDIT[id] || {}, { open: false, draft: null, notice: 'Artwork attached and checked back from its public address. The event is still live.', noticeKind: 'ok' });
+    liveRender(id);
+  } catch (err) { liveArtMsg(id, 'Upload failed: ' + err.message + '. Nothing was changed.', 'err'); }
 }
 function liveEditChanges(e) {
   const changes = [], blanks = [];
