@@ -160,10 +160,10 @@ function run() {
   const aboutText = [...aboutBody.matchAll(/<(h1|h2|p)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => unesc(m[2].replace(/<[^>]+>/g, "")));
   assert.deepStrictEqual(aboutText, APPROVED_ABOUT, "about.html visible text must be exactly the approved copy, in order");
   assert.strictEqual((aboutBody.match(/<h1\b/g) || []).length, 1, "about.html has one h1");
-  const APPROVED_LINKS = [["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Sentient Productions", "https://www.sentientproductions.com/"], ["Get to know Sentient Productions →", "https://www.sentientproductions.com/"], ["Detroit Music Collective", "https://detroitmusiccollective.com/"], ["Explore the Detroit Music Collective →", "https://detroitmusiccollective.com/"], ["Find your next experience.", "https://313.events"]];
+  const APPROVED_LINKS = [["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Sentient Productions", "https://www.sentientproductions.com/"], ["Get to know Sentient Productions →", "https://www.sentientproductions.com/"], ["Detroit Music Collective", "https://detroitmusiccollective.com/"], ["Explore the Detroit Music Collective →", "https://detroitmusiccollective.com/"], ["Find your next experience.", "https://313.events"]];
   const aboutLinks = [...aboutBody.matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].map((m) => [m[2], m[1]]);
   assert.deepStrictEqual(aboutLinks, APPROVED_LINKS, "about.html links are exactly the approved ones (Ricky Rat, Sentient Productions, the Detroit Music Collective, and the closing link to https://313.events)");
-  assert.ok(/Berlin/.test(aboutBody) && /Hold my beer/.test(aboutBody) && /Ricky Rat named me\./.test(aboutBody), "the Berlin story, the prototype story and the Ricky Rat section are present");
+  assert.ok(/Berlin/.test(aboutBody) && /Hold my beer/.test(aboutBody) && />Ricky Rat<\/a> named me\./.test(aboutBody), "the Berlin story, the prototype story and the Ricky Rat section are present");
   assert.ok(!/\b\d[\d,]*\+?\s*(users|visitors|readers|events served|monthly)/i.test(about), "about.html must not state audience/usage statistics");
   console.log("PASS: 6. about.html carries the owner-approved copy exactly, headings and closing link included");
 
