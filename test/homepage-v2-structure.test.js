@@ -127,7 +127,7 @@ console.log("PASS: neighborhood and press rails — carousels with buttons, 5 / 
 {
   const block = html.match(/const NEIGHBORHOOD_PHOTOS = \{[\s\S]*?\n\};/)[0];
   const keys = [...block.matchAll(/^  "([^"]+)": \{/gm)].map((m) => m[1]).sort();
-  assert.deepStrictEqual(keys, ["Downtown", "Eastern Market", "Eastside Historic Cemetery District", "Fitzgerald-Marygrove", "Midtown", "Mexicantown / Southwest Detroit", "North Corktown", "Old Redford"].sort(), "photograph keys are production neighbourhood names");
+  assert.deepStrictEqual(keys, ["Corktown", "Downtown", "Eastern Market", "Eastside Historic Cemetery District", "Fitzgerald-Marygrove", "Midtown", "Mexicantown / Southwest Detroit", "North Corktown", "Old Redford"].sort(), "photograph keys are production neighbourhood names");
   assert.ok(!/^  "Fitzgerald": \{/m.test(block), "no photograph under the non-production name Fitzgerald");
 }
 console.log("PASS: neighbourhood photographs are sized renditions, local files exist, attribution unchanged");
