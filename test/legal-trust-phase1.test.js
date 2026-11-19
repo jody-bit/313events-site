@@ -87,17 +87,72 @@ function run() {
   console.log("PASS: 5. terms.html reflects the current (active) Michigan LLC status; copyright.html still correctly flags DMCA agent registration as pending");
 
   // ============================================================
-  // 5. About page sticks to Jody's exact six factual points, no fluff
+  // 6. About page carries the owner-approved copy exactly (2026-11-19: Marketing & Growth final copy, owner "ship it").
+  // This replaces the earlier "exactly six factual points" check: the approved copy intentionally has dates and numbers
+  // (August 19, 2026; more than twenty-five years; a 75-mile radius; 5:38; eight days later). The check is now that the
+  // visible text is the approved text, in order, with nothing added, and that the closing line links to https://313.events.
   // ============================================================
-  assert.ok(/independent Detroit-area event discovery and editorial platform/.test(about));
-  assert.ok(/Detroit Orbit/.test(about));
-  assert.ok(/On the Radar/.test(about));
-  assert.ok(/product of <strong>Sentient Productions LLC<\/strong>/.test(about));
-  assert.ok(/based in Detroit, Michigan/.test(about));
-  // No invented stats/history/partnerships -- spot-check common fluff markers absent
-  assert.ok(!/\b\d[\d,]*\+?\s*(users|visitors|readers|events served|monthly)/i.test(about), "about.html must not invent audience/usage statistics");
-  assert.ok(!/since 20\d\d/i.test(about) && !/founded in/i.test(about), "about.html must not invent company history/founding dates");
-  console.log("PASS: 6. about.html covers exactly the six factual points, no invented stats, history, or partnerships");
+  const APPROVED_ABOUT = [
+      "I’m LA Jody. The woman behind 313.events.",
+      "I go out. A lot.",
+      "Live music, gallery openings, food, conversations with artists, strange little happenings that make you think, Wait—what is that?",
+      "I want to know what’s around the corner. What’s inside that building. Who made that. And especially what happened here before we showed up.",
+      "Sometimes I’m watching a band at Paris Bar. Sometimes I’m hearing Phat Kat talk about making music with J Dilla. Sometimes I’m getting very invested in a seasonal pizza menu.",
+      "That curiosity is why I’m building 313.events.",
+      "LA Jody, meet the Detroit Orbit.",
+      "California is part of my story. I still get homesick. When a California band comes through Detroit, sometimes I can hear the sunshine in the music.",
+      "Since arriving here, I’ve been exploring everything Detroit has to offer and documenting my adventures along the way.",
+      "The history especially gets me. How much of the fabric of American life came from HERE. Music, cars, industry, design—the people and ideas that shaped life far beyond Michigan.",
+      "I want to see the famous places. I also want to find the little room, the neighborhood institution, the artist down the street and the thing happening once that I’ll regret missing.",
+      "There is so much here. I want more people to experience it.",
+      "Building digital products and experiences that people can use, be entertained by and sometimes both",
+      "I’m Jody Tyree, founder of Sentient Productions. I’ve spent more than twenty-five years helping teams develop products and emerging technologies.",
+      "A lot of that work comes down to listening. What do people need? What’s missing? What could we build that would actually help?",
+      "Then you make something, learn from how people use it, and keep making it better.",
+      "Through Sentient Productions, I’m bringing that experience into artist development: helping artists make decisions and build the tools, connections and career foundations that support their work.",
+      "That brought me into conversations with Kevin Kay, founder of the Detroit Music Collective, and the community surrounding the Greater Detroit Music Census.",
+      "A conversation. Then a prototype.",
+      "On August 19, 2026, Kevin and I discussed the possibility of a centralized events calendar.",
+      "Cleveland had a calendar we could look to. Why couldn’t Detroit have a place to bring its own abundance together?",
+      "My reaction?",
+      "“Hold my beer.”",
+      "By 5:38 that afternoon, I had emailed Kevin a working prototype of 313.events.",
+      "“I couldn’t let this idea go because it is so attainable!” I wrote.",
+      "That’s the first documented day of this website.",
+      "Eight days later, I emailed Kevin with a name for the geography I wanted to explore: the Detroit Orbit.",
+      "The music census covered a 75-mile radius around Detroit. That regional perspective made sense for discovering things to do, too. There are reasons to explore in every direction.",
+      "The story that stayed with me",
+      "Friends from Berlin were visiting Detroit. They wanted to discover something besides clubs—they had plenty of nightlife back home.",
+      "I hosted them one evening. They told me they didn’t know where to look for other things to do and had ended up watching TV.",
+      "In Detroit. With everything happening here.",
+      "That stayed with me. I never want someone to miss what this place has to offer because they couldn’t find it.",
+      "And that goes for the people who live here, too.",
+      "One place. So many possibilities.",
+      "My ambition is to create one place to discover anything and everything happening in the Detroit Orbit.",
+      "Something for tonight. Something worth planning ahead for. Something you didn’t know you wanted to do until you saw it.",
+      "Music, art, food, culture, seasonal adventures and unusual experiences. A big night out with friends. Somewhere to take a visitor. Somewhere you’re comfortable going on your own.",
+      "I want us to find the treasures down the street and venture beyond our familiar places. To discover a neighborhood through its food, meet an artist through their work, or end up talking to someone we might otherwise never have met.",
+      "A shared table, a gallery opening, a dance floor or a history tour gives us a reason to be in the same room.",
+      "Sometimes that’s where a connection starts.",
+      "You’ll see me out there.",
+      "313.events has also become a home for my own adventures: the places I’m exploring, the performances I’m seeing and the details I want to share.",
+      "When you see ENCOUNTERS, you’re getting a look at somewhere I actually went, through my photos and videos.",
+      "LA Jody’s Picks is my Monday selection of things to do that night through the following Sunday. Things that caught my attention and might deserve a place in your week.",
+      "I’ll share what I’m discovering. Tell me what I’m missing.",
+      "I want this site to help you make a plan, send a friend something irresistible, and get out there.",
+      "There’s a whole Orbit to explore.",
+      "THE CITY IS ON.",
+      "Find your next experience."
+  ];
+  const aboutBody = about.slice(about.indexOf('<h1 class="legal-title">'), about.indexOf('<footer class="site">'));
+  const unesc = (x) => x.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+  const aboutText = [...aboutBody.matchAll(/<(h1|h2|p)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => unesc(m[2].replace(/<[^>]+>/g, "")));
+  assert.deepStrictEqual(aboutText, APPROVED_ABOUT, "about.html visible text must be exactly the approved copy, in order");
+  assert.strictEqual((aboutBody.match(/<h1\b/g) || []).length, 1, "about.html has one h1");
+  assert.ok(/<p class="legal-p"><a href="https:\/\/313\.events">Find your next experience\.<\/a><\/p>/.test(aboutBody), "the closing line links to https://313.events");
+  assert.ok(/Berlin/.test(aboutBody) && /Hold my beer/.test(aboutBody), "the Berlin story and the prototype story are present");
+  assert.ok(!/\b\d[\d,]*\+?\s*(users|visitors|readers|events served|monthly)/i.test(about), "about.html must not state audience/usage statistics");
+  console.log("PASS: 6. about.html carries the owner-approved copy exactly, headings and closing link included");
 
   // ============================================================
   // 6. 313 Presents handled per decision 7 -- generic disclaimer only
