@@ -6,6 +6,7 @@ const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { decideSourceDescription, REPAIR_SOURCES } = require("./_lib/description-strength");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { preserveRange } = require("./_lib/range-preservation"); // MC-RANGE: a refresh never narrows a range below evidenced dates
 const { fillBlankSourceCalendarLinks } = require("./_lib/source-calendar-links");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
@@ -885,7 +886,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
       rows.map((r) => r.external_id),
-      { select: "external_id,status,source,title,description,description_source,event_url,note,internal_note" }
+      { select: "external_id,status,source,title,description,description_source,event_url,note,internal_note,start_date,end_date,date_semantics,occurrence_dates,recurrence_evidence" }
     );
     existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {
@@ -899,12 +900,24 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found; ${skippedPast} already ended, not inserted`, upserted: 0, skippedPast };
   }
   const skippedNote = skippedPast ? `; ${skippedPast} already ended, not inserted` : "";
+  const rangeAsOf = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Detroit" }).format(new Date());
   const rowsWithStatus = keep.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
     const { _dateConfidence, _publication, _enrichment, _recurring, _calendarUrl, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
+    // MC-RANGE (same rule the VisitDetroit connector applies): a stored classified range (recurring occurrence dates or a
+    // continuous run) is never narrowed or shifted off its evidenced dates by the feed's rolling window. Unclassified and
+    // new rows pass through unchanged. Only start_date/end_date are touched.
+    const priorRow = existingRowsByExternalId.get(row.external_id);
+    if (priorRow && out.start_date) {
+      const range = preserveRange(out, priorRow, rangeAsOf);
+      if (range.action !== "incoming") {
+        out.start_date = range.start_date;
+        out.end_date = range.end_date;
+      }
+    }
     // Description strength rule (api/_lib/description-strength.js), for the sources the repair is rolled out to: a
     // source text that is only a link (or any weaker or blank text) never replaces a stronger stored description,
     // such as the factual copy the nightly repair wrote. The key is dropped, so the stored value is kept. Other
