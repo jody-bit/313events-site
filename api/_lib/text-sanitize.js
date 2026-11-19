@@ -42,6 +42,18 @@ function sanitizeText(value) {
   return s === "" ? value : s;
 }
 
+// RUN-TOGETHER SENTENCES (description only): a source that flattens its HTML joins paragraphs with no space ("...8:50 p.m.Saturdays",
+// "...Music Hall!Our mission"). Insert one space after sentence punctuation that is directly followed by a capitalised word,
+// never inside a URL, domain or e-mail token, and only after a lowercase letter or digit so initials ("J.R.Smith") are untouched.
+// Idempotent; adds characters only (a space), never removes or reorders text.
+function fixRunTogether(text) {
+  if (typeof text !== "string" || !text) return text;
+  return text.replace(/\S+/g, (tok) => {
+    if (/:\/\/|^www\.|@|\.(?:com|org|net|edu|gov|us|io|co)\b/i.test(tok)) return tok;
+    return tok.replace(/([a-z0-9][.!?])(?=[A-Z][a-z])/g, "$1 ");
+  });
+}
+
 const TEXT_FIELDS = ["title", "description", "venue_name_raw", "venue_address_raw", "venue_city_raw"];
 
 // Returns a copy of the row with its text fields cleaned; fields that are absent stay absent.
@@ -50,10 +62,11 @@ function sanitizeRowText(row) {
   let out = row;
   for (const f of TEXT_FIELDS) {
     if (typeof row[f] !== "string") continue;
-    const cleaned = sanitizeText(row[f]);
+    let cleaned = sanitizeText(row[f]);
+    if (f === "description") cleaned = fixRunTogether(cleaned);
     if (cleaned !== row[f]) { if (out === row) out = Object.assign({}, row); out[f] = cleaned; }
   }
   return out;
 }
 
-module.exports = { sanitizeText, sanitizeRowText, decodeEntitiesOnce, TEXT_FIELDS };
+module.exports = { fixRunTogether, sanitizeText, sanitizeRowText, decodeEntitiesOnce, TEXT_FIELDS };
