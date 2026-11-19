@@ -8,7 +8,11 @@ assert.ok(m, "NEIGHBORHOOD_PHOTOS found");
 const NEIGHBORHOOD_PHOTOS = new Function(m[1].replace(/^/, "return "))();
 assert.ok(NEIGHBORHOOD_PHOTOS["Fitzgerald-Marygrove"], "Fitzgerald-Marygrove keeps its photo");
 assert.ok(NEIGHBORHOOD_PHOTOS["Corktown"] && NEIGHBORHOOD_PHOTOS["Corktown"].file, "Corktown has a photo");
-assert.ok(!NEIGHBORHOOD_PHOTOS["Corktown"].credit, "owner photo has no visible credit");
+for (const n of ["Corktown", "Belle Isle", "New Center", "Rivertown"]) {
+  assert.ok(NEIGHBORHOOD_PHOTOS[n] && NEIGHBORHOOD_PHOTOS[n].file && NEIGHBORHOOD_PHOTOS[n].alt, n + " has a photo with alt text");
+  assert.ok(!NEIGHBORHOOD_PHOTOS[n].credit && !NEIGHBORHOOD_PHOTOS[n].attribution, n + " owner photo has no visible credit");
+}
+assert.ok(!NEIGHBORHOOD_PHOTOS["Milwaukee Junction"], "Milwaukee Junction fallback is not mapped");
 for (const [name, p] of Object.entries(NEIGHBORHOOD_PHOTOS)) {
   if (p && p.file) assert.ok(fs.existsSync(path.join(root, "assets/photography/neighborhoods", p.file)), name + " file exists");
 }
