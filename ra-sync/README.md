@@ -93,6 +93,44 @@ existing `on: push` trigger fires exactly as before. Nothing on the
 Action side (`.github/scripts/ra-sync-bridge.js`, the workflow file, or
 `/api/cron-ra`) changed.
 
+## ra-sync-inbox transport (owner-approved 2026-10-19; cutover not yet done)
+
+Raw payloads must not be committed to `main`: that is what made every
+daily run trigger two production redeploys of unchanged code and put a
+direct, unreviewed push on the production branch. The approved target is:
+
+1. The device writes `ra-sync/inbox/<action>-<runToken>.json` to the
+   `ra-sync-inbox` branch (an orphan branch holding only payloads) with the
+   same Contents API call and the same `GH_PUSH_TOKEN`.
+2. The client then sends a `repository_dispatch` (`ra-sync-payload`) with
+   `{action, runToken, sha, path}`.
+3. This workflow runs from `main` (repository_dispatch always uses the
+   default branch's copy, so only reviewed code holds `CRON_SECRET`),
+   validates the dispatch against an allow-list, checks the commit is on
+   `ra-sync-inbox`, reads that one file, calls `/api/cron-ra` exactly as
+   before and pushes the same response tag.
+4. The device polls for the tag exactly as before.
+
+Cutover is a device-side environment change only: `RA_BRIDGE_BRANCH=ra-sync-inbox`.
+Unset or `main` is the legacy transport, which the workflow's `push`
+trigger still serves until a follow-up PR removes it. Unsetting the
+variable is the rollback.
+
+Recovery and observability:
+- Replay is idempotent (the tag check). A lost dispatch is re-sent with
+  `node scripts/ra-bridge-client.js dispatch <action> <runToken>`, or by
+  running the workflow manually (`workflow_dispatch`: action, runToken).
+- A daily report-only reconcile (`schedule`, 14:45Z) fails the run, and so
+  triggers GitHub's failure notification, if any payload on the branch has
+  no response tag after one hour. It relays nothing.
+- A relay failure still pushes an `ok:false` response tag and fails the job.
+  That runToken is then spent (its tag exists, so a replay is skipped): the
+  device resubmits the run with a new runToken, as it does today.
+- Until the branch exists the reconcile logs that and succeeds.
+
+Vercel: `vercel.json` has `git.deploymentEnabled: {"ra-sync-inbox": false}`
+so payload commits create no deployment; every other branch is unaffected.
+
 ## Why a tag, and not a commit, carries the response
 
 A commit from the Action back into `main` would (a) need cleanup to avoid

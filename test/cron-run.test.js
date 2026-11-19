@@ -45,6 +45,14 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   assert.strictEqual(ok.records_written, 4);
   assert.strictEqual(ok.records_fetched, undefined, "fetched/parsed are never invented");
   assert.deepStrictEqual(ok.session_data, { skippedPast: 2, feedsChecked: 1 });
+  // VisitDetroit reports how many stored ranges the refresh preserved (MC-RANGE); it reaches the run record, 0 included.
+  assert.deepStrictEqual(classifyResponse(200, { upserted: 9, rangesPreserved: 3 }).session_data, { rangesPreserved: 3 });
+  assert.deepStrictEqual(classifyResponse(200, { upserted: 9, rangesPreserved: 0 }).session_data, { rangesPreserved: 0 }, "an explicit zero is recorded, not dropped");
+  assert.strictEqual(classifyResponse(200, { upserted: 9 }).session_data, undefined, "sources that do not report it get no key");
+  // adding the key must not drop any key already on main (including the #353 resume keys)
+  for (const k of ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate", "resume", "preambleMs", "feedsAttempted", "feedsDeferred", "feedsSkippedOnResume", "feedsStale", "perFeed"]) {
+    assert.deepStrictEqual(classifyResponse(200, { upserted: 1, [k]: 7 }).session_data, { [k]: 7 }, "session key lost: " + k);
+  }
   const feedFail = (n, total) => ({ sourceFailures: () => ({ attempted: total, failed: n }) });
   assert.strictEqual(classifyResponse(200, { upserted: 0 }, feedFail(1, 3)).outcome, "partial");
   assert.strictEqual(classifyResponse(200, { upserted: 0 }, feedFail(3, 3)).outcome, "failed");
@@ -78,6 +86,24 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   assert.strictEqual(patch(calls)[0].records_written, 7);
   assert.strictEqual(res.code, 200);
   assert.deepStrictEqual(res.body, { upserted: 7 }, "response is unchanged");
+
+  // --- cron-feeds second-run record reaches the written row (session_data), not just the response ---
+  calls = makeFetch();
+  const feedsBody = { upserted: 6, resume: true, preambleMs: 900, feedsAttempted: 5, feedsDeferred: 1, feedsSkippedOnResume: 20, feedsStale: 0, perFeed: [{ feed: "a", status: "ok", ms: 120 }] };
+  await withRunLog("feeds", async (req, r) => { r.status(200).json(feedsBody); })({ headers: {} }, makeRes());
+  const sd = patch(calls)[0].session_data;
+  assert.strictEqual(sd.resume, true, "session_data.resume is written on the run row");
+  assert.deepStrictEqual(sd.perFeed, feedsBody.perFeed, "per-feed results are written on the run row");
+  for (const k of ["preambleMs", "feedsAttempted", "feedsDeferred", "feedsSkippedOnResume", "feedsStale"]) assert.strictEqual(sd[k], feedsBody[k], k + " written");
+  // the written flag is what source-health reads (the select returns session_data->>resume as the string "true")
+  {
+    const sh = require(path.join(REPO, "api/_lib/source-health.js"));
+    const NOW = Date.parse("2026-10-23T22:30:00Z"), D = 86400000;
+    const run = (d, w, extra) => ({ source_slug: "feeds", outcome: "success", started_at: new Date(NOW - 1800000 - d * D).toISOString(), finished_at: new Date(NOW - 1740000 - d * D).toISOString(), records_fetched: null, records_written: w, ...extra });
+    const cfg = { crons: [{ path: "/api/cron-feeds", schedule: "0 22 * * *" }] };
+    const runs = [run(0, 6, { resume: String(sd.resume) }), run(0.01, 120), ...[1, 2, 3, 4, 5].map((d) => run(d, 120))];
+    assert.strictEqual(sh.evaluateSources({ runs, vercelConfig: cfg, now: NOW }).bySlug.get("feeds").volume.records_written.latest, 120, "a row carrying the written resume flag is ignored by the volume comparison");
+  }
 
   // --- failures are logged, response preserved ---------------------------
   calls = makeFetch();
@@ -118,7 +144,7 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   // editorial and post-to-facebook are not event-ingestion sources; cron-ra is
   // a bridge logged as 'resident-advisor' by the RA sync, not a Vercel cron.
   // Any OTHER cron without run logging must be added above or here, or this fails.
-  const EXCLUDED = ["cron-editorial.js", "cron-post-to-facebook.js", "cron-ra.js", "cron-healthcheck.js"]; // healthcheck reads source_runs, it is not a source
+  const EXCLUDED = ["cron-editorial.js", "cron-post-to-facebook.js", "cron-ra.js", "cron-healthcheck.js", "cron-link-check.js"]; // healthcheck reads source_runs, link check verifies stored URLs: neither is a source
   for (const file of fs.readdirSync(path.join(REPO, "api")).filter((f) => /^cron-.*\.js$/.test(f))) {
     const src = fs.readFileSync(path.join(REPO, "api", file), "utf8");
     const logged = /require\(["']\.\/_lib\/(run-log|cron-run)["']\)/.test(src);

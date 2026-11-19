@@ -2,9 +2,11 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { zeroWriteReasons } = require("./_lib/zero-write-reasons");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter"); // governance meetings are excluded (owner policy 2026-11-15)
 
 // Vercel Cron job — Bagley Community Council (bagleycommunity.org), added
 // 2026-10-01 per explicit Product Owner request ("Add Bagley as a
@@ -291,6 +293,9 @@ const TIER2_TITLE_PATTERN = new RegExp(
   "i"
 );
 
+// Explicit admission wording only ("free admission", "free to attend", "admission is free", "free of charge"...).
+const TIER2_EXPLICIT_FREE = /\b(free (admission|entry|event|to attend|and open to the public)|admission (is )?free|free of charge)\b/i;
+
 function parseTier2Post(post) {
   const titleRaw = decodeEntities(stripHtml(post.title && post.title.rendered) || "");
   if (!titleRaw) return null;
@@ -351,7 +356,7 @@ function parseTier2Post(post) {
     end_date: null,
     time_display: time ? formatTime(time.hour, time.minute) : null,
     is_all_day: !time,
-    is_free: true, // no price signal observed on any Tier 2 event to date — never guessed otherwise
+    ...(TIER2_EXPLICIT_FREE.test(`${titleRaw} ${plainContent || ""}`) ? { is_free: true } : {}), // FREE only when the post says so; no price signal is "not stated", key omitted so a stored value stands
     price_from: null,
     ticket_url: post.link || null,
     image_url: null,
@@ -434,7 +439,9 @@ module.exports = async (req, res) => {
   const tier1Rows = tier1RowsAll.filter((r) => r.start_date >= todayIso);
   const tier2Rows = tier2RowsAll.filter((r) => r.start_date >= todayIso);
   const excludedAsPast = (tier1RowsAll.length - tier1Rows.length) + (tier2RowsAll.length - tier2Rows.length);
-  const rawRows = [...tier1Rows, ...tier2Rows];
+  // Owner policy 2026-11-15: a community council / association general meeting is governance, not a public event.
+  const governanceExcluded = [...tier1Rows, ...tier2Rows].filter((r) => isLikelyNotARealEvent({ title: r.title }));
+  const rawRows = [...tier1Rows, ...tier2Rows].filter((r) => !isLikelyNotARealEvent({ title: r.title }));
 
   if (!rawRows.length) {
     await finishRun(runHandle, {
@@ -443,6 +450,11 @@ module.exports = async (req, res) => {
       records_parsed: 0,
       records_written: 0,
       error_sample: fetchErrors.join("; ") || undefined,
+      session_data: zeroWriteReasons(recordsFetched, {
+        unparsed: recordsFetched - tier1RowsAll.length - tier2RowsAll.length,
+        past_date: excludedAsPast,
+        rejected: governanceExcluded.length, // governance meetings, owner policy 2026-11-15
+      }),
     });
     res.status(200).json({ upserted: 0, recordsFetched, excludedAsPast, errors: fetchErrors, fetchedAt: new Date().toISOString() });
     return;

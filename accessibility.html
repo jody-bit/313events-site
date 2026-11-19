@@ -37,7 +37,7 @@
   :root{
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
@@ -60,6 +60,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-13px -8px;}
 
   h1.legal-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
@@ -147,14 +149,15 @@
         <a href="terms.html">Terms</a> &middot;
         <a href="privacy.html">Privacy</a> &middot;
         <a href="copyright.html">Copyright / DMCA</a> &middot;
-        <a href="/copyright#photo-credits">Photo Credits</a> &middot;
+        <a href="/photo-credits">Photo Credits</a> &middot;
         <a href="accessibility.html">Accessibility</a> &middot;
-        <a href="mailto:jody@sentientproductions.com">Contact</a>
+        <a href="/media">Media</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a>
       </p>
       <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
       <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
       <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
     </footer>
   </div>
+<script src="/social-links.js" defer></script>
 </body>
 </html>

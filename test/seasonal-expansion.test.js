@@ -26,9 +26,9 @@ for (const col of ["fall", "fall-color"]) {
     const e = E[col].find((x) => x.id === id);
     assert.ok(e, id + " exists");
     const r = ED.review(e);
-    assert.strictEqual(r.state, "PUBLISHED", id + " is published by the authorized approval");
+    assert.strictEqual(r.state, AUTHZ.ENDED_AFTER_RELEASE.includes(col + "/" + id) ? "ENDED" : "PUBLISHED", id + " is published by the authorized approval (or ENDED after release, #244)");
     assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": carries exactly the authorized approval");
-    assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public");
+    assert.strictEqual(ED.COLLECTIONS.isPublic(e), !AUTHZ.ENDED_AFTER_RELEASE.includes(col + "/" + id), id + ": public (unless ENDED after release, #244)");
     assert.ok(/^https:\/\//.test(e.website), id + ": https official website");
     assert.ok(e.relevance && e.relevance.confirmed && e.relevance.note && e.relevance.confidence !== "low", id + ": relevance evidence");
     assert.ok(e.summary.length > 20 && !RESEARCH_NOTE.test(e.summary) && !FORBIDDEN.test(e.summary), id + ": clean description: " + e.summary);
@@ -64,9 +64,9 @@ const ids = new Set(E.fall.concat(E["fall-color"]).map((e) => e.id));
 for (const col of ["fall", "fall-color"]) for (const d of DISC[col]) assert.ok(!ids.has(d.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")), d.ledger_name + " is not a record");
 // everything else is unapproved
 const all = E.fall.concat(E["fall-color"]);
-assert.strictEqual(all.filter((e) => e.approval).length, 76, "only the 76 authorized Fall records are approved");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76);
-// Halloween (owner approval of 2026-10-11 and final editorial decision): 49 approved, 3 excluded, 7 pass the gate. Fall is untouched.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 49);
-assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 29);
+assert.strictEqual(all.filter((e) => e.approval).length, 79, "only the 76 batch-1 + 3 batch-2 authorized Fall records are approved");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 78); // 79 less Holiday Beach, ENDED after release (#244 draft)
+// Halloween (owner approval of 2026-10-11 and final editorial decision): 45 approved, 3 excluded, 7 pass the gate. Fall is untouched.
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 27);
+assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 7);
 console.log("seasonal expansion: ok");

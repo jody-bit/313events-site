@@ -31,7 +31,7 @@ function build() {
   out.push("|---|---|---|---|---|---|---|");
   for (const { slug, e, rv } of rows) {
     out.push("| " + slug + " | " + e.name + " | published | " + rv.state + " | " + (rv.imageRoute || "none (generated card)") + " | " + (rv.rightsRoute || "none") + " | " +
-      (rv.outstanding.map((o) => /^Gate (\d)/.exec(o)[1]).join(", ") || "none") + " |");
+      (rv.outstanding.map((o) => { const m = /^Gate (\d)/.exec(o); return m ? m[1] : null; }).filter(Boolean).join(", ") || "none") + " |");
   }
   out.push("");
   out.push("Numbers in the last column are gate items: 1 official-source verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.");

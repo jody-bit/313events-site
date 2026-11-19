@@ -293,7 +293,7 @@ const handler = async (req, res) => {
     venue_city_raw: VENUE_CITY,
     start_date: e.date,
     time_display: e.time,
-    is_free: false,
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     source: SOURCE_NAME,
     // Deliberately NOT setting event_url here -- this WP only adds the
     // ABILITY to parse it (for scripts/dossin-metadata-repair.js's reuse,

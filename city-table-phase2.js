@@ -47,6 +47,18 @@
   {name:"Onsted", region:"Michigan", lat:42.0060958, lng:-84.1893476, jurisdiction:"Village", source:"Census TIGERweb", featureId:"2660840", verified:"2026-10-15", events:1},
   {name:"Amherstburg", region:"Ontario", lat:42.1172222, lng:-83.0441666, jurisdiction:"Town of Amherstburg, Essex County", source:"NRCan CGN", featureId:"FEVJQ", verified:"2026-10-15", events:1},
   {name:"Harrow", region:"Ontario", lat:42.0355556, lng:-82.9183333, jurisdiction:"Unincorporated place (community in the Town of Essex)", source:"NRCan CGN", featureId:"FBMCG", verified:"2026-10-15", events:1},
+  // Added 2026-10-24 (geographic parity, owner direction): Dryden village, Lapeer County, MI. Internal point from
+  // Census TIGERweb (GEOID 2623140), researched by 03 Event Intelligence. Ontario also has a Dryden, so a bare
+  // name is accepted only for a listed feed, and "Dryden, ON" never resolves to this Michigan point.
+  {name:"Dryden", region:"Michigan", lat:42.9455811, lng:-83.1239865, jurisdiction:"Village", source:"Census TIGERweb", featureId:"2623140", verified:"2026-10-24", events:0},
+  // Added 2026-10-24 (geographic parity): Belle River, ON (unincorporated place, Essex County). NRCan CGN geoname id
+  // FAGXD only; a second record, FAGXE, was not readable and is not used. Researched by 03 Event Intelligence.
+  {name:"Belle River", region:"Ontario", lat:42.2913889, lng:-82.7044444, jurisdiction:"Unincorporated place (Essex County)", source:"NRCan CGN", featureId:"FAGXD", verified:"2026-10-24", events:1},
+  // Added 2026-10-24: Highland charter township, Oakland County, MI (Census TIGERweb county subdivision 2612538080).
+  // Michigan has a second Highland township (Osceola County, 2613338100) that is NOT this place. The Oakland match for the one
+  // VisitDetroit row (Bonadeo Farms, 1215 White Lake Rd) is REPORTED by a secondary page (Oakland County Blog farm list), not the
+  // farm's own site; R&Q may require the primary address page.
+  {name:"Highland", region:"Michigan", lat:42.655768, lng:-83.6213863, jurisdiction:"Highland charter township, Oakland County", source:"Census TIGERweb", featureId:"2612538080", verified:"2026-10-24", events:1},
   ];
 
   // Source feeds that are jurisdiction evidence for each city (03 Event Intelligence,
@@ -54,6 +66,16 @@
   // listed: Canton, Plymouth, Wayne, Richmond, Oxford, Huron, Tecumseh, Essex, Bowling Green
   // and the rest also exist as other places, so the name alone is not evidence.
   var SOURCES = {
+      "Highland": [
+          "VisitDetroit"
+      ],
+      "Belle River": [
+          "Tourism Windsor Essex Pelee Island"
+      ],
+      "Dryden": [
+          "Manual",
+          "Avenue Ticketing"
+      ],
       "Bowling Green": [
           "Bowling Green State University",
           "Ticketmaster"
@@ -109,7 +131,8 @@
           "Eastern Market Partnership"
       ],
       "Romulus": [
-          "Eastern Market Partnership"
+          "Eastern Market Partnership",
+          "TechTown Detroit"
       ],
       "Wayne": [
           "Eastern Market Partnership",
@@ -129,13 +152,15 @@
           "Tourism Windsor Essex Pelee Island"
       ],
       "Inkster": [
-          "Eastern Market Partnership"
+          "Eastern Market Partnership",
+          "TechTown Detroit"
       ],
       "West Bloomfield": [
           "VisitDetroit"
       ],
       "Hazel Park": [
-          "Manual"
+          "Manual",
+          "Editorial Review (Automated)"
       ],
       "Lake Orion": [
           "VisitDetroit"

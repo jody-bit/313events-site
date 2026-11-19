@@ -41,7 +41,7 @@ const fs = require("fs");
 const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
 const plain = (x) => JSON.parse(JSON.stringify(x));
 
@@ -450,11 +450,13 @@ function run() {
     };
     function readOnPage(surface, url) {
       const page = PAGES[surface];
-      const sb = { URLSearchParams, document: dummyDocument(), console };
+      const ED = require(`${REPO_DIR}/event-dates.js`);
+      // Calendar/Map take "today" from EventDates.detroitClock (PR-4); pin it to this test's fixed now.
+      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`), EventDates: Object.assign({}, ED, { detroitClock: (n) => ED.detroitClock(n || new Date(NOW)) }), PlaceList: require(`${REPO_DIR}/place-list.js`) };
       vm.createContext(sb);
       vm.runInContext(FAKE_DATE(NOW), sb);
       vm.runInContext([
-        block(page.html, "CATS", "\\};"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
+        block(page.html, "CATS", "\\}\\);"), "const KNOWN_PLACES = PlaceList.locations();", block(page.html, "FEATURE_CHIPS", "\\];"),
         oneLineFn(page.html, "toISO"), fn(page.html, "getTodayISO"), fn(page.html, "getWeekendDates"),
         `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
              originLocation = null, radiusMiles = null, cachedWeekendDates = [];
@@ -467,7 +469,7 @@ function run() {
       // plain(): values created inside the sandbox belong to another realm.
       return plain(vm.runInContext(`({ cats: Array.from(activeCats), free: freeOnly, features: Array.from(activeFeatures), q: query, when: whenMode,
         loc: originLocation ? originLocation.name : null, radius: radiusMiles,
-        knownPlaces: LOCATIONS.map(function(l){ return l.name; }), knownFeatures: FEATURE_CHIPS.map(function(f){ return f.key; }),
+        knownPlaces: KNOWN_PLACES.map(function(l){ return l.name; }), knownFeatures: FEATURE_CHIPS.map(function(f){ return f.key; }),
         selectedDate: typeof selectedDate === "undefined" ? undefined : selectedDate,
         neighborhood: typeof neighborhoodFilter === "undefined" ? undefined : neighborhoodFilter,
         picked: typeof pickedDate === "undefined" ? undefined : pickedDate })`, sb));
@@ -526,7 +528,9 @@ function run() {
     // What the approved plan said would and would not travel before Calendar and Map adopt the shared file.
     for (const surface of ["calendar", "map"]) {
       for (const must of ["place+radius", "when:tonight", "when:weekend", "when:today", "feature:tickets"]) assert.ok(carried[surface].has(must), `${surface} should carry ${must}`);
-      for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "place:Lansing", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
+      // "place:Lansing" used to be a gap on both pages; geographic parity (2026-10-24) put Lansing
+      // in their city tables, so a Lansing link now carries (asserted by place-eligibility.test.js).
+      for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
     }
     for (const must of ["opens the day:today", "opens the day:tonight", "opens the day:tomorrow", "opens the day:dates"]) assert.ok(carried.calendar.has(must), `calendar ${must}`);
     console.log(`PASS: ${states.length} states sent through Discovery.href() into Calendar's and Map's real readStateFromURL() — categories, free, search, known features, place + radius, tonight / weekend / today carry to Calendar and Map now; Calendar opens the right day for single-day states`);
@@ -538,16 +542,17 @@ function run() {
   // =====================================================================
   {
     const canonical = D.categories.map((c) => [c.key, c.label]);
-    const evalIn = (src, expr) => { const sb = {}; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
+    // The pages build CATS from /categories.js, which they load in <head>; give the sandbox the same global.
+    const evalIn = (src, expr) => { const sb = { Categories: require(`${REPO_DIR}/categories.js`) }; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
     // Five pages still keep their own CATS object, submit.html a list. (The
     // homepage no longer has a copy: it builds CATS from Discovery.categories.)
     ["calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
-      const cats = evalIn(block(read(f), "CATS", "\\};"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
+      const cats = evalIn(block(read(f), "CATS", "\\}\\);"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
       assert.deepStrictEqual(plain(cats), canonical, `${f}: CATS keys, labels and order match discovery.js`);
     });
-    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\];"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
+    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\}\\)\\);"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
     // The homepage keeps only a COLOUR per category (presentation): exactly one for each canonical key, no extras.
-    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\};"), "Object.keys(CAT_COLORS)");
+    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\}\\);"), "Object.keys(CAT_COLORS)");
     assert.deepStrictEqual(plain(homeColours), canonical.map(([k]) => k), "index.html: a colour for every category, in the canonical order, and for nothing else");
     // admin.html's editorial form lists [key, label] pairs. Same keys, same
     // order. ONE label already differs there today — 'fest' reads
@@ -576,7 +581,7 @@ function run() {
     assert.deepStrictEqual(plain(D.places), plain(vm.runInContext("LOCATIONS", sb)), "places match what the homepage had, exactly");
     // The boundary: the shared copy, the server's copy and the homepage's old copy are the same polygon.
     const server = require(`${REPO_DIR}/api/_lib/detroit-boundary.js`);
-    const { _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+    const { _defaultConfig } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
     assert.deepStrictEqual(plain(_defaultConfig.boundary), plain(server.DETROIT_BOUNDARY), "discovery.js and the server use the same Detroit boundary");
     assert.deepStrictEqual(plain(vm.runInContext("DETROIT_BOUNDARY", sb)), plain(server.DETROIT_BOUNDARY), "and it is the one the homepage had");
     // The Orbit decision for every city agrees with the server's maths and with the homepage's old maths.
@@ -597,12 +602,11 @@ function run() {
     assert.deepStrictEqual(D.features.filter((f) => f.kind === "derived").map((f) => ({ key: f.key, label: f.label })), chips, "derived features match what the homepage's FEATURE_CHIPS had");
     const blocked = plain(vm.runInContext("BLOCKED_NAMES", sb));
     blocked.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked`));
-    // Calendar and Map still carry their own copies of these.
-    ["calendar.html", "map.html"].forEach((f) => {
-      assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`);
-      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
-    });
-    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and Calendar's and Map's remaining copies");
+    // Calendar and Map no longer carry copies: they read the same shared modules (test/drift-guard.test.js forbids a private copy).
+    const shared = require(`${REPO_DIR}/blocked-names.js`);
+    assert.deepStrictEqual(plain(shared.NAMES), blocked, "the shared blocked-names.js list is the one the homepage had");
+    shared.NAMES.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked by discovery.js too`));
+    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and the shared blocked-names.js / place-list.js that Calendar and Map now read");
   }
 
   console.log("\nAll discovery compatibility tests passed.");
@@ -612,7 +616,7 @@ function run() {
 // the border, SERVICE_AREA.md); Lansing is the documented case just inside
 // (67.5 mi). Built with a private places table so the real one is untouched.
 function _probeOrbit() {
-  const { _build, _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+  const { _build, _defaultConfig } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
   const P = _build(Object.assign({}, _defaultConfig, { places: _defaultConfig.places.concat([["Saginaw", "city", "Michigan", 43.4195, -83.9508]]) }));
   const orbit = P.change(P.defaults(), { where: { radius: "orbit" } });
   const ctx = { now: new Date("2026-10-03T19:00:00Z") };

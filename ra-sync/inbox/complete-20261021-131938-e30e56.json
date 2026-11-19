@@ -1,0 +1,67 @@
+{
+  "runToken": "20261021-131938-e30e56",
+  "action": "complete",
+  "runId": "2f4b287f-59fd-46a0-93aa-d4793013d265",
+  "events": [
+    {
+      "id": "ra-2566158",
+      "title": "Rager Haus",
+      "description": "",
+      "startDate": "2026-10-22T22:00:00.000",
+      "endDate": "2026-10-23T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/7b5168d3cece8baf02254f6af1f214114d8000ca.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2566148",
+      "title": "Juicy, Ro Low, & Rob Lloyd",
+      "description": "",
+      "startDate": "2026-10-23T22:00:00.000",
+      "endDate": "2026-10-24T04:00:00.000",
+      "venueName": "Lincoln Factory",
+      "address": "1331 Holden Street, Detroit, MI 48202, USA",
+      "image": "https://images.ra.co/28c9224037ff37670a62f9c498c276cfe2da6fd4.jpg",
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2566075",
+      "title": "Wheels Art show",
+      "description": "This Friday 10/23 6PM- 2AM join us for WHEELS, a car focused art and music exhibition featuring pieces by @art_by_3rent @she_paints_cars @somemedium @_itsboos @brookbanham \n\nWe will have music in the usual @hizz.me back room while the gallery is going on until 11. Expect more experimental, ambient, IDM type of music. After 11 the club portion of the night starts as the gallery will closes we will get dancier but keeping it weird and experimental.\n\nBYOB. 5$ tickets on RA but donation based door.",
+      "startDate": "2026-10-23T18:00:00.000",
+      "endDate": "2026-10-24T02:00:00.000",
+      "venueName": "Hizz Lounge",
+      "address": "2475 W Grand Blvd, Detroit, MI 48208",
+      "image": "https://images.ra.co/8f8aae9bcc5834ea725cc87826b43799fcc58837.jpg",
+      "offersPrice": 5.5,
+      "url": null
+    },
+    {
+      "id": "ra-2566160",
+      "title": "Foggy Sunday",
+      "description": "",
+      "startDate": "2026-10-25T22:00:00.000",
+      "endDate": "2026-10-26T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/6d6ffe7c393eb2871dd2e4a6281509681346dfdc.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2566302",
+      "title": "TOP2BTTM presents: A SLUTTY GAY HALLOWEEN PARTY",
+      "description": "GHOULISH AND GAY AND HAUNTINGLY HOMOSEXUAL - TOP2BTTM IS GETTING SPOOOOOOOKY AND SLUTTY THIS HALLOWEEN WEEKEND!!\n\nWe are BACK at SOS 7 Mile for the hottest and gayest Halloween party in the city!! \n\nTOP2BTTM Boss WE1SMAN will be doing an extended set, joined by UNS4NE and ??",
+      "startDate": "2026-10-31T21:00:00.000",
+      "endDate": "2026-11-01T04:00:00.000",
+      "venueName": "SOS",
+      "address": "310 W 7 Mile Rd, Detroit, MI 48203",
+      "image": "https://images.ra.co/8844ec0ac8ecde9c92978f6f9438d290cd846b42.png",
+      "offersPrice": 5,
+      "url": null
+    }
+  ]
+}

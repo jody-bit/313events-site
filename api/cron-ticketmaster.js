@@ -2,10 +2,12 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingStatuses, lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { fetchAllPagedRows } = require("./_lib/paged-rows");
+const { decideEventSpecificDescription } = require("./_lib/description-strength");
 const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
@@ -164,8 +166,11 @@ function pickImage(images) {
   return chosenFrom.reduce((best, img) => ((img.width || 0) > (best.width || 0) ? img : best), chosenFrom[0]).url;
 }
 
+// null when Ticketmaster supplies no localTime (time not announced). The old
+// "Evening" fallback asserted a time of day the source never stated and, via the
+// merge upsert, overwrote any time already stored or corrected on the row.
 function formatTime(dateObj) {
-  if (!dateObj || !dateObj.localTime) return "Evening";
+  if (!dateObj || !dateObj.localTime) return null;
   const [h, m] = dateObj.localTime.split(":");
   let hour = parseInt(h, 10);
   const ap = hour >= 12 ? "PM" : "AM";
@@ -346,8 +351,10 @@ function shapeForDb(e, venueMap) {
     venue_address_raw: venueAddress,
     venue_city_raw: venueCity,
     start_date: start.localDate,
-    time_display: formatTime(start),
-    is_free: false,
+    // Key omitted (not sent as null) when Ticketmaster has no time: a new row stores NULL, and the
+    // upsert's merge leaves any stored time on an existing row untouched.
+    ...(formatTime(start) ? { time_display: formatTime(start) } : {}),
+    // is_free is not sent: this source states no price, and "not stated" is not "paid". Omitted, a stored value (e.g. a reviewer-set FREE) stands and a new row gets the column default.
     price_from: priceRange ? priceRange.min : null,
     ticket_url: affiliateTicketUrl(e.url),
     image_url: pickImage(e.images),
@@ -389,7 +396,7 @@ async function fetchStoredRows(ids) {
   const cols = ["id", "external_id", "status", "internal_note", "description", "venue_id"].concat(DIFF_FIELDS).join(",");
   for (let i = 0; i < ids.length; i += 100) {
     const chunk = ids.slice(i, i + 100);
-    const url = `${SUPABASE_URL}/rest/v1/events?select=${cols}&source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})`;
+    const url = `${SUPABASE_URL}/rest/v1/events?select=${cols}&source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})&limit=100`;
     const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
     if (!r.ok) throw new Error(`stored-row lookup failed: HTTP ${r.status}`);
     for (const row of await r.json()) stored.set(row.external_id, row);
@@ -439,10 +446,11 @@ const PROTECTED_VIEW = ["status", "title", "time_display", "venue_id", "venue_ad
 // Stored upcoming approved Ticketmaster rows (id, title, date) for the "no longer returned by the API" report.
 async function fetchStoredUpcoming() {
   const today = new Date().toISOString().slice(0, 10);
-  const url = `${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&status=eq.approved&start_date=gte.${today}&select=external_id,title,start_date&order=start_date.asc&limit=5000`;
-  const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
-  if (!r.ok) throw new Error(`stored-upcoming lookup failed: HTTP ${r.status}`);
-  return r.json();
+  const url = `${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&status=eq.approved&start_date=gte.${today}&select=id,external_id,title,start_date&order=start_date.asc,id.asc`;
+  // Paged read (main's paged-query guard: no list read may stop at the 1,000-row server cap).
+  const r = await fetchAllPagedRows(url, { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` });
+  if (!r.ok) throw new Error(`stored-upcoming lookup failed: ${r.error}`);
+  return r.rows;
 }
 
 const DEFAULT_STATUS = "approved";
@@ -587,12 +595,16 @@ module.exports = async (req, res) => {
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
     let existingStatusByExternalId;
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      // Status plus the stored description text and its source: the precedence rule below needs all three.
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,title,description,description_source,internal_note" }
       );
+      existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([id, r]) => [id, r.status]));
     } catch (lookupErr) {
       await logFinish({ outcome: "failed", records_parsed: rows.length, records_written: 0, error_sample: "Status lookup failed: " + lookupErr.message });
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
@@ -638,6 +650,28 @@ module.exports = async (req, res) => {
       written += newRows.length;
     }
 
+    // DESCRIPTION PRECEDENCE (owner direction 2026-10-24, from main) is kept as a report only under field protection.
+    // decideEventSpecificDescription() still decides what it would do with Ticketmaster's `info` for each stored row and the
+    // counts reach session_data.description_precedence, but a stored event is never upserted any more, so nothing is
+    // written to its description whatever DESCRIPTION_PRECEDENCE_MODE says (applied is always false here).
+    // Applying a replacement would need its own column-only UPDATE path and an owner decision.
+    const precedence = { mode: process.env.DESCRIPTION_PRECEDENCE_MODE === "apply" ? "apply" : "dry", applied: false, considered: 0, would_replace: 0, kept: 0, review: 0, replace_ids: [], review_ids: [] };
+    for (const row of existingRows) {
+      const incoming = row.description;
+      if (typeof incoming !== "string" || !incoming.trim()) continue;
+      const prev = existingRowsByExternalId.get(row.external_id) || {};
+      precedence.considered += 1;
+      const verdict = decideEventSpecificDescription({ stored: prev.description, storedSource: prev.description_source, incoming, title: prev.title || row.title });
+      if (verdict.action === "replace") {
+        precedence.would_replace += 1;
+        if (precedence.replace_ids.length < 50) precedence.replace_ids.push(row.external_id);
+      } else if (verdict.action === "review") {
+        precedence.review += 1;
+        if (precedence.review_ids.length < 50) precedence.review_ids.push(row.external_id + " (" + verdict.reason + ")");
+      } else precedence.kept += 1;
+    }
+    runStats.description_precedence = precedence;
+
     const patch = await refreshTicketStatus(existingRows);
     written += patch.updated;
     if (patch.failed.length) {
@@ -664,3 +698,5 @@ module.exports.shapeForDb = shapeForDb;
 module.exports.fetchTicketmasterEvents = fetchTicketmasterEvents;
 module.exports.refreshTicketStatus = refreshTicketStatus;
 module.exports.diffAgainstStored = diffAgainstStored;
+// Exposed for the read-only report (scripts/ticketmaster-report.js, api/_lib/ticketmaster-report.js).
+module.exports.mapCategory = mapCategory;

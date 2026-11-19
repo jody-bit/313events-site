@@ -59,7 +59,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(r.statusCode, 200, slug + " " + env);
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
-    assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
+    assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 70, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
     const authSet = AUTHZ.authorized(require(path.join(root, "api/_lib/seasonal-editorial/editorial.js")));
     assert.ok(d.records.every((x) => x.public === authSet.has(slug + "/" + x.id)), slug + ": public only if authorized");
     assert.ok(!/Hush|Slay Nights/.test(r.body));
@@ -94,7 +94,7 @@ const PRIVATE = ["candidates.json", "candidate-images.json", "photo-library.json
 for (const f of served) assert.ok(!PRIVATE.includes(path.basename(f)), "private seasonal file is statically served: " + f);
 for (const f of PRIVATE) assert.ok(tracked.includes("api/_lib/seasonal-editorial/" + f), f + " lives in api/_lib/seasonal-editorial");
 assert.ok(!served.some((f) => /^seasonal\/.*(qa|candidate|linked|library|coverage|manifest|fixture|handoff|review)/i.test(f)), "no registry-like, manifest, fixture or review file left in seasonal/");
-assert.deepStrictEqual(served.filter((f) => /^seasonal\//.test(f)).sort(), ["seasonal/collections.js", "seasonal/image-fallback.js", "seasonal/page.js", "seasonal/published-entries.js", "seasonal/render.js", "seasonal/seasonal.css"],
+assert.deepStrictEqual(served.filter((f) => /^seasonal\//.test(f)).sort(), ["seasonal/collections.js", "seasonal/image-fallback.js", "seasonal/map-view.js", "seasonal/orbit-cities.js", "seasonal/page.js", "seasonal/published-entries.js", "seasonal/render.js", "seasonal/seasonal.css"],
   "the public seasonal folder holds only the renderer, the gate, the published projection and styles");
 // no unpublished destination name appears in any statically served seasonal file or page
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));

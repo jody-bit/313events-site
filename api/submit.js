@@ -13,6 +13,7 @@ require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { withOrganizerEventUrl } = require("./_lib/organizer-links");
+const { cityFromAddress } = require("./_lib/address-city");
 
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum",
@@ -259,6 +260,9 @@ module.exports = async (req, res) => {
     // from the request body above and then silently discarded. See
     // migration_020_venue_address_raw.sql for the full story.
     venue_address_raw: address && address.trim() ? address.trim() : null,
+    // The form has no city field. When the address text itself states a known
+    // city ("… Ferndale, MI") that is the city; "7500 Oakland Ave" stays blank.
+    venue_city_raw: (cityFromAddress(address) || {}).city || null,
     start_date: startDate,
     end_date: endDate || null,
     time_display: formatTimeDisplay(startTime),

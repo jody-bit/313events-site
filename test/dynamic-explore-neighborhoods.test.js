@@ -46,7 +46,8 @@ function extract(pattern, label) {
 }
 
 const SRC_INVENTORY_CTX = extract(/function inventoryCtx\(\)\{[\s\S]*?\n\}/, "inventoryCtx");
-const SRC_DISCOVERY = fs.readFileSync(`${REPO_DIR}/discovery.js`, "utf8");
+// discovery.js needs the shared blocked-names.js and place-list.js loaded first (issue #16), exactly as index.html does.
+const SRC_DISCOVERY = ["blocked-names.js", "place-list.js", "discovery.js"].map((f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")).join("\n");
 const SRC_RAIL_LIMIT = extract(/const NEIGHBORHOOD_RAIL_LIMIT = \d+;/, "NEIGHBORHOOD_RAIL_LIMIT");
 const SRC_COMPUTE_COUNTS = extract(/function computeNeighborhoodCounts\(\)\{[\s\S]*?\n\}/, "computeNeighborhoodCounts");
 const SRC_RENDER_RAIL = extract(/function renderNeighborhoodsRail\(\)\{[\s\S]*?\n\}/, "renderNeighborhoodsRail");

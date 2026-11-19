@@ -342,6 +342,18 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-029 — Promotional event imagery: no routine advance-permission outreach; remove promptly on a credible rights complaint
+
+**Date:** 2026-10-18 (owner directive 2026-10-19 02:15 UTC)
+**Decision:** 313.events does not routinely request advance permission for promotional event imagery. The owner, Jody Tyree, expressly accepts the business and legal risks of that approach. Operating process: (1) prefer authentic imagery relevant to the event, venue, attraction or destination; (2) prefer images supplied directly, licensed images, official press assets and images with documented reuse permissions where available; (3) do not initiate routine photo-permission outreach, and do not contact organizers about photographs merely because advance permission has not been obtained; (4) record the source URL, source organization, retrieval date and known rights information in the asset metadata; (5) preserve required attribution and license conditions; (6) keep a straightforward rights-holder complaint and removal process; (7) on a credible rights complaint, promptly remove or disable the disputed image; (8) investigate the rights, then either obtain permission before reposting or replace the image with an authorized alternative; (9) keep a record of complaints and resolutions. Do not use images with known prohibitions, watermarks indicating unauthorized use, or known adverse rights claims.
+**Context:** Earlier owner direction: 2026-10-15, venue/organizer-supplied promotional images publish by default with no visible credit unless the license requires it, and approved images are not re-audited; 2026-10-17, a photo found on an organizer's website was said not to be permission to republish, with a route order of licensed assets, then explicitly licensed organizer images, then a direct permission request. This decision replaces the 2026-10-17 permission-request route. Drafted outreach messages stay unsent.
+**Alternatives considered:** Routine permission requests to every organizer (rejected by the owner: slow, and the owner accepts the risk); publishing with no complaint process (rejected: the process in steps 6 to 9 is part of the decision).
+**Reason:** Authentic imagery improves the product, and per-venue outreach does not scale with coverage. This is a risk acceptance, not a finding that public promotional images are free to reuse, and it does not remove potential liability.
+**Consequences:** Seasonal and event image work records source metadata per asset and does not send permission requests. The public editorial policy page (`editorial-policy.html`) is NOT changed by this entry; any change to public policy wording needs separate owner approval. Previously linked images with owner-accepted risk keep their recorded risk notes.
+**Related backlog items:** none.
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.

@@ -54,7 +54,7 @@ assert.ok(guard, "calendar buttons sit inside a calendarExportAvailable(e) guard
 assert.ok(/buildGoogleCalUrl\(e\)/.test(guard[1]) && /buildICS\(e\)/.test(guard[1]), "both Google and Apple/Outlook are inside the guard");
 assert.ok(!/buildGoogleCalUrl|buildICS/.test(actionsSrc.replace(guard[0], "")), "nothing outside the guard builds a calendar link");
 assert.ok(/id="evtShareBtn"/.test(actionsSrc.slice(actionsSrc.indexOf(guard[0]) + guard[0].length)), "Share is outside the guard and always rendered");
-assert.ok(/Tickets & info/.test(html.slice(html.indexOf("Tickets & info") - 200, html.indexOf("Tickets & info") + 50)) && html.indexOf("Tickets & info") < html.indexOf(guard[0]), "Tickets is built before, and outside, the guard");
+assert.ok(html.indexOf("if(L.primary) actionsHtml += linkBtn(L.primary") !== -1 && html.indexOf("if(L.primary) actionsHtml += linkBtn(L.primary") < html.indexOf(guard[0]), "Tickets is built before, and outside, the guard");
 assert.ok(/function calendarExportAvailable\(e\)\{\s*if\(isDatesUnconfirmed\(e\)\) return false;/.test(html), "unverified dates never offer a calendar export");
 console.log("PASS: unverified rows get no Add to Calendar controls; Share and Tickets stay");
 

@@ -1,0 +1,461 @@
+{
+  "runToken": "20261031-131448-ebe691",
+  "action": "start",
+  "candidateIds": [
+    "ra-2474825",
+    "ra-2474836",
+    "ra-2500295",
+    "ra-2503651",
+    "ra-2512641",
+    "ra-2516198",
+    "ra-2520031",
+    "ra-2525360",
+    "ra-2525714",
+    "ra-2527755",
+    "ra-2536039",
+    "ra-2540047",
+    "ra-2541676",
+    "ra-2542519",
+    "ra-2545591",
+    "ra-2547937",
+    "ra-2554535",
+    "ra-2554549",
+    "ra-2555144",
+    "ra-2555944",
+    "ra-2557322",
+    "ra-2559327",
+    "ra-2559455",
+    "ra-2560389",
+    "ra-2561782",
+    "ra-2561822",
+    "ra-2562023",
+    "ra-2562771",
+    "ra-2562938",
+    "ra-2562939",
+    "ra-2563281",
+    "ra-2563844",
+    "ra-2564140",
+    "ra-2566302",
+    "ra-2567199",
+    "ra-2567236",
+    "ra-2567889",
+    "ra-2567948",
+    "ra-2568140",
+    "ra-2568232",
+    "ra-2569184",
+    "ra-2569631",
+    "ra-2569634",
+    "ra-2569973",
+    "ra-2570048",
+    "ra-2570111",
+    "ra-2570850",
+    "ra-2570880",
+    "ra-2571059",
+    "ra-2571134",
+    "ra-2571712",
+    "ra-2572313",
+    "ra-2572667",
+    "ra-2572699",
+    "ra-2573149",
+    "ra-2573158",
+    "ra-2573171"
+  ],
+  "listingMetadata": {
+    "ra-2474825": {
+      "title": "SAMHAIN XXVI WEEKEND",
+      "venueName": "Tangent Gallery",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2474825"
+    },
+    "ra-2474836": {
+      "title": "SAMHAIN XXVI",
+      "venueName": "Tangent Gallery",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2474836"
+    },
+    "ra-2500295": {
+      "title": "Steve Aoki: Dim Mak 30 Tour",
+      "venueName": "Russell Industrial Center",
+      "city": "Detroit",
+      "date": "Fri, 6 Nov",
+      "url": "https://ra.co/events/2500295"
+    },
+    "ra-2503651": {
+      "title": "Fadi Mohem by Urban Pulse",
+      "venueName": "Tangent Gallery",
+      "city": "Detroit",
+      "date": "Sat, 21 Nov",
+      "url": "https://ra.co/events/2503651"
+    },
+    "ra-2512641": {
+      "title": "Grave Rave",
+      "venueName": "Detroit Shipping Company",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2512641"
+    },
+    "ra-2516198": {
+      "title": "Sera J & ANNĒ",
+      "venueName": "Tangent Gallery",
+      "city": "Detroit",
+      "date": "Fri, 8 Jan",
+      "url": "https://ra.co/events/2516198"
+    },
+    "ra-2520031": {
+      "title": "TXTR : Pariah & Verraco",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Fri, 6 Nov",
+      "url": "https://ra.co/events/2520031"
+    },
+    "ra-2525360": {
+      "title": "Dasha Rush - Luke Hess - Lincoln Factory",
+      "venueName": "Lincoln Factory",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2525360"
+    },
+    "ra-2525714": {
+      "title": "FUNHAUS",
+      "venueName": "Olympus Theater",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2525714"
+    },
+    "ra-2527755": {
+      "title": "☆KRAMPUS NIGHT III☆",
+      "venueName": "Olympus Theater",
+      "city": "Detroit",
+      "date": "Sat, 26 Dec",
+      "url": "https://ra.co/events/2527755"
+    },
+    "ra-2536039": {
+      "title": "Industrial Detroit - Mvtant, Pink Stiletto, Mechanatura, C.M. Samuels, Kenjiro",
+      "venueName": "Paris Bar",
+      "city": "Detroit",
+      "date": "Sun, 1 Nov",
+      "url": "https://ra.co/events/2536039"
+    },
+    "ra-2540047": {
+      "title": "TV • Further • Charivari Detroit • UMA",
+      "venueName": "TV Lounge",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2540047"
+    },
+    "ra-2541676": {
+      "title": "V.V. Lightbody with John Krautner & Rachele Eve",
+      "venueName": "Moondog Cafe",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2541676"
+    },
+    "ra-2542519": {
+      "title": "ART 8 HOUSE",
+      "venueName": "Andy Arts",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2542519"
+    },
+    "ra-2545591": {
+      "title": "City Of Machines",
+      "venueName": "HALO DETROIT",
+      "city": "Detroit",
+      "date": "Wed, 25 Nov",
+      "url": "https://ra.co/events/2545591"
+    },
+    "ra-2547937": {
+      "title": "Fiesta House with Rosa Pistola",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2547937"
+    },
+    "ra-2554535": {
+      "title": "Dance Against Fascism",
+      "venueName": "The High Dive",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2554535"
+    },
+    "ra-2554549": {
+      "title": "Haute to Death 19 Year Anniversary -wsg- Charles Trees, DJ Etta, dream beach, and Peter Croce",
+      "venueName": "Paris Bar",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2554549"
+    },
+    "ra-2555144": {
+      "title": "Paradise Lost: An Industrial Apocalypse",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2555144"
+    },
+    "ra-2555944": {
+      "title": "DETROIT IS SPOOKY: MUNCH (HALLOWEEN PARTY) - OPEN FORMAT BANGERS (LIMITED TIX AT DOOR)",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2555944"
+    },
+    "ra-2557322": {
+      "title": "Clown-o-Ween",
+      "venueName": "The High Dive",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2557322"
+    },
+    "ra-2559327": {
+      "title": "Halloween at TV",
+      "venueName": "TV Lounge",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2559327"
+    },
+    "ra-2559455": {
+      "title": "MEMCO presents: IMPULSE 2100",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2559455"
+    },
+    "ra-2560389": {
+      "title": "Industrial Detroit - The Treasury, Hexx Head, Mission to the Sun, Deadlines",
+      "venueName": "Outer Limits Lounge",
+      "city": "Detroit",
+      "date": "Fri, 20 Nov",
+      "url": "https://ra.co/events/2560389"
+    },
+    "ra-2561782": {
+      "title": "VØRA: Saytek*LIVE with minimal detroit",
+      "city": "Detroit",
+      "date": "Sat, 5 Dec",
+      "url": "https://ra.co/events/2561782"
+    },
+    "ra-2561822": {
+      "title": "S T R Ʌ T Ø S",
+      "venueName": "Moondog Cafe",
+      "city": "Detroit",
+      "date": "Sat, 21 Nov",
+      "url": "https://ra.co/events/2561822"
+    },
+    "ra-2562023": {
+      "title": "SHADOWPLAY: Haunted Techno Warehouse",
+      "venueName": "The Vault 313",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2562023"
+    },
+    "ra-2562771": {
+      "title": "Alternative School presents: Musicology with Glenn Underground, ameera & Turtle Bugg",
+      "venueName": "Northern Lights Lounge",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2562771"
+    },
+    "ra-2562938": {
+      "title": "Toribio • sillygirlcarmen • BROOKLYN, DETROIT AND EVERYWHERE THE GROOVE TAKES YOU",
+      "venueName": "TV Lounge",
+      "city": "Detroit",
+      "date": "Sat, 5 Dec",
+      "url": "https://ra.co/events/2562938"
+    },
+    "ra-2562939": {
+      "title": "RADIANT",
+      "venueName": "HALO DETROIT",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2562939"
+    },
+    "ra-2563281": {
+      "title": "Decliner: CUT RATE RELEASE SHOW",
+      "venueName": "The Strays",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2563281"
+    },
+    "ra-2563844": {
+      "title": "STUDIO 215: Disco All Night Long feat. Dynamique (Vegas)",
+      "venueName": "215 W",
+      "city": "Detroit",
+      "date": "Fri, 20 Nov",
+      "url": "https://ra.co/events/2563844"
+    },
+    "ra-2564140": {
+      "title": "Siren Pres: Christian Girl Autumn",
+      "venueName": "Paris Bar",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2564140"
+    },
+    "ra-2566302": {
+      "title": "TOP2BTTM presents: A SLUTTY GAY HALLOWEEN PARTY",
+      "venueName": "SOS",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2566302"
+    },
+    "ra-2567199": {
+      "title": "Mark Broom, Sard (live), Zoe Talley",
+      "venueName": "Lincoln Factory",
+      "city": "Detroit",
+      "date": "Fri, 6 Nov",
+      "url": "https://ra.co/events/2567199"
+    },
+    "ra-2567236": {
+      "title": "XOXR4YR",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2567236"
+    },
+    "ra-2567889": {
+      "title": "NO SKIPS: HIPHOP + R&B (HALLOWEEN PARTY) - BLAKITO",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Sun, 1 Nov",
+      "url": "https://ra.co/events/2567889"
+    },
+    "ra-2567948": {
+      "title": "ORBIT 002: Noncompliant, Flange, sina, AIDEL, Adri, Duck Trash",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Fri, 20 Nov",
+      "url": "https://ra.co/events/2567948"
+    },
+    "ra-2568140": {
+      "title": "The Occasional Thursday Party with S.P.Y and Friends",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Thu, 10 Dec",
+      "url": "https://ra.co/events/2568140"
+    },
+    "ra-2568232": {
+      "title": "KICK Invites",
+      "venueName": "TBA",
+      "city": "Detroit",
+      "date": "Sat, 12 Dec",
+      "url": "https://ra.co/events/2568232"
+    },
+    "ra-2569184": {
+      "title": "The Blood Orange Room",
+      "venueName": "Spkrbox",
+      "city": "Detroit",
+      "date": "Sat, 31 Oct",
+      "url": "https://ra.co/events/2569184"
+    },
+    "ra-2569631": {
+      "title": "CUFFING SZN: DJ MOCHI & COMPLETD (R&B + DANCE MUSIC)",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2569631"
+    },
+    "ra-2569634": {
+      "title": "HIPHOP NIGHT: DJBJ 3525 & DJ DONO (OPEN FORMAT CLUB HITS)",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Fri, 6 Nov",
+      "url": "https://ra.co/events/2569634"
+    },
+    "ra-2569973": {
+      "title": "Hoochie Palace x DickAppointment (DETROIT)",
+      "venueName": "Northern Lights Lounge",
+      "city": "Detroit",
+      "date": "Fri, 13 Nov",
+      "url": "https://ra.co/events/2569973"
+    },
+    "ra-2570048": {
+      "title": "GHETTOTECHTOPIA",
+      "venueName": "Lincoln Factory",
+      "city": "Detroit",
+      "date": "Fri, 13 Nov",
+      "url": "https://ra.co/events/2570048"
+    },
+    "ra-2570111": {
+      "title": "Interference x Ennate presents Matrixxman, Nick Dagher and Emil Siman",
+      "venueName": "Hizz Lounge",
+      "city": "Detroit",
+      "date": "Sat, 7 Nov",
+      "url": "https://ra.co/events/2570111"
+    },
+    "ra-2570850": {
+      "title": "Mathew Jonson, Shaun Reeves, Nicolas Matar, Ataxia + Mister Joshooa",
+      "venueName": "Lincoln Factory",
+      "city": "Detroit",
+      "date": "Fri, 13 Nov",
+      "url": "https://ra.co/events/2570850"
+    },
+    "ra-2570880": {
+      "title": "The Art of Noise: A Performance and Q&A Series",
+      "venueName": "Moondog Cafe",
+      "city": "Detroit",
+      "date": "Sun, 8 Nov",
+      "url": "https://ra.co/events/2570880"
+    },
+    "ra-2571059": {
+      "title": "Adam X - Marble Bar",
+      "venueName": "Marble Bar",
+      "city": "Detroit",
+      "date": "Fri, 27 Nov",
+      "url": "https://ra.co/events/2571059"
+    },
+    "ra-2571134": {
+      "title": "LAÍRE NIGHT XI",
+      "venueName": "SOS",
+      "city": "Detroit",
+      "date": "Fri, 13 Nov",
+      "url": "https://ra.co/events/2571134"
+    },
+    "ra-2571712": {
+      "title": "Burgers & Bangers - Inside Edition",
+      "venueName": "Per Ankh Detroit Entheogenic Church",
+      "city": "Detroit",
+      "date": "Wed, 25 Nov",
+      "url": "https://ra.co/events/2571712"
+    },
+    "ra-2572313": {
+      "title": "Requiem For A Machine Soul: AbuQadim Haqq Graphic Novel Release Event",
+      "venueName": "The Stone House Bar",
+      "city": "Detroit",
+      "date": "Wed, 11 Nov",
+      "url": "https://ra.co/events/2572313"
+    },
+    "ra-2572667": {
+      "title": "Music 4 Your Soul feat. N Da Pock3t Band & Friends",
+      "venueName": "Boozilla Event Space",
+      "city": "Detroit",
+      "date": "Fri, 20 Nov",
+      "url": "https://ra.co/events/2572667"
+    },
+    "ra-2572699": {
+      "title": "EarDrugs",
+      "venueName": "Per Ankh Detroit Entheogenic Church",
+      "city": "Detroit",
+      "date": "Thu, 19 Nov",
+      "url": "https://ra.co/events/2572699"
+    },
+    "ra-2573149": {
+      "title": "NO SKIPS: HIPHOP & R&B (SUNDAY NIGHT) - BLAKITO",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Sun, 8 Nov",
+      "url": "https://ra.co/events/2573149"
+    },
+    "ra-2573158": {
+      "title": "GIRLY POP NIGHT: PROBLEMATICBLACKHOTTIE (CHARLIE XCX & OLIVIA RODRIGO VIBES)",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Fri, 13 Nov",
+      "url": "https://ra.co/events/2573158"
+    },
+    "ra-2573171": {
+      "title": "HIPHOP NIGHT: DJ MARATHON B2B DJ CARTER (OPEN FORMAT CLUB HITS)",
+      "venueName": "Big Pink",
+      "city": "Detroit",
+      "date": "Sat, 14 Nov",
+      "url": "https://ra.co/events/2573171"
+    }
+  }
+}

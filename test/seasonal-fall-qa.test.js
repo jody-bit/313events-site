@@ -38,7 +38,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) {
       assert.ok(!ids.has(r.id + "/" + o.id), "unique option id");
       ids.add(r.id + "/" + o.id);
-      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|commons-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
+      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|commons-[a-z0-9-]+|archival-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
       if (o.type.indexOf("linked") === 0) {
         assert.strictEqual(o.permission_on_file, false, "no permission on file for a linked image");
         assert.ok(/not cleared/.test(o.rights_status));
@@ -47,7 +47,7 @@ for (const slug of ["fall", "fall-color"]) {
     }
     // an owner-photo record defaults to its photo
     if (e && e.image.ownerPhoto) assert.strictEqual(r.image_options[0].id, e.image.ownerPhoto.photoId);
-    assert.strictEqual(r.publication.gate.approval, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": approval only if authorized");
+    assert.strictEqual(r.publication.gate.approval, AUTHZ.authorized(ED).has(slug + "/" + r.id) || AUTHZ.ENDED_AFTER_RELEASE.includes(slug + "/" + r.id), r.id + ": approval only if authorized");
   }
   // the client renders every record and a selection switches the primary image
   const html = QA.results(col, d.records, { category: "all", query: "", view: "grid" }, {});

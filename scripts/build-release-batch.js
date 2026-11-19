@@ -10,6 +10,7 @@
 // `approval {by, at}` to a record.
 //   node scripts/build-release-batch.js          write
 //   node scripts/build-release-batch.js --check  exit 1 if stale
+//   node scripts/build-release-batch.js --batch=2 [--check]  batch 2 (release-2.json) instead of batch 1
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -24,6 +25,43 @@ const BATCH = "seasonal-release-1";
 // The owner's authorization message (2026-10-12): approve all 76 records of this batch, approved by Jody Tyree on 2026-10-12.
 const AUTH = { by: "Jody Tyree", at: "2026-10-12" };
 
+// ---- batch 2 (owner gate 5, 2026-10-19): `--batch=2` builds/checks RELEASE_BATCH_2.json from release-2.json. Batch 1 below is untouched.
+if (process.argv.includes("--batch=2")) {
+  const R2 = rd("release-2.json"), A2 = R2.authorization;
+  const recs = [], probs = [];
+  const seen = new Set(), batch1 = new Set(rd("RELEASE_BATCH_1.json").records.map((r) => r.collection + "/" + r.id));
+  for (const col of ["fall", "fall-color"]) {
+    for (const id of R2.collections[col] || []) {
+      const key = col + "/" + id;
+      if (seen.has(key)) probs.push(key + ": duplicate in batch 2"); seen.add(key);
+      if (batch1.has(key)) probs.push(key + ": already in batch 1");
+      const e = E[col].find((x) => x.id === id);
+      if (!e) { probs.push(key + ": missing"); continue; }
+      const rv = ED.review(e), g = C.gate(e);
+      if (!(e.approval && e.approval.by === A2.by && e.approval.at === A2.at)) probs.push(key + ": approval is not the batch-2 authorization");
+      if (rv.state !== "PUBLISHED" || !C.isPublic(e)) probs.push(key + ": not public (state " + rv.state + ")");
+      const im = e.image || {}, rm = im.remote || {};
+      // DEC-029 provenance: an owner-accepted source page, credit and recorded risk acceptance; never a claim of a license.
+      if (!(rm.sourcePage && rm.credit && rm.acceptedBy && rm.acceptedAt && rm.riskNote)) probs.push(key + ": DEC-029 provenance incomplete");
+      // The rights route must be the recorded risk acceptance, never a license: no licenseUrl (Creative Commons style) and no owner-photo block.
+      if (g.rightsRoute !== "linked-risk-acceptance" || im.licenseUrl || im.ownerPhoto) probs.push(key + ": a DEC-029 image must carry the linked-risk-acceptance route only (got " + g.rightsRoute + ")");
+      const rec = { collection: col, id, name: e.name, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute, approval: e.approval, source: { page: rm.sourcePage, link: rm.src, credit: rm.credit, acceptedBy: rm.acceptedBy, acceptedAt: rm.acceptedAt } };
+      if (im.acquired) rec.acquired = im.acquired;
+      recs.push(rec);
+    }
+  }
+  if (probs.length) { console.error("release batch 2 cannot be prepared:\n  " + probs.join("\n  ")); process.exit(1); }
+  const n = (col) => recs.filter((r) => r.collection === col).length;
+  const out2 = JSON.stringify({ batch: R2.batch, status: "APPLIED IN A DRAFT PR. " + R2.status, authorization: A2, counts: { total: recs.length, fall: n("fall"), "fall-color": n("fall-color") },
+    reconciles: { batch1: batch1.size, batch2: recs.length, total: batch1.size + recs.length }, records: recs }, null, 1) + "\n";
+  const f2 = path.join(E_DIR, "RELEASE_BATCH_2.json");
+  if (process.argv.includes("--check")) {
+    if (!fs.existsSync(f2) || fs.readFileSync(f2, "utf8") !== out2) { console.error("stale: RELEASE_BATCH_2.json"); process.exit(1); }
+  } else fs.writeFileSync(f2, out2);
+  console.log(JSON.stringify({ batch: R2.batch, total: recs.length }));
+  process.exit(0);
+}
+
 const records = [];
 const problems = [];
 for (const col of ["fall", "fall-color"]) {
@@ -34,11 +72,15 @@ for (const col of ["fall", "fall-color"]) {
     if (e.approval) {
       // Applied batch: the approval must be the authorized one and the record must now be public.
       if (!(e.approval.by === AUTH.by && e.approval.at === AUTH.at)) problems.push(id + ": approval is not the authorized one");
-      if (rv.state !== "PUBLISHED" || !C.isPublic(e)) problems.push(id + ": approved but not public (state " + rv.state + ")");
+      // An applied record may since have ENDED (verified season end + unpublish decision, #260): it was public when released and is now private.
+      if (rv.state === "ENDED") { /* ok: approved, then ended */ }
+      else if (rv.state !== "PUBLISHED" || !C.isPublic(e)) problems.push(id + ": approved but not public (state " + rv.state + ")");
     } else if (rv.state !== "READY_FOR_REVIEW") problems.push(id + ": state " + rv.state);
     if (!e.editorialAccepted) problems.push(id + ": no editorial acceptance");
     // approval simulated in memory only
     const sim = JSON.parse(JSON.stringify(e)); if (!e.approval) { sim.status = "PUBLISHED"; sim.approval = { by: "(approver)", at: "2026-01-01" }; }
+    // An ENDED record is checked as it stood when released: PUBLISHED, before the season fields and the unpublish decision.
+    if (e.status === "ENDED") { sim.status = "PUBLISHED"; delete sim.season; delete sim.expiryDisposition; }
     if (!C.isPublic(sim)) problems.push(id + ": would not pass the gate once approved");
     const card = ED.publicEntry(sim);
     records.push({ collection: col, id, name: e.name, original15: L1[col].includes(id), currentStatus: e.status, gate: rv.state, imageRoute: rv.imageRoute,

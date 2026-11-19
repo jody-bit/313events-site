@@ -15,7 +15,7 @@ const query = url.slice(url.indexOf("?") + 1);
 
 // 1. Every top-level parameter is one the query intends: a raw "&" inside a source name would add a bogus one.
 const keys = query.split("&").map((kv) => kv.split("=")[0]);
-const allowed = new Set(["start_date", "status", "followup_dismissed", "description", "source", "select", "limit"]);
+const allowed = new Set(["start_date", "status", "followup_dismissed", "description", "source", "select", "order", "limit"]);
 for (const k of keys) assert.ok(allowed.has(k), `unexpected query parameter "${k}" (a source name leaked an "&")`);
 assert.strictEqual(keys.filter((k) => k === "source").length, 1, "exactly one source filter");
 

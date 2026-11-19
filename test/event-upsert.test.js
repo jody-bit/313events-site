@@ -324,7 +324,7 @@ async function run() {
           const roll = rnd(4);
           if (roll === 0) row[key] = undefined;       // omitted
           else if (roll === 1) row[key] = null;       // explicit blank
-          else if (roll === 2) row[key] = key === "price_from" ? rnd(90) : `${key}-${i}`;
+          else if (roll === 2) row[key] = key === "price_from" ? rnd(90) : key === "ticket_url" ? `https://example.com/${key}-${i}` : `${key}-${i}`;
           // roll 3: key not set at all
         }
         rows.push(row);

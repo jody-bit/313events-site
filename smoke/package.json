@@ -1,0 +1,13 @@
+{
+  "name": "313events-smoke",
+  "private": true,
+  "description": "Browser smoke tests for 313.events Preview/staging deployments (REL-1 W1). Not part of the site; never deployed.",
+  "scripts": {
+    "test": "playwright test",
+    "selftest": "node selftest.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "leaflet": "1.9.4"
+  }
+}

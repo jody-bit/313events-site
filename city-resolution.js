@@ -10,8 +10,9 @@
 //      the city field); a state given must match the table city's region
 //      (MI / OH / ON), otherwise the string stays unresolved
 //   3. "Twp" / "Twp." -> "Township"; "Charter Township Of X" -> "X Township"
-//   4. explicit alias: Grosse Pointe Farms / Shores plot on the Grosse Pointe
+//   4. explicit alias: Grosse Pointe Farms / Shores / Park plot on the Grosse Pointe
 //      centroid (separate municipalities, one shared point)
+//   4b. a leading "Mt" / "Mt." reads as "Mount" ("Mt. Clemens" = Mount Clemens)
 //   5. exact, case-insensitive match against the table
 //   6. PHASE 2 entries carry `sources`: a bare name resolves only when the event's source feed
 //      is listed (jurisdiction evidence); an explicit matching state needs no source. The one
@@ -33,7 +34,8 @@
 
   var ALIASES = {
     "grosse pointe farms": "grosse pointe",
-    "grosse pointe shores": "grosse pointe"
+    "grosse pointe shores": "grosse pointe",
+    "grosse pointe park": "grosse pointe"
   };
 
   // A province is not a city. These two Tourism Windsor Essex rows say "Ontario" and name the
@@ -48,6 +50,7 @@
     var state = null;
     s = s.replace(STATE_ZIP, function (_, st) { state = st.toUpperCase(); state = FULL_NAMES[state] || state; return ""; }).trim();
     s = s.replace(/\bTwp\.?(?=\s|$)/gi, "Township");
+    s = s.replace(/^Mt\.?(?=\s)/i, "Mount");
     var m = /^charter township of (.+)$/i.exec(s);
     if (m) s = m[1].trim() + " Township";
     return { name: s.toLowerCase(), state: state };

@@ -259,12 +259,7 @@ async function run() {
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
   delete process.env.CRON_SECRET;
 
-  // --- A. THE critical correctness property: a General Meeting event
-  //     resolves venue_id to Neighborhood Home Base — and this connector
-  //     never writes a neighborhood_id, source text match, or anything
-  //     else that could put it in Bagley instead. Neighborhood is left to
-  //     be inherited downstream via venue_id -> venues.neighborhood_id
-  //     (Fitzgerald), exactly like every other connector in this project. ---
+  // --- A. A General Meeting post is governance (owner policy 2026-11-15): parsed, but never written. ---
   {
     const handler = freshConnector();
     const { fetchFn, calls } = makeMockFetch({
@@ -275,18 +270,9 @@ async function run() {
     await handler({ headers: {} }, res);
 
     assert.strictEqual(res._status, 200);
-    const body = upsertBody(calls);
-    assert.ok(body && body.length === 1);
-    assert.strictEqual(body[0].venue_id, "venue-fitzgerald-home-base", "General Meeting must resolve to the Neighborhood Home Base venue row");
-    assert.strictEqual(body[0].venue_name_raw, "Neighborhood Home Base");
-    assert.strictEqual(
-      Object.prototype.hasOwnProperty.call(body[0], "neighborhood_id"),
-      false,
-      "this connector must never set events.neighborhood_id directly — neighborhood is inherited only via venue_id, never by source/title text"
-    );
-    assert.ok(body[0].source === "Bagley Community Council", "source reads Bagley Community Council even though the venue is NOT in the Bagley neighborhood");
+    assert.strictEqual(upsertBody(calls), null, "a General Meeting is excluded; nothing is written");
   }
-  console.log("PASS: a General Meeting event resolves to Neighborhood Home Base (Fitzgerald), with no neighborhood_id or Bagley-text-matching written directly");
+  console.log("PASS: a General Meeting (governance) is excluded at import");
 
   // --- B. A Trunk-or-Treat-style Tier 2 event resolves to Bagley
   //     Elementary School — the genuinely-in-Bagley venue — proving venue
@@ -349,14 +335,14 @@ async function run() {
     await handler({ headers: {} }, res);
 
     assert.strictEqual(res._status, 200);
-    assert.strictEqual(res._body.upserted, 2, "one Tier 1 + one matching Tier 2 row; the non-matching post is silently excluded, not an error");
+    assert.strictEqual(res._body.upserted, 1, "the General Meeting (governance) and the non-matching post are excluded; only the matching Tier 2 row is written");
     assert.strictEqual(res._body.tier1, 1);
     assert.strictEqual(res._body.tier2, 1);
 
     const patches = patchCalls(calls);
     assert.strictEqual(patches.length, 1);
     assert.strictEqual(patches[0].body.outcome, "success");
-    assert.strictEqual(patches[0].body.records_written, 2);
+    assert.strictEqual(patches[0].body.records_written, 1);
   }
   console.log("PASS: a combined Tier 1 + Tier 2 run upserts both and logs source_runs outcome=success");
 
@@ -416,8 +402,8 @@ async function run() {
   {
     const handler = freshConnector();
     const { fetchFn, calls } = makeMockFetch({
-      eventListing: () => ({ ok: true, status: 200, json: async () => [eventListingPost({ id: 3 })] }),
-      posts: () => ({ ok: false, status: 500, text: async () => "upstream error" }),
+      eventListing: () => ({ ok: false, status: 500, text: async () => "upstream error" }),
+      posts: () => ({ ok: true, status: 200, json: async () => [post({ id: 24, title: "Bagley Community Council Annual Trunk or Treat – October 31st at 6 p.m.", date: "2026-10-20T08:00:00" })] }),
     });
     global.fetch = fetchFn;
     const res = makeRes();
@@ -444,10 +430,10 @@ async function run() {
     const res = makeRes();
     await handler({ headers: {} }, res);
 
-    const body = upsertBody(calls);
-    assert.strictEqual(body[0].status, "rejected", "a moderator's rejected decision must survive a re-run, not be reset to approved");
+    // A governance meeting is excluded before any write, so a stored rejected row is never touched again (owner policy 2026-11-15).
+    assert.strictEqual(upsertBody(calls), null, "an excluded governance meeting is never upserted, so its stored rejected status cannot be reset");
   }
-  console.log("PASS: an existing rejected row's status survives a re-run (status-preserving upsert)");
+  console.log("PASS: an excluded governance meeting is never rewritten, so a stored rejected row stays rejected");
 
   // --- H. Fail-closed status lookup: a failed status lookup must abort the
   //     whole run (HTTP 502, zero writes) rather than silently defaulting
@@ -455,7 +441,7 @@ async function run() {
   {
     const handler = freshConnector();
     const { fetchFn, calls } = makeMockFetch({
-      eventListing: () => ({ ok: true, status: 200, json: async () => [eventListingPost({ id: 5 })] }),
+      posts: () => ({ ok: true, status: 200, json: async () => [post({ id: 25, title: "Bagley Community Council Annual Trunk or Treat – October 31st at 6 p.m.", date: "2026-10-20T08:00:00" })] }),
       statusLookup: () => ({ ok: false, status: 500, json: async () => ({}) }),
     });
     global.fetch = fetchFn;

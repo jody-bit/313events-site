@@ -143,8 +143,8 @@ function makeMockPostgrest(tables, options) {
     gt: (a, b) => a != null && String(a) > b,
     lte: (a, b) => a != null && String(a) <= b,
     lt: (a, b) => a != null && String(a) < b,
-    // like.prefix-* -- PostgREST's `*` is SQL's `%`. Case-sensitive, as LIKE is.
-    like: (a, b) => a != null && new RegExp("^" + b.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*") + "$").test(String(a)),
+    // like.prefix-* -- PostgREST's `*` is SQL's `%`. Case-sensitive, as LIKE is, and `%` matches newlines (a multi-line internal_note).
+    like: (a, b) => a != null && new RegExp("^" + b.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*") + "$", "s").test(String(a)),
   };
 
   // in.(a,b,"c,d") -> ["a","b","c,d"]
@@ -172,15 +172,29 @@ function makeMockPostgrest(tables, options) {
 
   // or=(start_date.gte.2026-10-03,end_date.gte.2026-10-03) — a row passes
   // if ANY of the comma-separated `column.op.value` conditions holds.
+  // A condition may also be and(c1,c2): the row must pass every inner condition
+  // (used by the venue-count query: and(date_semantics.eq.continuous,end_date.gte.T)).
+  function splitTop(str) {
+    const parts = []; let depth = 0, cur = "";
+    for (const ch of str) {
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+      if (ch === "," && depth === 0) { parts.push(cur); cur = ""; } else cur += ch;
+    }
+    parts.push(cur);
+    return parts;
+  }
+  function passesCondition(rows, part) {
+    const a = /^and\((.*)\)$/.exec(part);
+    if (a) return splitTop(a[1]).reduce((acc, p) => passesCondition(acc, p), rows);
+    const dot = part.indexOf(".");
+    return applyFilter(rows, part.slice(0, dot), part.slice(dot + 1));
+  }
   function applyOr(rows, expr) {
     const m = /^\((.*)\)$/.exec(expr);
     if (!m) throw new Error(`mock-postgrest: unsupported or= expression ${expr}`);
-    const conditions = m[1].split(",").map((part) => {
-      const dot = part.indexOf(".");
-      return { column: part.slice(0, dot), expr: part.slice(dot + 1) };
-    });
     const passing = new Set();
-    conditions.forEach((c) => applyFilter(rows, c.column, c.expr).forEach((r) => passing.add(r)));
+    splitTop(m[1]).forEach((part) => passesCondition(rows, part).forEach((r) => passing.add(r)));
     return rows.filter((r) => passing.has(r));
   }
 

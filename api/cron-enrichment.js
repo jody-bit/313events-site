@@ -299,8 +299,17 @@ module.exports = async (req, res) => {
       // Per-record description outcomes (issue #100): counts by outcome, and
       // the records that were changed, skipped or failed (not the untouched
       // ones). Observation only; capSessionData drops the samples if too big.
-      session_data: genericCounts && genericCounts.descriptionOutcomes
-        ? { description_outcomes: genericCounts.descriptionOutcomes, samples: genericCounts.descriptionOutcomeSamples || [] }
+      // The candidate-cap record (how many rows were examined, whether the cap or the ordering limited the run) rides
+      // beside the outcomes and survives capSessionData, which only ever drops `samples`; without it a run row cannot
+      // say whether rows were left unexamined (B-037).
+      session_data: genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)
+        ? {
+            ...(genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
+            total_considered: genericCounts.totalConsidered,
+            cap_reached: genericCounts.capReached === true,
+            ...(genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),
+            ...(genericCounts.descriptionOutcomes ? { samples: genericCounts.descriptionOutcomeSamples || [] } : {}),
+          }
         : undefined,
     });
 

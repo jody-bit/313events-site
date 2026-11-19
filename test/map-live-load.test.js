@@ -29,6 +29,7 @@ function makeCtx({ fetchBehaviour }) {
     console: { error() {}, log() {}, warn() {} },
     setTimeout: (fn) => { fn(); return 0; }, // collapse retry delays
     loadFloorISO: () => "2026-10-07",
+    getTodayISO: () => "2026-10-16",
     loadVenueLatLng: async () => {},
     mapSupabaseRow: (r) => r, addToByDate: () => {}, buildFilterBar: () => {},
     render: () => renders.push({ state: ctx.loadState, events: ctx.EVENTS.length }),

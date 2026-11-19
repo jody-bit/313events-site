@@ -113,7 +113,11 @@ const IG = "https://www.instagram.com/shakesomeactionwfmu/";
   // wired into the shared upsert used by every connector
   const seen = [];
   const realFetch = global.fetch;
-  global.fetch = async (url, init) => { seen.push({ url, method: init && init.method }); return { ok: true, status: 201, text: async () => "" }; };
+  global.fetch = async (url, init) => {
+    seen.push({ url, method: init && init.method });
+    if (url.includes("internal_note=like.")) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; // #185 owner-correction read
+    return { ok: true, status: 201, text: async () => "" };
+  };
   try {
     await upsertEventRows("https://db.test", "k", [{ external_id: "e1", title: "Shake Some Action WFMU Presents: Y", source: "Eventbrite", ticket_url: "https://tix.example/y" }]);
     assert.ok(seen.some((x) => x.method === "PATCH" && x.url.includes("event_url.is.null")), "shared upsert back-fills blank organizer links");

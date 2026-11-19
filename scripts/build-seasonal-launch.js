@@ -33,7 +33,10 @@ const heldIds = (col) => new Set(Object.keys((proposal.held || {})[col] || {}));
 // Expansion batch (launch-expansion.json, written by scripts/prepare-expansion.js): reviewed records, hand-curated and flagged as proposed.
 const expansion = (() => { try { return read("launch-expansion.json"); } catch (e) { return { batch: null, collections: {} }; } })();
 const expansionIds = (col) => new Set((expansion.collections || {})[col] || []);
-const handIds = (col) => new Set([...curatedIds(col), ...expansionIds(col), ...heldIds(col)]);
+// Release batch 2 (release-2.json, owner gate 5 on 2026-10-19): three hand-curated records with DEC-029 image provenance. Kept exactly as authored.
+const release2 = (() => { try { return read("release-2.json"); } catch (e) { return { collections: {} }; } })();
+const release2Ids = (col) => new Set((release2.collections || {})[col] || []);
+const handIds = (col) => new Set([...curatedIds(col), ...expansionIds(col), ...heldIds(col), ...release2Ids(col)]);
 const lib = read("photo-library.json");
 const reg = read("candidates.json");
 const entriesFile = read("entries.json");
@@ -151,6 +154,9 @@ const built = { fall: [], "fall-color": [] };
 for (const col of ["fall", "fall-color"]) {
   let n = 0;
   for (const item of launch.collections[col]) {
+    // Owner decision 2026-10-19 (Almar duplicate): this research row is a duplicate of the canonical Almar Orchards record and is
+    // no longer in the inventory ledger. The research file stays untouched as history; the generator skips the consolidated row.
+    if (col === "fall" && item.ledger_name === "JK’s Farmhouse Ciders / Almar Orchards") continue;
     const row = reg.candidates.find((c) => c.collection === col && c.name === item.ledger_name && c.location === item.ledger_location);
     if (!row) throw new Error("no ledger row for " + col + " " + item.ledger_name);
     const key = keyFor(row);
@@ -201,7 +207,8 @@ function deriveCats(col, note) {
 function launchFor(col, e, rv, prim, batch) {
   // A proposed record is READY_FOR_REVIEW with no approval, or PUBLISHED with the approver's recorded approval (never one without the other).
   const approved = !!rv.gate.approval;
-  if (approved ? !(e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e)) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
+  // An approved record may since have ENDED (#260): released, then unpublished at the end of its verified season. Use the DERIVED state (rv.state), not the declared status.
+  if (approved ? !(rv.state === "ENDED" || (e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e))) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
   const route = rv.gate.imageRoute;
   return { batch: batch || proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
     image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "acquired-file" && prim.type === "licensed_third_party" ? "Image: openly licensed photograph (" + prim.rights_status.split(" (")[0] + ", Wikimedia Commons)" : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };
@@ -222,8 +229,12 @@ for (const col of ["fall", "fall-color"]) {
     const dest = destPhotos(col, c);
     // An openly licensed photograph (third-party license route, e.g. Wikimedia Commons) is its own option type and is the record's default.
     const licensed = !!(e && e.image && e.image.illustrative === false && !e.image.ownerPhoto && e.image.license && /^https:\/\//.test(e.image.licenseUrl || ""));
-    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : (licensed ? "commons-" + e.id : null);
+    // An archival photograph (image.historic === true, repo file, not an illustration) is its own QA option so the "Historic photo" badge can be reviewed in a preview. It carries no rights claim.
+    const archival = !!(e && e.image && e.image.historic === true && e.image.illustrative === false && e.image.acquired && e.image.acquired.file === e.image.src);
+    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : (archival ? "archival-" + e.id : (licensed ? "commons-" + e.id : null));
     dest.forEach((p) => opts.push(photoOpt(p, "owner_photo_destination")));
+    if (archival) opts.unshift({ id: "archival-" + e.id, type: "archival_acquired", src: e.image.src, source: e.image.source, credit: "Kept in the private record (not drawn on the card)", rights_status: (e.image.provenance && e.image.provenance.rights) || "Not cleared",
+      illustrative: false, depicts_actual_destination: true, historic: true, warnings: ["Archival photograph: shown with the Historic photo badge and no credit line. Rights not cleared; DEC-029 risk acceptance not recorded for this image."], image_kind: "photo" });
     if (licensed) opts.unshift({ id: "commons-" + e.id, type: "licensed_third_party", src: e.image.src, source: e.image.source, credit: e.image.credit, rights_status: e.image.license + " (" + e.image.licenseUrl + ")",
       illustrative: false, depicts_actual_destination: true, warnings: [], image_kind: "photo", rights_basis: "third-party-license", license_url: e.image.licenseUrl, source_page: e.image.commons && e.image.commons.filePage });
     let primary;

@@ -126,6 +126,29 @@ const REQUEST_HEADERS = {
   Referer: `https://www.crowdwork.com/v/${VENUE_SLUG}/shows`,
 };
 
+// 2026-10-16: CrowdWork's CEO replied to our allowlist request (the block is a Cloudflare managed challenge) and
+// will add a custom rule that recognizes an X-CrowdWork-Key header they issued to us. The key lives only in the
+// CROWDWORK_KEY environment variable (set in Vercel by the owner); it is never committed, logged or echoed. With
+// no key set the request is exactly the one we sent before, so this change is inert until the variable exists.
+// The User-Agent stays honest, and nothing here tries to get around the challenge other than the rule they offered.
+function buildRequestHeaders(env = process.env) {
+  const key = env.CROWDWORK_KEY && String(env.CROWDWORK_KEY).trim();
+  return key ? { ...REQUEST_HEADERS, "X-CrowdWork-Key": key } : { ...REQUEST_HEADERS };
+}
+
+// Diagnostic for a rejected request: whether the key header was attached (a boolean only, never the key or its
+// length), the status, and Cloudflare's own cf-ray / cf-mitigated response headers, so a 403 can be told apart
+// (challenge vs. rule not matching vs. header never sent) from the run record alone.
+function describeUpstream(status, headers, requestHeaders) {
+  const get = (name) => (headers && typeof headers.get === "function" ? headers.get(name) : null) || "none";
+  return {
+    status,
+    keyHeaderSent: Object.prototype.hasOwnProperty.call(requestHeaders || {}, "X-CrowdWork-Key"),
+    cfMitigated: get("cf-mitigated"),
+    cfRay: get("cf-ray"),
+  };
+}
+
 function decodeEntities(str) {
   if (!str) return str;
   return String(str)
@@ -195,11 +218,15 @@ function parseVenue(raw) {
   };
 }
 
+// price_from is the cheapest PAID tier. A $0 tier next to paid tiers (a comp or placeholder tier, not the
+// price a reader pays) must not make the show read as free: 2026-10-22, "My Daddy is Haunted!" stored 0.00
+// while CrowdWork lists $32.85 online / $38.10 at the door. A show is free only when every priced tier is $0.
 function minCostDollars(costTiers) {
   if (!Array.isArray(costTiers) || !costTiers.length) return null;
-  const cents = costTiers.map((t) => t.cost_after_fees).filter((n) => typeof n === "number" && Number.isFinite(n));
+  const cents = costTiers.map((t) => t && t.cost_after_fees).filter((n) => typeof n === "number" && Number.isFinite(n) && n >= 0);
   if (!cents.length) return null;
-  return Math.round(Math.min(...cents)) / 100;
+  const paid = cents.filter((n) => n > 0);
+  return Math.round(paid.length ? Math.min(...paid) : 0) / 100;
 }
 
 // 12-hour time string straight from an ISO datetime's own HH:MM — the ISO
@@ -268,15 +295,19 @@ module.exports = async (req, res) => {
   let payload;
   let httpStatus = null;
   try {
+    const requestHeaders = buildRequestHeaders();
     const r = await fetch(
       `https://www.crowdwork.com/api/v2/${VENUE_SLUG}/shows?start=${todayISO}`,
-      { headers: REQUEST_HEADERS }
+      { headers: requestHeaders }
     );
     httpStatus = r.status;
     if (!r.ok) {
       const blocked = r.status === 401 || r.status === 403;
-      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `Fetch failed: HTTP ${r.status}` });
-      res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
+      const d = describeUpstream(r.status, r.headers, requestHeaders);
+      const detail = `key header sent: ${d.keyHeaderSent}; cf-mitigated: ${d.cfMitigated}; cf-ray: ${d.cfRay}`;
+      console.warn("planetanttheatre: upstream rejected request " + JSON.stringify(d));
+      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `Fetch failed: HTTP ${r.status} (${detail})` });
+      res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}`, keyHeaderSent: d.keyHeaderSent, cfMitigated: d.cfMitigated, cfRay: d.cfRay });
       return;
     }
     payload = await r.json();
@@ -374,3 +405,6 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports.buildRequestHeaders = buildRequestHeaders;
+module.exports.describeUpstream = describeUpstream;
+module.exports.shapeRowsForShow = shapeRowsForShow; // exposed for test/cron-planetanttheatre-price.test.js only

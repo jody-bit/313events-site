@@ -23,6 +23,57 @@
 const integrity = require("./integrity");
 const sourceHealth = require("./source-health");
 
+
+// ---- ONE quality queue (Platform). Pure; detects nothing: findings come from EI's shared contract
+// (api/_lib/quality-contract.js, interface v1). Import and published findings share one key, so the same
+// record is ONE item; only class "actionable" is queued, "informative" is counted as health.
+const QUEUE_STATUSES = new Set(["open", "acknowledged", "resolved"]);
+const OWNER_ORDER = ["Owner", "EI", "Discovery", "Editorial", "Platform"];
+
+function isFinding(f) {
+  return !!f && typeof f === "object" && f.schema_version === 1 && typeof f.key === "string" && f.key && typeof f.code === "string" && f.code
+    && (f.class === "actionable" || f.class === "informative") && (f.stage === "import" || f.stage === "published");
+}
+
+// build(findings, { statusByKey }) -> { queue[], informative{code:count}, rejected, byOwner, byCode }
+// statusByKey is the queue's own state (acknowledged / resolved) and is the only thing Platform adds.
+function buildQueue(findings, opts) {
+  const statusByKey = (opts && opts.statusByKey) || {};
+  const items = new Map();
+  const informative = {};
+  let rejected = 0;
+  for (const f of Array.isArray(findings) ? findings : []) {
+    if (!isFinding(f)) { rejected++; continue; }
+    if (f.class === "informative") { informative[f.code] = (informative[f.code] || 0) + 1; continue; }
+    const prior = items.get(f.key);
+    const stages = new Set(prior ? prior.stages : []); stages.add(f.stage);
+    const st = statusByKey[f.key];
+    const item = {
+      key: f.key, code: f.code, owner: f.owner || "Owner", decision: f.decision || "", events: f.events || [], evidence: f.evidence || {},
+      stages: Array.from(stages).sort(), status: QUEUE_STATUSES.has(st) ? st : "open",
+    };
+    // The published record wins the evidence/decision text; the import finding only adds its stage.
+    items.set(f.key, prior && f.stage === "import" ? Object.assign({}, prior, { stages: item.stages }) : item);
+  }
+  const queue = Array.from(items.values()).sort((a, b) =>
+    (a.status === "resolved") - (b.status === "resolved") || OWNER_ORDER.indexOf(a.owner) - OWNER_ORDER.indexOf(b.owner) || a.code.localeCompare(b.code) || a.key.localeCompare(b.key));
+  const byOwner = {}, byCode = {};
+  for (const it of queue) if (it.status !== "resolved") { byOwner[it.owner] = (byOwner[it.owner] || 0) + 1; byCode[it.code] = (byCode[it.code] || 0) + 1; }
+  return { queue, open: queue.filter((i) => i.status !== "resolved").length, informative, rejected, byOwner, byCode };
+}
+
+// detect(rows) -> findings via EI's contract if it has shipped; otherwise an honest NOT RUN (never a guess).
+function detectFindings(rows, ctx) {
+  let contract = null;
+  try { contract = require("./quality-contract"); } catch (_) { contract = null; }
+  if (!contract || typeof contract.detect !== "function") return { state: "not_run", reason: "shared quality contract (api/_lib/quality-contract.js) is not on this branch", findings: [] };
+  try { return { state: "ok", reason: null, findings: contract.detect(rows, ctx || {}) }; }
+  catch (err) { return { state: "error", reason: String(err && err.message || err).slice(0, 200), findings: [] }; }
+}
+
+
+const qualityQueue = { build: buildQueue, detect: detectFindings };
+
 const PAGE_SIZE = 1000;
 const MAX_PAGES = 20;
 const RUN_WINDOW_DAYS = 30;
@@ -88,7 +139,7 @@ async function loadSnapshot({ supabaseUrl, serviceRoleKey, fetchFn = fetch, now 
   let runs = [];
   let runsError = null;
   try {
-    runs = await readAll(fetchFn, `${supabaseUrl}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${encodeURIComponent(since)}&order=started_at.desc`, headers);
+    runs = await readAll(fetchFn, `${supabaseUrl}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status,resume:session_data->>resume,zero_write_reasons:session_data->zero_write_reasons,ra_summary:session_data->summary,ra_summary_text:session_data->>summaryText,ra_per_candidate:session_data->perCandidate&started_at=gte.${encodeURIComponent(since)}&order=started_at.desc`, headers);
   } catch (err) {
     runsError = err.message; // reported, never silently treated as "no runs"
   }
@@ -193,6 +244,9 @@ function buildReport(snapshot, { includeEvents = true } = {}) {
     pendingReview: events.filter((e) => e.status === "pending_review").length,
   };
   decisions.venues = venueRepairs(snapshot, publicEvents);
+  // ONE queue: EI's shared findings (import + published, same keys) -> actionable items; informative is counted only.
+  const detected = qualityQueue.detect(events, { now, today: snapshot.today });
+  decisions.quality = Object.assign({ detector: detected.state, detectorNote: detected.reason }, qualityQueue.build(detected.findings));
   if (includeEvents) {
     const titleById = new Map(publicEvents.map((e) => [e.id, e]));
     decisions.events = summary.results
@@ -231,4 +285,4 @@ function buildReport(snapshot, { includeEvents = true } = {}) {
   };
 }
 
-module.exports = { loadSnapshot, buildReport, todayInDetroit, EVENT_SELECT_BASE };
+module.exports = { loadSnapshot, buildReport, qualityQueue, todayInDetroit, EVENT_SELECT_BASE };

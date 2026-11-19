@@ -54,6 +54,7 @@
 //   node scripts/dossin-metadata-repair.js --dry-run  (reports only, writes nothing)
 
 const path = require("path");
+const { isOwnerSuppliedRow } = require(path.join(__dirname, "owner-supplied-row"));
 const {
   parseDossinEvents,
   dossinExternalId,
@@ -76,7 +77,18 @@ async function fetchEventUrlsByExternalId(fetchImpl = fetch) {
   const r = await fetchImpl(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
   if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
   const html = await r.text();
-  const events = parseDossinEvents(html);
+  // The source page carries relative "LEARN MORE" hrefs (e.g. /events/guided-tour-57). Resolve each
+  // against the page URL so only an absolute http(s) link is ever stored; anything that does not
+  // resolve to one is treated as no link.
+  const events = parseDossinEvents(html).map((e) => {
+    if (!e.event_url) return e;
+    let abs = null;
+    try {
+      const u = new URL(e.event_url, SOURCE_URL);
+      if (u.protocol === "http:" || u.protocol === "https:") abs = u.href;
+    } catch { /* unparseable href: no link */ }
+    return { ...e, event_url: abs };
+  });
 
   const hrefCounts = new Map();
   for (const e of events) {
@@ -104,7 +116,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=is.null&event_url=is.null` +
-    `&select=id,external_id,ticket_url,event_url,start_date,status` +
+    `&select=id,external_id,ticket_url,event_url,start_date,status,source,internal_note` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch Dossin repair candidates: HTTP ${resp.status}`);
@@ -169,6 +181,8 @@ async function repairDossinMetadata({
     // Defensive re-check -- never touch a candidate that already has
     // either link populated, even if the query above somehow returned one.
     if ((event.ticket_url && event.ticket_url.trim()) || (event.event_url && event.event_url.trim())) continue;
+    // Owner-supplied / editorial-hold rows are never changed by automation, even to fill a blank.
+    if (isOwnerSuppliedRow(event)) { counts.skippedOwnerSupplied = (counts.skippedOwnerSupplied || 0) + 1; continue; }
 
     if (!eventUrlsByExternalId.has(event.external_id)) {
       counts.unmatched++;

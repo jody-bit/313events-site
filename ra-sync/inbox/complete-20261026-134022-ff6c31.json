@@ -1,0 +1,161 @@
+{
+  "runToken": "20261026-134022-ff6c31",
+  "action": "complete",
+  "runId": "bbccc54b-b659-4df5-81c0-6d914f712e3e",
+  "events": [
+    {
+      "id": "ra-2569232",
+      "title": "Solid Gold",
+      "description": "",
+      "startDate": "2026-10-27T22:00:00.000",
+      "endDate": "2026-10-28T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/530d43aef0cff8e887108e7acf059dff002fd60b.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2569307",
+      "title": "Nightcap Detroit",
+      "description": "",
+      "startDate": "2026-10-28T22:00:00.000",
+      "endDate": "2026-10-29T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/ae8062e65e1ca5b909d35bf7cba9c80b0ba20820.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2569306",
+      "title": "Planet Funk",
+      "description": "",
+      "startDate": "2026-10-28T19:00:00.000",
+      "endDate": "2026-10-28T22:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/45c87fcc66a689573368036c1fe32a03dd299a54.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569309",
+      "title": "Groove Night",
+      "description": "",
+      "startDate": "2026-10-29T22:00:00.000",
+      "endDate": "2026-10-30T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/7e2ddf106e7d58361c8b26daa63dc62a722f195b.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569312",
+      "title": "Night Trip",
+      "description": "",
+      "startDate": "2026-10-30T22:00:00.000",
+      "endDate": "2026-10-31T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/f4c3fa557e4dd7c040545202a4b45cc052cb841f.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2569249",
+      "title": "5th Friday",
+      "description": "",
+      "startDate": "2026-10-30T19:00:00.000",
+      "endDate": "2026-10-30T23:59:00.000",
+      "venueName": "The Gold Bar Detroit",
+      "address": "293 Eliot St Detroit MI. 48201",
+      "image": [
+        "https://images.ra.co/31bc06a3a0ea1dd335cbe8492d7dcf6a296518ef.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569184",
+      "title": "The Blood Orange Room",
+      "description": "Step inside The Blood Orange Room this Halloween, Saturday October 31st  for pure techno frequency featuring Eric Yaz (Poosh Records, A10N | DC), alongside Candywax and Medusa. \n",
+      "startDate": "2026-10-31T22:00:00.000",
+      "endDate": "2026-11-01T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/87cdad083b73d2bb6eee6ea8691afa77c172d29d.jpg"
+      ],
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2569313",
+      "title": "Saturday Grind",
+      "description": "",
+      "startDate": "2026-10-31T11:00:00.000",
+      "endDate": "2026-10-31T15:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/2d99c66fa4b928fe736eae43649bfdf95562b757.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569315",
+      "title": "SPKR BRNCH",
+      "description": "",
+      "startDate": "2026-11-01T11:00:00.000",
+      "endDate": "2026-11-01T15:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/0bab1793dc6dfb667213be430a748223f74ea286.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569634",
+      "title": "HIPHOP NIGHT: DJBJ 3525 & DJ DONO (OPEN FORMAT CLUB HITS)",
+      "description": "If you haven't been to a Hip Hop Night at Big Pink yet, let us put you on...\n\nWe've got DJBJ 3525 & DJ DONO playing your favorite hip-hop hits, throwbacks & club bangers all night long! No sections, no booths, no bottle service. Just good music & a dance floor full of people ready to have a good time.\n\nHip Hop Night has become one of our favorite parties for a reason! Grab some FREE tickets for you & your crew, lock in your plans & we'll see you on the dance floor!\n\n21+\n\nMessage @bigpinklovesyou on Instagram with any questions.",
+      "startDate": "2026-11-06T22:00:00.000",
+      "endDate": "2026-11-07T02:00:00.000",
+      "venueName": "Big Pink",
+      "address": "6440 Wight St, Detroit, MI 48207, USA",
+      "image": [
+        "https://images.ra.co/e714c7200e6eedb08334e3e150e83b14066564b1.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2569631",
+      "title": "CUFFING SZN: DJ MOCHI & COMPLETD (R&B + DANCE MUSIC)",
+      "description": "It's getting colder outside, which means CUFFING SZN is officially here! So it's only right we bring one of our favorite parties back to Big Pink!\n\nWhether you're single, taken, or somewhere in between, we've got you covered! Expect blends of hip-hop, R&B & dance music all night. Think Kaytranada blended with SZA and everything in between. Bring your boo, your situationship, or your besties & meet us on the dance floor!\n\nLimited FREE tickets available now, grab yours while you can!\n\n21+\n\nMessage @bigpinklovesyou on Instagram with any questions.",
+      "startDate": "2026-11-07T22:00:00.000",
+      "endDate": "2026-11-08T02:00:00.000",
+      "venueName": "Big Pink",
+      "address": "6440 Wight St, Detroit, MI 48207, USA",
+      "image": [
+        "https://images.ra.co/ceb603dbd6a5457574d8fcee6dde67721f40c44c.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

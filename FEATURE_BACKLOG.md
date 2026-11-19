@@ -4,6 +4,14 @@ Running list of requested features/improvements not yet implemented. Add new ite
 
 ---
 
+## 2026-11-15
+
+### Product policy: civic governance meetings are not listed (decided; implemented in api/_lib/non-event-filter.js)
+
+Product Owner, 2026-11-15, after reviewing Needs Follow-up: city commission and governance meetings are NOT wanted on the site ("purge the site of all those types"). This supersedes the earlier "a public body's own meeting is the Product Owner's decision" exemption and the 2026-10-13 hold-for-review rule for Dearborn. Rule: a council, commission, committee, board, authority, trustees, zoning/planning/appeals/review, ethics, pension, DDA/BIA, HOA or association meeting, hearing or session, a bare "Public/Budget Hearing", and a "General/Membership Meeting" are excluded at import, approval and follow-up (rule name `governance_meeting`). Kept: board games, a Historical Commission Open House, Trunk or Treat, concerts, and artists or programs named for a body. The one-time guarded cleanup of 273 stored rows already ran and is never rerun.
+
+---
+
 ## 2026-10-01
 
 ### 7. Generic self-healing: extract structured facts from external evidence instead of persisting raw page prose

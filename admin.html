@@ -22,7 +22,7 @@
 <style>
   :root{
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --ok:#3fbf6a; --ok-ink:#06210f; --bad:#e07a72; --bad-ink:#3a1f1f;
@@ -163,6 +163,20 @@
   .sub-ready{color:var(--muted,#9aa3ad);}
   .sub-reason .rc{color:#e8c96b;font-weight:700;}
   .sub-times{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  .sub-edit-btn{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit;margin-left:6px;}
+  .sub-edit-panel{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel-alt);}
+  .sub-edit-panel fieldset{border:0;margin:0 0 10px;padding:0;min-width:0;}
+  .sub-edit-panel legend{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);padding:0 0 4px;}
+  .sub-edit-panel label{display:block;font-size:12px;color:var(--ink-soft);margin:6px 0 2px;}
+  .sub-edit-panel input,.sub-edit-panel textarea{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;}
+  .sub-edit-panel textarea{min-height:90px;resize:vertical;}
+  .sub-edit-panel .changed{border-color:var(--accent);}
+  .sub-edit-evidence{font-size:12px;color:var(--ink-soft);margin:8px 0;padding:8px 10px;border:1px dashed var(--line);border-radius:6px;overflow-wrap:anywhere;}
+  .sub-edit-diff,.sub-edit-msg{font-size:12.5px;margin:6px 0;overflow-wrap:anywhere;}
+  .sub-edit-msg.err{color:#e8a0a0;}
+  .sub-edit-msg.ok{color:var(--ok);}
+  .sub-edit-msg.warn{color:#e8c96b;}
+  .sub-edited{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
   .sub-row details summary{cursor:pointer;color:var(--ink-soft);font-size:12px;margin-top:6px;}
   .sub-row .actions{margin-top:8px;}
   .sub-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;padding:10px 12px;border:1px dashed var(--line);border-radius:8px;}
@@ -237,6 +251,30 @@
     width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;
     background:var(--panel-alt);color:var(--ink);font-family:inherit;
   }
+
+  /* Formatting pass (2026-11-17): contain overflow inside the element that owns it, never the page. No behaviour change. */
+  .search-row input{min-width:0;}
+  .search-row button{flex:none;white-space:nowrap;}
+  .match-search .search-row{flex-wrap:wrap;}
+  .match-search .search-row input{flex:1 1 100%;}
+  .article-card > *{min-width:0;}
+  .tab-btn{flex:none;}
+  .card,.card a,.meta{overflow-wrap:anywhere;}
+  .sub-filters select{max-width:100%;min-width:0;}
+  .sub-chip{max-width:100%;overflow-wrap:anywhere;white-space:normal;}
+  details.intro{margin:0 0 12px;}
+  details.intro > summary{cursor:pointer;color:var(--ink-soft);font-size:13px;font-weight:600;padding:6px 0;}
+  details.intro > summary:hover{color:var(--ink);}
+  details.intro[open] > summary{margin-bottom:4px;}
+  @media (max-width:600px){
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+    .sub-filters select,.sub-filters input{flex:1 1 100%;min-width:0;}
+    .sub-presets button{min-height:40px;}
+    details.intro > summary{min-height:40px;box-sizing:border-box;padding:10px 0;}
+    [id^="liveartapply-"],input[id^="liveart-"]{min-height:40px;}
+    .tab-btn,.sub-lane,.actions button,.search-row button,.refresh button,.sub-filters select,.sub-filters input,.search-row input{min-height:40px;font-size:14px;}
+    .meta,.sub{font-size:14px;line-height:1.45;}
+  }
 </style>
 </head>
 <body>
@@ -299,7 +337,7 @@
            than showing nothing. See scripts/ra-sync.js and api/admin-ra.js. -->
       <section class="block">
         <h2>Resident Advisor sync</h2>
-        <div class="sub">The device's browser-driven scheduled task still walks ra.co's listing and fetches each event's detail page -- RA's anti-bot defenses require a real browser, so that part is unchanged. Everything after that (deciding what's genuinely new, deriving fields, a conservative duplicate check, and the actual database write) now happens server-side here, tracked as one sync session per run.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">The device's browser-driven scheduled task still walks ra.co's listing and fetches each event's detail page -- RA's anti-bot defenses require a real browser, so that part is unchanged. Everything after that (deciding what's genuinely new, deriving fields, a conservative duplicate check, and the actual database write) now happens server-side here, tracked as one sync session per run.</div></details>
         <div id="raSyncBanner" class="health-banner"></div>
       </section>
     </div>
@@ -310,7 +348,7 @@
     <div class="tab-panel" data-tab-panel="tower">
       <section class="block" style="margin-top:0;">
         <h2>System health <span class="sub" style="font-weight:normal;">(sources — fixed by engineering, not by editing events)</span></h2>
-        <div class="sub">A run that "succeeded" is not a healthy source. Each source is measured on execution, retrieval, useful output, records written and inventory currency separately; "insufficient evidence" means the connector keeps no run log, not that it is fine. Stale means not re-seen at the source on schedule — it never means cancelled.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">A run that "succeeded" is not a healthy source. Each source is measured on execution, retrieval, useful output, records written and inventory currency separately; "insufficient evidence" means the connector keeps no run log, not that it is fine. Stale means not re-seen at the source on schedule — it never means cancelled.</div></details>
         <div class="err" id="towerError" style="display:none;"></div>
         <div class="sub" id="towerSystemSummary"></div>
         <div class="ct-wrap"><table class="ct-table" id="towerSources"></table></div>
@@ -318,13 +356,18 @@
       </section>
       <section class="block">
         <h2>Human decisions <span class="sub" style="font-weight:normal;">(public upcoming events, grouped by problem)</span></h2>
-        <div class="sub">Every event gets exactly one state — Cleared, Advisory, Repairable, Needs decision or Blocked — and every state but Cleared says why. A problem shared by many events is listed once, with how many it affects: a repair class, not a pile of cards.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">Every event gets exactly one state — Cleared, Advisory, Repairable, Needs decision or Blocked — and every state but Cleared says why. A problem shared by many events is listed once, with how many it affects: a repair class, not a pile of cards.</div></details>
         <div class="ct-tiles" id="towerTiles"></div>
         <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
       </section>
       <section class="block">
+        <h2>Review queue <span class="sub" style="font-weight:normal;">(import and published findings, one queue)</span></h2>
+        <div class="sub" id="towerQueueSummary"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerQueue"></table></div>
+      </section>
+      <section class="block">
         <h2>Venue repairs <span class="sub" style="font-weight:normal;">(location gaps, grouped by venue)</span></h2>
-        <div class="sub">What 313.events already knows about each venue, and what that knowledge does for public upcoming events with no street address or no city. <b>Fill</b>: trusted knowledge (the canonical record, two independent sources, or the place's own source on two dates) — filled automatically, with provenance. <b>Confirm</b>: only one source states it — one confirmation at venue level resolves every event there. <b>Conflict</b>: the event and the venue disagree — a person decides; nothing is moved between cities. <b>Excluded</b>: TBA, secret, multiple locations, online, mobile or street-segment names never inherit an address. Read-only: nothing here writes.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">What 313.events already knows about each venue, and what that knowledge does for public upcoming events with no street address or no city. <b>Fill</b>: trusted knowledge (the canonical record, two independent sources, or the place's own source on two dates) — filled automatically, with provenance. <b>Confirm</b>: only one source states it — one confirmation at venue level resolves every event there. <b>Conflict</b>: the event and the venue disagree — a person decides; nothing is moved between cities. <b>Excluded</b>: TBA, secret, multiple locations, online, mobile or street-segment names never inherit an address. Read-only: nothing here writes.</div></details>
         <div class="sub" id="towerVenueSummary" style="margin-top:8px;"></div>
         <div class="ct-wrap"><table class="ct-table" id="towerVenueCanonical"></table></div>
         <div class="ct-wrap"><table class="ct-table" id="towerVenues"></table></div>
@@ -335,13 +378,13 @@
     <div class="tab-panel" data-tab-panel="editorial">
       <section class="block" style="margin-top:0;">
         <h2>Press coverage</h2>
-        <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. cron-editorial.js already runs an automated deep-linking pass (scripts/press-coverage-linking.js) on every scheduled run — reading each article's own page, not just its headline, matching it against every current event, and creating a new one when the article itself contains enough verified information. What's left here is what that automation couldn't safely resolve. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. cron-editorial.js already runs an automated deep-linking pass (scripts/press-coverage-linking.js) on every scheduled run — reading each article's own page, not just its headline, matching it against every current event, and creating a new one when the article itself contains enough verified information. What's left here is what that automation couldn't safely resolve. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div></details>
         <div class="refresh" style="margin:0 0 12px;"><button id="autoLinkBtn" onclick="autoLinkEditorial()">Auto-Link</button><span class="refresh-status" id="autoLinkStatus"></span></div>
         <div id="editorialList"></div>
       </section>
       <section class="block" id="linkReviewBlock">
         <h2>Article–event links to verify</h2>
-        <div class="sub">The site only shows an article as covering an event once that pairing is <b>verified</b>. Pairings the matcher found but could not verify wait here, hidden from the public. Confirm a pairing only if the article is really about that specific event (same event, place and dates); reject it if it is a different event with a similar name. Nothing is deleted: rejected pairings stay on record, are never re-created automatically, and can be reopened.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">The site only shows an article as covering an event once that pairing is <b>verified</b>. Pairings the matcher found but could not verify wait here, hidden from the public. Confirm a pairing only if the article is really about that specific event (same event, place and dates); reject it if it is a different event with a similar name. Nothing is deleted: rejected pairings stay on record, are never re-created automatically, and can be reopened.</div></details>
         <div class="refresh" style="margin:0 0 12px;"><label><input type="checkbox" id="linkShowRejected" onchange="loadLinkReview()"> Also show rejected</label> <label style="margin-left:14px;"><input type="checkbox" id="linkShowHidden" onchange="renderLinkReview(linkReviewData.links, linkReviewData.counts)"> Show hidden</label></div>
         <div class="meta" id="linkHiddenLine" style="margin:0 0 12px;"></div>
         <div id="linkReviewList"></div>
@@ -351,7 +394,7 @@
     <div class="tab-panel active" data-tab-panel="submissions">
       <section class="block" style="margin-top:0;">
         <h2>Submissions</h2>
-        <div class="sub">Where each pending record came from, why it is waiting, and who has to act. Technical failures and source-policy holds are kept apart from decisions that need a person. Read-only: Approve and Reject behave exactly as before and no publication decision changes here.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">Where each pending record came from, why it is waiting, and who has to act. Technical failures and source-policy holds are kept apart from decisions that need a person. Approve and Reject behave as before. Edit saves a correction and never approves unless you choose Save and approve.</div></details>
         <div class="sub-lanes" id="subLanes" role="tablist" aria-label="Submission lanes">
           <button type="button" class="sub-lane active" role="tab" data-lane="person" onclick="subSetLane('person')">Needs a person <span class="n" id="subN-person">0</span></button>
           <button type="button" class="sub-lane" role="tab" data-lane="blocked" onclick="subSetLane('blocked')">Blocked at source <span class="n" id="subN-blocked">0</span></button>
@@ -379,9 +422,9 @@
     <div class="tab-panel" data-tab-panel="followup">
       <section class="block" style="margin-top:0;">
         <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(actionable only)</span></h2>
-        <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link, where a human can actually do something about it. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown. A gap a source structurally never provides (e.g. Trinosophes has no description or link data at all on its own page) is a confirmed limitation, not a task — it's left out of this list entirely rather than nagging forever about something no one can fix; see the note below the list when that's hiding anything.</div>
+        <details class="intro"><summary>About this section</summary><div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link, where a human can actually do something about it. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown. A gap a source structurally never provides (e.g. Trinosophes has no description or link data at all on its own page) is a confirmed limitation, not a task — it's left out of this list entirely rather than nagging forever about something no one can fix; see the note below the list when that's hiding anything.</div></details>
         <div class="refresh" style="margin:0 0 12px;"><button id="autoRepairBtn" onclick="autoRepairFollowup()">Auto-Repair</button><span class="refresh-status" id="autoRepairStatus"></span></div>
-        <div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup); for Outer Limits Lounge, a blank description pulled from that venue's own live event page; for Detroit Historical Society/Dossin, a blank ticket/event link pulled from that venue's own "Learn More" link — only ever when the source itself has real, event-specific data (a link shared by more than one event is treated as generic and never used); and for Redford Theatre, a blank description and/or event link and/or ticket link recovered from that event's own authoritative detail page — the ticket link only when that page has exactly one "Buy Tickets" link. Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its actionable missing fields is actually resolved.</div>
+        <details class="intro"><summary>About Auto-Repair</summary><div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup); for Outer Limits Lounge, a blank description pulled from that venue's own live event page; for Detroit Historical Society/Dossin, a blank ticket/event link pulled from that venue's own "Learn More" link — only ever when the source itself has real, event-specific data (a link shared by more than one event is treated as generic and never used); and for Redford Theatre, a blank description and/or event link and/or ticket link recovered from that event's own authoritative detail page — the ticket link only when that page has exactly one "Buy Tickets" link. Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its actionable missing fields is actually resolved.</div></details>
         <div class="err" id="incompleteError" style="display:none;"></div>
         <div id="followupBreakdown"></div>
         <div class="sub" id="sourceLimitedNote" style="margin-top:4px;"></div>
@@ -411,9 +454,9 @@
     <div class="tab-panel" data-tab-panel="live">
       <section class="block" style="margin-top:0;">
         <h2>Live events</h2>
-        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
+        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — correct a wrong value with Edit, or remove it if it doesn't fit the brand. A correction keeps the event live and importers will not overwrite the corrected fields. Removing is reversible from "Recently hidden" below.</div>
         <div class="search-row">
-          <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
+          <input type="text" id="liveSearchInput" placeholder="Search by title, venue or source…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
           <button onclick="searchLiveEvents()">Search</button>
         </div>
         <div id="liveResults"></div>
@@ -509,6 +552,7 @@ function setRefreshStatus(state) {
 // as before tabs existed. Switching tabs never re-fetches anything.
 function showTab(key) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+  const activeTab = document.querySelector('.tab-btn.active'); if (activeTab && activeTab.scrollIntoView) activeTab.scrollIntoView({ inline: 'nearest', block: 'nearest' });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tabPanel === key));
 }
 
@@ -566,7 +610,7 @@ function renderControlTower(data) {
       + '<td><b>' + escapeHtml(s.label.replace(/\s*\(.*\)$/, '')) + '</b><br>' + towerChip(s.status) + '</td>'
       + '<td>' + (s.schedule ? escapeHtml(s.schedule.expr || 'external') + (s.schedule.cadenceHours ? ' (' + s.schedule.cadenceHours + 'h)' : '') : '<b style="color:var(--bad)">none</b>') + '</td>'
       + '<td>' + (s.runLogged ? escapeHtml(towerWhen(s.lastAttemptAt)) + ' ' + escapeHtml(s.lastOutcome || '') + '<br>ok ' + escapeHtml(towerWhen(s.lastSuccessAt)) : 'no run log') + '</td>'
-      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') : '—') + '</td>'
+      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') + (s.lastWritten === 0 && s.zeroWrite && s.zeroWrite.known ? '<br><small>' + escapeHtml(s.zeroWrite.text) + '</small>' : '') : '—') + '</td>'
       + '<td style="white-space:nowrap">' + dim(s.dimensions || {}) + '</td>'
       + '<td>' + s.upcomingPublic + (s.upcomingPending ? ' (+' + s.upcomingPending + ' pending)' : '') + '</td>'
       + '<td>' + towerPct(s.reseenShare) + '<br>' + escapeHtml(towerWhen(s.lastSeenPublicAt)) + (s.missingLinkRate !== null ? '<br>weak links ' + towerPct(s.missingLinkRate) : '') + '</td>'
@@ -580,6 +624,16 @@ function renderControlTower(data) {
     ['Stale currency', cur.stale], ['Unknown currency', cur.unknown], ['Unhealthy sources', sys.summary.unhealthy], ['Unexplained anomalies', anomalies.length],
   ];
   document.getElementById('towerTiles').innerHTML = tiles.map(t => '<div class="ct-tile"><div class="n">' + t[1] + '</div><div class="l">' + escapeHtml(t[0]) + '</div></div>').join('');
+  const qz = dec.quality || {};
+  const qInfo = Object.entries(qz.informative || {}).map(e => escapeHtml(e[0].replace(/_/g, ' ')) + ' ' + e[1]).join(' · ');
+  document.getElementById('towerQueueSummary').innerHTML = qz.detector === 'ok'
+    ? '<b>' + (qz.open || 0) + '</b> need a decision' + ((qz.queue || []).length > 50 ? ' (showing the first 50 of ' + qz.queue.length + ')' : '') + '. Health only (not queued): ' + (qInfo || 'none')
+    : (qz.detector === 'error' ? 'Detector error: ' : 'Not run: ') + escapeHtml(qz.detectorNote || 'quality detector unavailable') + '. Nothing is guessed.';
+  document.getElementById('towerQueue').innerHTML = (qz.queue || []).length
+    ? '<tr><th>Status</th><th>Issue</th><th>Owner</th><th>Stage</th><th>Next step</th></tr>' + qz.queue.slice(0, 50).map(it => '<tr>'
+      + '<td>' + escapeHtml(it.status) + '</td>'
+      + '<td style="min-width:140px"><b>' + escapeHtml(it.code.replace(/_/g, ' ')) + '</b><br>' + (it.events || []).slice(0, 3).map(e => escapeHtml(e.title || e.id || '')).join('<br>') + '</td>'
+      + '<td>' + escapeHtml(it.owner) + '</td><td>' + escapeHtml(it.stages.join(' + ')) + '</td><td>' + escapeHtml(it.decision) + '</td></tr>').join('') : '';
   document.getElementById('towerClasses').innerHTML = '<tr><th>State</th><th>Problem</th><th>Affected</th><th>Where</th><th></th></tr>'
     + dec.classes.map((k, i) => '<tr>'
       + '<td>' + towerChip(k.state) + '</td>'
@@ -1160,6 +1214,14 @@ async function autoRepairFollowup() {
       // recovery -- itself failed (e.g. the live Squarespace feed was
       // unreachable). That failure must never be silently absorbed into
       // what otherwise reads as a clean success line.
+      // #256: steps now run under a time budget. A run that did not finish
+      // every step says so and names each step that did not complete.
+      if (data.partial) {
+        const notDone = (data.steps || []).filter((st) => st.status !== 'completed')
+          .map((st) => `${st.label} (${String(st.status).replace(/_/g, ' ')})`);
+        summary += ` PARTIAL RUN — not all steps completed${notDone.length ? ': ' + notDone.join(', ') : ''}. Run Auto-Repair again to continue.`;
+        statusEl.classList.add('refresh-error');
+      }
       if (data.outerLimitsDescriptionError) {
         summary += ` Outer Limits description repair failed: ${data.outerLimitsDescriptionError}.`;
         statusEl.classList.add('refresh-error');
@@ -1372,16 +1434,24 @@ function renderHealthcheck(data) {
   const banner = document.getElementById('healthBanner');
   const { latest, streakOk } = data;
   const checkedAt = new Date(latest.run_at).toLocaleString();
-  const failing = (latest.checks || []).filter(c => !c.ok);
+  // Checks the run skipped (level 'not_run', e.g. read-only mode) are not executed: they never count as passing or
+  // failing, and are listed separately so a skipped check is never read as healthy.
+  const allChecks = latest.checks || [];
+  const skipped = allChecks.filter(c => c.level === 'not_run');
+  const executed = allChecks.filter(c => c.level !== 'not_run');
+  const failing = executed.filter(c => !c.ok);
+  const skippedNote = skipped.length
+    ? ` <span class="checked-at">— ${skipped.length} NOT RUN: ${skipped.map(c => escapeHtml(c.name)).join(', ')}</span>`
+    : '';
   setTabBadge('health', failing.length);
 
   if (latest.overall === 'ok') {
     banner.className = 'health-banner ok';
-    banner.innerHTML = `✓ <b>All ${latest.checks.length} smoke checks passing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>`;
+    banner.innerHTML = `✓ <b>All ${executed.length} ${skipped.length ? 'executed ' : ''}smoke checks passing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>${skippedNote}`;
   } else {
     banner.className = 'health-banner fail';
     banner.innerHTML = `
-      ✗ <b>${failing.length} of ${latest.checks.length} smoke check${latest.checks.length === 1 ? '' : 's'} failing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>
+      ✗ <b>${failing.length} of ${executed.length} ${skipped.length ? 'executed ' : ''}smoke check${executed.length === 1 ? '' : 's'} failing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>${skippedNote}
       <ul class="fail-list">
         ${failing.map(c => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.detail || '')}</li>`).join('')}
       </ul>
@@ -1420,6 +1490,21 @@ function formatRaCounts(run) {
   return parts.join(', ');
 }
 
+// Four-count RA telemetry line. Absent values read "unknown", never 0/success.
+// Listing promotions are pending_review (hidden) and never counted as public.
+function formatRaTelemetry(run) {
+  const t = run && run.telemetry;
+  if (!t || !t.known) return 'Run detail (listing / detail fetch / pending_review / public): unknown — not recorded for this run';
+  const c = t.counts || {};
+  const v = (x) => (x === null || x === undefined ? 'unknown' : x);
+  const per = Array.isArray(t.perCandidate) ? t.perCandidate : [];
+  const blocked = per.filter((p) => p.status === 'blocked' || p.detailBlocked).length;
+  const never = per.filter((p) => p.status === 'never_attempted').length;
+  let line = `Listing: ${v(c.listingCandidates)} candidates, ${v(c.listingNew)} new · Detail fetch: ${v(c.detailSucceeded)} succeeded, ${v(c.detailBlocked)} blocked (attempted ${v(c.detailAttempted)}) · Hidden pending_review: ${v(c.pendingReview)}, deferred by cap: ${v(c.deferredByCap)} · Public: ${v(c.public)}`;
+  if (per.length) line += ` · Candidates blocked ${blocked}, never attempted ${never}`;
+  return line;
+}
+
 function renderRaSync(data) {
   const banner = document.getElementById('raSyncBanner');
   const { latestRun, lastSuccessfulRun } = data;
@@ -1450,6 +1535,11 @@ function renderRaSync(data) {
     banner.innerHTML = `
       ✗ <b>Resident Advisor sync ${escapeHtml(latestRun.outcome || 'failed')}</b> <span class="checked-at">— ${escapeHtml(startedAt)} — ${escapeHtml(formatRaCounts(latestRun))}</span>
     `;
+  }
+
+  banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">${escapeHtml(formatRaTelemetry(latestRun))}</div>`;
+  if (latestRun.telemetry && latestRun.telemetry.summaryText) {
+    banner.innerHTML += `<div class="checked-at" style="margin-top:4px;">${escapeHtml(latestRun.telemetry.summaryText)}</div>`;
   }
 
   // Surface the last time it genuinely worked whenever the latest run
@@ -1676,12 +1766,14 @@ function subRowHtml(e, nowMs, withActions) {
     + reasonHtml
     + (s.notes && s.notes.length ? '<div class="sub-times">' + s.notes.map(n => 'Note: ' + escapeHtml(n.text)).join(' · ') + '</div>' : '')
     + '<div class="sub-times">' + times.map(escapeHtml).join(' · ') + '</div>'
+    + subEditedHtml(e)
     + '<details><summary>Details</summary><div class="sub-meta" style="margin-top:6px;">'
     + (e.ticket_url ? '<a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a> ' : '')
     + (e.event_url && e.event_url !== e.ticket_url ? '<a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">event page</a> ' : '')
     + (e.submitter_org_name || e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || SUB_NP) + '</b> (' + escapeHtml(e.submitter_email || SUB_NP) + ')' : '')
     + '<br>Description: ' + (e.description ? escapeHtml(e.description) : SUB_NP) + '</div></details>'
-    + (withActions ? '<div class="actions"><button class="btn-approve" onclick="review(\'' + escapeAttr(e.id) + '\',\'approve\')">Approve</button><button class="btn-reject" onclick="review(\'' + escapeAttr(e.id) + '\',\'reject\')">Reject</button></div>' : '')
+    + (withActions ? '<div class="actions"><button class="btn-approve" onclick="review(\'' + escapeAttr(e.id) + '\',\'approve\')">Approve</button><button class="btn-reject" onclick="review(\'' + escapeAttr(e.id) + '\',\'reject\')">Reject</button><button type="button" class="sub-edit-btn" id="subeditbtn-' + escapeAttr(e.id) + '" aria-expanded="' + (SUB_EDIT[e.id] && SUB_EDIT[e.id].open ? 'true' : 'false') + '" onclick="subEditOpen(\'' + escapeAttr(e.id) + '\')">Edit</button></div>' : '')
+    + (withActions ? subEditNoticeHtml(e) + subEditPanelHtml(e) : '')
     + '</div>';
 }
 
@@ -1819,18 +1911,203 @@ function subTowerArrived() { if (SUB_ROWS.length) { SUB_ROWS = subBuild(SUB_ROWS
 const QUEUE_CLASS_ORDER = ['public_event', 'ambiguous', 'civic_meeting', 'service', 'observance'];
 const QUEUE_CLASS_LABELS = { public_event: 'Events and programs', ambiguous: 'Needs a closer look', civic_meeting: 'Civic & Community: public meetings', service: 'Community services', observance: 'Calendar observances' };
 
-async function review(id, action) {
+
+// ---- Review-queue editing (#185 increment 1) ----
+// Saves go through POST /api/admin-events {action:'save_correction'}. A save is a correction: it replaces a value and is
+// recorded by the API; it never clears a value and never approves unless "Save and approve" is used. The page shows only
+// what the API returns: row_version, owner_corrected[], edits[]. The recorded actor is the shared "admin" secret, so no
+// person's name is ever shown. There is no stored as-ingested snapshot yet, so the evidence block says "Recorded values".
+const SUB_EDIT_GROUPS = [
+  { title: 'What and when', fields: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'category', label: 'Category', type: 'text' },
+    { key: 'time_display', label: 'Time (for example 9:00 PM)', type: 'text' } ] },
+  { title: 'Where', fields: [
+    { key: 'venue_name_raw', label: 'Venue name', type: 'text' },
+    { key: 'venue_address_raw', label: 'Venue address', type: 'text' },
+    { key: 'venue_city_raw', label: 'Venue city', type: 'text' } ] },
+  { title: 'Links', fields: [
+    { key: 'ticket_url', label: 'Ticket link', type: 'url' },
+    { key: 'event_url', label: 'Event link', type: 'url' } ] },
+  { title: 'Description', fields: [
+    { key: 'description', label: 'Description', type: 'textarea' } ] },
+];
+const SUB_EDIT_LABELS = {};
+SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => { SUB_EDIT_LABELS[f.key] = f.label.replace(/ \(.*\)$/, ''); }));
+SUB_EDIT_LABELS.venue_id = 'Venue link';
+const SUB_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+
+function subEditFind(id) { return SUB_ROWS.find(r => r.id === id) || (SUB_ENDED || []).find(r => r.id === id) || null; }
+function subEditValue(e, key) { const d = SUB_EDIT[e.id] && SUB_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function subEditLabel(k) { return SUB_EDIT_LABELS[k] || k; }
+
+function subEditedHtml(e) {
+  const oc = Array.isArray(e.owner_corrected) ? e.owner_corrected : [];
+  if (!oc.length) return '';
+  return '<div class="sub-edited">Edited by owner: ' + escapeHtml(oc.map(subEditLabel).join(', ')) + '. Importers will not overwrite these fields.</div>';
+}
+function subEditNoticeHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.notice || st.open) return '';
+  return '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>';
+}
+function subEditHistoryHtml(e) {
+  const eds = Array.isArray(e.edits) ? e.edits : [];
+  if (!eds.length) return '<div>No corrections recorded.</div>';
+  return '<ul style="margin:4px 0 0;padding-left:18px;">' + eds.map(x => '<li>' + escapeHtml(subEditLabel(x.field)) + ': ' + escapeHtml(x.before == null ? SUB_NP : x.before) + ' → ' + escapeHtml(x.after == null ? SUB_NP : x.after)
+    + ' (' + (x.at ? escapeHtml(subDetroit(x.at)) : SUB_NP) + ', by admin)</li>').join('') + '</ul>';
+}
+function subEditPanelHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id), p = e._sub.prov;
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'subedit-' + id + '-' + f.key, v = subEditValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="subEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="subEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> The original as-imported copy is not stored yet, so earlier values are only available from the corrections below.'
+    + '<br>Source: ' + escapeHtml(p.source || SUB_NP) + ' · Method: ' + escapeHtml(p.method || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit event" onkeydown="if(event.key===\'Escape\'){subEditClose(\'' + id + '\');}">'
+    + groups + evidence
+    + '<div class="sub-edit-diff" id="subeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="subeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="subeditsave-' + id + '" onclick="subEditSave(\'' + id + '\',false)">Save correction</button>'
+    + '<button type="button" class="btn-approve" id="subeditapprove-' + id + '" onclick="subEditSave(\'' + id + '\',true)">Save and approve</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="subEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+
+// What the form would change, from the live inputs (or the draft when the inputs are not on screen).
+function subEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = subEditValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function subEditDiffRefresh(id) {
+  const e = subEditFind(id); if (!e) return;
+  const r = subEditChanges(e), diff = document.getElementById('subeditdiff-' + id);
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = SUB_EDIT[id], dis = !r.changes.length || r.blanks.length > 0 || (st && st.busy);
+  ['subeditsave-', 'subeditapprove-'].forEach(pre => { const b = document.getElementById(pre + id); if (b) b.disabled = !!dis; });
+}
+function subEditInput(id) {
+  const st = SUB_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  subEditDiffRefresh(id);
+}
+function subEditOpen(id) {
+  const e = subEditFind(id); if (!e) return;
+  SUB_EDIT[id] = Object.assign(SUB_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  subRender();
+  subEditDiffRefresh(id);
+  const first = document.getElementById('subedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function subEditClose(id) {
+  if (SUB_EDIT[id]) { SUB_EDIT[id].open = false; SUB_EDIT[id].draft = null; SUB_EDIT[id].notice = ''; }
+  subRender();
+  const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+}
+// Rebuild the derived lane data after the API returned new field values.
+function subEditApply(id, patch) {
+  const apply = list => list && list.map(r => r.id === id ? subBuild([Object.assign({}, r, patch)], TOWER)[0] : r);
+  SUB_ROWS = apply(SUB_ROWS);
+  if (SUB_ENDED) SUB_ENDED = apply(SUB_ENDED);
+}
+async function subEditSave(id, approve) {
+  const e = subEditFind(id), st = SUB_EDIT[id]; if (!e || !st) return;
+  subEditInput(id);
+  const r = subEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { subEditDiffRefresh(id); return; }
+  const rv = e.row_version || null;
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Reload the queue and try again.'; st.noticeKind = 'err'; subRender(); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; subEditDiffRefresh(id);
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields, approve: !!approve }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      // Someone or something changed the event after this page loaded. Show the current values; keep what was typed.
+      if (data.current) subEditApply(id, Object.assign({}, data.current, { row_version: data.row_version || (data.current && data.current.updated_at) || null }));
+      st.notice = 'This event changed since you opened it, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    const ap = data.approve || {};
+    if (ap.done) {
+      SUB_ROWS = SUB_ROWS.filter(x => x.id !== id); if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(x => x.id !== id);
+      delete SUB_EDIT[id]; subRender(); return;
+    }
+    subEditApply(id, Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    let msg = 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still awaiting review.', kind = 'ok';
+    if (ap.requested && ap.blocked) { msg += ' Not approved: ' + (ap.blocked.why || 'a publication check failed') + (ap.blocked.codes && ap.blocked.codes.length ? ' (' + ap.blocked.codes.join(', ') + ')' : '') + '.'; kind = 'warn'; }
+    SUB_EDIT[id] = { open: false, draft: null, notice: msg, noticeKind: kind };
+    subRender();
+    const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    subRender(); subEditDiffRefresh(id);
+  }
+}
+
+async function review(id, action, acknowledgeMissingLocation) {
   const card = document.getElementById('card-' + id);
   card.style.opacity = '0.5';
   try {
     const resp = await fetch('/api/admin-events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
-      body: JSON.stringify({ id, action }),
+      body: JSON.stringify(acknowledgeMissingLocation ? { id, action, acknowledgeMissingLocation: true } : { id, action }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
+    if (!resp.ok) {
+      // A Venue Submission with no venue link and no city (api/_lib/venue-location-gate.js): say why on the card and
+      // let the moderator approve it on purpose with a second click. Nothing was written by the refused first try.
+      if (action === 'approve' && !acknowledgeMissingLocation && data && data.error === 'MISSING_VENUE_LOCATION') {
+        card.style.opacity = '1';
+        const btn = card.querySelector('.btn-approve');
+        if (btn) { btn.textContent = 'Approve without a venue or city'; btn.onclick = () => review(id, 'approve', true); }
+        if (!card.querySelector('.sub-locwarn')) {
+          const note = document.createElement('div');
+          note.className = 'sub sub-locwarn';
+          note.textContent = data.message || 'This submission has no venue and no city.';
+          const actions = card.querySelector('.actions');
+          if (actions && actions.parentNode) actions.parentNode.insertBefore(note, actions); else card.appendChild(note);
+        }
+        return;
+      }
+      throw new Error(errText(data, 'Action failed'));
+    }
     card.remove();
+    delete SUB_EDIT[id];
     SUB_ROWS = SUB_ROWS.filter(r => r.id !== id);
     if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(r => r.id !== id);
     subRender();
@@ -2427,7 +2704,7 @@ async function searchLiveEvents() {
   if (!q) { results.innerHTML = ''; return; }
   results.innerHTML = '<div class="empty">Searching…</div>';
   try {
-    const resp = await fetch('/api/admin-events?search=' + encodeURIComponent(q), {
+    const resp = await fetch('/api/admin-events?match=any&search=' + encodeURIComponent(q), {
       headers: { 'x-admin-secret': SECRET },
     });
     const data = await resp.json();
@@ -2438,24 +2715,200 @@ async function searchLiveEvents() {
   }
 }
 
-function renderLiveResults(events) {
-  const results = document.getElementById('liveResults');
-  if (!events.length) {
-    results.innerHTML = '<div class="empty">No live events match that search.</div>';
-    return;
-  }
-  results.innerHTML = events.map(e => `
-    <div class="card" id="live-card-${e.id}">
+// Live events: results are kept so an Edit panel can be drawn beside Remove. Corrections go through the same
+// save_correction action as the review queue (see "Review-queue editing"); a live event stays live, nothing is approved.
+let LIVE_ROWS = [];
+const LIVE_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+function liveRowVersion(e) { return e.row_version || e.updated_at || null; }
+function liveFind(id) { return LIVE_ROWS.find(r => r.id === id) || null; }
+function liveValue(e, key) { const d = LIVE_EDIT[e.id] && LIVE_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function liveCardHtml(e) {
+  const id = escapeAttr(e.id), st = LIVE_EDIT[e.id];
+  const notice = st && st.notice && !st.open ? '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>' : '';
+  return `
+    <div class="card" id="live-card-${id}">
       <h3>${escapeHtml(e.title)}</h3>
       <div class="meta">
         <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b> · Source: <b>${escapeHtml(e.source || 'Manual')}</b>
       </div>
+      ${subEditedHtml(e)}${notice}${livePanelHtml(e)}
       <div class="actions">
-        <button class="btn-hide" id="hide-btn-${e.id}" onclick="hideEvent('${e.id}')">Remove from site</button>
+        <button class="sub-edit-btn" id="liveeditbtn-${id}" onclick="liveEditOpen('${id}')"${st && st.open ? ' aria-expanded="true"' : ' aria-expanded="false"'}>Edit</button>
+        <button class="btn-hide" id="hide-btn-${id}" onclick="hideEvent('${id}')">Remove from site</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+function renderLiveResults(events) {
+  const results = document.getElementById('liveResults');
+  LIVE_ROWS = events;
+  if (!events.length) {
+    results.innerHTML = '<div class="empty">No live events match that search.</div>';
+    return;
+  }
+  results.innerHTML = events.map(liveCardHtml).join('');
+}
+function liveRender(id) {
+  const e = liveFind(id), card = document.getElementById('live-card-' + id);
+  if (!e || !card) return;
+  const tmp = document.createElement('div'); tmp.innerHTML = liveCardHtml(e).trim();
+  card.replaceWith(tmp.firstChild);
+}
+function livePanelHtml(e) {
+  const st = LIVE_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id);
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'liveedit-' + id + '-' + f.key, v = liveValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="liveEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="liveEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> Source: ' + escapeHtml(e.source || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit live event" onkeydown="if(event.key===\'Escape\'){liveEditClose(\'' + id + '\');}">'
+    + groups + liveArtHtml(e) + evidence
+    + '<div class="sub-edit-diff" id="liveeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="liveeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="liveeditsave-' + id + '" onclick="liveEditSave(\'' + id + '\')">Save correction</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="liveEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+// Artwork for a live event: same admin sign-in, one exact event, preview first, never replaces an existing image
+// (the server fixes replace:false). Files are limited to 3 MB so the base64 body stays under the platform request cap.
+const LIVE_ART = {};   // id -> { b64, sha256 }
+function liveArtHtml(e) {
+  const id = escapeAttr(e.id);
+  if (e.image_url) return '<fieldset><legend>Artwork</legend>Current image (kept; this form cannot replace it):<br><img src="' + escapeAttr(e.image_url) + '" alt="Current artwork" style="max-width:100%;max-height:200px"></fieldset>';
+  return '<fieldset><legend>Artwork</legend><label for="liveart-' + id + '">Add artwork (JPG, PNG, WEBP or GIF, up to 3 MB)</label>'
+    + '<input type="file" id="liveart-' + id + '" accept="image/jpeg,image/png,image/webp,image/gif" onchange="liveArtPick(\'' + id + '\')">'
+    + '<img id="liveartprev-' + id + '" alt="Preview of the chosen artwork" hidden style="max-width:100%;max-height:240px">'
+    + '<div class="sub-edit-msg" id="liveartmsg-' + id + '" role="status" aria-live="polite"></div>'
+    + '<button type="button" class="btn-approve" id="liveartapply-' + id + '" disabled onclick="liveArtApply(\'' + id + '\')">Upload artwork</button></fieldset>';
+}
+function liveArtMsg(id, text, kind) { const m = document.getElementById('liveartmsg-' + id); if (m) { m.textContent = text; m.className = 'sub-edit-msg ' + (kind || ''); } }
+async function liveArtCall(id, apply) {
+  const art = LIVE_ART[id];
+  const resp = await fetch('/api/admin-events', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+    body: JSON.stringify({ id: id, action: 'upload_image', image_base64: art.b64, expected_sha256: art.sha256, apply: apply === true, source_note: 'admin portal upload' }),
+  });
+  return { resp: resp, data: await resp.json().catch(() => ({})) };
+}
+async function liveArtPick(id) {
+  const input = document.getElementById('liveart-' + id), btn = document.getElementById('liveartapply-' + id), prev = document.getElementById('liveartprev-' + id);
+  delete LIVE_ART[id]; if (btn) btn.disabled = true; if (prev) prev.hidden = true;
+  const f = input && input.files && input.files[0]; if (!f) return;
+  if (f.size > 3 * 1024 * 1024) { liveArtMsg(id, 'That file is over 3 MB. Nothing was uploaded.', 'err'); return; }
+  const buf = await f.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  const sha = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+  let bin = ''; const u8 = new Uint8Array(buf); for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  LIVE_ART[id] = { b64: btoa(bin), sha256: sha };
+  if (prev) { prev.src = URL.createObjectURL(f); prev.hidden = false; }
+  liveArtMsg(id, 'Checking the file...', '');
+  try {
+    const r = await liveArtCall(id, false);
+    if (!r.resp.ok) { liveArtMsg(id, (r.data.error || 'Check failed') + ' Nothing was uploaded.', 'err'); return; }
+    const im = r.data.image || {};
+    liveArtMsg(id, 'Ready: ' + im.type + ', ' + im.width + 'x' + im.height + ', ' + im.bytes + ' bytes. Nothing is uploaded until you press Upload artwork.', 'ok');
+    if (btn) btn.disabled = false;
+  } catch (err) { liveArtMsg(id, 'Check failed: ' + err.message + '. Nothing was uploaded.', 'err'); }
+}
+async function liveArtApply(id) {
+  if (!LIVE_ART[id]) return;
+  const btn = document.getElementById('liveartapply-' + id); if (btn) btn.disabled = true;
+  try {
+    const r = await liveArtCall(id, true);
+    if (!r.resp.ok) { liveArtMsg(id, (r.data.error || 'Upload failed') + ' Nothing was changed.', 'err'); return; }
+    const url = r.data.image && r.data.image.url;
+    LIVE_ROWS = LIVE_ROWS.map(x => x.id === id ? Object.assign({}, x, { image_url: url }) : x);
+    delete LIVE_ART[id];
+    LIVE_EDIT[id] = Object.assign(LIVE_EDIT[id] || {}, { open: false, draft: null, notice: 'Artwork attached and checked back from its public address. The event is still live.', noticeKind: 'ok' });
+    liveRender(id);
+  } catch (err) { liveArtMsg(id, 'Upload failed: ' + err.message + '. Nothing was changed.', 'err'); }
+}
+function liveEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = liveValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function liveEditDiffRefresh(id) {
+  const e = liveFind(id); if (!e) return;
+  const r = liveEditChanges(e), diff = document.getElementById('liveeditdiff-' + id);
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') + '. The event stays live.' : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = LIVE_EDIT[id], b = document.getElementById('liveeditsave-' + id);
+  if (b) b.disabled = !r.changes.length || r.blanks.length > 0 || !!(st && st.busy);
+}
+function liveEditInput(id) {
+  const st = LIVE_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  liveEditDiffRefresh(id);
+}
+function liveEditOpen(id) {
+  if (!liveFind(id)) return;
+  LIVE_EDIT[id] = Object.assign(LIVE_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  liveRender(id); liveEditDiffRefresh(id);
+  const first = document.getElementById('liveedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function liveEditClose(id) {
+  if (LIVE_EDIT[id]) { LIVE_EDIT[id].open = false; LIVE_EDIT[id].draft = null; LIVE_EDIT[id].notice = ''; }
+  liveRender(id);
+  const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+}
+async function liveEditSave(id) {
+  const e = liveFind(id), st = LIVE_EDIT[id]; if (!e || !st) return;
+  liveEditInput(id);
+  const r = liveEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { liveEditDiffRefresh(id); return; }
+  const rv = liveRowVersion(e);
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Search again and retry.'; st.noticeKind = 'err'; liveRender(id); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; liveEditDiffRefresh(id);
+  const replace = row => { LIVE_ROWS = LIVE_ROWS.map(x => x.id === id ? Object.assign({}, x, row) : x); };
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      if (data.current) replace(Object.assign({}, data.current, { row_version: data.row_version || data.current.updated_at || null }));
+      st.notice = 'This event changed since you searched, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    replace(Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    LIVE_EDIT[id] = { open: false, draft: null, notice: 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still live, and importers will not overwrite the corrected fields.', noticeKind: 'ok' };
+    liveRender(id);
+    const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    liveRender(id); liveEditDiffRefresh(id);
+  }
 }
 
 // Two-step confirm, inline (no native confirm() dialogs): first click arms

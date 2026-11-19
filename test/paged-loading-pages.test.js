@@ -208,7 +208,7 @@ async function run() {
     const html = read("venues.html");
     const templates = [...html.matchAll(/fetchAllRows\(`([^`]+)`/g)].map((m) => m[1]);
     assert.strictEqual(templates.length, 2, "venues.html pages both its venues list and its event rows");
-    const fill = (t) => t.replace("${SUPABASE_URL}", "https://example.supabase.co").replace("${getTodayISO()}", TODAY);
+    const fill = (t) => t.replace("${SUPABASE_URL}", "https://example.supabase.co").split("${detroitTodayISO()}").join(TODAY);
     const eventsUrl = fill(templates.find((t) => /\/events\?/.test(t)));
     const venuesUrl = fill(templates.find((t) => /\/venues\?/.test(t)));
     const { fetchAllRows } = require(`${REPO_DIR}/paged-fetch.js`);

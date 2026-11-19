@@ -1,0 +1,31 @@
+{
+  "runToken": "20261019-131931-0d9207",
+  "action": "complete",
+  "runId": "5ee4d046-c9fe-4723-b8f1-5f90a022614a",
+  "events": [
+    {
+      "id": "ra-2563827",
+      "title": "Beepboop vs Boombap",
+      "description": "Outdoor space\nBonfire\nBring a chair\nCostumes encouraged\nCome Friendly ",
+      "startDate": "2026-10-23T18:00:00.000",
+      "endDate": "2026-10-23T23:59:00.000",
+      "venueName": "TBA",
+      "address": null,
+      "image": "https://images.ra.co/ea9e81aec4a77772801b9199615c8b84e36c2f48.jpg",
+      "offersPrice": 14.95,
+      "url": "https://ra.co/events/2563827"
+    },
+    {
+      "id": "ra-2564140",
+      "title": "Siren Pres: Christian Girl Autumn",
+      "description": "Bye Hot Girl Summer, Hello Christian Girl Fall\n\nSelectors:\nAdjust Rain (LA)\nLapilli (Nashville)\nSapphyree (Baltimore)\nJoycxi\n\nVendors TBA\n\nCostume Contest?\n\nTickets will be more at the door, get yours early!\n\nParis Bar\n9pm-2am, 21+",
+      "startDate": "2026-11-14T21:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "Paris Bar",
+      "address": "2961 E McNichols Rd, Hamtramck, MI 48212, United States",
+      "image": "https://images.ra.co/fa7c994dc816f90fdd8bb163853fd71a9dd99311.png",
+      "offersPrice": 11.3,
+      "url": "https://ra.co/events/2564140"
+    }
+  ]
+}

@@ -35,14 +35,24 @@
 // populated either.
 
 const crypto = require("crypto");
+const guard = require("./_lib/upload-guard");
 
-function readRawBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
+// P0 security remediation (owner decision I1, 2026-10-17). Before this change the endpoint accepted any POST from anyone:
+// no token, no rate limit, and the bytes were never inspected (the declared Content-Type alone decided acceptance).
+// Now: GET returns a short-lived signed token the submit form fetches first; POST requires it, sniffs the real bytes
+// (JPEG/PNG/GIF/WebP, must match the declared type, pixel ceiling), caps uploads per client per hour, writes under a
+// per-client prefix, and says x-upsert: false so an existing object can never be replaced. The service key never reaches
+// the browser; the token key is derived from it on the server.
+
+async function readRawBody(req, maxBytes) {
+  const chunks = [];
+  let total = 0;
+  for await (const chunk of req) {
+    total += chunk.length;
+    if (total > maxBytes) { const e = new Error("too large"); e.code = "TOO_LARGE"; throw e; }
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -50,46 +60,64 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BUCKET = "event-flyers";
-// 4MB, not 5 — Vercel Serverless Functions cap the whole request body
-// (headers + payload) at ~4.5MB regardless of what this code checks, so a
-// limit here that isn't comfortably under that just means the platform
-// itself rejects borderline uploads with an opaque error instead of this
-// endpoint's own clear "too large" message. Matches migration_013's bucket
-// file_size_limit — keep both in sync if this ever changes.
+// 4MB, not 5 -- Vercel Serverless Functions cap the whole request body at ~4.5MB regardless of what this code checks.
+// Matches migration_013's bucket file_size_limit; keep both in sync if this ever changes.
 const MAX_BYTES = 4 * 1024 * 1024;
-const EXT_BY_TYPE = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-};
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
+async function recentUploadTimes(prefix) {
+  const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
+    method: "POST",
+    headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix, limit: 50, sortBy: { column: "created_at", order: "desc" } }),
+  });
+  if (!resp.ok) throw new Error(`storage list HTTP ${resp.status}`);
+  const rows = await resp.json();
+  return (Array.isArray(rows) ? rows : []).map((r) => r.created_at).filter(Boolean);
+}
 
 module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method not allowed" });
-    return;
-  }
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Content-Type-Options", "nosniff");
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(500).json({ error: "Image uploads are not configured yet (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set)." });
     return;
   }
 
+  if (req.method === "GET") {
+    res.status(200).json({ token: guard.issueToken(SUPABASE_SERVICE_ROLE_KEY), expiresInSeconds: guard.TOKEN_TTL_MS / 1000 });
+    return;
+  }
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  const tokenCheck = guard.verifyToken(SUPABASE_SERVICE_ROLE_KEY, req.headers["x-upload-token"]);
+  if (!tokenCheck.ok) {
+    res.status(401).json({ error: tokenCheck.reason === "expired" ? "That upload session expired — please reload the page and try again." : "Upload not authorised." });
+    return;
+  }
+
   const contentType = (req.headers["content-type"] || "").split(";")[0].trim();
-  const ext = EXT_BY_TYPE[contentType];
-  if (!ext) {
+  if (!ALLOWED_TYPES.has(contentType)) {
     res.status(400).json({ error: "Unsupported image type — please use JPG, PNG, WEBP, or GIF." });
+    return;
+  }
+  const declaredLength = Number(req.headers["content-length"]);
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BYTES) {
+    res.status(413).json({ error: "That image is too large — max 4MB." });
     return;
   }
 
   let buffer;
   try {
-    // Prefer req.body only if some runtime already gave us real bytes;
-    // otherwise read the raw stream ourselves — see the file-header
-    // comment for why req.body can't be trusted to be populated here.
-    buffer = Buffer.isBuffer(req.body) && req.body.length ? req.body : await readRawBody(req);
+    // req.body only if a runtime already gave us real bytes; otherwise stream with a hard byte ceiling.
+    buffer = Buffer.isBuffer(req.body) && req.body.length ? req.body : await readRawBody(req, MAX_BYTES);
   } catch (err) {
-    res.status(500).json({ error: "Failed to read the upload: " + err.message });
+    if (err && err.code === "TOO_LARGE") { res.status(413).json({ error: "That image is too large — max 4MB." }); return; }
+    res.status(500).json({ error: "Failed to read the upload." });
     return;
   }
   if (!buffer.length) {
@@ -101,7 +129,28 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const path = `${crypto.randomUUID()}.${ext}`;
+  const verdict = guard.validateUpload(buffer, contentType);
+  if (!verdict.ok) {
+    res.status(verdict.status).json({ error: verdict.error });
+    return;
+  }
+
+  const client = guard.clientKey(SUPABASE_SERVICE_ROLE_KEY, guard.clientIp(req.headers));
+  const prefix = `u/${client}`;
+  try {
+    const times = await recentUploadTimes(prefix);
+    if (guard.overClientLimit(times)) {
+      res.setHeader("Retry-After", "3600");
+      res.status(429).json({ error: "Too many uploads from this connection — please try again later." });
+      return;
+    }
+  } catch (_) {
+    // Fail closed: an unverifiable rate limit is not a pass.
+    res.status(503).json({ error: "Uploads are temporarily unavailable — please try again shortly." });
+    return;
+  }
+
+  const path = `${prefix}/${crypto.randomUUID()}.${verdict.ext}`;
 
   try {
     const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
@@ -109,20 +158,21 @@ module.exports = async (req, res) => {
       headers: {
         apikey: SUPABASE_SERVICE_ROLE_KEY,
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": contentType,
+        "Content-Type": verdict.type,
+        "x-upsert": "false",
+        "Cache-Control": "max-age=31536000",
       },
       body: buffer,
     });
 
     if (!resp.ok) {
-      const errText = await resp.text();
-      res.status(502).json({ error: "Storage rejected the upload: " + errText });
+      res.status(502).json({ error: "Storage rejected the upload." });
       return;
     }
 
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
     res.status(201).json({ ok: true, url: publicUrl });
   } catch (err) {
-    res.status(500).json({ error: "Upload failed: " + err.message });
+    res.status(500).json({ error: "Upload failed." });
   }
 };
