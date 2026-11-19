@@ -99,45 +99,57 @@ function run() {
       "I want to know what’s around the corner. What’s inside that building. Who made that. And especially what happened here before we showed up.",
       "Sometimes I’m watching a band at Paris Bar. Sometimes I’m hearing Phat Kat talk about making music with J Dilla. Sometimes I’m getting very invested in a seasonal pizza menu.",
       "That curiosity is why I’m building 313.events.",
+      "How I accidentally moved to Detroit.",
+      "I first arrived on Halloween 2019 to see a house I’d accidentally bought in an online Detroit Land Bank Authority auction.",
+      "I came from Los Angeles for four days. During that visit, I landed a job interview. Before I knew it, I had a relocation package. By January 2020, I was living in Detroit.",
+      "Apparently I was moving here.",
+      "The first person I met in Detroit was Larry Love, the bartender at Temple Bar. He passed away recently, and I’m grateful he was part of my introduction to this city.",
+      "My across-the-street neighbor turned out to be Al Ester.",
+      "What a welcome.",
+      "Since then, I’ve been soaking it all up: the people, the shows, the art, the food, the moments you couldn’t have planned if you tried.",
+      "And the history. How much of the fabric of American life came from HERE. The people, places and ideas that shaped life far beyond Michigan.",
+      "Detroit is still delivering.",
+      "That history is still unfolding—on stages, in studios, in kitchens, in galleries and across neighborhoods.",
+      "I see Detroit as the center of American culture. I’m out here exploring it, and I want to show it to you.",
+      "I want to see the famous places. I also want to find the little room, the neighborhood institution, the artist down the street and the thing happening once that I’ll regret missing.",
+      "Those adventures became part of the foundation for 313.events.",
       "Ricky Rat named me.",
       "I didn’t give myself the name LA Jody. Ricky Rat did. Then everyone in the rock ’n’ roll scene started calling me that, so I accepted the moniker.",
       "I asked him if he knew other Jodys.",
       "No.",
       "Apparently I didn’t need distinguishing from another Jody. I just needed a nickname.",
       "I guess giving people nicknames is part of the culture here. This one stuck.",
-      "LA Jody, meet the Detroit Orbit.",
-      "California is part of my story. I still get homesick. When a California band comes through Detroit, sometimes I can hear the sunshine in the music.",
-      "Since arriving here, I’ve been exploring everything Detroit has to offer and documenting my adventures along the way.",
-      "The history especially gets me. How much of the fabric of American life came from HERE. Music, cars, industry, design—the people and ideas that shaped life far beyond Michigan.",
-      "I want to see the famous places. I also want to find the little room, the neighborhood institution, the artist down the street and the thing happening once that I’ll regret missing.",
-      "There is so much here. I want more people to experience it.",
       "Building digital products and experiences that people can use, be entertained by and sometimes both",
       "I’m Jody Tyree, founder of both 313.events and Sentient Productions. I’ve spent more than twenty-five years helping teams develop products and emerging technologies.",
       "A lot of that work comes down to listening. What do people need? What’s missing? What could we build that would actually help?",
       "Then you make something, learn from how people use it, and keep making it better.",
       "Through Sentient Productions, I’m bringing that experience into artist development: helping artists clarify their direction, choose their next steps and build the tools, connections and career foundations that support their goals.",
       "313.events helps people discover what’s happening. My work through Sentient supports the people creating it.",
-      "Get to know Sentient Productions →",
       "A conversation. Then a prototype.",
       "My work brought me into conversations with Kevin Kay, founder of the Detroit Music Collective, and the community surrounding the Greater Detroit Music Census.",
       "On August 19, 2026, Kevin and I discussed the possibility of a centralized events calendar.",
       "Cleveland had a calendar we could look to. Why couldn’t Detroit have a place to bring its own abundance together?",
       "My reaction?",
-      "“Hold my beer.”",
+      "“Hold my (proverbial) beer.”",
       "By 5:38 that afternoon, I had emailed Kevin a working prototype of 313.events.",
       "“I couldn’t let this idea go because it is so attainable!” I wrote.",
       "That’s the first documented day of this website.",
       "Eight days later, I emailed Kevin with a name for the geography I wanted to explore: the Detroit Orbit.",
       "The music census covered a 75-mile radius around Detroit. That regional perspective made sense for discovering things to do, too. There are reasons to explore in every direction.",
       "The Collective’s work bringing Detroit’s music community together—and understanding what it needs through the census—helped inspire me to start building. I’m grateful that conversation happened.",
-      "Take a look at their work and the efforts they’re bringing to Detroit.",
-      "Explore the Detroit Music Collective →",
       "The story that stayed with me",
       "Friends from Berlin were visiting Detroit. They wanted to discover something besides clubs—they had plenty of nightlife back home.",
       "I hosted them one evening. They told me they didn’t know where to look for other things to do and had ended up watching TV.",
       "In Detroit. With everything happening here.",
       "That stayed with me. I never want someone to miss what this place has to offer because they couldn’t find it.",
       "And that goes for the people who live here, too.",
+      "Explore the work behind the story",
+      "Detroit Music Collective",
+      "The conversation that helped start 313.events. Explore the Collective’s work connecting Detroit’s music community, the Greater Detroit Music Census and its community initiatives.",
+      "Explore the Collective →",
+      "Sentient Productions",
+      "My work supporting artists and their careers. I founded Sentient Productions to bring my digital product experience into artist development, helping artists build toward their own goals.",
+      "Get to know Sentient →",
       "One place. So many possibilities.",
       "My ambition is to create one place to discover anything and everything happening in the Detroit Orbit.",
       "Something for tonight. Something worth planning ahead for. Something you didn’t know you wanted to do until you saw it.",
@@ -157,13 +169,16 @@ function run() {
   ];
   const aboutBody = about.slice(about.indexOf('<h1 class="legal-title">'), about.indexOf('<footer class="site">'));
   const unesc = (x) => x.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-  const aboutText = [...aboutBody.matchAll(/<(h1|h2|p)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => unesc(m[2].replace(/<[^>]+>/g, "")));
+  const aboutText = [...aboutBody.matchAll(/<(h1|h2|h3|p)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => unesc(m[2].replace(/<[^>]+>/g, "")));
   assert.deepStrictEqual(aboutText, APPROVED_ABOUT, "about.html visible text must be exactly the approved copy, in order");
   assert.strictEqual((aboutBody.match(/<h1\b/g) || []).length, 1, "about.html has one h1");
-  const APPROVED_LINKS = [["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Sentient Productions", "https://www.sentientproductions.com/"], ["Get to know Sentient Productions →", "https://www.sentientproductions.com/"], ["Detroit Music Collective", "https://detroitmusiccollective.com/"], ["Explore the Detroit Music Collective →", "https://detroitmusiccollective.com/"], ["Find your next experience.", "https://313.events"]];
+  const APPROVED_LINKS = [["Ricky Rat", "https://www.facebook.com/rickyratdetroit/"], ["Explore the Collective →", "https://detroitmusiccollective.com/"], ["Get to know Sentient →", "https://www.sentientproductions.com/"], ["Find your next experience.", "https://313.events"]];
   const aboutLinks = [...aboutBody.matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].map((m) => [m[2], m[1]]);
-  assert.deepStrictEqual(aboutLinks, APPROVED_LINKS, "about.html links are exactly the approved ones (Ricky Rat, Sentient Productions, the Detroit Music Collective, and the closing link to https://313.events)");
-  assert.ok(/Berlin/.test(aboutBody) && /Hold my beer/.test(aboutBody) && />Ricky Rat<\/a> named me\./.test(aboutBody), "the Berlin story, the prototype story and the Ricky Rat section are present");
+  assert.deepStrictEqual(aboutLinks, APPROVED_LINKS, "about.html links are exactly the approved ones (the Ricky Rat heading, the two story cards and the closing link to https://313.events)");
+  assert.ok(/Berlin/.test(aboutBody) && /Hold my \(proverbial\) beer/.test(aboutBody) && />Ricky Rat<\/a> named me\./.test(aboutBody), "the Berlin story, the prototype story and the Ricky Rat section are present");
+  assert.strictEqual((aboutBody.match(/<div class="story-card">/g) || []).length, 2, "two story cards (Detroit Music Collective, Sentient Productions)");
+  assert.ok(aboutBody.indexOf("The story that stayed with me") < aboutBody.indexOf('class="story-cards"') && aboutBody.indexOf('class="story-cards"') < aboutBody.indexOf("One place. So many possibilities."), "the cards sit after the Berlin story");
+  assert.ok(!/Creatives Care|<img\b/i.test(aboutBody), "no Creatives Care and no new images on About");
   assert.ok(!/\b\d[\d,]*\+?\s*(users|visitors|readers|events served|monthly)/i.test(about), "about.html must not state audience/usage statistics");
   console.log("PASS: 6. about.html carries the owner-approved copy exactly, headings and closing link included");
 
