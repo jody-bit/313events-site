@@ -7140,10 +7140,6 @@ const NEIGHBORHOOD_PHOTOS = {
     alt: 'A stone bridge over a quiet pond at Elmwood Cemetery in Detroit, framed by mature trees.'
   }
 };
-// The same Fitzgerald photo under both spellings: Discovery's place list and the reference-data migration say "Fitzgerald",
-// while the live neighborhoods table has said "Fitzgerald-Marygrove" (2026-10-01 note). The card reads whichever name the
-// event data carries, so the one photo is keyed by both rather than guessing which is current.
-NEIGHBORHOOD_PHOTOS['Fitzgerald'] = NEIGHBORHOOD_PHOTOS['Fitzgerald-Marygrove'];
 
 function renderNeighborhoodsRail(){
   const section = document.getElementById('neighborhoodsSection');
