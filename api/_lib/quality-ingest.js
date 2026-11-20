@@ -31,8 +31,8 @@ function observeIngest(rows, opts) {
     // A partial row (e.g. a merge patch over a stored-row subset) cannot be assessed honestly: an omitted field would read as a
     // false failure. It is reported as an explicit coverage gap: every check unchecked, never pass, never fail.
     if (o.partial) {
-      const { CHECKS } = require("./quality-coverage");
-      const checks = Object.fromEntries(CHECKS.map((k) => [k, { pass: 0, fail: 0, review: 0, unchecked: list.length }]));
+      const { CHECKS, KIND } = require("./quality-coverage");
+      const checks = Object.fromEntries(CHECKS.map((k) => [k, { kind: KIND[k], pass: 0, fail: 0, review: 0, unchecked: list.length }]));
       const gap = { state: "ok", path, rows: list.length, partial: true, checks, review_keys: [], limits: ["partial rows are not assessed here: explicit coverage gap, all checks unchecked"] };
       if (log) log("[quality-ingest] " + JSON.stringify({ path, rows: list.length, partial: true, unchecked_all: true }));
       return gap;

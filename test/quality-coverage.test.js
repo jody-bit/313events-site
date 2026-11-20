@@ -23,12 +23,12 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
 
 // 1. Clean row (locked category, linked venue, ok link, current source) passes every check it can positively pass.
 {
-  const r = one(clean, { currency: { state: 'current' }, codes: new Set() });
-  for (const k of ['required_facts', 'freshness', 'date_time', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
+  const r = one(clean, { currency: { state: 'current', basis: 'last_seen_at_source' }, codes: new Set() });
+  for (const k of ['required_facts', 'venue_linked', 'freshness', 'date_time', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
   assert.equal(r.audience_purpose, 'unchecked', 'ordinary event verdict is the classifier abstaining, not pass');
   // A locked category is overwrite protection, not verification: still unchecked. Only recorded review evidence passes.
   assert.equal(r.category, 'unchecked');
-  assert.equal(one({ ...clean, category: 'nightlife' }, { currency: { state: 'current' } }).category, 'unchecked', 'locked wrong category is not accurate');
+  assert.equal(one({ ...clean, category: 'nightlife' }, { currency: { state: 'current', basis: 'last_seen_at_source' } }).category, 'unchecked', 'locked wrong category is not accurate');
   assert.equal(one(clean, { reviewed: (row, f) => f === 'category' && row.id === 'clean' }).category, 'pass');
   assert.equal(one(clean, { reviewed: () => 'yes' }).category, 'unchecked', 'only an explicit true passes');
 }
@@ -36,9 +36,9 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
 // 1b. An owner lock on the time deliberately differs from the source: date/time is unchecked, not pass.
 {
   const lockedTime = { ...clean, internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z e1 fields=time_display | {"actor":"owner","changes":[]}' };
-  assert.equal(one(lockedTime, { currency: { state: 'current' } }).date_time, 'unchecked');
+  assert.equal(one(lockedTime, { currency: { state: 'current', basis: 'last_seen_at_source' } }).date_time, 'unchecked');
   const lockedCategoryOnly = { ...clean, internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z e1 fields=category | {"actor":"owner","changes":[]}' };
-  assert.equal(one(lockedCategoryOnly, { currency: { state: 'current' } }).date_time, 'pass');
+  assert.equal(one(lockedCategoryOnly, { currency: { state: 'current', basis: 'last_seen_at_source' } }).date_time, 'pass');
 }
 
 // 2. Bad fixtures are caught on the named check (Madison TBA venue + dup text, no image, dead link, placeholder desc, duplicate pair).
@@ -51,7 +51,11 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   assert.equal(one({ ...clean, event_url: null, ticket_url: null }).stored_link, 'fail');
   assert.equal(one({ ...clean, description: 'https://example.org/tickets' }).hard_flags, 'fail', 'bare-url description is an editorial hard flag');
   assert.equal(one({ ...clean, description: null }).description_time, 'fail');
-  assert.equal(one({ ...clean, title: 'Monthly Planning Commission Meeting', description: 'Regular meeting of the planning commission agenda.' }).audience_purpose === 'pass', false);
+  assert.equal(one({ ...clean, title: 'City Council Meeting', description: 'Regular meeting of the city council.', source: 'City of X' }).audience_purpose, 'fail', 'governing body meeting fails the audience screen');
+  assert.equal(one({ ...clean, title: 'Planning Commission Regular Meeting', description: '', source: 'City of X' }).audience_purpose, 'fail');
+  assert.equal(one({ ...clean, title: 'Public Hearing: Planning Commission', description: '', source: 'City of X' }).audience_purpose, 'fail', 'existing non-event title filter excludes governing-body titles');
+  assert.equal(one({ ...clean, title: 'Community Open House', description: 'Open to everyone.', source: 'City of X' }).audience_purpose === 'pass', false);
+  assert.notEqual(one({ ...clean, title: 'Town Hall with the Mayor', description: '' }).audience_purpose, 'pass');
   const a = { ...clean, id: 'a', internal_note: null }, b = { ...clean, id: 'b', title: 'Different title', event_url: 'https://example.org/z', internal_note: null };
   const c = cov([a, b]);
   assert.equal(c.checks.pair_scan.review, 2, 'same venue same start flagged whatever the titles');
@@ -63,12 +67,12 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   assert.equal(r.freshness, 'unchecked'); assert.equal(r.date_time, 'unchecked'); assert.equal(r.category, 'unchecked');
   assert.equal(r.venue, 'unchecked'); assert.equal(r.stored_link, 'unchecked');
   // stale (complete refresh no longer lists it) is review, never pass, never a cancelled claim; failed fetch stays unchecked
-  assert.equal(one(clean, { currency: { state: 'stale' } }).freshness, 'review');
+  assert.equal(one(clean, { currency: { state: 'stale', basis: 'last_seen_at_source' } }).freshness, 'review');
   assert.equal(one(clean, { currency: { state: 'unknown' } }).freshness, 'unchecked');
   // a link checked long ago is not a recent pass
   assert.equal(one({ ...clean, link_checked_at: '2026-10-01T00:00:00Z' }).stored_link, 'unchecked');
   // multi-day with unconfirmed schedule is review on date/time
-  assert.equal(one(clean, { codes: new Set(['occurrences_unconfirmed']), currency: { state: 'current' } }).date_time, 'review');
+  assert.equal(one(clean, { codes: new Set(['occurrences_unconfirmed']), currency: { state: 'current', basis: 'last_seen_at_source' } }).date_time, 'review');
 }
 
 // 4. Coverage invariant: pass+fail+review+unchecked == denominator per check and per dimension; scope is public upcoming only.
@@ -120,7 +124,7 @@ assert.equal(one({ ...clean, description: 'https://x.org/t' }).hard_flags, 'fail
 {
   // Spacebarn pre-fix: category community + category lock, description is a drum and bass night.
   const spacebarn = { ...clean, id: '384fecfa', title: 'Drum & Bass Night', category: 'community', description: 'A drum and bass night with DJs, bass and a late set.', internal_note: 'OWNER-CORRECTION 2026-11-18T20:00Z e9 fields=category | {"actor":"owner","changes":[]}' };
-  assert.equal(one(spacebarn, { currency: { state: 'current' } }).category, 'unchecked', 'locked wrong category must not pass');
+  assert.equal(one(spacebarn, { currency: { state: 'current', basis: 'last_seen_at_source' } }).category, 'unchecked', 'locked wrong category must not pass');
   const c = cov([spacebarn]);
   assert.equal(c.checks.category.pass, 0); assert.equal(c.field_checks.category_locked_rows, 1);
   // venue_id present is a field check; semantic venue is unchecked without verified-resolver evidence
@@ -130,7 +134,7 @@ assert.equal(one({ ...clean, description: 'https://x.org/t' }).hard_flags, 'fail
   assert.equal(one(clean, { venueVerified: () => 'yes' }).venue, 'unchecked');
   // locked wrong time and wrong venue (venue_id stays linked) do not pass semantic checks
   const lockedWrong = { ...clean, time_display: '3:00 AM', venue_id: 'wrong-venue', internal_note: 'OWNER-CORRECTION 2026-11-18T20:00Z e9 fields=time_display,venue_name_raw | {"actor":"owner","changes":[]}' };
-  const r = one(lockedWrong, { currency: { state: 'current' } });
+  const r = one(lockedWrong, { currency: { state: 'current', basis: 'last_seen_at_source' } });
   assert.equal(r.date_time, 'unchecked'); assert.equal(r.venue, 'unchecked');
   // any recorded non-ok link status fails
   assert.equal(one({ ...clean, link_check_status: 'blocked' }).stored_link, 'fail');
@@ -154,6 +158,38 @@ assert.equal(one({ ...clean, description: 'https://x.org/t' }).hard_flags, 'fail
   for (const bad of [undefined, null, 'x', 5, {}, [null, undefined, 3]]) assert.doesNotThrow(() => observeIngest(bad, { log: null }));
   const p = observeIngest([{ ...clean }], { nowMs: NOW, log: null, partial: true });
   assert.equal(p.partial, true); assert.equal(p.checks.venue.unchecked, 1); assert.equal(p.checks.venue.pass + p.checks.venue.fail, 0);
+}
+
+// 5f. EI D3: field checks never roll into Accuracy; kind is reported; a row with all fields present is not 'accurate'.
+{
+  const c = cov([{ ...clean, internal_note: null, venue_id: 'v1' }]);
+  assert.equal(c.checks.required_facts.kind, 'field'); assert.equal(c.checks.venue_linked.kind, 'field'); assert.equal(c.checks.category.kind, 'semantic');
+  assert.ok(!c.dimensions.accuracy.checks.includes('required_facts') && !c.dimensions.accuracy.checks.includes('venue_linked'));
+  assert.equal(c.dimensions.accuracy.pass, 0, 'all fields present, semantics unchecked: accuracy is not pass');
+  assert.equal(c.field_checks.required_facts.pass, 1);
+  assert.equal(cov([{ ...clean, title: null }]).field_checks.required_facts.fail, 1, 'missing field still fails');
+  assert.ok(cov([clean]).limits.join(' ').includes('excluded from the Accuracy rollup'));
+  // governance screen clear is informative, audience stays unchecked
+  assert.equal(c.checks.audience_purpose.unchecked, 1); assert.equal(c.informative.governance_screen_clear_rows, 1);
+  // freshness needs row-level evidence: the updated_at proxy basis is not evidence
+  assert.equal(one(clean, { currency: { state: 'current', basis: 'updated_at (proxy)' } }).freshness, 'unchecked');
+  assert.equal(one(clean, { currency: { state: 'stale', basis: 'updated_at (proxy)' } }).freshness, 'unchecked');
+}
+
+// 5g. N4: classify/coverage never mutate deep-frozen rows and handle missing inputs.
+{
+  const deepFreeze = (o) => { Object.values(o).forEach((v) => v && typeof v === 'object' && deepFreeze(v)); return Object.freeze(o); };
+  const rows = [deepFreeze({ ...clean, nested: { a: 1 } }), deepFreeze({ id: 'sparse', status: 'approved', start_date: '2026-11-25' })];
+  assert.doesNotThrow(() => cov(rows));
+  assert.doesNotThrow(() => classifyRow(rows[1], { today: TODAY, nowMs: NOW }));
+  assert.doesNotThrow(() => buildCoverage(rows, { today: TODAY }));
+}
+
+// 5h. P2: the in-batch pair scan on a 2000-row batch stays cheap (no I/O); generous bound guards against a quadratic blowup.
+{
+  const big = Array.from({ length: 2000 }, (_, i) => ({ external_id: 'feed-big-' + i, title: 'Event ' + i, category: 'music', start_date: '2026-12-' + String(1 + (i % 28)).padStart(2, '0'), time_display: (i % 12 + 1) + ':00 PM', venue_name_raw: 'Same Hall', venue_city_raw: 'Detroit', event_url: 'https://x.org/' + i, image_url: 'https://x.org/i.jpg', description: 'A fine long description of event number ' + i + ' with details.', source: 'Feed', status: 'approved' }));
+  const t0 = Date.now(); const r = observeIngest(big, { nowMs: NOW, log: null });
+  assert.equal(r.state, 'ok'); assert.ok(Date.now() - t0 < 5000, '2000-row single-venue batch under 5s (measured ~0.4s)');
 }
 
 // 6. Every event write path is hooked (static check: a new writer must call the observer or fail this test).

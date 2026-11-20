@@ -15,9 +15,9 @@ const OUTCOMES = ["pass", "fail", "review", "unchecked"];
 const DEFAULT_LINK_FRESH_DAYS = 14;
 const EDITORIAL_REASONS = new Set(["placeholder", "bare_url", "time_only", "truncated"]);
 
-// Dimension -> checks (EI rubric names; Accuracy carries fact/venue/date/category/freshness checks inside its 25).
+// Dimension -> SEMANTIC checks (accuracy evidence). Accuracy carries semantic checks only (venue, date/time, category, freshness).
 const DIMENSIONS = {
-  accuracy: ["required_facts", "venue", "date_time", "category", "freshness"],
+  accuracy: ["venue", "date_time", "category", "freshness"],
   duplicates: ["pair_scan"],
   completeness: ["description_time"],
   editorial: ["hard_flags"],
@@ -25,7 +25,13 @@ const DIMENSIONS = {
   unique_value: ["audience_purpose"],
   images: ["image_presence"],
 };
-const CHECKS = Object.values(DIMENSIONS).flat();
+// FIELD checks prove presence/linkage only. They are reported in their own block and never roll into a dimension,
+// so a row with all fields present is not "accurate". A missing field is still a fail.
+const FIELD_CHECKS = ["required_facts", "venue_linked"];
+const CHECKS = Object.values(DIMENSIONS).flat().concat(FIELD_CHECKS);
+const KIND = Object.assign(Object.fromEntries(Object.values(DIMENSIONS).flat().map((k) => [k, "semantic"])), { required_facts: "field", venue_linked: "field" });
+// Presence-only semantic checks (disclosed): description_time, hard_flags, stored_link and image_presence prove a rule screen
+// or a recorded status, not that the content is right.
 
 const idOf = (r) => r.id || (r.external_id ? "ext:" + r.external_id : null);
 const publicScope = (row, today) => row && (row.id || row.external_id) && (!row.status || row.status === "approved") && EventDates.bounds(row).end >= today;
@@ -58,7 +64,10 @@ function classifyRow(row, ctx) {
   const locked = ownerCorrectedFields(row.internal_note);
 
   // Accuracy: required facts + contradictions (deterministic).
+  // FIELD check: presence only (see FIELD_CHECKS); pass here is not accuracy.
   out.required_facts = hasCode(c, "required_fact_missing", "contradictory_fact") ? "fail" : "pass";
+  // FIELD check: a canonical venue is linked. Linkage is not correctness (a linked wrong venue still links).
+  out.venue_linked = hasCode(c, "venue_placeholder") ? "fail" : row.venue_id ? "pass" : "unchecked";
 
   // Accuracy: venue. Blank/TBA fails; resolver doubt is review; semantic pass needs verified-resolver evidence supplied by the
   // caller (none wired in this PR), so the check is unchecked otherwise. A linked venue_id proves presence, not correctness.
@@ -68,11 +77,14 @@ function classifyRow(row, ctx) {
 
   // Freshness / source absence. Only the source-health currency verdict (complete successful refresh evidence) can pass.
   // A failed, partial or windowed refresh is never absence: stale is a review for a person, unknown is unchecked.
+  // Row-level proof only: source-health compares THIS row's last_seen_at_source to the source's latest retrieving run. Its
+  // fallback to updated_at (a proxy that any manual edit moves) is not evidence, so only the last_seen_at_source basis counts.
   const cur = ctx.currency && ctx.currency.state;
-  out.freshness = cur === "current" ? "pass" : cur === "stale" ? "review" : "unchecked";
+  const rowLevel = !!(ctx.currency && ctx.currency.basis === "last_seen_at_source");
+  out.freshness = rowLevel && cur === "current" ? "pass" : rowLevel && cur === "stale" ? "review" : "unchecked";
 
   // Accuracy: date/time. Unconfirmed time/occurrences are review; pass needs the row seen in the latest complete refresh.
-  if (hasCode(c, "start_time_unconfirmed", "occurrences_unconfirmed", "same_venue_time_unresolved")) out.date_time = "review";
+  if (hasCode(c, "start_time_unconfirmed", "occurrences_unconfirmed")) out.date_time = "review"; // same_venue_time_unresolved is counted once, in pair_scan
   else if (locked && (locked.has("time_display") || locked.has("start_date"))) out.date_time = "unchecked"; // a locked value intentionally differs from the source: no source-equality evidence
   else out.date_time = out.freshness === "pass" ? "pass" : "unchecked";
 
@@ -100,7 +112,10 @@ function classifyRow(row, ctx) {
   else if (row.link_check_status === "ok" && row.link_checked_at && daysBetween(new Date(ctx.nowMs).toISOString(), row.link_checked_at) <= (ctx.linkFreshDays || DEFAULT_LINK_FRESH_DAYS)) out.stored_link = "pass";
   else out.stored_link = "unchecked";
 
-  // Unique value: audience/purpose. Pass only on an explicit public-facing verdict; the classifier abstaining is unchecked.
+  // Unique value: audience/purpose. NO positive evidence exists in the row, so this check never passes. A governance screen can
+  // only fail (administrative meeting, non-event) or ask for review (ambiguous meeting). A clear screen (ordinary event, or the
+  // classifier's kept civic-engagement class) is counted as informative governance_screen_clear and the check stays unchecked:
+  // the absence of a governance signal is not evidence of audience or purpose.
   let audience = "unchecked";
   try {
     if (ctx.isNonEvent && ctx.isNonEvent({ title: row.title })) audience = "fail";
@@ -108,7 +123,6 @@ function classifyRow(row, ctx) {
       const m = ctx.classifyMeeting(row) || {};
       if (m.meeting_class === "administrative") audience = "fail";
       else if (m.needs_review) audience = "review";
-      else if (m.meeting_class === "civic_public") audience = "pass";
     }
   } catch (_) { audience = "unchecked"; }
   out.audience_purpose = audience;
@@ -129,13 +143,14 @@ function buildCoverage(rows, opts) {
   const nowMs = o.nowMs || Date.now();
   const byRow = indexFindings(o.findings);
   const scoped = (Array.isArray(rows) ? rows : []).filter((r) => o.stage === "import" || publicScope(r, today));
-  const checks = Object.fromEntries(CHECKS.map((k) => [k, blank()]));
+  const checks = Object.fromEntries(CHECKS.map((k) => [k, Object.assign({ kind: KIND[k] }, blank())]));
   const perRow = new Map();
-  let ownerLocked = 0, categoryLocked = 0, timeLocked = 0, venueLinked = 0;
+  let ownerLocked = 0, categoryLocked = 0, timeLocked = 0, venueLinked = 0, screenClear = 0;
   for (const row of scoped) {
     const codes = new Set((byRow.get(idOf(row)) || new Map()).keys());
     const result = classifyRow(row, { today, nowMs, codes, stage: o.stage || "published", currency: o.currencyOf ? o.currencyOf(row) : null, classifyMeeting: o.classifyMeeting, isNonEvent: o.isNonEvent, reviewed: o.reviewed, venueVerified: o.venueVerified, linkFreshDays: o.linkFreshDays });
     perRow.set(idOf(row), result);
+    if (result.audience_purpose === "unchecked") { try { const m = o.classifyMeeting && o.classifyMeeting(row); if (m && !m.needs_review && m.meeting_class !== "administrative") screenClear++; } catch (_) { /* informative only */ } }
     for (const k of CHECKS) checks[k][result[k]]++;
     const locks = ownerCorrectedFields(row.internal_note);
     if (locks && locks.size) ownerLocked++;
@@ -156,17 +171,22 @@ function buildCoverage(rows, opts) {
   }
   return {
     as_of: new Date(nowMs).toISOString(), today, mode: "report_only", stage: o.stage || "published", denominator: scoped.length,
-    dimensions, checks, informative: { owner_protected_rows: ownerLocked, category_owner_locked_rows: categoryLocked },
+    dimensions, checks, informative: { owner_protected_rows: ownerLocked, category_owner_locked_rows: categoryLocked, governance_screen_clear_rows: screenClear },
+    kinds: KIND,
     // Field/lock/link checks prove only that a value is present, protected or linked. They never count as semantic accuracy.
-    field_checks: { category_locked_rows: categoryLocked, time_locked_rows: timeLocked, venue_linked_rows: venueLinked, note: "presence, lock or link only; not verification" },
+    field_checks: Object.assign(
+      { note: "presence, lock or link only; proves a field exists, is protected or is linked, NOT that it is accurate. Never rolled into a dimension." },
+      { category_locked_rows: categoryLocked, time_locked_rows: timeLocked, venue_linked_rows: venueLinked },
+      Object.fromEntries(FIELD_CHECKS.map((k) => [k, checks[k]]))),
     limits: [
       "pass requires a stated positive condition; stored fields alone never pass, and unknown is unchecked.",
       "Category is unchecked for every row: an owner lock is overwrite protection, not verification (a locked wrong category would still be wrong), and no recorded-review evidence is wired in this PR. category_owner_locked_rows is informational only.",
       "Venue is unchecked unless verified-resolver evidence is supplied (none wired here); venue_id present is reported as field_checks.venue_linked_rows, not as accuracy.",
-      "Date/time passes only for a row seen in a complete refresh that is not owner-locked on time_display/start_date (a lock intentionally differs from source: unchecked); freshness passes only on source-health 'current' evidence (seen in a complete successful refresh); failed, partial or windowed refreshes are never absence.",
+      "Date/time passes only for a row seen in a complete refresh that is not owner-locked on time_display/start_date (a lock intentionally differs from source: unchecked); freshness passes only on row-level source-health evidence (this row's last_seen_at_source after the source's latest retrieving run; the updated_at proxy is not evidence); failed, partial or windowed refreshes are never absence.",
       "Duplicates cover same-venue same-start, shared event link and unresolved-time pairs only; cross-source different-title pairs are not covered and are not pass.",
       "Links pass only with link_check_status ok and a recent link_checked_at; never-checked is unchecked.",
-      "Audience passes only on an explicit civic_public verdict; an ordinary-event verdict is the classifier abstaining and is unchecked.",
+      "Audience never passes: no positive audience evidence exists in a row. The governance screen can fail or ask for review; a clear screen is informative (governance_screen_clear_rows) and the check stays unchecked.",
+      "Presence-only checks (description_time, hard_flags, stored_link, image_presence) prove a rule screen or a recorded status, not that the content is right; field checks (required_facts, venue_linked) prove presence/linkage only and are excluded from the Accuracy rollup.",
       "Image relevance, year and rights are human checks and are not covered; image_presence is presence only.",
       "NOT BUILT (not claimed as detected): category-vs-purpose check, cancellation-signal check, a dedicated source-absent detector (absence shows only as freshness review via source-health), cross-source different-title duplicates, click-here/chrome and caps editorial flags, date/time comparison against the source value, resolver-verified venue status, price checks.",
       "No score is computed here; the PE rubric score stays with EI.",
@@ -174,4 +194,4 @@ function buildCoverage(rows, opts) {
   };
 }
 
-module.exports = { buildCoverage, classifyRow, indexFindings, DIMENSIONS, CHECKS, OUTCOMES };
+module.exports = { buildCoverage, classifyRow, indexFindings, DIMENSIONS, CHECKS, FIELD_CHECKS, KIND, OUTCOMES };
