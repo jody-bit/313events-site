@@ -13,7 +13,7 @@ const clean = {
   id: 'clean', status: 'approved', title: 'Stef Chura with Easy Action', category: 'music', venue_id: 'v-third-man', venue_name_raw: 'Third Man Records Detroit',
   venue_city_raw: 'Detroit', start_date: '2026-11-21', date_semantics: 'single', time_display: '8:00 PM', image_url: 'https://example.org/p.jpg',
   event_url: 'https://example.org/e', description: 'Detroit rocker Stef Chura plays an intimate headline set with Easy Action opening the night.',
-  internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z edit1 fields=category,time_display | {"actor":"owner","changes":[]}', link_check_status: 'ok', link_checked_at: '2026-11-19T12:00:00Z',
+  internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z edit1 fields=category | {"actor":"owner","changes":[]}', link_check_status: 'ok', link_checked_at: '2026-11-19T12:00:00Z',
 };
 const cov = (rows, extra) => {
   const findings = findingsForPublished(rows, TODAY, {});
@@ -24,8 +24,21 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
 // 1. Clean row (locked category, linked venue, ok link, current source) passes every check it can positively pass.
 {
   const r = one(clean, { currency: { state: 'current' }, codes: new Set() });
-  for (const k of ['required_facts', 'venue', 'freshness', 'date_time', 'category', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
+  for (const k of ['required_facts', 'venue', 'freshness', 'date_time', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
   assert.equal(r.audience_purpose, 'unchecked', 'ordinary event verdict is the classifier abstaining, not pass');
+  // A locked category is overwrite protection, not verification: still unchecked. Only recorded review evidence passes.
+  assert.equal(r.category, 'unchecked');
+  assert.equal(one({ ...clean, category: 'nightlife' }, { currency: { state: 'current' } }).category, 'unchecked', 'locked wrong category is not accurate');
+  assert.equal(one(clean, { reviewed: (row, f) => f === 'category' && row.id === 'clean' }).category, 'pass');
+  assert.equal(one(clean, { reviewed: () => 'yes' }).category, 'unchecked', 'only an explicit true passes');
+}
+
+// 1b. An owner lock on the time deliberately differs from the source: date/time is unchecked, not pass.
+{
+  const lockedTime = { ...clean, internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z e1 fields=time_display | {"actor":"owner","changes":[]}' };
+  assert.equal(one(lockedTime, { currency: { state: 'current' } }).date_time, 'unchecked');
+  const lockedCategoryOnly = { ...clean, internal_note: 'OWNER-CORRECTION 2026-11-19T20:00Z e1 fields=category | {"actor":"owner","changes":[]}' };
+  assert.equal(one(lockedCategoryOnly, { currency: { state: 'current' } }).date_time, 'pass');
 }
 
 // 2. Bad fixtures are caught on the named check (Madison TBA venue + dup text, no image, dead link, placeholder desc, duplicate pair).
@@ -83,6 +96,17 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   assert.equal(observeIngest(null, { log: null }).state, 'skipped');
   const bad = observeIngest([{ title: 'x', start_date: {} }], { log: () => { throw new Error('log failed'); } });
   assert.ok(['ok', 'error'].includes(bad.state), 'never throws into a writer');
+}
+
+// 5b. Missing/hostile input and frozen rows: no mutation, no throw into the writer, no row content in the error.
+{
+  const frozen = Object.freeze({ ...clean, secret: 'sk-test-SECRET' });
+  const lines = [];
+  const s = observeIngest([frozen, null, 5, [], { title: 7, start_date: null, description: { x: 1 } }], { nowMs: NOW, log: (l) => lines.push(l) });
+  assert.ok(['ok', 'error'].includes(s.state));
+  assert.equal(frozen.status, 'approved'); assert.equal(Object.keys(frozen).length, Object.keys({ ...clean, secret: 1 }).length);
+  assert.ok(!JSON.stringify(s).includes('SECRET') && !lines.join('').includes('SECRET'), 'no row content in output');
+  assert.equal(JSON.stringify(Object.keys(s).includes('status')), 'false', 'observer returns no row/status');
 }
 
 // 6. Every event write path is hooked (static check: a new writer must call the observer or fail this test).

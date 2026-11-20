@@ -72,10 +72,13 @@ function classifyRow(row, ctx) {
 
   // Accuracy: date/time. Unconfirmed time/occurrences are review; pass needs the row seen in the latest complete refresh.
   if (hasCode(c, "start_time_unconfirmed", "occurrences_unconfirmed", "same_venue_time_unresolved")) out.date_time = "review";
+  else if (locked && (locked.has("time_display") || locked.has("start_date"))) out.date_time = "unchecked"; // a locked value intentionally differs from the source: no source-equality evidence
   else out.date_time = out.freshness === "pass" ? "pass" : "unchecked";
 
-  // Accuracy: category. Heuristics never pass; only an owner category lock (owner-verified) passes.
-  out.category = locked && locked.has("category") ? "pass" : "unchecked";
+  // Accuracy: category. An owner lock is overwrite protection, NOT verification: a locked wrong category would still be wrong.
+  // Heuristics never pass either. Pass needs recorded review evidence supplied by the caller (ctx.reviewed(row, "category"));
+  // this PR wires none (no evidence store without a migration), so category is unchecked and the lock is only counted.
+  out.category = ctx.reviewed && ctx.reviewed(row, "category") === true ? "pass" : "unchecked";
 
   // Duplicates: the scan covers same-venue/same-start and shared-link pairs only (disclosed in `limits`).
   out.pair_scan = hasCode(c, "same_venue_same_start_review", "same_event_link_collision", "same_venue_time_unresolved") ? "review" : ctx.stage === "import" ? "unchecked" : "pass";
@@ -127,14 +130,15 @@ function buildCoverage(rows, opts) {
   const scoped = (Array.isArray(rows) ? rows : []).filter((r) => o.stage === "import" || publicScope(r, today));
   const checks = Object.fromEntries(CHECKS.map((k) => [k, blank()]));
   const perRow = new Map();
-  let ownerLocked = 0;
+  let ownerLocked = 0, categoryLocked = 0;
   for (const row of scoped) {
     const codes = new Set((byRow.get(idOf(row)) || new Map()).keys());
-    const result = classifyRow(row, { today, nowMs, codes, stage: o.stage || "published", currency: o.currencyOf ? o.currencyOf(row) : null, classifyMeeting: o.classifyMeeting, isNonEvent: o.isNonEvent, linkFreshDays: o.linkFreshDays });
+    const result = classifyRow(row, { today, nowMs, codes, stage: o.stage || "published", currency: o.currencyOf ? o.currencyOf(row) : null, classifyMeeting: o.classifyMeeting, isNonEvent: o.isNonEvent, reviewed: o.reviewed, linkFreshDays: o.linkFreshDays });
     perRow.set(idOf(row), result);
     for (const k of CHECKS) checks[k][result[k]]++;
     const locks = ownerCorrectedFields(row.internal_note);
     if (locks && locks.size) ownerLocked++;
+    if (locks && locks.has("category")) categoryLocked++;
   }
   // A dimension row is worst-outcome over its checks: fail > review > unchecked > pass. Never better than its weakest check.
   const rank = { fail: 3, review: 2, unchecked: 1, pass: 0 };
@@ -149,12 +153,12 @@ function buildCoverage(rows, opts) {
   }
   return {
     as_of: new Date(nowMs).toISOString(), today, mode: "report_only", stage: o.stage || "published", denominator: scoped.length,
-    dimensions, checks, informative: { owner_protected_rows: ownerLocked },
+    dimensions, checks, informative: { owner_protected_rows: ownerLocked, category_owner_locked_rows: categoryLocked },
     limits: [
       "pass requires a stated positive condition; stored fields alone never pass, and unknown is unchecked.",
-      "Category passes only via an owner category lock; category heuristics are not implemented here, so most rows are unchecked.",
+      "Category is unchecked for every row: an owner lock is overwrite protection, not verification (a locked wrong category would still be wrong), and no recorded-review evidence is wired in this PR. category_owner_locked_rows is informational only.",
       "Venue passes only for a linked canonical venue (venue_id); free-text venue is unchecked.",
-      "Freshness and date/time pass only on source-health 'current' evidence (seen in a complete successful refresh); failed, partial or windowed refreshes are never absence.",
+      "Date/time passes only for a row seen in a complete refresh that is not owner-locked on time_display/start_date (a lock intentionally differs from source: unchecked); freshness passes only on source-health 'current' evidence (seen in a complete successful refresh); failed, partial or windowed refreshes are never absence.",
       "Duplicates cover same-venue same-start, shared event link and unresolved-time pairs only; cross-source different-title pairs are not covered and are not pass.",
       "Links pass only with link_check_status ok and a recent link_checked_at; never-checked is unchecked.",
       "Audience passes only on an explicit civic_public verdict; an ordinary-event verdict is the classifier abstaining and is unchecked.",

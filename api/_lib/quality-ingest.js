@@ -32,7 +32,7 @@ function observeIngest(rows, opts) {
     if (log) log("[quality-ingest] " + JSON.stringify({ path, rows: summary.rows, dimensions: summary.dimensions, review_keys: summary.review_keys }));
     return summary;
   } catch (err) {
-    const message = String((err && err.message) || err).slice(0, 200);
+    const message = "observer failed: " + String((err && err.name) || "Error").slice(0, 60); // never row content or secrets
     try { if (log) log("[quality-ingest] error " + JSON.stringify({ path, error: message })); } catch (_) { /* logging must never throw */ }
     return { state: "error", path, rows: 0, checks: {}, review_keys: [], error: message };
   }
