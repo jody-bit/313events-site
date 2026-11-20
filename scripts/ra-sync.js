@@ -923,6 +923,7 @@ async function completeRaSyncSession(opts) {
 
       if (toInsert.length) {
         const payload = toInsert.map(({ row }) => ({ ...row, status: "approved" }));
+        require("../api/_lib/quality-ingest").observeIngest(payload, { path: "ra-sync-insert" });
         const resp = await fetchFn(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
           method: "POST",
           headers: {
@@ -985,6 +986,7 @@ async function completeRaSyncSession(opts) {
               : `${f}.is.null`));
           const whereExtra = blankFieldFilters.length ? `&and=(${blankFieldFilters.join(",")})` : "";
 
+          require("../api/_lib/quality-ingest").observeIngest([{ ...existing, ...patch }], { path: "ra-sync-merge", partial: true });
           try {
             const resp = await fetchFn(
               `${SUPABASE_URL}/rest/v1/events?external_id=eq.${encodeURIComponent(row.external_id)}${whereExtra}`,

@@ -289,6 +289,7 @@ module.exports = async (req, res) => {
     submitter_email: contactEmail.trim(),
   };
 
+  require("./_lib/quality-ingest").observeIngest([row], { path: "submit" });
   try {
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events`, {
       method: "POST",

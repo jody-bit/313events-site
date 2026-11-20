@@ -142,6 +142,7 @@ async function getLatestRaSession(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, fetch
 // for any reason) -- it will just no-op-merge onto itself, never duplicate
 // (the unique index on external_id is the hard backstop either way).
 async function insertCandidateRow(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, row, fetchFn = fetch) {
+  require("../api/_lib/quality-ingest").observeIngest([row], { path: "ra-candidate-promotion" });
   try {
     const resp = await fetchFn(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
       method: "POST",

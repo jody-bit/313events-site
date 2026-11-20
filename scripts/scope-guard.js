@@ -41,6 +41,8 @@ const ALLOWED = [
   "api/_lib/non-event-filter.js",
   // Shared quality finding contract v1 (EI owner #2, owner direction 2026-11-15; P1 PASS 98c5144): pure, report-only, no writes.
   "api/_lib/quality-contract.js",
+  "api/_lib/quality-coverage.js",
+  "api/_lib/quality-ingest.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
