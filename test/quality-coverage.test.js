@@ -47,7 +47,6 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   assert.equal(one(tba, { codes: new Set(['venue_placeholder']) }).venue, 'fail');
   assert.equal(one({ ...clean, image_url: null }).image_presence, 'fail');
   assert.equal(one({ ...clean, image_url: 'https://313.events/assets/placeholders/x.png' }).image_presence, 'fail');
-  assert.equal(one({ ...clean, link_check_status: 'dead' }).stored_link, 'fail');
   assert.equal(one({ ...clean, event_url: null, ticket_url: null }).stored_link, 'fail');
   assert.equal(one({ ...clean, description: 'https://example.org/tickets' }).hard_flags, 'fail', 'bare-url description is an editorial hard flag');
   assert.equal(one({ ...clean, description: null }).description_time, 'fail');
@@ -137,7 +136,9 @@ assert.equal(one({ ...clean, description: 'https://x.org/t' }).hard_flags, 'fail
   const r = one(lockedWrong, { currency: { state: 'current', basis: 'last_seen_at_source' } });
   assert.equal(r.date_time, 'unchecked'); assert.equal(r.venue, 'unchecked');
   // any recorded non-ok link status fails
-  assert.equal(one({ ...clean, link_check_status: 'blocked' }).stored_link, 'fail');
+  // Link status vocabulary (link-health.js classifyUrlCheck): ok | dead | inconclusive (never stored). Only dead fails.
+  assert.equal(one({ ...clean, link_check_status: 'dead' }).stored_link, 'fail');
+  for (const st of ['blocked', 'timeout', 'error', 'rate-limited', 'inconclusive', 'weird']) assert.equal(one({ ...clean, link_check_status: st }).stored_link, 'review', st + ' is review, not broken');
   // limits list what is NOT built
   const limits = cov([clean]).limits.join(' ');
   for (const w of ['NOT BUILT', 'category-vs-purpose', 'cancellation-signal', 'cross-source', 'source-absent']) assert.ok(limits.includes(w), w);

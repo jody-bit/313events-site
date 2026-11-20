@@ -108,7 +108,11 @@ function classifyRow(row, ctx) {
 
   // Links: pass needs a recorded ok check that is recent. Never-checked is unchecked, a dead or missing link fails.
   if (!safeLink(row.event_url) && !safeLink(row.ticket_url)) out.stored_link = "fail";
-  else if (row.link_check_status && row.link_check_status !== "ok") out.stored_link = "fail"; // dead or any other recorded non-ok status
+  // Status vocabulary (api/_lib/link-health.js classifyUrlCheck): ok | dead (404/410 only) | inconclusive (never stored). Only an
+  // explicit dead status fails; any other recorded status (blocked, timeout, error, rate-limited, unknown strings) is review,
+  // because a blocked or robot-refused page is not a broken page.
+  else if (row.link_check_status === "dead") out.stored_link = "fail";
+  else if (row.link_check_status && row.link_check_status !== "ok") out.stored_link = "review";
   else if (row.link_check_status === "ok" && row.link_checked_at && daysBetween(new Date(ctx.nowMs).toISOString(), row.link_checked_at) <= (ctx.linkFreshDays || DEFAULT_LINK_FRESH_DAYS)) out.stored_link = "pass";
   else out.stored_link = "unchecked";
 
@@ -186,6 +190,7 @@ function buildCoverage(rows, opts) {
       "Duplicates cover same-venue same-start, shared event link and unresolved-time pairs only; cross-source different-title pairs are not covered and are not pass.",
       "Links pass only with link_check_status ok and a recent link_checked_at; never-checked is unchecked.",
       "Audience never passes: no positive audience evidence exists in a row. The governance screen can fail or ask for review; a clear screen is informative (governance_screen_clear_rows) and the check stays unchecked.",
+      "description_time (completeness) and hard_flags (editorial) both fail on the same bad description: that is the existing completeness vs editorial split, so one defect can appear in two dimensions.",
       "Presence-only checks (description_time, hard_flags, stored_link, image_presence) prove a rule screen or a recorded status, not that the content is right; field checks (required_facts, venue_linked) prove presence/linkage only and are excluded from the Accuracy rollup.",
       "Image relevance, year and rights are human checks and are not covered; image_presence is presence only.",
       "NOT BUILT (not claimed as detected): category-vs-purpose check, cancellation-signal check, a dedicated source-absent detector (absence shows only as freshness review via source-health), cross-source different-title duplicates, click-here/chrome and caps editorial flags, date/time comparison against the source value, resolver-verified venue status, price checks.",
