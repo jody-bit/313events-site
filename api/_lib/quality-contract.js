@@ -107,7 +107,7 @@ function crossSourceFindings(rows, stage, skip, accept) {
   }
   return out;
 }
-const pairKeysOf = (findings) => new Set(findings.filter((f) => f.code === 'same_venue_same_start_review' || f.code === 'same_venue_time_unresolved').map((f) => f.key.slice(f.code.length + 1)));
+const pairKeysOf = (findings) => new Set(findings.filter((f) => f.code === 'same_venue_same_start_review' || f.code === 'same_venue_time_unresolved' || f.code === 'same_event_link_collision').map((f) => f.key.slice(f.code.length + 1)));
 
 // Published rows: the #417 report-only rules (same keys) plus the record-level rules, in the v1 shape.
 function findingsForPublished(rows, today, opts) {

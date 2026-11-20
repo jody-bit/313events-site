@@ -87,3 +87,11 @@ test("must-not (disclosed limit): same venue name in different cities with diffe
   const b = row("c2", "S2", "Christmas Craft Fair", "2026-11-22", "7:00 PM", { venue_name_raw: "Community Center", venue_city_raw: "Warren", venue_address_raw: "9 B St" });
   assert.equal(onlyNew([a, b]).length, 0);
 });
+test("one pair, one finding: a shared event_url with a differently spelled city is not also flagged as cross-source (P1 defect)", () => {
+  const [a, b] = MUST_FLAG["Aladdin 11AM"].map((r) => ({ ...r, event_url: "https://example.org/aladdin-jr" }));
+  const pair = findingsForPublished([a, b], "2026-11-20").filter((f) => PAIR.concat("same_event_link_collision").includes(f.code));
+  assert.equal(pair.length, 1, pair.map((f) => f.code).join(","));
+  assert.equal(pair[0].code, "same_event_link_collision");
+  const imp = findingsForImport([a], [b], {}).filter((f) => PAIR.concat("same_event_link_collision").includes(f.code));
+  assert.ok(imp.length >= 1);
+});
