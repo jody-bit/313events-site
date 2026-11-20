@@ -24,7 +24,7 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
 // 1. Clean row (locked category, linked venue, ok link, current source) passes every check it can positively pass.
 {
   const r = one(clean, { currency: { state: 'current' }, codes: new Set() });
-  for (const k of ['required_facts', 'venue', 'freshness', 'date_time', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
+  for (const k of ['required_facts', 'freshness', 'date_time', 'pair_scan', 'description_time', 'hard_flags', 'stored_link', 'image_presence']) assert.equal(r[k], 'pass', 'clean ' + k);
   assert.equal(r.audience_purpose, 'unchecked', 'ordinary event verdict is the classifier abstaining, not pass');
   // A locked category is overwrite protection, not verification: still unchecked. Only recorded review evidence passes.
   assert.equal(r.category, 'unchecked');
@@ -109,6 +109,53 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   assert.equal(JSON.stringify(Object.keys(s).includes('status')), 'false', 'observer returns no row/status');
 }
 
+// 5c. P1: any failed description quality is never a completeness pass; hard_flags keeps its own fail.
+for (const d of ['https://www.mtclib.org/calendar.aspx?EID=2952', '7:00 PM - 9:00 PM', 'TBD']) {
+  const r = one({ ...clean, description: d });
+  assert.equal(r.description_time, 'fail', 'description_time ' + d);
+}
+assert.equal(one({ ...clean, description: 'https://x.org/t' }).hard_flags, 'fail');
+
+// 5d. EI/owner: locks and presence are field checks, never semantic passes.
+{
+  // Spacebarn pre-fix: category community + category lock, description is a drum and bass night.
+  const spacebarn = { ...clean, id: '384fecfa', title: 'Drum & Bass Night', category: 'community', description: 'A drum and bass night with DJs, bass and a late set.', internal_note: 'OWNER-CORRECTION 2026-11-18T20:00Z e9 fields=category | {"actor":"owner","changes":[]}' };
+  assert.equal(one(spacebarn, { currency: { state: 'current' } }).category, 'unchecked', 'locked wrong category must not pass');
+  const c = cov([spacebarn]);
+  assert.equal(c.checks.category.pass, 0); assert.equal(c.field_checks.category_locked_rows, 1);
+  // venue_id present is a field check; semantic venue is unchecked without verified-resolver evidence
+  assert.equal(one(clean).venue, 'unchecked');
+  assert.equal(cov([clean]).field_checks.venue_linked_rows, 1);
+  assert.equal(one(clean, { venueVerified: () => true }).venue, 'pass');
+  assert.equal(one(clean, { venueVerified: () => 'yes' }).venue, 'unchecked');
+  // locked wrong time and wrong venue (venue_id stays linked) do not pass semantic checks
+  const lockedWrong = { ...clean, time_display: '3:00 AM', venue_id: 'wrong-venue', internal_note: 'OWNER-CORRECTION 2026-11-18T20:00Z e9 fields=time_display,venue_name_raw | {"actor":"owner","changes":[]}' };
+  const r = one(lockedWrong, { currency: { state: 'current' } });
+  assert.equal(r.date_time, 'unchecked'); assert.equal(r.venue, 'unchecked');
+  // any recorded non-ok link status fails
+  assert.equal(one({ ...clean, link_check_status: 'blocked' }).stored_link, 'fail');
+  // limits list what is NOT built
+  const limits = cov([clean]).limits.join(' ');
+  for (const w of ['NOT BUILT', 'category-vs-purpose', 'cancellation-signal', 'cross-source', 'source-absent']) assert.ok(limits.includes(w), w);
+}
+
+// 5e. Observer safety: deep-frozen rows, null/missing inputs, a throwing detector, partial rows; logs hold counts + safe keys only.
+{
+  const deepFreeze = (o) => { Object.values(o).forEach((v) => v && typeof v === 'object' && deepFreeze(v)); return Object.freeze(o); };
+  const secretRow = deepFreeze({ id: null, external_id: 'feed-1-token=SECRET123@evil.example', title: 'Venue TBA night SECRETTITLE', category: 'nightlife', start_date: '2026-11-25', venue_name_raw: 'Venue TBA', description: 'user@example.com https://x.test/?sig=SECRET123', source: 'Feed', status: 'approved', nested: { a: 1 } });
+  const lines = [];
+  const s = observeIngest([secretRow, deepFreeze({ ...clean })], { nowMs: NOW, log: (l) => lines.push(l) });
+  assert.equal(s.state, 'ok');
+  const out = JSON.stringify(s) + lines.join('');
+  for (const leak of ['SECRET123', 'SECRETTITLE', 'user@example.com', 'evil.example', 'Venue TBA night']) assert.ok(!out.includes(leak), 'no leak: ' + leak);
+  const thrown = observeIngest([clean], { nowMs: NOW, log: (l) => lines.push(l), detect: () => { throw new Error('boom SECRET123 user@example.com'); } });
+  assert.equal(thrown.state, 'error'); assert.ok(!JSON.stringify(thrown).includes('SECRET123') && !JSON.stringify(thrown).includes('user@example.com'));
+  assert.ok(!lines.join('').includes('SECRET123'));
+  for (const bad of [undefined, null, 'x', 5, {}, [null, undefined, 3]]) assert.doesNotThrow(() => observeIngest(bad, { log: null }));
+  const p = observeIngest([{ ...clean }], { nowMs: NOW, log: null, partial: true });
+  assert.equal(p.partial, true); assert.equal(p.checks.venue.unchecked, 1); assert.equal(p.checks.venue.pass + p.checks.venue.fail, 0);
+}
+
 // 6. Every event write path is hooked (static check: a new writer must call the observer or fail this test).
 {
   const fs = require('fs'), path = require('path');
@@ -117,5 +164,6 @@ const one = (row, extra) => classifyRow(row, Object.assign({ today: TODAY, nowMs
   for (const [f, token] of Object.entries(need)) assert.ok(fs.readFileSync(path.join(root, f), 'utf8').includes(token), f + ' must call the quality observer');
   const raSync = fs.readFileSync(path.join(root, 'scripts/ra-sync.js'), 'utf8');
   assert.ok(raSync.includes('ra-sync-insert') && raSync.includes('ra-sync-merge'), 'RA insert and merge/update both hooked');
+  assert.ok(/ra-sync-merge", partial: true/.test(raSync), 'RA merge rows are partial: explicit gap, not assessed');
 }
 console.log('quality-coverage tests passed');

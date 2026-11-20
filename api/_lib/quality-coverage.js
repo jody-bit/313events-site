@@ -60,10 +60,11 @@ function classifyRow(row, ctx) {
   // Accuracy: required facts + contradictions (deterministic).
   out.required_facts = hasCode(c, "required_fact_missing", "contradictory_fact") ? "fail" : "pass";
 
-  // Accuracy: venue. Blank/TBA fails; resolver doubt is review; pass only for a linked canonical venue. Free text is not pass.
+  // Accuracy: venue. Blank/TBA fails; resolver doubt is review; semantic pass needs verified-resolver evidence supplied by the
+  // caller (none wired in this PR), so the check is unchecked otherwise. A linked venue_id proves presence, not correctness.
   if (hasCode(c, "venue_placeholder")) out.venue = "fail";
   else if (hasCode(c, "venue_resolution_review")) out.venue = "review";
-  else out.venue = row.venue_id ? "pass" : "unchecked";
+  else out.venue = ctx.venueVerified && ctx.venueVerified(row) === true ? "pass" : "unchecked"; // venue_id present is only a field check (field_checks.venue_linked_rows)
 
   // Freshness / source absence. Only the source-health currency verdict (complete successful refresh evidence) can pass.
   // A failed, partial or windowed refresh is never absence: stale is a review for a person, unknown is unchecked.
@@ -86,7 +87,7 @@ function classifyRow(row, ctx) {
   // Completeness: description + time present.
   const dq = descriptionQuality(row.description, row.title);
   const noTime = !row.is_all_day && !String(row.time_display || "").trim();
-  if (!dq.ok && !EDITORIAL_REASONS.has(dq.quality)) out.description_time = "fail";
+  if (!dq.ok) out.description_time = "fail"; // any failed description quality (missing, placeholder, bare_url, time_only, truncated...) is never a completeness pass
   else if (hasCode(c, "metadata_only_description_candidate") || noTime) out.description_time = "review";
   else out.description_time = "pass";
 
@@ -95,7 +96,7 @@ function classifyRow(row, ctx) {
 
   // Links: pass needs a recorded ok check that is recent. Never-checked is unchecked, a dead or missing link fails.
   if (!safeLink(row.event_url) && !safeLink(row.ticket_url)) out.stored_link = "fail";
-  else if (row.link_check_status === "dead") out.stored_link = "fail";
+  else if (row.link_check_status && row.link_check_status !== "ok") out.stored_link = "fail"; // dead or any other recorded non-ok status
   else if (row.link_check_status === "ok" && row.link_checked_at && daysBetween(new Date(ctx.nowMs).toISOString(), row.link_checked_at) <= (ctx.linkFreshDays || DEFAULT_LINK_FRESH_DAYS)) out.stored_link = "pass";
   else out.stored_link = "unchecked";
 
@@ -130,15 +131,17 @@ function buildCoverage(rows, opts) {
   const scoped = (Array.isArray(rows) ? rows : []).filter((r) => o.stage === "import" || publicScope(r, today));
   const checks = Object.fromEntries(CHECKS.map((k) => [k, blank()]));
   const perRow = new Map();
-  let ownerLocked = 0, categoryLocked = 0;
+  let ownerLocked = 0, categoryLocked = 0, timeLocked = 0, venueLinked = 0;
   for (const row of scoped) {
     const codes = new Set((byRow.get(idOf(row)) || new Map()).keys());
-    const result = classifyRow(row, { today, nowMs, codes, stage: o.stage || "published", currency: o.currencyOf ? o.currencyOf(row) : null, classifyMeeting: o.classifyMeeting, isNonEvent: o.isNonEvent, reviewed: o.reviewed, linkFreshDays: o.linkFreshDays });
+    const result = classifyRow(row, { today, nowMs, codes, stage: o.stage || "published", currency: o.currencyOf ? o.currencyOf(row) : null, classifyMeeting: o.classifyMeeting, isNonEvent: o.isNonEvent, reviewed: o.reviewed, venueVerified: o.venueVerified, linkFreshDays: o.linkFreshDays });
     perRow.set(idOf(row), result);
     for (const k of CHECKS) checks[k][result[k]]++;
     const locks = ownerCorrectedFields(row.internal_note);
     if (locks && locks.size) ownerLocked++;
     if (locks && locks.has("category")) categoryLocked++;
+    if (locks && (locks.has("time_display") || locks.has("start_date"))) timeLocked++;
+    if (row.venue_id) venueLinked++;
   }
   // A dimension row is worst-outcome over its checks: fail > review > unchecked > pass. Never better than its weakest check.
   const rank = { fail: 3, review: 2, unchecked: 1, pass: 0 };
@@ -154,15 +157,18 @@ function buildCoverage(rows, opts) {
   return {
     as_of: new Date(nowMs).toISOString(), today, mode: "report_only", stage: o.stage || "published", denominator: scoped.length,
     dimensions, checks, informative: { owner_protected_rows: ownerLocked, category_owner_locked_rows: categoryLocked },
+    // Field/lock/link checks prove only that a value is present, protected or linked. They never count as semantic accuracy.
+    field_checks: { category_locked_rows: categoryLocked, time_locked_rows: timeLocked, venue_linked_rows: venueLinked, note: "presence, lock or link only; not verification" },
     limits: [
       "pass requires a stated positive condition; stored fields alone never pass, and unknown is unchecked.",
       "Category is unchecked for every row: an owner lock is overwrite protection, not verification (a locked wrong category would still be wrong), and no recorded-review evidence is wired in this PR. category_owner_locked_rows is informational only.",
-      "Venue passes only for a linked canonical venue (venue_id); free-text venue is unchecked.",
+      "Venue is unchecked unless verified-resolver evidence is supplied (none wired here); venue_id present is reported as field_checks.venue_linked_rows, not as accuracy.",
       "Date/time passes only for a row seen in a complete refresh that is not owner-locked on time_display/start_date (a lock intentionally differs from source: unchecked); freshness passes only on source-health 'current' evidence (seen in a complete successful refresh); failed, partial or windowed refreshes are never absence.",
       "Duplicates cover same-venue same-start, shared event link and unresolved-time pairs only; cross-source different-title pairs are not covered and are not pass.",
       "Links pass only with link_check_status ok and a recent link_checked_at; never-checked is unchecked.",
       "Audience passes only on an explicit civic_public verdict; an ordinary-event verdict is the classifier abstaining and is unchecked.",
       "Image relevance, year and rights are human checks and are not covered; image_presence is presence only.",
+      "NOT BUILT (not claimed as detected): category-vs-purpose check, cancellation-signal check, a dedicated source-absent detector (absence shows only as freshness review via source-health), cross-source different-title duplicates, click-here/chrome and caps editorial flags, date/time comparison against the source value, resolver-verified venue status, price checks.",
       "No score is computed here; the PE rubric score stays with EI.",
     ],
   };
