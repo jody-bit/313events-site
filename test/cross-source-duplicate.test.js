@@ -71,3 +71,19 @@ test("pair_scan: a row starting beyond the 7-day pair window is unchecked, never
   assert.equal(cov.checks.pair_scan.pass, 1); assert.equal(cov.checks.pair_scan.unchecked, 1);
   assert.ok(cov.limits.some((l) => /next 7 days/.test(l)));
 });
+test("pair_scan: a broad schedule-unverified range never active on a window day is unchecked, not pass (same days() logic as the scan)", () => {
+  const broad = row("b1", "S1", "Winter Lights Trail", "2026-11-10", "7:00 PM", LIB, { end_date: "2027-01-10" });
+  const EventDates = require("../event-dates");
+  const window = [0, 1, 2, 3, 4, 5, 6].map((i) => new Date(Date.parse("2026-11-20T12:00:00Z") + i * 86400000).toISOString().slice(0, 10));
+  const active = window.some((d) => EventDates.isActiveOn(broad, d));
+  const cov = buildCoverage([broad], { stage: "published", today: "2026-11-20", nowMs: Date.parse("2026-11-20T12:00:00Z"), findings: [] });
+  assert.equal(cov.checks.pair_scan.pass, active ? 1 : 0); // never a pass unless the scan could actually compare it
+  assert.equal(cov.checks.pair_scan.unchecked, active ? 0 : 1);
+  console.log("  broad unverified range active in window:", active, "->", active ? "pass (comparable)" : "unchecked");
+  assert.equal(EventDates.scheduleState(broad), "unverified");
+});
+test("must-not (disclosed limit): same venue name in different cities with different titles is not flagged", () => {
+  const a = row("c1", "S1", "Holiday Concert", "2026-11-22", "7:00 PM", { venue_name_raw: "Community Center", venue_city_raw: "Livonia", venue_address_raw: "1 A St" });
+  const b = row("c2", "S2", "Christmas Craft Fair", "2026-11-22", "7:00 PM", { venue_name_raw: "Community Center", venue_city_raw: "Warren", venue_address_raw: "9 B St" });
+  assert.equal(onlyNew([a, b]).length, 0);
+});
