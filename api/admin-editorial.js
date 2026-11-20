@@ -392,6 +392,7 @@ module.exports = async (req, res) => {
       status: "approved",
     };
 
+    require("./_lib/quality-ingest").observeIngest([row], { path: "admin-editorial" });
     try {
       const insertResp = await fetch(`${SUPABASE_URL}/rest/v1/events`, {
         method: "POST",

@@ -87,6 +87,7 @@ const { OWNER_CORRECTION_MARKER, OWNER_LOCKABLE_FIELDS, protectOwnerCorrections 
 const { normalizeRowLinks } = require("./link-field");
 const { sanitizeRowText } = require("./text-sanitize");
 const { applyVenueCategoryPolicy } = require("./venue-category-policy");
+const { observeIngest } = require("./quality-ingest");
 
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
@@ -206,6 +207,9 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
       return { ok: false, status: 502, written: 0, attempted: rows.length, groups: [{ keys: null, rowCount: rows.length, ok: false, status: 502, error: message }], failedRows: Array.from(rows), text: async () => message };
     }
   }
+
+  // P0 quality coverage: every new AND updated row passes one report-only quality observation (never blocks or changes a row).
+  const quality = table === DEFAULT_TABLE ? observeIngest(rows, { path: (options && options.qualityPath) || "event-upsert" }) : null;
 
   const stamp = table === DEFAULT_TABLE && lastSeenStampEnabled() ? new Date().toISOString() : null;
   const input = stamp ? Array.from(rows).map((row) => (row && typeof row === "object" && !Array.isArray(row) ? Object.assign({}, row, { [LAST_SEEN_COLUMN]: stamp }) : row)) : Array.from(rows);
@@ -339,6 +343,7 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
     attempted: rows.length,
     groups,
     failedRows,
+    quality,
     text: async () => errorText,
   };
 }

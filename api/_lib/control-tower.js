@@ -87,6 +87,8 @@ const EVENT_SELECT_BASE = [
   "updated_at", "ticket_status", "no_fixed_venue", "feed_source_id", "venues(name,city,address)",
 ].join(",");
 
+const COVERAGE_COLUMNS = "link_check_status,link_checked_at,date_semantics,occurrence_dates,recurrence_evidence";
+
 // The cron schedule is read from the deployed vercel.json (a static require,
 // so the bundler ships it with the function). Unreadable -> null, and
 // source-health then reports schedules as unknown, never as "unscheduled".
@@ -128,12 +130,18 @@ async function loadSnapshot({ supabaseUrl, serviceRoleKey, fetchFn = fetch, now 
   let events;
   let lastSeenColumn = true;
   try {
-    events = await readAll(fetchFn, eventsUrl(`${EVENT_SELECT_BASE},last_seen_at_source`), headers);
+    // P0 coverage reads the stored link-check and schedule evidence too; any column missing falls back a tier, and says so.
+    events = await readAll(fetchFn, eventsUrl(`${EVENT_SELECT_BASE},last_seen_at_source,${COVERAGE_COLUMNS}`), headers);
   } catch (err) {
-    // migration_046 not applied: read without it, and say so.
     if (err.status !== 400) throw err;
-    lastSeenColumn = false;
-    events = await readAll(fetchFn, eventsUrl(EVENT_SELECT_BASE), headers);
+    try {
+      events = await readAll(fetchFn, eventsUrl(`${EVENT_SELECT_BASE},last_seen_at_source`), headers);
+    } catch (err2) {
+      // migration_046 not applied: read without it, and say so.
+      if (err2.status !== 400) throw err2;
+      lastSeenColumn = false;
+      events = await readAll(fetchFn, eventsUrl(EVENT_SELECT_BASE), headers);
+    }
   }
   const since = new Date(now - RUN_WINDOW_DAYS * 86400000).toISOString();
   let runs = [];
@@ -247,6 +255,20 @@ function buildReport(snapshot, { includeEvents = true } = {}) {
   // ONE queue: EI's shared findings (import + published, same keys) -> actionable items; informative is counted only.
   const detected = qualityQueue.detect(events, { now, today: snapshot.today });
   decisions.quality = Object.assign({ detector: detected.state, detectorNote: detected.reason }, qualityQueue.build(detected.findings));
+  // P0 coverage: per-dimension pass/fail/review/unchecked over this same public upcoming inventory. Needs the detector's
+  // findings; without them it reports NOT RUN, never an all-pass.
+  if (detected.state === "ok") {
+    try {
+      const { buildCoverage } = require("./quality-coverage");
+      const { classifyMeeting } = require("./meeting-classifier");
+      const { isLikelyNotARealEvent } = require("./non-event-filter");
+      decisions.coverage = Object.assign({ state: "ok" }, buildCoverage(events, { today: snapshot.today, nowMs: now, findings: detected.findings, currencyOf: health.currencyOf, classifyMeeting, isNonEvent: isLikelyNotARealEvent }));
+    } catch (err) {
+      decisions.coverage = { state: "error", reason: String((err && err.message) || err).slice(0, 200) };
+    }
+  } else {
+    decisions.coverage = { state: "not_run", reason: detected.reason || "quality detector did not run" };
+  }
   if (includeEvents) {
     const titleById = new Map(publicEvents.map((e) => [e.id, e]));
     decisions.events = summary.results
