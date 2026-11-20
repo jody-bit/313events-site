@@ -34,6 +34,9 @@ const KIND = Object.assign(Object.fromEntries(Object.values(DIMENSIONS).flat().m
 // or a recorded status, not that the content is right.
 
 const idOf = (r) => r.id || (r.external_id ? "ext:" + r.external_id : null);
+// The strict published pair scan (report() in public-content-quality) only compares pairs that overlap [today, today+6].
+// A row that starts after that window was never compared, so "no finding" is not evidence: unchecked, never pass.
+const beyondPairWindow = (row, today) => { const end = new Date(Date.parse(today + "T12:00:00Z") + 6 * 86400000).toISOString().slice(0, 10); return EventDates.bounds(row).start > end; };
 const publicScope = (row, today) => row && (row.id || row.external_id) && (!row.status || row.status === "approved") && EventDates.bounds(row).end >= today;
 const hasCode = (codes, ...list) => list.some((c) => codes.has(c));
 const safeLink = (x) => { try { const u = new URL(x); return /^https?:$/.test(u.protocol) ? u.href : null; } catch (_) { return null; } };
@@ -94,7 +97,7 @@ function classifyRow(row, ctx) {
   out.category = ctx.reviewed && ctx.reviewed(row, "category") === true ? "pass" : "unchecked";
 
   // Duplicates: the scan covers same-venue/same-start and shared-link pairs only (disclosed in `limits`).
-  out.pair_scan = hasCode(c, "same_venue_same_start_review", "same_event_link_collision", "same_venue_time_unresolved") ? "review" : ctx.stage === "import" ? "unchecked" : "pass";
+  out.pair_scan = hasCode(c, "same_venue_same_start_review", "same_event_link_collision", "same_venue_time_unresolved", "cross_source_title_date_review") ? "review" : ctx.stage === "import" ? "unchecked" : beyondPairWindow(row, ctx.today) ? "unchecked" : "pass";
 
   // Completeness: description + time present.
   const dq = descriptionQuality(row.description, row.title);
@@ -187,7 +190,7 @@ function buildCoverage(rows, opts) {
       "Category is unchecked for every row: an owner lock is overwrite protection, not verification (a locked wrong category would still be wrong), and no recorded-review evidence is wired in this PR. category_owner_locked_rows is informational only.",
       "Venue is unchecked unless verified-resolver evidence is supplied (none wired here); venue_id present is reported as field_checks.venue_linked_rows, not as accuracy.",
       "Date/time passes only for a row seen in a complete refresh that is not owner-locked on time_display/start_date (a lock intentionally differs from source: unchecked); freshness passes only on row-level source-health evidence (this row's last_seen_at_source after the source's latest retrieving run; the updated_at proxy is not evidence); failed, partial or windowed refreshes are never absence.",
-      "Duplicates cover same-venue same-start, shared event link and unresolved-time pairs only; cross-source different-title pairs are not covered and are not pass.",
+      "Duplicates: the strict same-venue/same-start, shared-link and unresolved-time scan compares only pairs overlapping the next 7 days, so a row starting later is unchecked, never pass. Cross-source pairs (different source, same date, loosely the same venue, same start minute, similar title) are reviewed for all dates; same-source pairs and different-start pairs beyond 7 days are not covered.",
       "Links pass only with link_check_status ok and a recent link_checked_at; never-checked is unchecked.",
       "Audience never passes: no positive audience evidence exists in a row. The governance screen can fail or ask for review; a clear screen is informative (governance_screen_clear_rows) and the check stays unchecked.",
       "description_time (completeness) and hard_flags (editorial) both fail on the same bad description: that is the existing completeness vs editorial split, so one defect can appear in two dimensions.",
