@@ -19,6 +19,8 @@ module.exports = async (req, res) => {
     const url = `${cfg.supabaseUrl}/rest/v1/events?status=eq.approved&start_date=gte.${today}&start_date=lte.${last}&select=${COLUMNS}&order=start_date.asc,id.asc`;
     const result = await fetchAllPagedRows(url, { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` });
     if (!result.ok) { console.warn(`[calendar-feed] incomplete read (${result.rows.length} rows): ${result.error}`); res.setHeader("Retry-After", "600"); return res.status(503).end(); }
+    // A 14 day window with no rows at all is a failed read, not an empty calendar: serving it would delete every event for subscribers.
+    if (!result.rows.length) { console.warn("[calendar-feed] zero rows in the window; not serving an empty feed"); res.setHeader("Retry-After", "600"); return res.status(503).end(); }
     const feed = buildFeed(result.rows, { siteUrl: siteUrl(), today });
     res.setHeader("Content-Type", "text/calendar; charset=utf-8");
     res.setHeader("Content-Disposition", 'inline; filename="313-events-next-14-days.ics"');

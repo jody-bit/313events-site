@@ -78,3 +78,22 @@ test("handler: partial read answers 503 and never serves a partial feed; complet
     const bad = mkRes(); await handler({ method: "POST" }, bad); assert.equal(bad.code, 405);
   } finally { global.fetch = realFetch; Object.keys(process.env).forEach((k) => { if (!(k in env)) delete process.env[k]; }); Object.assign(process.env, env); }
 });
+
+test("an end equal to the start is no stated end (2 hour default); only a strictly earlier end crosses midnight", () => {
+  const eq = feed([base({ time_display: "6:30 PM – 6:30 PM" })]);
+  assert.match(eq.ics, /DTSTART:20261121T233000Z/); assert.match(eq.ics, /DTEND:20261122T013000Z/);
+  const overnight = feed([base({ time_display: "10:00 PM – 2:00 AM" })]);
+  assert.match(overnight.ics, /DTSTART:20261122T030000Z/); assert.match(overnight.ics, /DTEND:20261122T070000Z/);
+});
+test("handler: a successful read with zero rows answers 503, not an empty calendar", async () => {
+  const path = require.resolve("../api/calendar-feed.js");
+  const mkRes = () => { const r = { headers: {}, code: 0, body: null, setHeader(k, v) { r.headers[k] = v; return r; }, status(c) { r.code = c; return r; }, end() { return r; }, send(b) { r.body = b; return r; } }; return r; };
+  const env = { ...process.env }; Object.assign(process.env, { VERCEL_ENV: "production", SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "anon" });
+  const realFetch = global.fetch;
+  try {
+    delete require.cache[path];
+    global.fetch = async () => ({ ok: true, status: 200, headers: { get: () => null }, text: async () => "[]", json: async () => [] });
+    const handler = require(path); const res = mkRes(); await handler({ method: "GET" }, res);
+    assert.equal(res.code, 503); assert.equal(res.body, null);
+  } finally { global.fetch = realFetch; Object.keys(process.env).forEach((k) => { if (!(k in env)) delete process.env[k]; }); Object.assign(process.env, env); }
+});

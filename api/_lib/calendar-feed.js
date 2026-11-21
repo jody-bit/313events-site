@@ -64,8 +64,10 @@ function buildFeed(rows, opts) {
     const c = classify(r, today, lastDay);
     if (!c.listed) { skipped[c.reason] = (skipped[c.reason] || 0) + 1; continue; }
     const start = detroitToUtc(r.start_date, c.startMin);
-    let endMin = c.endMin !== null ? c.endMin : c.startMin + DEFAULT_MINUTES;
-    if (endMin <= c.startMin) endMin += 24 * 60; // crosses midnight
+    // An end equal to the start is "no stated end" (the 6:30 PM - 6:30 PM shape), never a 24 hour event; only a strictly earlier
+    // end crosses midnight (same rule as the in-page exporter).
+    let endMin = c.endMin !== null && c.endMin !== c.startMin ? c.endMin : c.startMin + DEFAULT_MINUTES;
+    if (endMin < c.startMin) endMin += 24 * 60;
     const end = new Date(start.getTime() + (endMin - c.startMin) * 60000);
     const where = CalendarLocation.icsLocationLine(CalendarLocation.resolveForEvent({ venue: r.venue_name_raw, locEventAddress: r.venue_address_raw, locEventCity: r.venue_city_raw }));
     const page = siteUrl + "/event.html?id=" + encodeURIComponent(r.id);
