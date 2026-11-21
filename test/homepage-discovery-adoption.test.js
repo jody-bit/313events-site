@@ -219,7 +219,7 @@ async function run() {
     assert.ok(chip(page, "#allTypesChip").classList.contains("active"), '"All categories" is the current choice');
     assert.ok(page.el("filterBar").querySelectorAll(".chip").every((c) => !/class="dot"|style=/.test(c.innerHTML)), "no chip carries a colour dot");
     assert.deepStrictEqual(page.el("filterBar").querySelectorAll(".chip").map((c) => c.textContent),
-      ["All categories", ...D.categories.map((c) => c.label), "Free only", "Tickets available", "Has photo", "Community submitted", "On the Radar", "Reset filters"],
+      ["All categories", ...D.categories.map((c) => c.label), "Free only", "Tickets available", "Has photo", "Community submitted", "In the Press", "Reset filters"],
       "the chip row: same chips, same order, same wording (no Clothing optional chip — STORY-023)");
     assert.strictEqual(page.el("whenDateInput").value, day(0), 'the "From" input shows today');
     assert.strictEqual(page.el("whenDateInput").min, day(0));

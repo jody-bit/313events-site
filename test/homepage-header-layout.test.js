@@ -83,7 +83,7 @@ console.log("PASS: the menu button exists exactly where the nav folds");
 
   const nav = header.match(/<nav class="site-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
   const links = [...nav.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map((m) => [m[2], m[1]]);
-  assert.deepStrictEqual(links, [["Events", "/"], ["Calendar", "calendar.html"], ["Map", "map.html"], ["Venues", "venues.html"], ["Neighborhoods", "neighborhoods.html"], ["On the Radar", "radar.html"], ["About", "about.html"]]);
+  assert.deepStrictEqual(links, [["Events", "/"], ["Calendar", "calendar.html"], ["Map", "map.html"], ["Venues", "venues.html"], ["Neighborhoods", "neighborhoods.html"], ["In the Press", "radar.html"], ["About", "about.html"]]);
   for (const [, href] of links) if (href !== "/") assert.ok(fs.existsSync(`${REPO_DIR}/${href}`), `${href} exists — no dead navigation links`);
   assert.ok(/<a class="submit-btn" href="submit\.html"/.test(group) && fs.existsSync(`${REPO_DIR}/submit.html`), "Submit Event goes to the submit page");
 }

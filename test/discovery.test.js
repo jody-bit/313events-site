@@ -534,7 +534,7 @@ function run() {
     const d = D.describe(s);
     assert.deepStrictEqual(d.map((x) => `${x.dim}:${x.label}`), [
       "when:This Weekend", "where:25 mi · Ann Arbor", "where:Corktown",
-      "what:Music", "what:Visual Arts", "what:Free only", "what:On the Radar", 'search:"jazz"',
+      "what:Music", "what:Visual Arts", "what:Free only", "what:In the Press", 'search:"jazz"',
     ], "WHEN, WHERE, WHAT, SEARCH — in that order");
     // Every entry's `remove` patch removes exactly that entry.
     d.forEach((entry) => {

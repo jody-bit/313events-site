@@ -238,7 +238,7 @@ const FEATURE_CHIPS = [
   { key: 'tickets', label: 'Tickets available' },
   { key: 'photo', label: 'Has photo' },
   { key: 'submitted', label: 'Community submitted' },
-  { key: 'radar', label: 'On the Radar' },
+  { key: 'radar', label: 'In the Press' },
 ];
 
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
