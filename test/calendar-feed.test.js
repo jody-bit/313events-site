@@ -68,7 +68,7 @@ test("parseTimes reads only a leading time and an adjacent range end", () => {
 test("handler: partial read answers 503 and never serves a partial feed; complete read serves text/calendar", async () => {
   const path = require.resolve("../api/calendar-feed.js");
   const mkRes = () => { const r = { headers: {}, code: 0, body: null, setHeader(k, v) { r.headers[k] = v; return r; }, status(c) { r.code = c; return r; }, end() { return r; }, send(b) { r.body = b; return r; } }; return r; };
-  const env = { ...process.env }; Object.assign(process.env, { VERCEL_ENV: "production", SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "anon" });
+  const env = { ...process.env }; Object.assign(process.env, { VERCEL_ENV: "production", SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "anon", SUPABASE_SERVICE_ROLE_KEY: "svc-secret" });
   const realFetch = global.fetch;
   try {
     delete require.cache[path];
@@ -88,7 +88,7 @@ test("an end equal to the start is no stated end (2 hour default); only a strict
 test("handler: a successful read with zero picks answers 200 with a valid empty calendar (a failed read is the 503)", async () => {
   const path = require.resolve("../api/calendar-feed.js");
   const mkRes = () => { const r = { headers: {}, code: 0, body: null, setHeader(k, v) { r.headers[k] = v; return r; }, status(c) { r.code = c; return r; }, end() { return r; }, send(b) { r.body = b; return r; } }; return r; };
-  const env = { ...process.env }; Object.assign(process.env, { VERCEL_ENV: "production", SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "anon" });
+  const env = { ...process.env }; Object.assign(process.env, { VERCEL_ENV: "production", SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "anon", SUPABASE_SERVICE_ROLE_KEY: "svc-secret" });
   const realFetch = global.fetch;
   try {
     delete require.cache[path];
@@ -115,18 +115,23 @@ test("category filter tunes the feed; unknown keys are dropped; all-unknown mean
 });
 test("handler asks the database for picks only and answers a good empty read with a valid empty calendar, a failed read with 503", async () => {
   const handler = require("../api/calendar-feed");
-  const env = { VERCEL_ENV: "production", SUPABASE_URL: "https://example.supabase.co", SUPABASE_ANON_KEY: "anon" };
-  const seen = []; const realFetch = global.fetch; const saved = {};
+  const env = { VERCEL_ENV: "production", SUPABASE_URL: "https://example.supabase.co", SUPABASE_ANON_KEY: "anon", SUPABASE_SERVICE_ROLE_KEY: "svc-secret" };
+  const seen = []; const hdrs = []; const realFetch = global.fetch; const saved = {};
   for (const k of Object.keys(env)) { saved[k] = process.env[k]; process.env[k] = env[k]; }
   const run = async (fetchImpl, query) => {
+    seen.length = 0;
     global.fetch = fetchImpl;
     const out = { headers: {} }; const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.status = c; return this; }, send(b) { out.body = b; return this; }, end() { return this; } };
     await handler({ method: "GET", query: query || {} }, res); return out;
   };
   try {
-    const ok = await run(async (url) => { seen.push(String(url)); return { ok: true, status: 200, headers: { get: () => null }, json: async () => [] }; });
+    const ok = await run(async (url, init) => { seen.push(String(url)); hdrs.push(init && init.headers); return { ok: true, status: 200, headers: { get: () => null }, json: async () => [] }; });
     assert.equal(ok.status, 200); assert.match(ok.body, /BEGIN:VCALENDAR/);
     assert.ok(seen.length && seen.every((u) => /is_pick=eq\.true/.test(u) && /status=eq\.approved/.test(u)));
+    assert.ok(hdrs.every((h) => h && h.apikey === "svc-secret"), "reads with the service role");
+    assert.ok(!ok.body.includes("svc-secret") && !JSON.stringify(ok.headers).includes("svc-secret"), "the key never reaches the response");
+    const noKey = (delete process.env.SUPABASE_SERVICE_ROLE_KEY, await run(async () => { throw new Error("must not fetch"); }));
+    assert.equal(noKey.status, 503); process.env.SUPABASE_SERVICE_ROLE_KEY = "svc-secret";
     const bad = await run(async () => ({ ok: false, status: 400, headers: { get: () => null }, json: async () => ({ message: "column events.is_pick does not exist" }), text: async () => "column does not exist" }));
     assert.equal(bad.status, 503);
   } finally { global.fetch = realFetch; for (const k of Object.keys(env)) { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; } }
