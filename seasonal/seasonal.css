@@ -30,10 +30,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-credit{margin:6px 0 0;font-family:var(--font-data);font-size:11px;letter-spacing:.02em;line-height:1.35;color:var(--ink-soft);overflow-wrap:anywhere}
 .sc-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .sc-fell-back .sc-credit{display:none}
-.sc-pending{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--accent,#F5C400);color:#0A0A0A;padding:3px 7px;position:absolute;left:6px;bottom:6px;font-weight:700}
-.sc-pending-fb{display:none}
-.sc-fell-back .sc-pending-fb{display:block}
-.sc-pending-hero{left:auto;right:10px;top:10px;bottom:auto;z-index:2}
 .sc-illus-hero{left:auto;right:10px;top:10px;bottom:auto;z-index:2}
 .sc-filters{display:grid;grid-template-columns:1fr minmax(240px,360px);gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
 .sc-label{margin:0 0 8px;display:block;font-family:var(--font-data);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
@@ -152,7 +148,6 @@ a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 .sc-no-photo{background:var(--panel-alt)}
 .sc-no-photo::after{content:"Event photo unavailable";position:absolute;inset:0;display:grid;place-content:center;padding:20px;text-align:center;color:var(--ink-soft);font:12px/1.5 var(--font-data);letter-spacing:.04em}
 .sc-no-photo .sc-illus,.sc-no-photo .sc-hist{display:none}
-.sc-no-photo .sc-pending{z-index:1}
 
 .sc-cover-credit{display:none}
 .sc-fell-back[data-image-source="cover"] .sc-cover-credit{display:block}
@@ -164,5 +159,3 @@ a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 .sc-card-media.sc-no-photo{aspect-ratio:auto;min-height:48px;padding:14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;border-bottom:1px solid var(--line)}
 .sc-no-photo img,.sc-no-photo .sc-ph{display:none}
 .sc-no-photo::after{position:static;display:block;padding:0;text-align:left}
-.sc-no-photo .sc-pending{position:static}
-.sc-no-photo:has(.sc-pending)::after{display:none}
