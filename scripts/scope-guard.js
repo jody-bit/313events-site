@@ -100,6 +100,8 @@ const ALLOWED = [
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js", "api/_lib/meeting-classifier.js",
   // Editorial Gateway (owner P1 interruption 2026-10-26): authenticated find / upload image / verify for AI clients; new files only.
   "api/editorial-gateway.js", "api/editorial-oauth.js", "api/_lib/oauth-front.js", "api/_lib/editorial-gateway.js",
+  // PR 373 / issue 163: submit-form imageUrl guard (public https only).
+  "api/_lib/image-url-guard.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   // Decision 7: rotating link check (dry by default).
