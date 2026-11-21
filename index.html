@@ -4065,6 +4065,12 @@
     padding:7px 12px 6px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;cursor:pointer;
     font-family:var(--font-data);text-transform:uppercase;letter-spacing:.1em;text-align:left;scroll-snap-align:start;
   }
+  .tod-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 6px;}
+  .tod-chip{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:7px 14px;min-height:36px;cursor:pointer;}
+  .tod-chip:hover{border-color:var(--ink-dim);background:var(--panel-hover);}
+  .tod-chip.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+  .tod-note{font-size:12px;color:var(--ink-soft);margin-left:4px;}
+  .list-sub-heading{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);padding:12px 0 4px;}
   .ds-day:hover{border-color:var(--ink-dim);background:var(--panel-hover);}
   .ds-dow{font-size:12px;line-height:1.2;color:var(--ink);}
   .ds-date{font-size:12px;line-height:1.2;color:var(--ink-soft);}
@@ -6091,6 +6097,58 @@ let streamViewKey = null;         // the view streamShown belongs to
 // window began — a picked date older than that shows the empty state, as
 // before, rather than the one exhibition that happens to be loaded standing
 // in for a day whose other events are not. Deep history is Calendar's.
+// ---- Today ordering and the time-of-day chips (owner decision 2026-11-20) ----
+// Rank inside today: 0 = not started yet, 1 = happening now (started; no end time or end not passed), 2 = no time.
+function todayRank(timeStr, nowMins){
+  const range = parseTimeRange(timeStr);
+  if(!range) return 2;
+  return range.start.h*60 + range.start.m >= nowMins ? 0 : 1;
+}
+// Morning is before 12, Afternoon 12 to 5 PM, Evening from 5 PM. The placeholder "Evening" (no clock time) counts under
+// Evening only. No time at all is null.
+function todBucket(timeStr){
+  const range = parseTimeRange(timeStr);
+  if(range) return range.start.h < 12 ? 'morning' : range.start.h < 17 ? 'afternoon' : 'evening';
+  return /evening/i.test(timeStr || '') ? 'evening' : null;
+}
+const TOD_MODES = ['today', 'tomorrow', 'weekend'];
+const TOD_LABELS = {morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening'};
+let timeOfDay = null;       // null | 'morning' | 'afternoon' | 'evening'
+let todHiddenNoTime = 0;    // rows left out of the current view because they have no time, while a chip is on
+function todChipsHtml(mode){
+  if(TOD_MODES.indexOf(mode) === -1) return '';
+  const chips = Object.keys(TOD_LABELS).map(k => `<button type="button" class="tod-chip${timeOfDay === k ? ' active' : ''}" data-tod="${k}" aria-pressed="${timeOfDay === k}">${TOD_LABELS[k]}</button>`).join('');
+  const note = timeOfDay && todHiddenNoTime ? `<span class="tod-note">${todHiddenNoTime.toLocaleString('en-US')} event${todHiddenNoTime===1?'':'s'} with no time hidden</span>` : '';
+  return `<div class="tod-row" role="group" aria-label="Time of day">${chips}${note}</div>`;
+}
+
+// The stream as shown: the time-of-day chip filters (Today / Tomorrow / This Weekend), then today's rows are ordered
+// not-started, happening now, no time. streamRows() itself is unchanged (date order, unknown times last).
+function arrangeStreamRows(rows, ctx){
+  const w = Discovery.window(state, ctx);
+  todHiddenNoTime = 0;
+  // The chip only means something where its row is shown; leaving Today / Tomorrow / This Weekend clears it, so the
+  // Evening note on placeholder rows can never appear without a chip on screen.
+  if(TOD_MODES.indexOf(w.mode) === -1) timeOfDay = null;
+  let listed = rows;
+  if(timeOfDay && TOD_MODES.indexOf(w.mode) !== -1){
+    listed = rows.filter(r => {
+      if(r.day === null) return false;
+      const b = todBucket(r.event.time);
+      if(b === null){ todHiddenNoTime++; return false; }
+      return b === timeOfDay;
+    });
+  }
+  if(w.mode === 'today' || w.mode === 'tonight'){
+    const now = detroitNow();
+    const rank = r => r.day === now.iso ? todayRank(r.event.time, now.mins) : 0;
+    listed = listed.map((r, i) => ({r, i})).sort((x, y) => (x.r.day === null || y.r.day === null) ? x.i - y.i :
+      (x.r.day < y.r.day ? -1 : x.r.day > y.r.day ? 1 : (rank(x.r) - rank(y.r)) || (timeSortMinutes(x.r.event.time) - timeSortMinutes(y.r.event.time)) || x.i - y.i)).map(o => o.r);
+  }
+  return listed;
+}
+
+
 function streamRows(ctx){
   const w = Discovery.window(state, ctx);
   const floor = loadFloorISO();
@@ -6184,6 +6242,8 @@ function streamRowHtml(e, dayIso, ctx){
 function timeCellHtml(time){
   const t = (time || '').trim();
   if(!t) return '';
+  // Under the Evening chip a placeholder "Evening" (no clock time) says so.
+  if(timeOfDay === 'evening' && /evening/i.test(t) && !parseTimeRange(t)) return 'Evening<small>exact time not confirmed</small>';
   // A clock time ("7:00 PM") is set in the display voice, the time and its
   // meridiem on two short lines; anything else is shown as the source gave it.
   const clock = x => { const c = /^(\d{1,2}(?::\d{2})?)\s*([AaPp]\.?[Mm]\.?)$/.exec(x.trim()); return c ? `<span class="t-clock">${escapeHtml(c[1])}</span><span class="t-mer">${escapeHtml(c[2].replace(/\./g,'').toUpperCase())}</span>` : null; };
@@ -6233,7 +6293,16 @@ function streamGroupsHtml(rows, ctx, todayIso, tomorrowIso, continuedDay){
     const total = j - i;
     html += `<div class="list-day-group" data-day="${dayIso}">` +
       `<div class="list-day-heading">${rel}<span class="ldh-date">${label}</span>${dayIso === continuedDay ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${total.toLocaleString('en-US')} event${total===1?'':'s'}</span></div>` +
-      rows.slice(i, j).map(r => streamRowHtml(r.event, dayIso, ctx)).join('') +
+      rows.slice(i, j).map((r, k, arr) => {
+        // Today: name the "Happening now" and no-time runs, where each begins.
+        let sub = '';
+        if(dayIso === todayIso && (state.when.mode === 'today' || state.when.mode === 'tonight')){
+          const cur = todayRank(r.event.time, detroitNow().mins), prev = k ? todayRank(arr[k-1].event.time, detroitNow().mins) : -1;
+          if(cur !== prev && cur === 1) sub = '<div class="list-sub-heading">Happening now</div>';
+          else if(cur !== prev && cur === 2) sub = '<div class="list-sub-heading">Time not confirmed</div>';
+        }
+        return sub + streamRowHtml(r.event, dayIso, ctx);
+      }).join('') +
       `</div>`;
     i = j;
   }
@@ -6310,6 +6379,8 @@ document.getElementById('listView').addEventListener('click', (e)=>{
   if(!t) return;
   const day = t.closest('.ds-day');
   if(day){ pickStripDay(day.dataset.day); return; }
+  const tod = t.closest('.tod-chip');
+  if(tod){ const k = tod.dataset.tod; timeOfDay = timeOfDay === k ? null : k; streamShown = STREAM_INITIAL; renderList(); const b = document.querySelector(`#listView .tod-chip[data-tod="${k}"]`); if(b) b.focus({preventScroll: true}); return; }
   if(t.closest('.ds-next')){ dayStripOffset += STRIP_DAYS; renderList(); const b = document.querySelector('#listView .ds-next'); if(b) b.focus({preventScroll: true}); return; }
   if(t.closest('.ds-prev')){ dayStripOffset = Math.max(0, dayStripOffset - STRIP_DAYS); renderList(); const b = document.querySelector('#listView .ds-next'); if(b) b.focus({preventScroll: true}); }
 });
@@ -6325,7 +6396,7 @@ function renderList(){
   syncUnplacedKey();
   const meta = currentListMeta();
   const ctx = discoveryCtx();
-  const rows = streamRows(ctx);
+  const rows = arrangeStreamRows(streamRows(ctx), ctx);
 
   // A different view starts again from the top; the same view re-rendered
   // (a count arriving, the data loading) keeps what has been opened.
@@ -6336,7 +6407,7 @@ function renderList(){
   // whole view, the way into the full calendar for it, and the date strip.
   // It is written for an empty view too, so the day can always be changed.
   const calHref = Discovery.href('calendar', state, ctx);
-  const headHtml = (countLine) => `<div class="stream-head"><div class="sec-head"><h2 class="sec-title">What's Happening</h2>${countLine}<a class="sec-link" href="${escapeHtml(calHref)}">View full calendar &rarr;</a></div>${dayStripHtml()}</div>`;
+  const headHtml = (countLine) => `<div class="stream-head"><div class="sec-head"><h2 class="sec-title">What's Happening</h2>${countLine}<a class="sec-link" href="${escapeHtml(calHref)}">View full calendar &rarr;</a></div>${dayStripHtml()}${todChipsHtml(Discovery.window(state, ctx).mode)}</div>`;
 
   if(!rows.length){
     first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
