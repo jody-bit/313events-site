@@ -11,9 +11,9 @@ const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
 const version = "2026-11-20T12:00:00+00:00";
 const description = "A monthly Mario Kart tournament at GottaGacha in Warren.";
 
-function setup() {
+async function setup() {
   const tables = { events: [{ id: "event-1", title: "Hi-Fight Circuit #15", status: "approved",
-    category: "community", start_date: "2026-11-22", description: "Mario Kart Monthly",
+    category: "community", start_date: new Date(Date.now() + 86400000).toISOString().slice(0, 10), description: "Mario Kart Monthly",
     venue_address_raw: "29200 Dequindre Rd #2B", venue_city_raw: "Warren",
     internal_note: null, updated_at: version }] };
   const db = makeMockPostgrest(tables);
@@ -42,10 +42,15 @@ function setup() {
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(script + "\nSECRET='fixture-secret'; this.refreshes=0; loadIncomplete=async()=>{this.refreshes++;return true;};", sandbox);
-  sandbox.renderIncompleteList([{ e: tables.events[0], missing: ["description"] }]);
+  const response = { status(code) { this.code = code; return this; }, json(data) { this.data = data; return this; } };
+  await handler({ method: "GET", query: { incomplete: "1" }, headers: { "x-admin-secret": "fixture-secret" } }, response);
+  assert.strictEqual(response.code, 200);
+  const queueRow = response.data.events[0];
+  assert.strictEqual(queueRow.updated_at, version, "the actual queue API supplies the loaded version");
+  sandbox.renderIncompleteList([{ e: queueRow, missing: ["description"] }]);
   assert.ok(element("incompleteList").innerHTML.includes(`data-row-version="${version}"`));
   const card = element("incomplete-event-1");
-  const fieldsElement = { dataset: { fields: "description,venue_city_raw", rowVersion: version } };
+  const fieldsElement = { dataset: { fields: "description,venue_city_raw", rowVersion: queueRow.updated_at } };
   card.querySelector = () => fieldsElement;
   element("inc-description-event-1").value = description;
   element("inc-venue_city_raw-event-1").value = "   ";
@@ -54,7 +59,7 @@ function setup() {
 
 async function run() {
   {
-    const t = setup();
+    const t = await setup();
     await t.sandbox.saveIncompleteFields("event-1");
     assert.strictEqual(t.tables.events[0].description, description, "queue Save persists a nonempty-description replacement");
     assert.strictEqual(t.tables.events[0].venue_city_raw, "Warren", "blank inputs preserve existing fields");
@@ -66,7 +71,7 @@ async function run() {
     assert.strictEqual(t.sandbox.refreshes, 1);
   }
   {
-    const t = setup();
+    const t = await setup();
     t.tables.events[0].updated_at = "2026-11-20T12:01:00+00:00";
     t.tables.events[0].description = "Another editor's correction.";
     await t.sandbox.saveIncompleteFields("event-1");
@@ -76,7 +81,7 @@ async function run() {
     assert.match(t.element("incomplete-err-event-1").textContent, /changed/i);
   }
   {
-    const t = setup();
+    const t = await setup();
     t.sandbox.fetch = async () => ({ ok: true, json: async () => ({ ok: true, event: t.tables.events[0] }) });
     await t.sandbox.saveIncompleteFields("event-1");
     assert.strictEqual(t.sandbox.refreshes, 0, "HTTP 200 without the requested value is not success");
@@ -84,7 +89,7 @@ async function run() {
     assert.strictEqual(t.element("inc-description-event-1").value, description);
   }
   {
-    const t = setup();
+    const t = await setup();
     t.element("incomplete-event-1").querySelector().dataset.rowVersion = "";
     await t.sandbox.saveIncompleteFields("event-1");
     assert.strictEqual(t.calls.length, 0, "missing versions never write");
