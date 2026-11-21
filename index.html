@@ -6202,16 +6202,9 @@ const ART_CODES = {
   fest:'Fest', food:'Food', film:'Film', nightlife:'Night', sports:'Sports', community:'Community',
   vendor:'Vendor', training:'Training', gaming:'Gaming'
 };
-const ART_ORBITS = [
-  [96,72,56,44],[8,74,64,28],[52,-8,28,50],[96,72,40,36],
-  [8,74,80,22],[52,-8,76,48],[96,72,22,28],[8,74,60,16]
-];
+// The no-photo tile (owner decision 2026-11-20): the category's own colour, drawn by the shared Categories.tileSvg().
 function artFallbackSvg(e){
-  let h = 0;
-  const key = String(e.id || e.title || '');
-  for(let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-  const [cx, cy, dx, dy] = ART_ORBITS[h % ART_ORBITS.length];
-  return `<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="${cx}" cy="${cy}" r="20" stroke="#2a2a2a"/><circle cx="${cx}" cy="${cy}" r="40" stroke="#232323"/><circle cx="${cx}" cy="${cy}" r="60" stroke="#1c1c1c"/><circle cx="${cx}" cy="${cy}" r="80" stroke="#171717"/></g><circle cx="${dx}" cy="${dy}" r="2" fill="#5c5d58"/></svg>`;
+  return Categories.tileSvg(e.cat, e.id || e.title);
 }
 
 // The day groups for a run of consecutive stream rows. Each heading counts the rows listed under it in this section

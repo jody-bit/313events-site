@@ -1794,6 +1794,12 @@ function renderMonth(){
 // reaches this page after admin approval. Without this, a submitted title
 // like "<img src=x onerror=alert(1)>" would execute in every visitor's
 // browser once approved. Same pattern already used in admin.html.
+// An event's small image slot. With no usable photo (or one that fails to load) it shows the branded category tile
+// (owner decision 2026-11-20); the photo-pending label is written on the event page only.
+function thumbBoxHtml(e){
+  const u = e.imageUrl && safeUrl(e.imageUrl);
+  return `<span class="evt-thumb-box" aria-hidden="true">${Categories.tileSvg(e.cat, e.id || e.title)}${u ? `<img class="evt-thumb" src="${escapeHtml(u)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>`;
+}
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
@@ -1890,7 +1896,7 @@ function showDayPanel(iso){
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              ${thumbBoxHtml(e)}
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
@@ -1944,7 +1950,7 @@ function renderList(dateList){
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              ${thumbBoxHtml(e)}
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">

@@ -15,6 +15,10 @@
 //   Categories.tagHtml(key, {size})  the ONE event-type label. Every surface that shows an event's type renders this
 //                                and nothing else; size is "detail" (event page lead label only) or omitted.
 //   Categories.tagCss()          the rules for that label, written into the page with the tokens
+//   Categories.tileSvg(key, seed)  the stand-in for an event with no usable photo (owner decision 2026-11-20): a branded
+//                                tile in the category's own colour (tinted ground, orbit arcs, one dot). seed (the event id)
+//                                moves the arcs so a column of tiles reads as a field. No stock or generated image.
+//   Categories.tileCss()         the rules for .evt-thumb-box (a small image slot that falls back to the tile), written in too
 // Loading this file in <head> also writes that block, and the label rules, into the page (<style id="category-tokens">),
 // so a page never declares a --c-* value or a label style of its own.
 //
@@ -93,14 +97,33 @@
     return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{background:var(' + c.token + ');}'; }).join("");
   }
 
-  var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss, tagHtml: tagHtml, tagCss: tagCss });
+  // The no-photo tile. Eight arc positions, picked by the event's id.
+  var TILE_ORBITS = [[96,72,56,44],[8,74,64,28],[52,-8,28,50],[96,72,40,36],[8,74,80,22],[52,-8,76,48],[96,72,22,28],[8,74,60,16]];
+  function tileSvg(key, seed) {
+    var c = BY_KEY[key], colour = c ? c.hex : "#D7FF00", h = 0, k = String(seed == null ? "" : seed);
+    for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0;
+    var o = TILE_ORBITS[h % TILE_ORBITS.length], cx = o[0], cy = o[1];
+    var arcs = [[20, .42], [40, .3], [60, .2], [80, .13]].map(function (a) {
+      return '<circle cx="' + cx + '" cy="' + cy + '" r="' + a[0] + '" stroke="' + colour + '" stroke-opacity="' + a[1] + '"/>';
+    }).join("");
+    return '<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">' +
+      '<rect width="104" height="70" fill="#161616"/><rect width="104" height="70" fill="' + colour + '" fill-opacity=".16"/>' +
+      '<g fill="none">' + arcs + '</g><circle cx="' + o[2] + '" cy="' + o[3] + '" r="2.4" fill="' + colour + '"/></svg>';
+  }
+  function tileCss() {
+    return ".evt-thumb-box{position:relative;flex:0 0 auto;width:52px;height:52px;overflow:hidden;background:#161616;}" +
+      ".evt-thumb-box svg{position:absolute;left:0;top:0;width:100%;height:100%;display:block;}" +
+      ".evt-thumb-box .evt-thumb{position:absolute;left:0;top:0;width:100%;height:100%;}";
+  }
+
+  var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss, tagHtml: tagHtml, tagCss: tagCss, tileSvg: tileSvg, tileCss: tileCss });
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) {
     root.Categories = api;
     var el = root.document.createElement("style");
     el.id = "category-tokens";
-    el.textContent = tokenCss() + tagCss();
+    el.textContent = tokenCss() + tagCss() + tileCss();
     (root.document.head || root.document.documentElement).appendChild(el);
   }
 })(typeof window !== "undefined" ? window : null);

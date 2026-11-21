@@ -95,6 +95,9 @@
      hugs exactly whatever the uploaded image's real dimensions are —
      portrait, landscape, or square — at any viewport width. */
   .evt-image-wrap{max-height:70vh;margin:0 0 20px;text-align:center;}
+  .evt-tile{position:relative;overflow:hidden;width:100%;aspect-ratio:16/6;max-height:260px;background:var(--panel-alt);border:1px solid var(--line);}
+  .evt-tile svg{position:absolute;left:0;top:0;width:100%;height:100%;display:block;}
+  .evt-tile-label{position:absolute;left:14px;bottom:12px;font-family:var(--font-data,'Space Mono',monospace);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
   .evt-image-wrap img{
     display:inline-block;max-width:100%;max-height:70vh;width:auto;height:auto;
     background:var(--panel-alt);border:1px solid var(--line);
@@ -806,13 +809,23 @@ function renderEvent(e){
   // that serves an HTML page instead of raw image bytes) will always fail
   // to load as an <img> src, and that's more common than a truly broken
   // link, so failing invisibly beats failing loudly here.
-  if(e.imageUrl && safeUrl(e.imageUrl)){
+  // With no usable photo (none given, or the link does not load) the page shows the branded category tile and says
+  // "Photo pending" (owner decision 2026-11-20). The label is on this page only, never on cards or lists.
+  {
     const wrap = document.getElementById('evtImageWrap');
     const img = document.getElementById('evtImage');
-    img.onerror = () => { wrap.style.display = 'none'; };
-    wrap.style.display = 'block';
-    img.src = safeUrl(e.imageUrl);
-    img.alt = e.title;
+    const showTile = () => {
+      wrap.innerHTML = `<div class="evt-tile" role="img" aria-label="Photo pending for ${escapeHtml(e.title)}">${Categories.tileSvg(e.cat, e.id || e.title)}<span class="evt-tile-label">Photo pending</span></div>`;
+      wrap.style.display = 'block';
+    };
+    if(e.imageUrl && safeUrl(e.imageUrl)){
+      img.onerror = showTile;
+      wrap.style.display = 'block';
+      img.src = safeUrl(e.imageUrl);
+      img.alt = e.title;
+    } else {
+      showTile();
+    }
   }
 
   // ---- badge / title / meta ----
