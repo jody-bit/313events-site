@@ -29,6 +29,10 @@ assert.equal(decide(env, () => ({ status: null, error: new Error("timeout") })).
 // even if the newest commit only changes documentation. Renames must also
 // evaluate both the removed and added paths, including names with newlines.
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "vercel-build-test-"));
+// CI preloads this using a relative NODE_OPTIONS path. Keep the same clock
+// in the child process even though its working directory is a temp repo.
+fs.mkdirSync(path.join(temp, "test/fixtures"), { recursive: true });
+fs.copyFileSync(path.join(__dirname, "fixtures/shift-clock.js"), path.join(temp, "test/fixtures/shift-clock.js"));
 function git(...args) {
   const r = spawnSync("git", args, { cwd: temp, encoding: "utf8" });
   assert.equal(r.status, 0, r.stderr);
