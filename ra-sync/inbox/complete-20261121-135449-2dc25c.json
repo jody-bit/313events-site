@@ -1,0 +1,21 @@
+{
+  "runToken": "20261121-135449-2dc25c",
+  "action": "complete",
+  "runId": "3e4f65d3-b638-4505-8b59-c7a2c9b4e219",
+  "events": [
+    {
+      "id": "ra-2590393",
+      "title": "FOG 19",
+      "description": "",
+      "startDate": "2026-12-04T22:00:00.000",
+      "endDate": "2026-12-05T04:00:00.000",
+      "venueName": "Marble Bar",
+      "address": "1501 Holden St, Detroit, MI 48208, USA",
+      "image": [
+        "https://images.ra.co/e4368f4de93e1da8da7428994c60b5b04b0a36ac.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    }
+  ]
+}
