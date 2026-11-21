@@ -172,7 +172,7 @@ module.exports = async (req, res) => {
 
   const {
     title, category, description, imageUrl, startDate, endDate, startTime,
-    recurring, clothingOptional, venue, address, venueTba, admission, price, ticketUrl, eventUrl,
+    recurring, clothingOptional, venue, address, addressFormat, city, region, postalCode, country, venueTba, admission, price, ticketUrl, eventUrl,
     orgName, contactEmail, companyWebsite, elapsedMs,
   } = body;
 
@@ -235,6 +235,23 @@ module.exports = async (req, res) => {
   if (!isSafeHttpUrl(eventUrl)) errors.push("eventUrl must be a valid http(s) link");
   if (!isSafeHttpUrl(imageUrl)) errors.push("imageUrl must be a valid http(s) link");
 
+  // Explicit fields from the current form; legacy clients retain address parsing.
+  let submittedAddress = typeof address === 'string' ? address.trim() : '';
+  let submittedCity = (cityFromAddress(submittedAddress) || {}).city || null;
+  if (addressFormat === 'structured') {
+    const text = value => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
+    const cityText = text(city), regionText = text(region), postal = text(postalCode).toUpperCase();
+    const validCountry = country === 'US' || country === 'CA';
+    if (!validCountry) errors.push('choose United States or Canada');
+    if (!venueTba && !cityText) errors.push('city is required');
+    if (!venueTba && !regionText) errors.push('state / province is required');
+    if (cityText.length > 100 || regionText.length > 50 || submittedAddress.length > 200) errors.push('location fields are too long');
+    if (postal && !(country === 'CA' ? /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] ?\d[ABCEGHJ-NPRSTV-Z]\d$/ : /^\d{5}(-\d{4})?$/).test(postal)) errors.push('enter a valid ZIP / postal code for the selected country');
+    const normalizedPostal = country === 'CA' && postal ? postal.replace(/\s/g, '').replace(/^(.{3})(.{3})$/, '$1 $2') : postal;
+    submittedCity = cityText || null;
+    submittedAddress = [submittedAddress, cityText, [regionText, normalizedPostal].filter(Boolean).join(' '), validCountry ? (country === 'CA' ? 'Canada' : 'United States') : ''].filter(Boolean).join(', ');
+  }
+
   if (errors.length) {
     res.status(400).json({ error: "Invalid submission: " + errors.join("; ") });
     return;
@@ -259,10 +276,9 @@ module.exports = async (req, res) => {
     // but this row never actually saved it: `address` was destructured
     // from the request body above and then silently discarded. See
     // migration_020_venue_address_raw.sql for the full story.
-    venue_address_raw: address && address.trim() ? address.trim() : null,
-    // The form has no city field. When the address text itself states a known
-    // city ("… Ferndale, MI") that is the city; "7500 Oakland Ave" stays blank.
-    venue_city_raw: (cityFromAddress(address) || {}).city || null,
+    venue_address_raw: submittedAddress || null,
+    // Keep explicit city separate for admin review and public discovery.
+    venue_city_raw: submittedCity,
     start_date: startDate,
     end_date: endDate || null,
     time_display: formatTimeDisplay(startTime),
