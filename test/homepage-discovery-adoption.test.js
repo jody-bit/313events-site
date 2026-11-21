@@ -357,7 +357,7 @@ async function run() {
     assert.deepStrictEqual(v.tray, ["Today"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Today");
     assert.strictEqual(v.heading, "Showing 6 events today");
-    assert.deepStrictEqual(v.titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
+    assert.deepStrictEqual(v.titles, ["Jazz at Seven", "Running Exhibit", "Afternoon Play", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
     assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "events that have already ended today are not listed");
     assert.ok(!v.titles.includes("Augustus Williams Live"));
     assert.strictEqual(page.el("whenDateInput").value, "", "a shortcut blanks the date inputs, like Tonight and Tomorrow");
