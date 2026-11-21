@@ -749,6 +749,16 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Discovered Work:** —
 - **Product Decisions Required:** none.
 
+#### Owner clarification and efficiency pass — November 21, 2026
+
+- **History is retained and searchable.** Jody explicitly requires users to search events in the past. Preserve event IDs, original detail URLs and historical records for pattern recognition, monetization research and future event-linked photos/footage. Do not delete expired events, move them to a separate database, or make a default upcoming-only query the only public search route. Future visitor-media contributions are a captured requirement, not an implemented upload feature.
+- **Loading acceptance:** current/upcoming discovery may use bounded date queries, but must retain ongoing events overlapping the window; a deliberate historical date/search path must retrieve the requested past records with deterministic pagination and stable detail links. Do not impose the existing calendar's 12-month navigation limit as a history-retention limit. The current calendar still loads the approved history in full; an archive-search/query-window change is not implemented in this cost pass.
+- **First cost change, prepared locally:** `platform/vercel-cost-efficiency-2026-11-21`, primary owner `workstream:platform`, release gate `workstream:release-quality`. `vercel.json` uses `scripts/ignore-vercel-build.js` to skip only changes to paths already excluded by `.vercelignore`. It compares the previous successful branch deployment with the current SHA; runtime/config/data/assets changes, first builds, same-SHA redeploys, unavailable history and comparison errors all continue building. No event reads/writes or cron schedules change.
+- **Three checks:** (1) excluded-only commits skip builds, including multiple commits since the prior successful deployment; (2) runtime changes, renames, configuration changes and missing history still build; (3) existing tests/public delivery remain green and all event-history behavior is unchanged. CI/Preview, independent release review and production verification remain pending; local tests do not constitute a deployed result.
+- **Measured baseline:** owner-uploaded `vercel-costs.csv` and `Usage – Vercel.pdf`, October 25–November 25 cycle captured November 21: $15.99849 infrastructure, of which $8.456 builds and $6.77753 deployment storage (95.22% combined); 313events-site $15.93727 (99.62%). This is Vercel infrastructure, not a Supabase invoice or evidence of database overspending. Savings are unmeasured until released and compared across equivalent periods. Existing deployment storage will not disappear from skipping future builds.
+- **Rollback:** remove the added `ignoreCommand` property to restore automatic builds. This preserves records and deployed assets. Do not shorten retention or delete deployments as part of this change: that removes rollback versions and needs a separate explicit decision.
+- **References:** https://vercel.com/docs/project-configuration/vercel-json#ignorecommand and https://vercel.com/docs/environment-variables/system-environment-variables#vercel_git_previous_sha . No new PR opened; the owner's existing new-PR approval gate remains in force.
+
 ---
 
 ### DEBT-004 — Neighborhood coverage: only about 1 in 5 upcoming events has a neighborhood
@@ -897,6 +907,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
   5. **Unused indexes** `events_category_idx`, `source_runs_started_outcome_idx` (INFO, TD-40). Require usage evidence before any removal.
 - **Acceptance Criteria (proposed):** each item resolved or explicitly accepted as intentional with a recorded reason, as above (item 1 and 2 against a fresh advisor run and the deployed SZ-01 contract; items 3 and 5 in P2-05, with usage evidence).
 - **Implementation Notes:** none yet.
+- **Read-only recheck, November 21, 2026 (P2-05 / TD-31 / TD-39):** live performance advisor still reports missing covering indexes for `events.organizer_id` and `venues.neighborhood_id`. `pg_indexes` confirms an existing `(status, start_date)` index and no `end_date` index. `pg_stat_user_tables` estimates 6,669 event rows and 9,543,680 bytes including indexes; this is an estimate at inspection, not an exact count or growth forecast. Query-statistics output contains historical manual diagnostics and is not sufficient to attribute current web traffic or quantify index savings. Do not apply indexes solely to silence the advisor; evaluate the actual historical-search/date-overlap query plan first. No DDL, RLS, view, index or production-data change was made.
 - **Product Decisions Required:** none new; any change to `events_public` must preserve the deployed SZ-01 contract (`supabase/verify/public_boundary_check.sql`, `test/public-boundary.test.js`).
 
 ### DEBT-013 — Public event/venue data cannot carry a state or province
