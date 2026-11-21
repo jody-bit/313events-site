@@ -2768,6 +2768,7 @@ function liveCardHtml(e) {
       ${subEditedHtml(e)}${notice}${livePanelHtml(e)}
       <div class="actions">
         <button class="sub-edit-btn" id="liveeditbtn-${id}" onclick="liveEditOpen('${id}')"${st && st.open ? ' aria-expanded="true"' : ' aria-expanded="false"'}>Edit</button>
+        <button class="sub-edit-btn" id="pick-btn-${id}" onclick="togglePick('${id}', ${e.is_pick === true ? 'false' : 'true'})" aria-pressed="${e.is_pick === true ? 'true' : 'false'}" title="Alignments by LA Jody (weekly picks): the only events the subscribable calendar feed lists.">${e.is_pick === true ? 'Alignments: remove' : 'Add to Alignments'}</button>
         <button class="btn-hide" id="hide-btn-${id}" onclick="hideEvent('${id}')">Remove from site</button>
       </div>
     </div>`;
@@ -2989,6 +2990,25 @@ async function hideEventGeneric(id, cardElId, btnElId, onHidden) {
   } catch (err) {
     card.style.opacity = '1';
     alert(err.message);
+  }
+}
+
+async function togglePick(id, pick) {
+  const btn = document.getElementById('pick-btn-' + id);
+  if (btn) btn.disabled = true;
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action: 'set_pick', pick }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Pick update failed'));
+    const row = liveFind(id); if (row) row.is_pick = pick;
+    const card = document.getElementById('live-card-' + id);
+    if (card) { const t = document.createElement('div'); t.innerHTML = liveCardHtml(row || data.event); card.replaceWith(t.firstElementChild); }
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = err.message; }
   }
 }
 

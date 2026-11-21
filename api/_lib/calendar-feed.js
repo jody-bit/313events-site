@@ -1,6 +1,7 @@
 "use strict";
-// Subscribable ICS feed of the next 14 days, confirmed start times only. Pure functions: no I/O, no env, no network.
-// A row is listed only when ALL of these hold: approved; a single-day start_date inside [today, today+13] (Detroit);
+// Subscribable ICS feed of the editor's weekly PICKS, confirmed start times only. Pure functions: no I/O, no env, no network.
+// Owner direction (2026-11-21): the feed is the curated picks, never the whole calendar, and the subscriber can tune it by category.
+// A row is listed only when ALL of these hold: approved; flagged is_pick (set only by the admin portal); in the optional category filter; a single-day start_date inside [today, today+13] (Detroit);
 // not all-day; a start time parsed from the first time in time_display; schedule state "confirmed". Anything else is left
 // out, never guessed: unknown times, "Evening" placeholders, schedule-unverified ranges and recurring series are not listed.
 const EventDates = require("../../event-dates");
@@ -10,7 +11,13 @@ const { CalendarLocation } = require("../../calendar-location.js");
 const WINDOW_DAYS = 14;
 const DEFAULT_MINUTES = 120; // DEC-028: a stated start with no end shows a 2 hour block
 const TZ = "America/Detroit";
-const CAL_NAME = "313.events: next 14 days";
+const CAL_NAME_BASE = "Alignments by LA Jody";
+const CATEGORY_KEYS = require("../../categories.js").list.map((c) => c.key);
+// ?cats=music,food -> ["music","food"]. Unknown keys are dropped; if none are valid the filter is ignored (never an empty feed from a typo).
+function parseCats(raw) {
+  const want = String(raw || "").toLowerCase().split(",").map((x) => x.trim()).filter(Boolean);
+  return [...new Set(want.filter((k) => CATEGORY_KEYS.includes(k)))];
+}
 
 const TIME = /(\d{1,2})(?::([0-5]\d))?\s*([ap])\.?m\.?/gi;
 function toMinutes(h, m, ap) { h = +h; if (h < 1 || h > 12) return null; return (h % 12 + (ap.toLowerCase() === "p" ? 12 : 0)) * 60 + +(m || 0); }
@@ -41,9 +48,11 @@ const esc = CalendarLocation.icsEscape, fold = CalendarLocation.foldICSLine;
 const safeUrl = (u) => { try { const x = new URL(u); return x.protocol === "https:" || x.protocol === "http:" ? x.href : null; } catch (_) { return null; } };
 
 // Why a row is or is not listed. Returns { listed:true, startMin, endMin } or { listed:false, reason }.
-function classify(row, today, lastDay) {
+function classify(row, today, lastDay, cats) {
   if (!row || !row.id || !row.title) return { listed: false, reason: "incomplete" };
   if (row.status && row.status !== "approved") return { listed: false, reason: "not_public" };
+  if (row.is_pick !== true) return { listed: false, reason: "not_pick" };
+  if (cats && cats.length && !cats.includes(row.category)) return { listed: false, reason: "category_filtered" };
   if (!row.start_date || row.start_date < today || row.start_date > lastDay) return { listed: false, reason: "outside_window" };
   if (row.is_all_day) return { listed: false, reason: "all_day" };
   if (row.end_date && row.end_date !== row.start_date) return { listed: false, reason: "multi_day" };
@@ -59,9 +68,10 @@ function buildFeed(rows, opts) {
   const siteUrl = (o.siteUrl || "https://313.events").replace(/\/$/, "");
   const today = o.today || new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date(nowMs));
   const lastDay = addDays(today, WINDOW_DAYS - 1);
+  const cats = parseCats(o.cats);
   const skipped = {}; const events = [];
   for (const r of Array.isArray(rows) ? rows : []) {
-    const c = classify(r, today, lastDay);
+    const c = classify(r, today, lastDay, cats);
     if (!c.listed) { skipped[c.reason] = (skipped[c.reason] || 0) + 1; continue; }
     const start = detroitToUtc(r.start_date, c.startMin);
     // An end equal to the start is "no stated end" (the 6:30 PM - 6:30 PM shape), never a 24 hour event; only a strictly earlier
@@ -74,8 +84,8 @@ function buildFeed(rows, opts) {
     events.push({ r, start, end, where, page });
   }
   events.sort((a, b) => a.start - b.start || String(a.r.id).localeCompare(String(b.r.id)));
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//313.events//Next 14 days//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
-    "X-WR-CALNAME:" + esc(CAL_NAME), "X-WR-TIMEZONE:" + TZ, "REFRESH-INTERVAL;VALUE=DURATION:PT6H", "X-PUBLISHED-TTL:PT6H"];
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//313.events//Alignments by LA Jody//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "X-WR-CALNAME:" + esc(CAL_NAME_BASE + (cats.length ? " (" + cats.join(", ") + ")" : "")), "X-WR-TIMEZONE:" + TZ, "REFRESH-INTERVAL;VALUE=DURATION:PT6H", "X-PUBLISHED-TTL:PT6H"];
   const dtstamp = stamp(new Date(nowMs));
   for (const e of events) {
     const link = safeUrl(e.r.ticket_url) || safeUrl(e.r.event_url);
@@ -85,7 +95,7 @@ function buildFeed(rows, opts) {
     lines.push("DESCRIPTION:" + esc("Details: " + e.page + (link ? "\n" + link : "")), "URL:" + e.page, "END:VEVENT");
   }
   lines.push("END:VCALENDAR");
-  return { ics: lines.map(fold).join("\r\n") + "\r\n", listed: events.length, skipped, window: { from: today, to: lastDay } };
+  return { ics: lines.map(fold).join("\r\n") + "\r\n", listed: events.length, skipped, window: { from: today, to: lastDay }, cats };
 }
 
-module.exports = { buildFeed, classify, parseTimes, detroitToUtc, WINDOW_DAYS };
+module.exports = { buildFeed, classify, parseTimes, parseCats, detroitToUtc, WINDOW_DAYS, CATEGORY_KEYS };
