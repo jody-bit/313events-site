@@ -159,7 +159,7 @@
       applies: function (e) { return !!e.imageUrl; } },
     { key: "submitted", label: "Community submitted", kind: "derived",
       applies: function (e) { return e.source === "Venue Submission"; } },
-    { key: "radar",     label: "On the Radar",        kind: "derived",
+    { key: "radar",     label: "In the Press",        kind: "derived",
       applies: function (e, ctx) { return hasCoverage(ctx.coverage, e.id); } },
     // DECLARED. Strictly `=== true`: false, null, undefined, "false", 0 and
     // every other value assert nothing.

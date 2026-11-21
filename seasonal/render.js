@@ -252,7 +252,7 @@
 
   function header() {
     return '<header class="sc-header"><a class="sc-brand" href="/" aria-label="313.events home"><img src="/assets/wordmark.svg" alt="313.events" height="26"></a>' +
-      '<nav class="sc-nav" aria-label="Primary"><a href="/calendar.html">Calendar</a><a href="/map.html">Map</a><a href="/neighborhoods.html">Neighborhoods</a><a href="/venues.html">Venues</a><a href="/radar.html">On the Radar</a><a href="/submit.html">Submit</a></nav>' +
+      '<nav class="sc-nav" aria-label="Primary"><a href="/calendar.html">Calendar</a><a href="/map.html">Map</a><a href="/neighborhoods.html">Neighborhoods</a><a href="/venues.html">Venues</a><a href="/radar.html">In the Press</a><a href="/submit.html">Submit</a></nav>' +
       '<a class="sc-cta" href="/">The city is on.</a></header>';
   }
   function footer() {

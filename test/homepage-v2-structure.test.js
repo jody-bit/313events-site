@@ -94,7 +94,7 @@ console.log("PASS: palette — Design System colours only, neutral category tags
   assert.ok(/\.neigh-card:not\(\.has-photo\)\{background:var\(--panel-alt\) url\('\/assets\/atmosphere\/313-events-scan-lines\.svg'\)/.test(flat) && fs.existsSync(`${REPO_DIR}/assets/atmosphere/313-events-scan-lines.svg`), "no approved photo: a quiet Charcoal plate under the existing scan-line asset");
 
   const radar = html.slice(html.indexOf("function renderOnRadarCard"), html.indexOf("function renderOnRadarCard") + 7000);
-  assert.ok(/<div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="On the Radar">/.test(radar) && /class="rail-btn rail-next" aria-label="More articles"/.test(radar), "the press rail is a labelled carousel with buttons");
+  assert.ok(/<div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="In the Press">/.test(radar) && /class="rail-btn rail-next" aria-label="More articles"/.test(radar), "the press rail is a labelled carousel with buttons");
   assert.ok(/\.rc-link\{position:relative;[^}]*aspect-ratio:3\/2/.test(flat) && /\.rc-body\{[^}]*position:absolute;[^}]*bottom:0/.test(flat), "image-led: the card is the photograph, the source, headline and date sit on a scrim");
   assert.ok(/<span class="rc-media-fallback"><\/span>/.test(radar) && !/radial-gradient\(circle at 100% 0/.test(css), "an article with no supported image gets the quiet scan-line plate, no drawn graphic");
   assert.ok(/article\.thumbnailUrl && safeUrl\(article\.thumbnailUrl\)/.test(radar) && !/event\.image/.test(radar), "only the article's own thumbnail is ever used — never the covered event's picture");

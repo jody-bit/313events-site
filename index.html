@@ -14,7 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>313.events — THE CITY IS ON.</title>
 <link rel="canonical" href="https://313.events/">
-<meta name="description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
+<meta name="description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events across Detroit and the surrounding region.">
 <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
@@ -29,7 +29,7 @@
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="313.events — THE CITY IS ON.">
-<meta property="og:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
+<meta property="og:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events across Detroit and the surrounding region.">
 <meta property="og:url" content="https://313.events/">
 <meta property="og:site_name" content="313.events">
 <meta property="og:image" content="https://313.events/assets/social/og-default.png">
@@ -37,7 +37,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="313.events — THE CITY IS ON.">
-<meta name="twitter:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
+<meta name="twitter:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events across Detroit and the surrounding region.">
 <meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 <script type="application/ld+json">
 {
@@ -4433,7 +4433,7 @@
       <a class="site-nav-link" href="map.html">Map</a>
       <a class="site-nav-link" href="venues.html">Venues</a>
       <a class="site-nav-link" href="neighborhoods.html">Neighborhoods</a>
-      <a class="site-nav-link" href="radar.html">On the Radar</a>
+      <a class="site-nav-link" href="radar.html">In the Press</a>
       <a class="site-nav-link" href="about.html">About</a>
     </nav>
     <div class="site-actions">
@@ -4705,7 +4705,7 @@
 
       <!-- ON THE RADAR: press coverage of upcoming events
            (renderOnRadarCard()); hidden when nothing qualifies. -->
-      <section id="onRadarCard" style="display:none;" aria-label="On the Radar"></section>
+      <section id="onRadarCard" style="display:none;" aria-label="In the Press"></section>
 
     </div>
 
@@ -8308,12 +8308,12 @@ function renderOnRadarCard(){
   // article text.
   el.innerHTML = `
     <div class="sec-head">
-      <h2 class="sec-title">On the Radar</h2>
+      <h2 class="sec-title">In the Press</h2>
       <p class="sec-sub">Upcoming events the local press is already covering.</p>
       <a class="sec-link" href="radar.html">View all &rarr;</a>
     </div>
     <div class="rail-wrap">
-    <div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="On the Radar">
+    <div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="In the Press">
       ${candidates.map(({event, article}) => {
         const src = article.source || 'Local press';
         const articleHref = safeUrl(article.url);
