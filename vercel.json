@@ -216,6 +216,10 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/calendar.ics",
+      "destination": "/api/calendar-feed"
+    },
+    {
       "source": "/event.html",
       "destination": "/api/event-meta"
     },
