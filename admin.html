@@ -1284,8 +1284,8 @@ async function autoRepairFollowup() {
 // onto api/admin-events.js's EDITABLE_FIELDS. "venue address/city" and
 // "ticket/event link" each cover two real columns but Jody only needs to
 // fill in whichever one she actually has — the other stays blank and
-// update_fields' own "only fill a gap in" rule (see that file) means
-// submitting a blank input never clobbers anything.
+// Blank inputs are omitted. Nonblank inputs use the existing versioned
+// correction action, because a flagged description can already contain text.
 const INCOMPLETE_FIELD_INPUTS = {
   'description':        [{ key: 'description',       label: 'Description',        type: 'textarea' }],
   'venue address/city':  [{ key: 'venue_address_raw', label: 'Street address',     type: 'text' },
@@ -1322,7 +1322,7 @@ function renderIncompleteList(flagged) {
         ${e.status === 'approved' ? (e.ticket_url || e.event_url ? ' · ' : '<br>') + '<a href="event.html?id=' + encodeURIComponent(e.id) + '" target="_blank" rel="noopener">View live page ↗</a>' : ''}
         <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span><span style="font-size:11px;color:#888;margin:0 6px 0 2px;" title="Automation already tried and could not safely resolve this — see FEATURE_BACKLOG.md/NEEDS_FOLLOWUP_CLOSURE.md">${escapeHtml(explainRemainingGap(m, e) || '')}</span>`).join(' ')}
       </div>
-      <div class="incomplete-fields" data-fields="${escapeAttr(inputs.map(f => f.key).join(','))}">
+      <div class="incomplete-fields" data-fields="${escapeAttr(inputs.map(f => f.key).join(','))}" data-row-version="${escapeAttr(e.row_version || e.updated_at || '')}">
         ${inputsHtml}
       </div>
       <div class="actions">
@@ -1373,14 +1373,23 @@ async function saveIncompleteFields(id) {
     errEl.style.display = 'block';
     return;
   }
+  const rowVersion = fieldsEl.dataset.rowVersion;
+  if (!rowVersion) {
+    errEl.textContent = 'This event has no saved version. Refresh Needs follow up before saving.';
+    errEl.style.display = 'block';
+    return;
+  }
   try {
     const resp = await fetch('/api/admin-events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
-      body: JSON.stringify({ id, action: 'update_fields', fields }),
+      body: JSON.stringify({ id, action: 'save_correction', row_version: rowVersion, fields, note: 'Needs follow-up correction' }),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Save failed'));
+    if (!data.ok || !data.event || Object.entries(fields).some(([key, value]) => data.event[key] !== value)) {
+      throw new Error('The saved event does not contain your changes. Your input has been kept; refresh the event before trying again.');
+    }
     // Simplest correct thing to do after a save: just reload the whole
     // queue — recomputes which fields (if any) are still actually missing
     // for every card, same as a fresh page load would show.
