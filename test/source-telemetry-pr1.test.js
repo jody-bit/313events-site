@@ -10,6 +10,7 @@
 // Run: node test/source-telemetry-pr1.test.js
 "use strict";
 const assert = require("assert");
+process.env.TICKETMASTER_REQUEST_GAP_MS = "0"; // no pacing delay in tests
 const { world, page, json, runConnector, eventWrites, sentRows } = require("./fixtures/connector-harness.js");
 
 const runs = (tables) => tables.source_runs;
@@ -47,13 +48,23 @@ async function ticketmaster() {
   assert.strictEqual(run.session_data.complete, false); assert.strictEqual(run.session_data.api_total_elements, 600);
   console.log("PASS: Ticketmaster incomplete pagination (page fails) logs partial, still writes what it got");
 
-  // more pages than the cap
+  // more results than the API will page through: the window is split, nothing is dropped (REL-3 truncation fix)
+  const spanDays = (u) => { const q = new URL(u).searchParams; return (Date.parse(q.get("endDateTime")) - Date.parse(q.get("startDateTime"))) / 86400000; };
+  w = world({ upstream: (u) => (u.startsWith(TM_URL) ? (spanDays(u) > 60 ? tmPage([], 9, 1800) : tmPage([`w${Math.round(spanDays(u))}-${new URL(u).searchParams.get("startDateTime").slice(5, 10)}`], 1, 400)) : null) });
+  res = await runConnector("cron-ticketmaster.js");
+  run = only(w.tables, "ticketmaster");
+  assert.strictEqual(run.outcome, "success", "a window split in two is a complete fetch: " + run.error_sample);
+  assert.strictEqual(run.records_fetched, 2, "both halves of the 90 days were fetched");
+  assert.strictEqual(run.session_data.api_total_elements, 1800, "and the API total is the whole-range total");
+  console.log("PASS: Ticketmaster result set beyond the 1,000-result cap is split into windows and logs success");
+
+  // still more than the cap in every window, down to the budget: partial, never a silent success
   w = world({ upstream: (u) => (u.startsWith(TM_URL) ? tmPage([`p${u.match(/page=(\d+)/)[1]}`], 9, 1800) : null) });
   res = await runConnector("cron-ticketmaster.js");
   run = only(w.tables, "ticketmaster");
-  assert.strictEqual(run.outcome, "partial"); assert.match(run.error_sample, /9 pages; only the first 5/);
-  assert.strictEqual(run.records_fetched, 5);
-  console.log("PASS: Ticketmaster result set beyond the 5-page cap logs partial");
+  assert.strictEqual(run.outcome, "partial"); assert.match(run.error_sample, /request budget|cannot be split further/);
+  assert.strictEqual(run.session_data.complete, false);
+  console.log("PASS: Ticketmaster windows that never fit under the cap log partial");
 
   // first page refused: blocked, nothing written, nothing unpublished
   w = world({ events: [{ id: "x1", external_id: "keep", title: "t", category: "music", start_date: "2026-10-20", status: "approved", source: "Ticketmaster" }], upstream: (u) => (u.startsWith(TM_URL) ? page("forbidden", 403) : null) });

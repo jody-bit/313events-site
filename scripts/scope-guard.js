@@ -166,6 +166,8 @@ const ALLOWED = [
   "api/admin-editorial.js",
   "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
   "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql",
+  // REL-3 Ticketmaster refresh (owner review 2026-10-18, Plan 1): schedule, dry-run mode, stored-field protection, window splitting.
+  "api/cron-ticketmaster.js",
   // Schedule-evidence pass, Stage 1 (owner approval 2026-10-18): pure read-only extraction and decision rules + the source allow-list data. No network, no database write.
   "api/_lib/schedule-evidence.js",
   "api/_lib/schedule-evidence-sources.json"

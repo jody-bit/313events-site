@@ -74,23 +74,21 @@ const ANDREA = "Andrea Gibson reads from their new collection for an evening of 
   const dry = JSON.parse(JSON.stringify(w.tables.source_runs.slice(-1)[0].session_data.description_precedence));
   assert.deepStrictEqual([dry.mode, dry.considered, dry.would_replace, dry.kept, dry.review], ["dry", 4, 1, 2, 1], "dry counts: one replace (the biography), two kept (approved, event-specific), one for review");
 
-  // apply mode: only the generic biography (and the research-tagged row without a lost fact) change
+  // apply mode under field protection (#207): the decision is still reported, but a stored row is never upserted, so nothing is written
   process.env.DESCRIPTION_PRECEDENCE_MODE = "apply";
   try {
     w = world({ events: rows(), upstream: upstreamOf(events()) });
     await runConnector("cron-ticketmaster.js");
-    const bio = byId(w.tables, "bio");
-    assert.strictEqual(bio.description, INFO, "the generic biography is replaced by Ticketmaster's event text");
-    assert.strictEqual(bio.description_source, "authoritative");
-    assert.ok(bio.internal_note.includes("was: Vince Staples is a Grammy-nominated"), "the replaced text is kept so the change can be reversed");
+    assert.strictEqual(byId(w.tables, "bio").description, BIO, "apply mode writes no stored description while field protection is in force");
     assert.strictEqual(byId(w.tables, "manual").description, MANUAL, "approved copy is protected");
     assert.strictEqual(byId(w.tables, "andrea").description, ANDREA, "event-specific research text is preserved");
-    assert.strictEqual(byId(w.tables, "facts").description, "Research note: package includes VIP parking, rescheduled from Sept 12.", "a replacement that would drop stored facts waits for review");
     const run = w.tables.source_runs.slice(-1)[0].session_data.description_precedence;
     assert.strictEqual(run.mode, "apply");
+    assert.strictEqual(run.applied, false, "reported as not applied");
+    assert.strictEqual(run.would_replace, 1);
     assert.ok(run.review_ids.some((x) => x.startsWith("facts")), "the review list names the row");
   } finally {
     delete process.env.DESCRIPTION_PRECEDENCE_MODE;
   }
-  console.log("PASS: description precedence — generic biographies yield to source text, protected and fact-bearing text does not, dry mode writes nothing");
+  console.log("PASS: description precedence — generic biographies yield to source text, protected and fact-bearing text does not, dry and apply modes write nothing under field protection");
 })().catch((e) => { console.error(e); process.exit(1); });

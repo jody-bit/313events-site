@@ -79,41 +79,43 @@ async function run() {
       upstream: (url) => (url.startsWith("https://app.ticketmaster.com/discovery/v2/events.json") ? json({ _embedded: { events }, page: { totalPages: 1 } }) : null),
     });
     const res = await runConnector("cron-ticketmaster.js");
-    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster", db, tables, res, 6);
+    // Since 2026-10-18 (REL-3 field protection) a stored event is not upserted; only the three NEW events are, so the
+    // helper checks 3 rows and the run still reports 6 (3 inserted + 3 stored rows' ticket_status refreshed).
+    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster", db, tables, { ...res, _body: { upserted: 3 } }, 3);
+    assert.strictEqual(res._body.upserted, 6);
     assert.strictEqual(outcome.shapes, 2, "with and without a description");
-    assert.strictEqual(tables.events.length, 6, "three updated, three inserted, no duplicates");
+    assert.strictEqual(tables.events.length, 6, "three left in place, three inserted, no duplicates");
 
     // Omitted stays omitted: Ticketmaster had no `info` for B, so the
     // description already on the row is untouched …
     const b = byId(tables, "vvG1OZ_CD9U6Tp");
     assert.strictEqual(b.description, "A rock show at Fixture Hall.", "a description the source did not supply is not overwritten or nulled");
     assert.strictEqual(b.description_source, "generated");
-    assert.strictEqual(b.title, "Fixture Band B", "… while what the source did supply is refreshed");
-    assert.strictEqual(b.time_display, "7:30 PM");
+    assert.strictEqual(b.title, "stale title", "… and, since 2026-10-18, so is every other stored field (REL-3 field protection)");
+    assert.strictEqual(b.time_display, "8:00 PM");
     // … and so is a stored description Ticketmaster DOES have `info` for:
     // the connector never replaces a description on an event that already
     // exists (the safeguard added before the first production run — see
     // test/cron-ticketmaster-description-safeguard.test.js).
     assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").description, "older text");
-    assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").title, "Fixture Band A", "its other fields are still refreshed");
+    assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").title, "stale title", "its other fields are protected too");
     // A NEW event gets Ticketmaster's `info` as its description.
     assert.strictEqual(byId(tables, "Z7r9jZ1AAvs84").description, "With special guests.");
     assert.strictEqual(byId(tables, "vv17OZ_8GkBtnaQa").description, "Seated show.");
     // A moderator's decision survives.
     assert.strictEqual(byId(tables, "rZ7HnEZ1Af1p07").status, "rejected", "an event hidden by a moderator stays hidden");
-    assert.strictEqual(byId(tables, "rZ7HnEZ1Af1p07").price_from, null, "an explicit null (no price range) is still written as null");
+    assert.strictEqual(byId(tables, "rZ7HnEZ1Af1p07").price_from, undefined, "a stored row's price is not touched");
     // New events arrive as this connector's default.
     for (const id of ["Z7r9jZ1AAvs84", "1718v0G6u_K3oxv", "vv17OZ_8GkBtnaQa"]) {
       assert.strictEqual(byId(tables, id).status, "approved");
       assert.strictEqual(byId(tables, id).source, "Ticketmaster");
     }
     assert.strictEqual(byId(tables, "1718v0G6u_K3oxv").description, null, "a new event with no `info` simply has no description");
-    // On the wire: the key is absent — not sent as null — for every event
-    // that already exists and for a new event without `info`; it is present
-    // only for a new event that has `info`.
-    for (const id of ["vvG1OZ_CD9U6Tp", "rZ7HnEZ1Af1p07", "vv1AFZkf6GkdIXBPo", "1718v0G6u_K3oxv"]) assert.strictEqual("description" in sentRow(db, id), false, `${id}: no description key was sent`);
+    // On the wire: stored events are not upserted at all; a new event without `info` carries no description key; it is
+    // present only for a new event that has `info`.
+    for (const id of ["vvG1OZ_CD9U6Tp", "rZ7HnEZ1Af1p07", "vv1AFZkf6GkdIXBPo"]) assert.strictEqual(sentRow(db, id), undefined, `${id}: a stored event is not upserted`);
+    assert.strictEqual("description" in sentRow(db, "1718v0G6u_K3oxv"), false, "a new event without `info` sends no description key");
     for (const id of ["Z7r9jZ1AAvs84", "vv17OZ_8GkBtnaQa"]) assert.strictEqual(typeof sentRow(db, id).description, "string");
-    assert.strictEqual(sentRow(db, "rZ7HnEZ1Af1p07").price_from, null, "while a key the connector sets to null IS sent, as null");
     summary.push(["Ticketmaster", 6, outcome.shapes, outcome.requests]);
   }
   console.log("PASS: Ticketmaster — rows with and without `info` are refused as one request and written as two; existing descriptions and a moderator's rejection survive");

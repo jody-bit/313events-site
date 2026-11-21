@@ -65,7 +65,7 @@ async function run() {
     const { tables, db } = world({ events: [stored("old-corrected", { time_display: "12:00 PM" })], upstream: upstreamOf(events) });
     const res = await runConnector("cron-ticketmaster.js");
     assert.deepStrictEqual([res._status, res._body.upserted], [200, 2]);
-    assert.strictEqual(hasKey(sentRow(db, "old-corrected"), "time_display"), false, "the key is not sent for the stored row");
+    assert.strictEqual(sentRow(db, "old-corrected"), undefined, "a stored row is not sent in an upsert at all (field protection)");
     assert.strictEqual(byId(tables, "old-corrected").time_display, "12:00 PM", "an existing verified time survives a run where Ticketmaster has no time");
     assert.strictEqual(byId(tables, "new-untimed").time_display, null, "a new event with an unknown time is stored with NULL, no invented time");
     assert.ok(tables.events.every((r) => r.time_display !== "Evening"), "no row holds the Evening placeholder");
@@ -92,27 +92,24 @@ async function run() {
       upstream: upstreamOf(events),
     });
     const res = await runConnector("cron-ticketmaster.js");
-    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster time safeguard", db, tables, res, 6);
-    assert.strictEqual(outcome.shapes, 2, "one shape with time_display, one without");
-    assert.strictEqual(outcome.requests, 2, "written as two uniform requests; every row lands");
-    assert.strictEqual(tables.events.length, 6, "two inserted, four updated in place, no duplicates");
-    const carrying = eventWrites(db).map((r) => JSON.parse(r.body)).filter((rows) => hasKey(rows[0], "time_display"));
-    assert.deepStrictEqual(carrying[0].map((r) => r.external_id).sort(), ["m-new-timed", "m-old-timed"], "only events Ticketmaster dated with a time carry the key");
-
+    assert.strictEqual(res._status, 200);
+    // Field protection (#207): only the two NEW events are upserted; the four stored rows are never sent, so no stored time, date or placeholder changes.
+    const sent = sentRows(db);
+    assert.deepStrictEqual(sent.map((r) => r.external_id).sort(), ["m-new-timed", "m-new-untimed"], "only new events are upserted");
+    assert.strictEqual(tables.events.length, 6, "two inserted, four stored rows untouched, no duplicates");
     assert.strictEqual(byId(tables, "m-new-timed").time_display, "7:00 PM");
-    assert.strictEqual(byId(tables, "m-old-timed").time_display, "6:30 PM", "a time Ticketmaster does supply still refreshes the stored one");
     assert.strictEqual(byId(tables, "m-new-untimed").time_display, null, "no invented start time for a new untimed event");
+    assert.strictEqual(byId(tables, "m-old-timed").time_display, "8:00 PM", "a stored time is not refreshed from Ticketmaster (differences show in the dry run)");
     assert.strictEqual(byId(tables, "m-old-untimed-null").time_display, null, "a stored NULL stays NULL");
     assert.strictEqual(byId(tables, "m-old-untimed-corrected").time_display, "7:00 PM", "a corrected time is kept");
     assert.strictEqual(byId(tables, "m-old-untimed-legacy").time_display, "Evening", "a legacy placeholder is left for the guarded correction, not silently rewritten");
     for (const id of ["m-old-timed", "m-old-untimed-null", "m-old-untimed-corrected", "m-old-untimed-legacy"]) {
-      assert.strictEqual(byId(tables, id).id, `row-${id}`, `${id} updated in place`);
+      assert.strictEqual(byId(tables, id).id, `row-${id}`, `${id} untouched`);
     }
-    // dates follow Ticketmaster exactly as before; the safeguard changes no date
-    for (const e of events) assert.strictEqual(byId(tables, e.id).start_date, e.dates.start.localDate, `${e.id}: start_date equals Ticketmaster's localDate`);
-    assert.ok(sentRows(db).every((r) => r.time_display !== "Evening"), "no request carries the placeholder");
+    assert.strictEqual(byId(tables, "m-old-timed").start_date, "2026-11-12", "a stored date is not changed");
+    assert.ok(sent.every((r) => r.time_display !== "Evening"), "no request carries the placeholder");
   }
-  console.log("PASS: a mixed batch writes as uniform requests; times preserved, refreshed or NULL as the rule says; dates unchanged");
+  console.log("PASS: a mixed batch upserts only new events; stored times, dates and placeholders are untouched");
 
   console.log("\nAll Ticketmaster time-safeguard checks passed.");
 }
