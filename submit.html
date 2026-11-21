@@ -725,7 +725,7 @@ document.getElementById('venueTba').addEventListener('change', function(){
 });
 
 const CONFIRMATION_ATTRIBUTE_FLAGS = ['recurring', 'clothingOptional', 'venueTba'];
-const CONFIRMATION_HIDDEN_FIELDS = ['companyWebsite', 'elapsedMs'];
+const CONFIRMATION_HIDDEN_FIELDS = ['companyWebsite', 'elapsedMs', 'addressFormat'];
 function buildConfirmationPreview(payload, catLabel){
   const preview = {};
   Object.keys(payload).forEach(key=>{

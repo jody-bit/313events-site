@@ -23,5 +23,7 @@ async function send(fields){ inserted=null;const res={status(n){this.code=n;retu
  r=await send({venueTba:true,country:'CA'});assert.equal(r.code,201);assert.equal(inserted.venue_city_raw,null);assert.match(inserted.venue_name_raw,/address TBA/);
  r=await send({addressFormat:undefined,address:'1501 Holden St, Detroit, MI'});assert.equal(r.code,201);assert.equal(inserted.venue_city_raw,'Detroit');
  const html=fs.readFileSync(root+'/submit.html','utf8');for(const id of ['city','region','postalCode','country']) {assert(html.includes('id="'+id+'"'));assert(html.includes("data.get('"+id+"')"));}assert(!html.includes('placeholder="e.g. 1501 Holden St, Detroit, MI"'));
+ const vm=require('vm');const confirmation=html.slice(html.indexOf('const CONFIRMATION_ATTRIBUTE_FLAGS'),html.indexOf("form.addEventListener('submit'"));
+ const preview=vm.runInNewContext(confirmation+";buildConfirmationPreview({addressFormat:'structured',city:'Windsor',region:'ON',postalCode:'N9A 5P4',country:'CA'},'Music')");assert(!('addressFormat' in preview));assert.equal(preview.city,'Windsor');
  console.log('PASS: real submission handler preserves separate US/Canadian city, formatted address, postal validation, TBA and legacy clients; form sends each explicit field');
 })().catch(e=>{console.error(e);process.exitCode=1});
