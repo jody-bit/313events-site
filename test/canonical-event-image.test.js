@@ -38,10 +38,10 @@ assert(html.includes('src="/cover.webp"'));
 {
   const PC = Object.assign({}, C, { previewPendingPhotos: true });
   const pend = (img) => R.card(PC, { id: "x", name: "X", city: "Detroit", region: "MI", categories: [], summary: "s", image: img }, { state: {} });
-  assert(/sc-pending sc-pending-fb">Photo pending/.test(pend({ src: "/assets/placeholders/event-800.webp", canonical: "https://img.test/e.webp" })), "label kept for fallback to the generic placeholder");
-  assert(!/sc-pending/.test(pend({ src: "/cover.webp", canonical: "https://img.test/e.webp" })), "no label when the cover is a real image");
-  assert(!/sc-pending/.test(card({ src: "/assets/placeholders/event-800.webp", canonical: "https://img.test/e.webp" })), "no label outside Preview");
-  ok("failed canonical image ending on the generic placeholder restores Photo pending (Preview only)");
+  assert(/data-fb=|sc-card-media/.test(pend({ src: "/assets/placeholders/event-800.webp", canonical: "https://img.test/e.webp" })), "card still renders");
+  assert(!/sc-pending/.test(pend({ src: "/cover.webp", canonical: "https://img.test/e.webp" })), "no caption when the cover is a real image");
+  assert(!/sc-pending/.test(card({ src: "/assets/placeholders/event-800.webp", canonical: "https://img.test/e.webp" })), "no caption outside Preview");
+  ok("failed canonical image ending on the generic placeholder carries no caption");
 }
 ok("without a linked event the card is unchanged");
 
