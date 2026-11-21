@@ -52,6 +52,63 @@ function recordFindings(row, stage, opts) {
   return out;
 }
 
+
+// ---- Cross-source duplicate review (P0 gap, EI rule 2026-11-20) -------------------------------------------------------
+// Review-only. Different source, same start_date, loosely the same venue, same parsed START minute, similar titles.
+// Never hides, merges or writes. Pairs the strict same-venue rule already flagged are skipped so each pair counts once.
+const norm = (x) => String(x || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const ABBR = { road: 'rd', street: 'st', avenue: 'ave', boulevard: 'blvd', drive: 'dr', highway: 'hwy', lane: 'ln' };
+const addrKey = (x) => norm(x).split(' ').map((t) => ABBR[t] || t).join(' ');
+const STOP = new Set(['a', 'an', 'the', 'and', 'of', 'at', 'in', 'on', 'for', 'to', 'with', 'w', 'vs', 'v', 'annual', 'presents', 'presented', 'by',
+  // organization/team-name tokens that one source adds and another omits (documented; fixtures decide, see test)
+  'bgsu', 'bowling', 'green', 'falcon', 'falcons', 'mens', 'men', 'womens']);
+const titleTokens = (t) => new Set(norm(t).split(' ').filter((w) => w.length > 1 && !/^\d{1,2}$/.test(w) && !/^\d+(st|nd|rd|th)$/.test(w) && !STOP.has(w)));
+function titleSimilarity(a, b) {
+  const A = titleTokens(a), B = titleTokens(b);
+  const shared = [...A].filter((w) => B.has(w)).length, min = Math.min(A.size, B.size);
+  const equalSets = A.size > 0 && A.size === B.size && shared === A.size;
+  return { shared, min, score: min ? shared / min : 0, equal_sets: equalSets, equal_titles: norm(a) === norm(b) };
+}
+const tbaName = (n) => !n || PLACEHOLDER.test(n);
+// Looser than venueMatch: a missing/garbled city or a different spelling of the city never hides the same venue.
+function venueKeyLoose(a, b) {
+  if (a.venue_id && b.venue_id && a.venue_id === b.venue_id) return 'venue_id';
+  const na = norm(a.venue_name || a.venue_name_raw), nb = norm(b.venue_name || b.venue_name_raw);
+  const ca = norm(a.venue_city || a.venue_city_raw), cb = norm(b.venue_city || b.venue_city_raw);
+  const titlesEqual = norm(a.title) === norm(b.title);
+  if (tbaName(a.venue_name || a.venue_name_raw) || tbaName(b.venue_name || b.venue_name_raw)) {
+    // A placeholder venue is never a venue match by itself: only the same city AND an identical title.
+    return tbaName(a.venue_name || a.venue_name_raw) && tbaName(b.venue_name || b.venue_name_raw) && ca && ca === cb && titlesEqual ? 'same_city_tba_same_title' : null;
+  }
+  if (!na || na !== nb) return null;
+  if (!ca || !cb || ca === cb) return 'same_name';
+  const aa = addrKey(a.venue_address || a.venue_address_raw), ab = addrKey(b.venue_address || b.venue_address_raw);
+  if (aa && aa === ab) return 'same_name_same_address';
+  return titlesEqual ? 'same_name_same_title' : null; // different cities only count when the titles are identical
+}
+function crossSourceFindings(rows, stage, skip, accept) {
+  const out = [], byDay = new Map();
+  for (const r of rows) { if (!r || !r.start_date) continue; if (!byDay.has(r.start_date)) byDay.set(r.start_date, []); byDay.get(r.start_date).push(r); }
+  for (const list of byDay.values()) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+    const a = list[i], b = list[j];
+    if (!a.source || !b.source || a.source === b.source) continue;
+    if (accept && !accept(a, b)) continue;
+    const vk = venueKeyLoose(a, b); if (!vk) continue;
+    const key = [idOf(a), idOf(b)].sort().join(':');
+    if (skip && skip.has(key)) continue;
+    const ta = startMinute(a), tb = startMinute(b), sim = titleSimilarity(a.title, b.title);
+    let basis = null;
+    if (ta !== null && tb !== null) {
+      if (ta !== tb) continue; // matinee/evening or different start: never flagged
+      if (sim.equal_titles || sim.equal_sets || (sim.shared >= 2 && sim.score >= 0.5)) basis = 'same_start_similar_title';
+    } else if (sim.equal_sets || sim.equal_titles) basis = 'start_unparsed_identical_title_tokens'; // unknown time is flagged only for identical titles, else unchecked
+    if (!basis) continue;
+    out.push(make('cross_source_title_date_review', stage, [a, b], { evidence: { venue_match: vk, basis, date: a.start_date, title_overlap: Math.round(sim.score * 100) / 100, shared_tokens: sim.shared }, decision: 'Confirm one event; EI then prepares a one-row hide of the weaker duplicate. Review only: never auto-merged, hidden or published.' }));
+  }
+  return out;
+}
+const pairKeysOf = (findings) => new Set(findings.filter((f) => f.code === 'same_venue_same_start_review' || f.code === 'same_venue_time_unresolved' || f.code === 'same_event_link_collision').map((f) => f.key.slice(f.code.length + 1)));
+
 // Published rows: the #417 report-only rules (same keys) plus the record-level rules, in the v1 shape.
 function findingsForPublished(rows, today, opts) {
   const out = report(rows, today).findings.map((f) => {
@@ -60,6 +117,7 @@ function findingsForPublished(rows, today, opts) {
     return { ...make(f.kind, 'published', f.events, { evidence, decision: f.decision || 'Review.' }), key: f.key };
   });
   for (const row of rows) if (PUBLISHED_SCOPE(row, today)) out.push(...recordFindings(row, 'published', opts));
+  out.push(...crossSourceFindings(rows.filter((r) => PUBLISHED_SCOPE(r, today)), 'published', pairKeysOf(out)));
   const seen = new Set();
   return out.filter((f) => !seen.has(f.key + '|' + f.stage) && seen.add(f.key + '|' + f.stage));
 }
@@ -85,6 +143,8 @@ function findingsForImport(candidates, existing, opts) {
       else if (ta === null || tb === null) out.push(make('same_venue_time_unresolved', 'import', pair, { evidence: { venue_match: venue, date: c.start_date }, decision: 'Verify source times; unresolved equivalence goes to owner.' }));
     }
   });
+  const isCandidate = new Set(candidates);
+  out.push(...crossSourceFindings(candidates.concat(pool), 'import', pairKeysOf(out), (x, y) => isCandidate.has(x) || isCandidate.has(y)));
   const seen = new Set();
   return out.filter((f) => !seen.has(f.key + '|' + f.stage) && seen.add(f.key + '|' + f.stage));
 }
@@ -96,4 +156,4 @@ function detect(rows, ctx) {
   return c.stage === 'import' ? findingsForImport(rows, c.existing || [], c) : findingsForPublished(rows, c.today, c);
 }
 
-module.exports = { detect, findingsForPublished, findingsForImport, recordFindings, INFORMATIVE };
+module.exports = { detect, findingsForPublished, findingsForImport, recordFindings, INFORMATIVE, venueKeyLoose, titleSimilarity, crossSourceFindings };

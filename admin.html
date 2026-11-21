@@ -361,6 +361,13 @@
         <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
       </section>
       <section class="block">
+        <h2>Quality coverage <span class="sub" style="font-weight:normal;">(public upcoming inventory, per dimension, report-only)</span></h2>
+        <details class="intro"><summary>About this section</summary><div class="sub">Each dimension counts every public upcoming event exactly once as pass, fail, review or unchecked, over the dated denominator shown. A pass needs a stated positive condition; unknown is unchecked, never a pass. No score is computed here.</div></details>
+        <div class="sub" id="towerCoverageSummary"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerCoverage"></table></div>
+        <div class="sub" id="towerCoverageLimits" style="margin-top:8px;"></div>
+      </section>
+      <section class="block">
         <h2>Review queue <span class="sub" style="font-weight:normal;">(import and published findings, one queue)</span></h2>
         <div class="sub" id="towerQueueSummary"></div>
         <div class="ct-wrap"><table class="ct-table" id="towerQueue"></table></div>
@@ -642,8 +649,25 @@ function renderControlTower(data) {
       + '<td>' + k.bySource.slice(0, 5).map(x => escapeHtml(x[0]) + ' ' + x[1]).join('<br>') + (k.bySource.length > 5 ? '<br>…' : '') + '</td>'
       + '<td><button type="button" class="ct-link" onclick="toggleTowerClass(' + i + ')">events</button></td>'
       + '</tr>').join('');
+  renderQualityCoverage(dec.coverage);
   renderVenueRepairs(dec.venues);
   setTabBadge('tower', (c.needs_decision || 0) + (c.blocked || 0));
+}
+// P0 quality coverage (report-only): per-dimension outcomes over the dated public-upcoming denominator.
+function renderQualityCoverage(cv) {
+  const sum = document.getElementById('towerCoverageSummary'), tbl = document.getElementById('towerCoverage'), lim = document.getElementById('towerCoverageLimits');
+  if (!sum || !tbl || !lim) return;
+  if (!cv || cv.state !== 'ok') { sum.innerHTML = 'Coverage not computed: ' + escapeHtml((cv && cv.reason) || 'no coverage in the response') + '. Nothing is guessed.'; tbl.innerHTML = ''; lim.innerHTML = ''; return; }
+  const inf = cv.informative || {};
+  sum.innerHTML = '<b>' + cv.denominator + '</b> public upcoming events · as of ' + escapeHtml(towerWhen(cv.as_of)) + ' (' + escapeHtml(cv.today || '') + ') · ' + escapeHtml(cv.mode || 'report_only')
+    + ' · owner-protected rows ' + (inf.owner_protected_rows || 0) + ' · category owner-locked ' + (inf.category_owner_locked_rows || 0);
+  const row = (name, d, note) => '<tr><td><b>' + escapeHtml(name.replace(/_/g, ' ')) + '</b>' + (note ? '<br><small>' + escapeHtml(note) + '</small>' : '') + '</td>'
+    + '<td style="color:var(--ok)">' + d.pass + '</td><td style="color:var(--bad)">' + d.fail + '</td><td>' + d.review + '</td><td>' + d.unchecked + '</td><td>' + (d.pass + d.fail + d.review + d.unchecked) + '</td></tr>';
+  tbl.innerHTML = '<tr><th>Dimension</th><th>Pass</th><th>Fail</th><th>Review</th><th>Unchecked</th><th>Total</th></tr>'
+    + Object.entries(cv.dimensions || {}).map(([k, d]) => row(k, d, 'checks: ' + (d.checks || []).join(', '))).join('')
+    + '<tr><th colspan="6" style="padding-top:12px;">Individual checks (field checks prove presence or linkage only, not accuracy)</th></tr>'
+    + Object.entries(cv.checks || {}).map(([k, d]) => row(k, d, d.kind)).join('');
+  lim.innerHTML = '<b>Limits:</b><ul class="ct-events">' + (cv.limits || []).map(l => '<li>' + escapeHtml(l) + '</li>').join('') + '</ul>';
 }
 // Issue #49: location gaps grouped by venue.
 function renderVenueRepairs(v) {
