@@ -307,7 +307,7 @@ async function loadArticles(){
     // making this page's fetch fail and show "Couldn't load press coverage
     // right now." The explicit !constraint-name hint pins this embed to the
     // original single-match FK, same relationship this page always used.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,end_date,date_semantics,occurrence_dates,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,end_date,date_semantics,occurrence_dates,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status,image_url))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -351,6 +351,7 @@ async function loadArticles(){
           venue: decodeEntities(resolveVenueDisplay(r._v.event).name) || 'Venue TBA',
           city: (function(){ const vc = resolveVenueDisplay(r._v.event).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
           cat: r._v.event.category,
+          imageUrl: r._v.event.image_url || null,
         } : null,
       }));
 
@@ -419,10 +420,22 @@ function eventSortDate(ev, todayIso){
 //   instead. The meta line is replaced with a "General coverage" tag plus
 //   the article's own publish date, since there's no event date/venue to
 //   show.
+// Try the verified linked event's artwork once if the article thumbnail fails.
+function radarImageFailed(img){
+  const fallback = safeUrl(img.dataset.eventImage);
+  delete img.dataset.eventImage;
+  if(fallback){ img.src = fallback; return; }
+  img.outerHTML = `<div class="rc-thumb-fallback">${escapeHtml(img.dataset.sourceInitial || '')}</div>`;
+}
+
 function radarCardHtml(item){
   const cat = item.event ? CATS[item.event.cat] : null;
-  const thumbHtml = item.thumbnailUrl && safeUrl(item.thumbnailUrl)
-    ? `<img src="${escapeHtml(safeUrl(item.thumbnailUrl))}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;rc-thumb-fallback&quot;>${escapeHtml(item.source.charAt(0))}</div>';">`
+  const articleImage = safeUrl(item.thumbnailUrl);
+  const eventImage = item.event ? safeUrl(item.event.imageUrl) : '';
+  const image = articleImage || eventImage;
+  const fallback = articleImage && eventImage !== articleImage ? eventImage : '';
+  const thumbHtml = image
+    ? `<img src="${escapeHtml(image)}" data-event-image="${escapeHtml(fallback)}" data-source-initial="${escapeHtml(item.source.charAt(0)).replace(/"/g, '&quot;')}" alt="" loading="lazy" onerror="radarImageFailed(this)">`
     : `<div class="rc-thumb-fallback">${escapeHtml(item.source.charAt(0))}</div>`;
 
   if(item.event){
