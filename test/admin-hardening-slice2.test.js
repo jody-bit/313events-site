@@ -273,9 +273,9 @@ function check(name, fn) {
     assert.strictEqual(health.parseCronCadenceHours("0 9 1 * *"), null);
     assert.strictEqual(health.parseCronCadenceHours("nonsense"), null);
   });
-  check("the real vercel.json: the 2026-10-04 hold is visible for Ticketmaster; MotorCity Wine was released 2026-10-12", () => {
+  check("the real vercel.json: Ticketmaster is scheduled daily (the 2026-10-04 hold ended with the owner's GO); MotorCity Wine was released 2026-10-12", () => {
     const sched = health.schedulesFromVercel(require(`${REPO_DIR}/vercel.json`));
-    assert.ok(!sched.has("ticketmaster"));
+    assert.strictEqual(sched.get("ticketmaster").cadenceHours, 24);
     assert.ok(sched.has("motorcitywine"), "MotorCity Wine cron restored after the stable-id migration");
     assert.strictEqual(sched.get("cinema-detroit").cadenceHours, 24);
   });
