@@ -386,11 +386,21 @@ function finish() {
   const EXPORTERS = ["index.html", "event-template.html"];
   // Ingestion code that merely READS calendars is not an exporter.
   const READERS = ["api/cron-feeds.js", "api/cron-motorcitywine.js"];
+  // SERVER exporters (the subscribable /calendar.ics feed). They are held to the same rules, adapted to server code:
+  // import the shared formatter and take LOCATION, escaping and folding only from it.
+  const SERVER_EXPORTERS = ["api/_lib/calendar-feed.js", "api/calendar-feed.js"];
   const exportsCalendar = /BEGIN:VCALENDAR|calendar\.google\.com\/calendar\/render|text\/calendar/;
   const found = files.filter((f) => f !== "calendar-location.js" && exportsCalendar.test(fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")));
-  assert.deepStrictEqual(found.filter((f) => !READERS.includes(f)).sort(), EXPORTERS.slice().sort(),
+  assert.deepStrictEqual(found.filter((f) => !READERS.includes(f)).sort(), EXPORTERS.concat(SERVER_EXPORTERS).sort(),
     "a calendar exporter exists outside the known list (or one vanished): route it through calendar-location.js, then list it here");
 
+  {
+    const lib = fs.readFileSync(`${REPO_DIR}/api/_lib/calendar-feed.js`, "utf8");
+    assert.ok(/require\("\.\.\/\.\.\/calendar-location\.js"\)/.test(lib), "server feed must load the shared formatter");
+    assert.ok(/CalendarLocation\.icsLocationLine\(CalendarLocation\.resolveForEvent\(/.test(lib), "server feed: ICS LOCATION must come from the shared formatter");
+    assert.ok(!/[`'"]LOCATION:/.test(lib), "server feed hand-writes an ICS LOCATION line");
+    assert.ok(!/function\s+icsEscape\b|function\s+foldICSLine\b/.test(lib), "server feed has its own ICS escaping/folding");
+  }
   for (const f of EXPORTERS) {
     const src = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
     assert.ok(src.includes('<script src="/calendar-location.js"></script>'), `${f} must load calendar-location.js`);
@@ -402,7 +412,7 @@ function finish() {
     if (f === "calendar-location.js") continue;
     const src = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
     assert.ok(!/function\s+buildEventLocation\b|buildEventLocation\s*=/.test(src), `${f} defines its own buildEventLocation(); use CalendarLocation`);
-    if (EXPORTERS.includes(f)) {
+    if (EXPORTERS.includes(f) || SERVER_EXPORTERS.includes(f)) {
       assert.ok(!/[`'"]LOCATION:/.test(src), `${f} hand-writes an ICS LOCATION line`);
       assert.ok(!/function\s+icsEscape\b|function\s+foldICSLine\b/.test(src), `${f} has its own ICS escaping/folding`);
     }

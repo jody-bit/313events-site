@@ -654,6 +654,29 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // set_pick (2026-11-21, owner: the calendar feed is the curated weekly picks). Flags or unflags one event for /calendar.ics.
+    // Needs migration_047_events_is_pick.sql; until that is applied PostgREST answers 400 and this answers 502 with the reason.
+    if (action === "set_pick") {
+      if (!id || typeof body.pick !== "boolean") {
+        res.status(400).json({ error: "Body must include { id, action: 'set_pick', pick: true|false }" });
+        return;
+      }
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved`, {
+          method: "PATCH",
+          headers: { ...sbHeaders, Prefer: "return=representation" },
+          body: JSON.stringify({ is_pick: body.pick, picked_at: body.pick ? new Date().toISOString() : null }),
+        });
+        const rows = await resp.json();
+        if (!resp.ok) { res.status(502).json({ error: "Could not update the pick flag", detail: rows }); return; }
+        if (!rows.length) { res.status(404).json({ error: "Only an approved, live event can be a pick" }); return; }
+        res.status(200).json({ ok: true, event: rows[0] });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     // dismiss_followup / undo_dismiss_followup (2026-09-16, Jody: "how can
     // we make this more seamless and auto-healing?") — a real slice of the
     // follow-up queue is never fixable (RA's secret/TBA venues, a bus tour
@@ -782,7 +805,7 @@ module.exports = async (req, res) => {
     }
 
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'save_correction'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'save_correction'|'dismiss_followup'|'undo_dismiss_followup'|'set_pick'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
       return;
     }
 
