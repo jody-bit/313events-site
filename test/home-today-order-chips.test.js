@@ -6,6 +6,7 @@ const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 const grab = (re, what) => { const m = html.match(re); assert.ok(m, what + " not found"); return m[0]; };
 const code = [
   grab(/function parseTimeRange\(timeStr\)\{[\s\S]*?\n\}\n/, "parseTimeRange"),
+  grab(/function timeCellHtml\(time\)\{[\s\S]*?\n\}\n/, "timeCellHtml"),
   grab(/function timeSortMinutes\(timeStr\)\{[\s\S]*?\n\}\n/, "timeSortMinutes"),
   grab(/function todayRank\(timeStr, nowMins\)\{[\s\S]*?\n\}\n/, "todayRank"),
   grab(/function todBucket\(timeStr\)\{[\s\S]*?\n\}\n/, "todBucket"),
@@ -16,7 +17,7 @@ const code = [
   grab(/function arrangeStreamRows\(rows, ctx\)\{[\s\S]*?\n\}\n/, "arrangeStreamRows"),
 ].join("\n");
 const mk = (mode, nowMins) => {
-  const sb = { Discovery: { window: () => ({ mode }) }, state: {}, detroitNow: () => ({ iso: "2026-11-21", mins: nowMins }), console };
+  const sb = { Discovery: { window: () => ({ mode }) }, state: {}, detroitNow: () => ({ iso: "2026-11-21", mins: nowMins }), escapeHtml: (x) => String(x), console };
   vm.createContext(sb); vm.runInContext(code, sb);
   return sb;
 };
@@ -43,4 +44,14 @@ sb.eval("timeOfDay = 'afternoon'");
 assert.deepStrictEqual(titles(sb.arrangeStreamRows(rows(), {})), ["Noon show"]);
 assert.strictEqual(sb.eval("todChipsHtml('all')"), "", "no chips outside Today, Tomorrow and This Weekend");
 assert.strictEqual((sb.eval("todChipsHtml('weekend')").match(/class="tod-chip/g) || []).length, 3);
+// Leaving the chip views clears the chip, so the Evening note never shows without a chip on screen (P1 finding on #441).
+sb = mk("today", 13 * 60); sb.eval = (s) => vm.runInContext(s, sb);
+sb.eval("timeOfDay = 'evening'");
+sb.arrangeStreamRows(rows(), {});
+assert.strictEqual(sb.eval("timeOfDay"), "evening", "kept on Today");
+const sbAll = mk("all", 13 * 60); sbAll.eval = (s) => vm.runInContext(s, sbAll);
+sbAll.eval("timeOfDay = 'evening'");
+assert.deepStrictEqual(titles(sbAll.arrangeStreamRows(rows(), {})), titles(rows()), "no chip filtering outside the chip views");
+assert.strictEqual(sbAll.eval("timeOfDay"), null, "cleared outside Today, Tomorrow and This Weekend");
+assert.ok(!/exact time not confirmed/.test(sbAll.eval("timeCellHtml('Evening')")), "no Evening note without a chip");
 console.log("PASS: Today ordering and the time-of-day chips");

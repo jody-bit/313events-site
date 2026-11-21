@@ -6127,6 +6127,9 @@ function todChipsHtml(mode){
 function arrangeStreamRows(rows, ctx){
   const w = Discovery.window(state, ctx);
   todHiddenNoTime = 0;
+  // The chip only means something where its row is shown; leaving Today / Tomorrow / This Weekend clears it, so the
+  // Evening note on placeholder rows can never appear without a chip on screen.
+  if(TOD_MODES.indexOf(w.mode) === -1) timeOfDay = null;
   let listed = rows;
   if(timeOfDay && TOD_MODES.indexOf(w.mode) !== -1){
     listed = rows.filter(r => {
