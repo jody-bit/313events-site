@@ -322,7 +322,7 @@ module.exports = async (req, res) => {
         // comment (2026-09-16) for why venue_address_raw/venue_city_raw
         // alone was flagging well-matched events (e.g. Paris Bar) as
         // missing an address they don't actually lack.
-        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note,no_fixed_venue,ticket_status,link_check_status&order=start_date.asc,id.asc`;
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note,no_fixed_venue,ticket_status,link_check_status,updated_at&order=start_date.asc,id.asc`;
         // DEBT-003: every page, not the first 1,000 rows -- see fetchAllPages.
         // The judgment of what is "incomplete" still happens in admin.html,
         // on the whole candidate set, exactly as before.
