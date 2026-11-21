@@ -352,9 +352,33 @@
         </div>
         <div class="field">
           <label for="address">Street address <span class="opt">(optional — leave blank if "venue TBA")</span></label>
-          <input type="text" id="address" name="address" placeholder="e.g. 1501 Holden St, Detroit, MI">
+          <input type="text" id="address" name="address" placeholder="e.g. 1501 Holden St" autocomplete="address-line1" maxlength="200">
         </div>
       </div>
+      <div class="row">
+        <div class="field">
+          <label for="city">City <span class="req">*</span></label>
+          <input type="text" id="city" name="city" required autocomplete="address-level2" maxlength="100" placeholder="e.g. Detroit or Windsor">
+        </div>
+        <div class="field">
+          <label for="region">State / province <span class="req">*</span></label>
+          <input type="text" id="region" name="region" required autocomplete="address-level1" maxlength="50" placeholder="e.g. MI or Ontario">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="postalCode">ZIP / postal code <span class="opt">(optional)</span></label>
+          <input type="text" id="postalCode" name="postalCode" autocomplete="postal-code" maxlength="10" placeholder="e.g. 48202 or N9A 5P4">
+        </div>
+        <div class="field">
+          <label for="country">Country <span class="req">*</span></label>
+          <select id="country" name="country" autocomplete="country" required>
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+          </select>
+        </div>
+      </div>
+      <p class="field-hint">Enter only the building number and street in Street address. Use the separate city, state/province and ZIP/postal code fields.</p>
       <div class="field checkbox-row">
         <input type="checkbox" id="venueTba" name="venueTba">
         <label for="venueTba">Venue address is private / released day-of (common for underground &amp; warehouse events)</label>
@@ -696,8 +720,12 @@ async function uploadFlyerImage(file){
 // (`companyWebsite`, the honeypot, and `elapsedMs`, the fill-time check).
 // Now: a yes/no event attribute is listed only when the submitter actually
 // checked it, and the anti-spam fields are never shown.
+document.getElementById('venueTba').addEventListener('change', function(){
+  for (const id of ['city', 'region']) document.getElementById(id).required = !this.checked;
+});
+
 const CONFIRMATION_ATTRIBUTE_FLAGS = ['recurring', 'clothingOptional', 'venueTba'];
-const CONFIRMATION_HIDDEN_FIELDS = ['companyWebsite', 'elapsedMs'];
+const CONFIRMATION_HIDDEN_FIELDS = ['companyWebsite', 'elapsedMs', 'addressFormat'];
 function buildConfirmationPreview(payload, catLabel){
   const preview = {};
   Object.keys(payload).forEach(key=>{
@@ -771,6 +799,11 @@ form.addEventListener('submit', async (e)=>{
     clothingOptional: form.clothingOptional.checked,
     venue: data.get('venue'),
     address: data.get('address') || null,
+    addressFormat: 'structured',
+    city: data.get('city'),
+    region: data.get('region'),
+    postalCode: data.get('postalCode'),
+    country: data.get('country'),
     venueTba: form.venueTba.checked,
     admission: data.get('admission'),
     price: data.get('price') || null,
