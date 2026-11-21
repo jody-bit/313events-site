@@ -110,7 +110,6 @@ const ALLOWED = [
   "api/_lib/paged-rows.js", "api/sitemap.js",
   // Calendar feed (owner go 2026-11-20, owned-audience channel option 1): one read-only ICS of the next 14 days, confirmed times only.
   "api/calendar-feed.js", "api/_lib/calendar-feed.js",
-  "supabase/migration_047_events_is_pick.sql", "supabase/migration_047_events_is_pick.rollback.sql", "supabase/verify/events_is_pick_check.sql",
   // Owner-approved 2026-11-09 (#395): admin venue autofill and shared venue lookups read every venue past the 1,000-row cap.
   "api/admin-venues.js", "api/_lib/venue-lookup.js",
   // Owner-approved 2026-11-09 (#399): description enrichment drops the filler end time conditionally (single entry; no write or schedule change).
